@@ -1,0 +1,157 @@
+name: 🌌 Morphe Ecosystem Patcher
+
+on:
+  workflow_dispatch:
+    inputs:
+      apps:
+        description: 'Select Application to Patch'
+        required: true
+        type: choice
+        default: 'all'
+        options:
+          - all
+          - youtube
+          - youtube-music
+          - reddit
+      architecture:
+        description: 'Target Architecture'
+        required: true
+        type: choice
+        default: 'arm64-v8a'
+        options:
+          - arm64-v8a
+          - armeabi-v7a
+          - x86_64
+      version_selection:
+        description: 'App Version Selection'
+        required: true
+        type: choice
+        default: 'Latest Recommended'
+        options:
+          - Latest Recommended
+          - Beta
+          - Custom
+      custom_version:
+        description: 'Custom App Version (Required if Custom is selected)'
+        required: false
+        default: ''
+      cli_track:
+        description: 'Morphe CLI Track'
+        required: true
+        type: choice
+        default: 'Stable'
+        options:
+          - Stable
+          - Pre-release
+      patches_track:
+        description: 'Ecosystem Patches Track'
+        required: true
+        type: choice
+        default: 'Stable'
+        options:
+          - Stable
+          - Pre-release
+          - Custom Local
+
+jobs:
+  execute-patching:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Initialize Java JDK 25
+        uses: actions/setup-java@v5.7.0
+        with:
+          distribution: 'zulu'
+          java-version: '25'
+          
+      - name: Initialize Python Environment
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Install Dependencies & apkeep
+        run: |
+          pip install -r requirements.txt
+          wget -q https://github.com/EFForg/apkeep/releases/latest/download/apkeep-x86_64-unknown-linux-gnu -O apkeep
+          chmod +x apkeep
+          sudo mv apkeep /usr/local/bin/
+
+      - name: Fetch Environment Artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 1. Fetch Morphe Desktop CLI
+          if [ "${{ github.event.inputs.cli_track }}" == "Pre-release" ]; then
+            CLI_TAG=$(gh api repos/MorpheApp/morphe-desktop/releases | jq -r '.[0].tag_name')
+            gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
+          else
+            gh release download -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
+          fi
+          mv morphe-desktop-*-all.jar morphe.jar
+          
+          # 2. Hardcoded Ecosystem Repository for Morphe
+          REPO_URL="MorpheApp/morphe-patches"
+          echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> $GITHUB_ENV
+          
+          # 3. Fetch Morphe Patches
+          if [ "${{ github.event.inputs.patches_track }}" == "Custom Local" ]; then
+            cp "Custom-Patches/morphe-custom.mpp" patches.mpp
+            echo "PATCHES_VERSION=custom-local" >> $GITHUB_ENV
+          elif [ "${{ github.event.inputs.patches_track }}" == "Pre-release" ]; then
+            PATCH_TAG=$(gh api repos/$REPO_URL/releases | jq -r '.[0].tag_name')
+            gh release download "$PATCH_TAG" -R $REPO_URL --pattern "*.mpp"
+            mv *.mpp patches.mpp
+            echo "PATCHES_VERSION=$PATCH_TAG" >> $GITHUB_ENV
+          else
+            PATCH_TAG=$(gh api repos/$REPO_URL/releases/latest | jq -r '.tag_name')
+            gh release download "$PATCH_TAG" -R $REPO_URL --pattern "*.mpp"
+            mv *.mpp patches.mpp
+            echo "PATCHES_VERSION=$PATCH_TAG" >> $GITHUB_ENV
+          fi
+
+      - name: Decode Custom Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > custom.keystore
+
+      - name: Execute Chihafuyu Tool
+        env:
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_SIGNER_NAME: ${{ secrets.KEYSTORE_SIGNER_NAME }}
+        run: |
+          # Hardcoded ecosystem parameter: morphe
+          python -u chihafuyu_tool.py \
+            --ecosystem "morphe" \
+            --apps "${{ github.event.inputs.apps }}" \
+            --arch "${{ github.event.inputs.architecture }}" \
+            --version-selection "${{ github.event.inputs.version_selection }}" \
+            --custom-version "${{ github.event.inputs.custom_version }}" \
+            --cli "morphe.jar" \
+            --patches "patches.mpp" \
+            --patches-version "${{ env.PATCHES_VERSION }}" \
+            --repo-url "${{ env.TARGET_REPO_URL }}" \
+            --keystore "custom.keystore" \
+            --ks-alias "$KEYSTORE_ALIAS" \
+            --ks-pass "$KEYSTORE_PASSWORD" \
+            --signer "$KEYSTORE_SIGNER_NAME"
+
+      - name: Set Release Tag
+        id: vars
+        run: echo "DATE_TAG=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_ENV
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: morphe-${{ env.DATE_TAG }}
+          name: Patched Apps - Morphe (${{ env.DATE_TAG }})
+          body_path: ./morphe/changelog.md
+          files: ./morphe/Output/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
