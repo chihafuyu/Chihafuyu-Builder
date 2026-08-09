@@ -638,9 +638,9 @@ def execute_patch_cli(patch_cmd):
         proc.wait()
         return proc.returncode, zero_patches
 
-def _generate_options_json(app_name, args, app_data, paths):
+def _generate_options_json(app_name, args, app_data, workspace):
     """Generates options JSON file using Morphe CLI."""
-    json_file = os.path.join(paths[2], f"{app_name}-options.json")
+    json_file = os.path.join(workspace, f"{app_name}-options.json")
     cmd_opts = [
         "java", "-jar", args.cli, "options-create", "--patches", args.patches,
         "--out", json_file, "--filter-package-name", app_data["package"]
@@ -651,7 +651,7 @@ def _generate_options_json(app_name, args, app_data, paths):
         update_options_json(json_file, app_data["options_override"])
     return json_file
 
-def process_single_app(app_name, args, app_data, app_custom_version, paths, success_patches):
+def process_single_app(app_name, args, app_data, app_custom_version, state):
     """Processes a single app for downloading and patching."""
     target_ver = resolve_target_version(app_data, args.version_selection, app_custom_version)
     arch = app_data.get("force_arch", args.arch)
@@ -659,14 +659,14 @@ def process_single_app(app_name, args, app_data, app_custom_version, paths, succ
     print(f"\n--- {app_name} ({app_data['package']}) ---")
     apk_path = download_apk(
         app_data, target_ver, arch,
-        app_data.get("version_codes", {}).get(arch), paths[0]
+        app_data.get("version_codes", {}).get(arch), state["in_dir"]
     )
     if not apk_path:
         return
 
-    json_file = _generate_options_json(app_name, args, app_data, paths)
-    apk_name = f"{app_name}_{args.ecosystem}_patched_{target_ver}-{arch}_patches_{paths[3]}.apk"
-    out_apk = os.path.join(paths[1], apk_name)
+    json_file = _generate_options_json(app_name, args, app_data, state["workspace"])
+    apk_name = f"{app_name}_{args.ecosystem}_patched_{target_ver}-{arch}_patches_{state['clean_ver']}.apk"
+    out_apk = os.path.join(state["out_dir"], apk_name)
 
     print("[INFO] Patching via Morphe CLI...")
     ret_code, zero_patches = execute_patch_cli(
@@ -675,7 +675,7 @@ def process_single_app(app_name, args, app_data, app_custom_version, paths, succ
 
     if ret_code == 0 and not zero_patches:
         print(f"\n[INFO] SUCCESS: {app_name}")
-        success_patches.append({
+        state["success"].append({
             "name": app_name,
             "version": target_ver,
             "build": app_data.get("version_codes", {}).get(arch),
@@ -691,10 +691,17 @@ def process_single_app(app_name, args, app_data, app_custom_version, paths, succ
 def run_patcher(args):
     """Main execution function to handle the patching loop."""
     workspace = f"./{args.ecosystem}"
-    in_dir = f"{workspace}/Input"
-    out_dir = f"{workspace}/Output"
-    os.makedirs(in_dir, exist_ok=True)
-    os.makedirs(out_dir, exist_ok=True)
+    
+    state = {
+        "in_dir": f"{workspace}/Input",
+        "out_dir": f"{workspace}/Output",
+        "workspace": workspace,
+        "clean_ver": args.patches_version.lstrip('v') if args.patches_version else "unknown",
+        "success": []
+    }
+    
+    os.makedirs(state["in_dir"], exist_ok=True)
+    os.makedirs(state["out_dir"], exist_ok=True)
 
     print(f"=== INITIALIZING WORKSPACE: {args.ecosystem.upper()} ===")
     if args.ecosystem not in ECOSYSTEMS:
@@ -705,20 +712,24 @@ def run_patcher(args):
     app_list = list(ecosystem_apps.keys()) if args.apps.lower() == "all" else args.apps.split(',')
 
     custom_versions_dict = parse_custom_versions(args.custom_version)
-    success_patches = []
-    clean_ver = args.patches_version.lstrip('v') if args.patches_version else "unknown"
 
     for app_name in app_list:
         clean_name = app_name.strip()
         if clean_name in ecosystem_apps:
-            app_custom_ver = custom_versions_dict.get(clean_name) or custom_versions_dict.get("_global")
+            app_custom_ver = (
+                custom_versions_dict.get(clean_name) or
+                custom_versions_dict.get("_global")
+            )
             process_single_app(
                 clean_name, args, ecosystem_apps[clean_name],
-                app_custom_ver, (in_dir, out_dir, workspace, clean_ver), success_patches
+                app_custom_ver, state
             )
 
-    if success_patches:
-        write_changelog(args.ecosystem, args.repo_url, clean_ver, success_patches, workspace)
+    if state["success"]:
+        write_changelog(
+            args.ecosystem, args.repo_url, state["clean_ver"],
+            state["success"], workspace
+        )
 
 def parse_arguments():
     """Parses command line arguments."""
