@@ -665,7 +665,10 @@ def process_single_app(app_name, args, app_data, app_custom_version, state):
         return
 
     json_file = _generate_options_json(app_name, args, app_data, state["workspace"])
-    apk_name = f"{app_name}_{args.ecosystem}_patched_{target_ver}-{arch}_patches_{state['clean_ver']}.apk"
+    apk_name = (
+        f"{app_name}_{args.ecosystem}_patched_{target_ver}-"
+        f"{arch}_patches_{state['clean_ver']}.apk"
+    )
     out_apk = os.path.join(state["out_dir"], apk_name)
 
     print("[INFO] Patching via Morphe CLI...")
@@ -691,7 +694,6 @@ def process_single_app(app_name, args, app_data, app_custom_version, state):
 def run_patcher(args):
     """Main execution function to handle the patching loop."""
     workspace = f"./{args.ecosystem}"
-    
     state = {
         "in_dir": f"{workspace}/Input",
         "out_dir": f"{workspace}/Output",
@@ -699,7 +701,6 @@ def run_patcher(args):
         "clean_ver": args.patches_version.lstrip('v') if args.patches_version else "unknown",
         "success": []
     }
-    
     os.makedirs(state["in_dir"], exist_ok=True)
     os.makedirs(state["out_dir"], exist_ok=True)
 
