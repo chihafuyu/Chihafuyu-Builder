@@ -9,7 +9,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "alpha-progression": {
                 "package": "com.alphaprogression.alphaprogression",
@@ -19,7 +20,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "bandlab": {
                 "package": "com.bandlab.bandlab",
@@ -29,7 +31,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "battery-guru": {
                 "package": "com.paget96.batteryguru",
@@ -39,7 +42,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "cronometer": {
                 "package": "com.cronometer.android.gold",
@@ -49,7 +53,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "directchat": {
                 "package": "net.uniquegem.directchat",
@@ -59,7 +64,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "finch": {
                 "package": "com.finch.finch",
@@ -69,7 +75,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "flightradar24": {
                 "package": "com.flightradar24free",
@@ -79,7 +86,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "foldersync": {
                 "package": "dk.tacit.android.foldersync.lite",
@@ -89,7 +97,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "inshot": {
                 "package": "com.camerasideas.instashot",
@@ -99,7 +108,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "liquid-gallery": {
                 "package": "com.soepic.photogallery.release",
@@ -109,7 +119,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "poweramp": {
                 "package": "com.maxmpz.audioplayer",
@@ -119,7 +130,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "smart-audiobook": {
                 "package": "ak.alizandro.smartaudiobookplayer",
@@ -129,7 +141,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "symfonium": {
                 "package": "app.symfonik.music.player",
@@ -139,7 +152,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "tumblr": {
                 "package": "com.tumblr",
@@ -149,7 +163,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "video-converter": {
                 "package": "app.remux.video.converter",
@@ -160,7 +175,8 @@
                 "beta": [],
                 "strip": true,
                 "force_arch": "arm64-v8a",
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "webtoon": {
                 "package": "com.naver.linewebtoon",
@@ -170,7 +186,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
@@ -184,7 +201,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "stellarium": {
                 "package": "com.noctuasoftware.stellarium_free",
@@ -194,7 +212,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "proto": {
                 "package": "com.proto.circuitsimulator",
@@ -204,7 +223,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "vpnify": {
                 "package": "com.vpn.free.hotspot.secure.vpnify",
@@ -214,7 +234,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "backdrops": {
                 "package": "com.backdrops.wallpapers",
@@ -224,7 +245,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "solid-explorer": {
                 "package": "pl.solidexplorer2",
@@ -234,7 +256,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
@@ -249,7 +272,8 @@
                 "beta": [],
                 "strip": true,
                 "uptodown_url": "https://pinterest.en.uptodown.com/android",
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "easy-sudoku": {
                 "package": "easy.sudoku.puzzle.solver.free",
@@ -259,7 +283,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
@@ -273,7 +298,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "rar": {
                 "package": "com.rarlab.rar",
@@ -283,7 +309,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
@@ -302,7 +329,8 @@
                     "x86_64": "42118001"
                 },
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "ibispaint": {
                 "package": "jp.ne.ibis.ibispaintx.app",
@@ -314,7 +342,8 @@
                 "strip": true,
                 "force_arch": "arm64-v8a",
                 "uptodown_url": "https://ibispaint-x.en.uptodown.com/android",
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "wps": {
                 "package": "cn.wps.moffice_eng",
@@ -324,7 +353,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "camscanner": {
                 "package": "com.intsig.camscanner",
@@ -334,7 +364,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "sleep-as-android": {
                 "package": "com.urbandroid.sleep",
@@ -344,7 +375,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "duolingo": {
                 "package": "com.duolingo",
@@ -354,7 +386,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "mimo": {
                 "package": "com.getmimo",
@@ -364,7 +397,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "windy": {
                 "package": "com.windyty.android",
@@ -374,7 +408,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "xrecorder": {
                 "package": "videoeditor.videorecorder.screenrecorder",
@@ -384,7 +419,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "xodo": {
                 "package": "com.xodo.pdf.reader",
@@ -394,7 +430,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
@@ -408,7 +445,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
@@ -422,7 +460,8 @@
                 ],
                 "beta": ["5.0.1m"],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "audiorelay": {
                 "package": "com.azefsw.audioconnect",
@@ -432,7 +471,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "boorusama": {
                 "package": "com.degenk.boorusama",
@@ -442,7 +482,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "epic": {
                 "package": "com.getepic.Epic",
@@ -452,7 +493,8 @@
                 ],
                 "beta": ["3.141.44"],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "fakegps": {
                 "package": "com.hopefactory2021.fakegpslocation",
@@ -462,7 +504,8 @@
                 ],
                 "beta": ["125.0"],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "hermit": {
                 "package": "com.chimbori.hermitcrab",
@@ -472,7 +515,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "hidden-settings": {
                 "package": "com.ceyhan.sets",
@@ -482,7 +526,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "ilovepdf": {
                 "package": "com.ilovepdf.www",
@@ -492,7 +537,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "key-mapper": {
                 "package": "io.github.sds100.keymapper",
@@ -502,7 +548,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "keymate": {
                 "package": "net.nemostudio.keymate",
@@ -512,7 +559,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "manga-plus": {
                 "package": "jp.co.shueisha.mangaplus",
@@ -522,7 +570,8 @@
                 ],
                 "beta": ["2.6.1"],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "pixellab": {
                 "package": "com.imaginstudio.imagetools.pixellab",
@@ -532,7 +581,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "timestamp-camera": {
                 "package": "com.jeyluta.timestampcamerafree",
@@ -542,7 +592,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "nekopoi": {
                 "package": "com.kcstream.cing",
@@ -552,7 +603,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
@@ -586,7 +638,8 @@
                 ],
                 "beta": ["9.26.56"],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "reddit": {
                 "package": "com.reddit.frontpage",
@@ -615,7 +668,8 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
@@ -629,7 +683,12 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Dynamic color": {
+                        "enabled": true
+                    }
+                }
             },
             "instagram": {
                 "package": "com.instagram.android",
@@ -643,7 +702,8 @@
                 },
                 "strip": true,
                 "force_arch": "arm64-v8a",
-                "archive_id": "ZeNiX"
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }
