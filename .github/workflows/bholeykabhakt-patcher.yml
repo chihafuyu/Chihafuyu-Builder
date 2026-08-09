@@ -3,19 +3,36 @@ name: 🕉️ BholeyKaBhakt Ecosystem Patcher
 on:
   workflow_dispatch:
     inputs:
-      apps:
-        description: 'Select Application to Patch'
+      app_speedtest:
+        description: 'Patch speedtest'
         required: true
-        type: choice
-        default: 'all'
-        options:
-          - all
-          - speedtest
-          - stellarium
-          - proto
-          - vpnify
-          - backdrops
-          - solid-explorer
+        type: boolean
+        default: false
+      app_stellarium:
+        description: 'Patch stellarium'
+        required: true
+        type: boolean
+        default: false
+      app_proto:
+        description: 'Patch proto'
+        required: true
+        type: boolean
+        default: false
+      app_vpnify:
+        description: 'Patch vpnify'
+        required: true
+        type: boolean
+        default: false
+      app_backdrops:
+        description: 'Patch backdrops'
+        required: true
+        type: boolean
+        default: false
+      app_solid_explorer:
+        description: 'Patch solid-explorer'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -79,6 +96,7 @@ jobs:
 
       - name: Install Dependencies & apkeep
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
           wget -q https://github.com/EFForg/apkeep/releases/latest/download/apkeep-x86_64-unknown-linux-gnu -O apkeep
           chmod +x apkeep
@@ -120,6 +138,30 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > custom.keystore
 
+      # --- CHECKBOX COMBINER ENGINE ---
+      - name: Prepare App Selection
+        id: prep_apps
+        run: |
+          APP_LIST=""
+          if [ "${{ github.event.inputs.app_speedtest }}" == "true" ]; then APP_LIST="$APP_LIST,speedtest"; fi
+          if [ "${{ github.event.inputs.app_stellarium }}" == "true" ]; then APP_LIST="$APP_LIST,stellarium"; fi
+          if [ "${{ github.event.inputs.app_proto }}" == "true" ]; then APP_LIST="$APP_LIST,proto"; fi
+          if [ "${{ github.event.inputs.app_vpnify }}" == "true" ]; then APP_LIST="$APP_LIST,vpnify"; fi
+          if [ "${{ github.event.inputs.app_backdrops }}" == "true" ]; then APP_LIST="$APP_LIST,backdrops"; fi
+          if [ "${{ github.event.inputs.app_solid_explorer }}" == "true" ]; then APP_LIST="$APP_LIST,solid-explorer"; fi
+          
+          # Remove leading comma (if any)
+          APP_LIST=${APP_LIST#,}
+          
+          # Prevent error if no application is selected
+          if [ -z "$APP_LIST" ]; then
+            echo "::error::No applications selected for patching!"
+            exit 1
+          fi
+          
+          echo "SELECTED_APPS=$APP_LIST" >> $GITHUB_ENV
+          echo "Ready to patch: $APP_LIST"
+
       - name: Execute Chihafuyu Tool
         env:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
@@ -128,7 +170,7 @@ jobs:
         run: |
           python -u chihafuyu_tool.py \
             --ecosystem "BholeyKaBhakt" \
-            --apps "${{ github.event.inputs.apps }}" \
+            --apps "${{ env.SELECTED_APPS }}" \
             --arch "${{ github.event.inputs.architecture }}" \
             --version-selection "${{ github.event.inputs.version_selection }}" \
             --custom-version "${{ github.event.inputs.custom_version }}" \
