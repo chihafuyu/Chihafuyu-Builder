@@ -276,7 +276,7 @@ def _download_apkmirror_variant(scraper, var_url, is_bundle, file_meta):
             print(f"[INFO] Tier 1 Success ({'.apkm' if is_bundle else '.apk'})")
             return out_path
     else:
-        print("[WARN] Direct download link missing on final APKMirror page.")
+        print("[WARN] Direct download link missing.")
 
     return None
 
@@ -684,6 +684,11 @@ def run_patcher(args):
 
     ecosystem_apps = ECOSYSTEMS[args.ecosystem]["apps"]
     app_list = list(ecosystem_apps.keys()) if args.apps.lower() == "all" else args.apps.split(',')
+
+    if args.version_selection.lower() == "custom" and len(app_list) > 1:
+        print("[FATAL] Custom version mode only supports 1 application per run.")
+        sys.exit(1)
+
     success_patches = []
     clean_ver = args.patches_version.lstrip('v') if args.patches_version else "unknown"
 
