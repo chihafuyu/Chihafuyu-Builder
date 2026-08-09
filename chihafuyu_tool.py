@@ -201,8 +201,8 @@ def _find_apkmirror_release(scraper, pkg, version):
     query = urllib.parse.quote_plus(f"{pkg} {version}")
     url = f"https://www.apkmirror.com/?post_type=app_release&s={query}"
     resp = scraper.get(url, timeout=30)
-    if resp.status_code in [403, 429]:
-        print(f"[ERROR] Blocked HTTP {resp.status_code} at search page")
+    if resp.status_code != 200:
+        print(f"[WARN] HTTP {resp.status_code} at search page")
         return None
     soup = BeautifulSoup(resp.text, 'html.parser')
     exclude_kws = ["secondary"]
@@ -215,8 +215,8 @@ def _find_apkmirror_release(scraper, pkg, version):
 def _find_apkmirror_variant(scraper, release_url, arch, ver_code):
     """Finds the specific variant download page."""
     resp = scraper.get(release_url, timeout=30)
-    if resp.status_code in [403, 429]:
-        print(f"[WARN] Blocked HTTP {resp.status_code} at release page")
+    if resp.status_code != 200:
+        print(f"[WARN] HTTP {resp.status_code} at release page")
         return None, False
     soup = BeautifulSoup(resp.text, 'html.parser')
     valid_archs = [arch.lower(), "universal", "noarch"]
@@ -242,35 +242,37 @@ def _find_apkmirror_variant(scraper, release_url, arch, ver_code):
 
 def _download_apkmirror_variant(scraper, var_url, is_bundle, file_meta):
     """Downloads the exact variant from APKMirror."""
-    pkg, target_ver, out_dir = file_meta
-
     resp = scraper.get(var_url, timeout=30)
-    if resp.status_code in [403, 429]:
-        print(f"[WARN] Blocked HTTP {resp.status_code} at variant page")
+    if resp.status_code != 200:
+        print(f"[WARN] HTTP {resp.status_code} at variant page")
         return None
 
     soup = BeautifulSoup(resp.text, 'html.parser')
     dl_btn = soup.find('a', class_='downloadButton')
 
     if not dl_btn:
-        print("[WARN] Download button not found on APKMirror variant page.")
+        print("[WARN] Download button not found on variant page.")
         return None
 
     dl_page = "https://www.apkmirror.com" + dl_btn['href']
 
     resp = scraper.get(dl_page, timeout=30)
-    if resp.status_code in [403, 429]:
-        print(f"[WARN] Blocked HTTP {resp.status_code} at download page")
+    if resp.status_code != 200:
+        print(f"[WARN] HTTP {resp.status_code} at download page")
         return None
 
     soup = BeautifulSoup(resp.text, 'html.parser')
-    direct_link = soup.find("a", {"rel": "nofollow"})
+    dl_btn = soup.find("a", {"rel": "nofollow"})
 
-    if direct_link and 'href' in direct_link.attrs:
-        direct_url = "https://www.apkmirror.com" + direct_link['href']
-        out_path = os.path.join(out_dir, f"{pkg}_{target_ver}{'.apkm' if is_bundle else '.apk'}")
+    if dl_btn and 'href' in dl_btn.attrs:
+        out_path = os.path.join(
+            file_meta[2],
+            f"{file_meta[0]}_{file_meta[1]}{'.apkm' if is_bundle else '.apk'}"
+        )
         print("[INFO] Downloading from APKMirror...")
-        if download_file_stream(scraper, direct_url, out_path, dl_page):
+        if download_file_stream(
+            scraper, "https://www.apkmirror.com" + dl_btn['href'], out_path, dl_page
+        ):
             print(f"[INFO] Tier 1 Success ({'.apkm' if is_bundle else '.apk'})")
             return out_path
     else:
