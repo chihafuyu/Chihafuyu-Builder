@@ -23,6 +23,10 @@ This project uses methods and tools from the following developers:
 - [**Morphe**](https://github.com/MorpheApp) - Patching CLI and base ecosystem. Licensed under GPLv3.
 - [**apkeep**](https://github.com/EFForg/apkeep) - `APKPure` fallback download mechanism. Licensed under MIT.
 
+## 📚 Frequently Asked Questions (FAQ)
+
+**Got questions or running into errors?** Check out our [FAQ Page](FAQ.md) first!
+
 ## 📄 License
 Distributed under the **MIT License**.
 

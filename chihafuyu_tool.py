@@ -276,7 +276,7 @@ def _download_apkmirror_variant(scraper, var_url, is_bundle, file_meta):
             print(f"[INFO] Tier 1 Success ({'.apkm' if is_bundle else '.apk'})")
             return out_path
     else:
-        print("[WARN] Direct download link missing on final APKMirror page.")
+        print("[WARN] Direct download link missing.")
 
     return None
 
@@ -572,10 +572,29 @@ def write_changelog(ecosystem, repo_url, patches_version, apps_patched, workspac
         file_obj.write("For Google Apps, install [microG-RE]")
         file_obj.write("(https://github.com/MorpheApp/MicroG-RE/releases/latest).\n")
 
-def resolve_target_version(app_data, version_selection, custom_version):
+def parse_custom_versions(custom_version_str):
+    """Parses the custom version string into a dictionary."""
+    parsed_versions = {}
+    if not custom_version_str:
+        return parsed_versions
+
+    if "=" in custom_version_str:
+        parts = custom_version_str.split(',')
+        for part in parts:
+            if "=" in part:
+                key, val = part.split('=', 1)
+                parsed_versions[key.strip()] = val.strip()
+    else:
+        parsed_versions["_global"] = custom_version_str.strip()
+
+    return parsed_versions
+
+def resolve_target_version(app_data, version_selection, app_custom_version):
     """Resolves the target version to download based on user input."""
-    if version_selection == "Custom" and custom_version:
-        return custom_version
+    if version_selection.lower() == "custom":
+        if app_custom_version:
+            return app_custom_version
+        print("[WARN] Custom version missing for this app. Falling back to stable.")
     if version_selection.lower() in ["beta", "pre-release", "latest", "experimental"]:
         if "beta" in app_data and app_data["beta"]:
             return app_data["beta"][0]
@@ -619,9 +638,9 @@ def execute_patch_cli(patch_cmd):
         proc.wait()
         return proc.returncode, zero_patches
 
-def _generate_options_json(app_name, args, app_data, paths):
+def _generate_options_json(app_name, args, app_data, workspace):
     """Generates options JSON file using Morphe CLI."""
-    json_file = os.path.join(paths[2], f"{app_name}-options.json")
+    json_file = os.path.join(workspace, f"{app_name}-options.json")
     cmd_opts = [
         "java", "-jar", args.cli, "options-create", "--patches", args.patches,
         "--out", json_file, "--filter-package-name", app_data["package"]
@@ -632,22 +651,25 @@ def _generate_options_json(app_name, args, app_data, paths):
         update_options_json(json_file, app_data["options_override"])
     return json_file
 
-def process_single_app(app_name, args, app_data, paths, success_patches):
+def process_single_app(app_name, args, app_data, app_custom_version, state):
     """Processes a single app for downloading and patching."""
-    target_ver = resolve_target_version(app_data, args.version_selection, args.custom_version)
+    target_ver = resolve_target_version(app_data, args.version_selection, app_custom_version)
     arch = app_data.get("force_arch", args.arch)
 
     print(f"\n--- {app_name} ({app_data['package']}) ---")
     apk_path = download_apk(
         app_data, target_ver, arch,
-        app_data.get("version_codes", {}).get(arch), paths[0]
+        app_data.get("version_codes", {}).get(arch), state["in_dir"]
     )
     if not apk_path:
         return
 
-    json_file = _generate_options_json(app_name, args, app_data, paths)
-    apk_name = f"{app_name}_{args.ecosystem}_patched_{target_ver}-{arch}_patches_{paths[3]}.apk"
-    out_apk = os.path.join(paths[1], apk_name)
+    json_file = _generate_options_json(app_name, args, app_data, state["workspace"])
+    apk_name = (
+        f"{app_name}_{args.ecosystem}_patched_{target_ver}-"
+        f"{arch}_patches_{state['clean_ver']}.apk"
+    )
+    out_apk = os.path.join(state["out_dir"], apk_name)
 
     print("[INFO] Patching via Morphe CLI...")
     ret_code, zero_patches = execute_patch_cli(
@@ -656,7 +678,7 @@ def process_single_app(app_name, args, app_data, paths, success_patches):
 
     if ret_code == 0 and not zero_patches:
         print(f"\n[INFO] SUCCESS: {app_name}")
-        success_patches.append({
+        state["success"].append({
             "name": app_name,
             "version": target_ver,
             "build": app_data.get("version_codes", {}).get(arch),
@@ -672,10 +694,15 @@ def process_single_app(app_name, args, app_data, paths, success_patches):
 def run_patcher(args):
     """Main execution function to handle the patching loop."""
     workspace = f"./{args.ecosystem}"
-    in_dir = f"{workspace}/Input"
-    out_dir = f"{workspace}/Output"
-    os.makedirs(in_dir, exist_ok=True)
-    os.makedirs(out_dir, exist_ok=True)
+    state = {
+        "in_dir": f"{workspace}/Input",
+        "out_dir": f"{workspace}/Output",
+        "workspace": workspace,
+        "clean_ver": args.patches_version.lstrip('v') if args.patches_version else "unknown",
+        "success": []
+    }
+    os.makedirs(state["in_dir"], exist_ok=True)
+    os.makedirs(state["out_dir"], exist_ok=True)
 
     print(f"=== INITIALIZING WORKSPACE: {args.ecosystem.upper()} ===")
     if args.ecosystem not in ECOSYSTEMS:
@@ -684,18 +711,26 @@ def run_patcher(args):
 
     ecosystem_apps = ECOSYSTEMS[args.ecosystem]["apps"]
     app_list = list(ecosystem_apps.keys()) if args.apps.lower() == "all" else args.apps.split(',')
-    success_patches = []
-    clean_ver = args.patches_version.lstrip('v') if args.patches_version else "unknown"
+
+    custom_versions_dict = parse_custom_versions(args.custom_version)
 
     for app_name in app_list:
-        if app_name.strip() in ecosystem_apps:
+        clean_name = app_name.strip()
+        if clean_name in ecosystem_apps:
+            app_custom_ver = (
+                custom_versions_dict.get(clean_name) or
+                custom_versions_dict.get("_global")
+            )
             process_single_app(
-                app_name.strip(), args, ecosystem_apps[app_name.strip()],
-                (in_dir, out_dir, workspace, clean_ver), success_patches
+                clean_name, args, ecosystem_apps[clean_name],
+                app_custom_ver, state
             )
 
-    if success_patches:
-        write_changelog(args.ecosystem, args.repo_url, clean_ver, success_patches, workspace)
+    if state["success"]:
+        write_changelog(
+            args.ecosystem, args.repo_url, state["clean_ver"],
+            state["success"], workspace
+        )
 
 def parse_arguments():
     """Parses command line arguments."""
