@@ -3,27 +3,76 @@ name: 🌸 Kiraio-moe Ecosystem Patcher
 on:
   workflow_dispatch:
     inputs:
-      apps:
-        description: 'Select Application to Patch'
+      app_atomic:
+        description: 'Patch atomic'
         required: true
-        type: choice
-        default: 'all'
-        options:
-          - all
-          - atomic
-          - audiorelay
-          - boorusama
-          - epic
-          - fakegps
-          - hermit
-          - hidden-settings
-          - ilovepdf
-          - key-mapper
-          - keymate
-          - manga-plus
-          - pixellab
-          - timestamp-camera
-          - nekopoi
+        type: boolean
+        default: false
+      app_audiorelay:
+        description: 'Patch audiorelay'
+        required: true
+        type: boolean
+        default: false
+      app_boorusama:
+        description: 'Patch boorusama'
+        required: true
+        type: boolean
+        default: false
+      app_epic:
+        description: 'Patch epic'
+        required: true
+        type: boolean
+        default: false
+      app_fakegps:
+        description: 'Patch fakegps'
+        required: true
+        type: boolean
+        default: false
+      app_hermit:
+        description: 'Patch hermit'
+        required: true
+        type: boolean
+        default: false
+      app_hidden_settings:
+        description: 'Patch hidden-settings'
+        required: true
+        type: boolean
+        default: false
+      app_ilovepdf:
+        description: 'Patch ilovepdf'
+        required: true
+        type: boolean
+        default: false
+      app_key_mapper:
+        description: 'Patch key-mapper'
+        required: true
+        type: boolean
+        default: false
+      app_keymate:
+        description: 'Patch keymate'
+        required: true
+        type: boolean
+        default: false
+      app_manga_plus:
+        description: 'Patch manga-plus'
+        required: true
+        type: boolean
+        default: false
+      app_pixellab:
+        description: 'Patch pixellab'
+        required: true
+        type: boolean
+        default: false
+      app_timestamp_camera:
+        description: 'Patch timestamp-camera'
+        required: true
+        type: boolean
+        default: false
+      app_nekopoi:
+        description: 'Patch nekopoi'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -128,6 +177,38 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > custom.keystore
 
+      # --- CHECKBOX COMBINER ENGINE ---
+      - name: Prepare App Selection
+        id: prep_apps
+        run: |
+          APP_LIST=""
+          if [ "${{ github.event.inputs.app_atomic }}" == "true" ]; then APP_LIST="$APP_LIST,atomic"; fi
+          if [ "${{ github.event.inputs.app_audiorelay }}" == "true" ]; then APP_LIST="$APP_LIST,audiorelay"; fi
+          if [ "${{ github.event.inputs.app_boorusama }}" == "true" ]; then APP_LIST="$APP_LIST,boorusama"; fi
+          if [ "${{ github.event.inputs.app_epic }}" == "true" ]; then APP_LIST="$APP_LIST,epic"; fi
+          if [ "${{ github.event.inputs.app_fakegps }}" == "true" ]; then APP_LIST="$APP_LIST,fakegps"; fi
+          if [ "${{ github.event.inputs.app_hermit }}" == "true" ]; then APP_LIST="$APP_LIST,hermit"; fi
+          if [ "${{ github.event.inputs.app_hidden_settings }}" == "true" ]; then APP_LIST="$APP_LIST,hidden-settings"; fi
+          if [ "${{ github.event.inputs.app_ilovepdf }}" == "true" ]; then APP_LIST="$APP_LIST,ilovepdf"; fi
+          if [ "${{ github.event.inputs.app_key_mapper }}" == "true" ]; then APP_LIST="$APP_LIST,key-mapper"; fi
+          if [ "${{ github.event.inputs.app_keymate }}" == "true" ]; then APP_LIST="$APP_LIST,keymate"; fi
+          if [ "${{ github.event.inputs.app_manga_plus }}" == "true" ]; then APP_LIST="$APP_LIST,manga-plus"; fi
+          if [ "${{ github.event.inputs.app_pixellab }}" == "true" ]; then APP_LIST="$APP_LIST,pixellab"; fi
+          if [ "${{ github.event.inputs.app_timestamp_camera }}" == "true" ]; then APP_LIST="$APP_LIST,timestamp-camera"; fi
+          if [ "${{ github.event.inputs.app_nekopoi }}" == "true" ]; then APP_LIST="$APP_LIST,nekopoi"; fi
+          
+          # Remove leading comma (if any)
+          APP_LIST=${APP_LIST#,}
+          
+          # Prevent error if no application is selected
+          if [ -z "$APP_LIST" ]; then
+            echo "::error::No applications selected for patching!"
+            exit 1
+          fi
+          
+          echo "SELECTED_APPS=$APP_LIST" >> $GITHUB_ENV
+          echo "Ready to patch: $APP_LIST"
+
       - name: Execute Chihafuyu Tool
         env:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
@@ -136,7 +217,7 @@ jobs:
         run: |
           python -u chihafuyu_tool.py \
             --ecosystem "kiraio-moe" \
-            --apps "${{ github.event.inputs.apps }}" \
+            --apps "${{ env.SELECTED_APPS }}" \
             --arch "${{ github.event.inputs.architecture }}" \
             --version-selection "${{ github.event.inputs.version_selection }}" \
             --custom-version "${{ github.event.inputs.custom_version }}" \

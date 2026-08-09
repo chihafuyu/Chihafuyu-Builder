@@ -3,30 +3,91 @@ name: 🧑‍ Arandomhooman Ecosystem Patcher
 on:
   workflow_dispatch:
     inputs:
-      apps:
-        description: 'Select Application to Patch'
+      app_adm:
+        description: 'Patch adm'
         required: true
-        type: choice
-        default: 'all'
-        options:
-          - all
-          - adm
-          - alpha-progression
-          - bandlab
-          - battery-guru
-          - cronometer
-          - directchat
-          - finch
-          - flightradar24
-          - foldersync
-          - inshot
-          - liquid-gallery
-          - poweramp
-          - smart-audiobook
-          - symfonium
-          - tumblr
-          - video-converter
-          - webtoon
+        type: boolean
+        default: false
+      app_alpha_progression:
+        description: 'Patch alpha-progression'
+        required: true
+        type: boolean
+        default: false
+      app_bandlab:
+        description: 'Patch bandlab'
+        required: true
+        type: boolean
+        default: false
+      app_battery_guru:
+        description: 'Patch battery-guru'
+        required: true
+        type: boolean
+        default: false
+      app_cronometer:
+        description: 'Patch cronometer'
+        required: true
+        type: boolean
+        default: false
+      app_directchat:
+        description: 'Patch directchat'
+        required: true
+        type: boolean
+        default: false
+      app_finch:
+        description: 'Patch finch'
+        required: true
+        type: boolean
+        default: false
+      app_flightradar24:
+        description: 'Patch flightradar24'
+        required: true
+        type: boolean
+        default: false
+      app_foldersync:
+        description: 'Patch foldersync'
+        required: true
+        type: boolean
+        default: false
+      app_inshot:
+        description: 'Patch inshot'
+        required: true
+        type: boolean
+        default: false
+      app_liquid_gallery:
+        description: 'Patch liquid-gallery'
+        required: true
+        type: boolean
+        default: false
+      app_poweramp:
+        description: 'Patch poweramp'
+        required: true
+        type: boolean
+        default: false
+      app_smart_audiobook:
+        description: 'Patch smart-audiobook'
+        required: true
+        type: boolean
+        default: false
+      app_symfonium:
+        description: 'Patch symfonium'
+        required: true
+        type: boolean
+        default: false
+      app_tumblr:
+        description: 'Patch tumblr'
+        required: true
+        type: boolean
+        default: false
+      app_video_converter:
+        description: 'Patch video-converter'
+        required: true
+        type: boolean
+        default: false
+      app_webtoon:
+        description: 'Patch webtoon'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -131,6 +192,41 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > custom.keystore
 
+      # --- CHECKBOX COMBINER ENGINE ---
+      - name: Prepare App Selection
+        id: prep_apps
+        run: |
+          APP_LIST=""
+          if [ "${{ github.event.inputs.app_adm }}" == "true" ]; then APP_LIST="$APP_LIST,adm"; fi
+          if [ "${{ github.event.inputs.app_alpha_progression }}" == "true" ]; then APP_LIST="$APP_LIST,alpha-progression"; fi
+          if [ "${{ github.event.inputs.app_bandlab }}" == "true" ]; then APP_LIST="$APP_LIST,bandlab"; fi
+          if [ "${{ github.event.inputs.app_battery_guru }}" == "true" ]; then APP_LIST="$APP_LIST,battery-guru"; fi
+          if [ "${{ github.event.inputs.app_cronometer }}" == "true" ]; then APP_LIST="$APP_LIST,cronometer"; fi
+          if [ "${{ github.event.inputs.app_directchat }}" == "true" ]; then APP_LIST="$APP_LIST,directchat"; fi
+          if [ "${{ github.event.inputs.app_finch }}" == "true" ]; then APP_LIST="$APP_LIST,finch"; fi
+          if [ "${{ github.event.inputs.app_flightradar24 }}" == "true" ]; then APP_LIST="$APP_LIST,flightradar24"; fi
+          if [ "${{ github.event.inputs.app_foldersync }}" == "true" ]; then APP_LIST="$APP_LIST,foldersync"; fi
+          if [ "${{ github.event.inputs.app_inshot }}" == "true" ]; then APP_LIST="$APP_LIST,inshot"; fi
+          if [ "${{ github.event.inputs.app_liquid_gallery }}" == "true" ]; then APP_LIST="$APP_LIST,liquid-gallery"; fi
+          if [ "${{ github.event.inputs.app_poweramp }}" == "true" ]; then APP_LIST="$APP_LIST,poweramp"; fi
+          if [ "${{ github.event.inputs.app_smart_audiobook }}" == "true" ]; then APP_LIST="$APP_LIST,smart-audiobook"; fi
+          if [ "${{ github.event.inputs.app_symfonium }}" == "true" ]; then APP_LIST="$APP_LIST,symfonium"; fi
+          if [ "${{ github.event.inputs.app_tumblr }}" == "true" ]; then APP_LIST="$APP_LIST,tumblr"; fi
+          if [ "${{ github.event.inputs.app_video_converter }}" == "true" ]; then APP_LIST="$APP_LIST,video-converter"; fi
+          if [ "${{ github.event.inputs.app_webtoon }}" == "true" ]; then APP_LIST="$APP_LIST,webtoon"; fi
+          
+          # Remove leading comma (if any)
+          APP_LIST=${APP_LIST#,}
+          
+          # Prevent error if no application is selected
+          if [ -z "$APP_LIST" ]; then
+            echo "::error::No applications selected for patching!"
+            exit 1
+          fi
+          
+          echo "SELECTED_APPS=$APP_LIST" >> $GITHUB_ENV
+          echo "Ready to patch: $APP_LIST"
+
       - name: Execute Chihafuyu Tool
         env:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
@@ -139,7 +235,7 @@ jobs:
         run: |
           python -u chihafuyu_tool.py \
             --ecosystem "arandomhooman" \
-            --apps "${{ github.event.inputs.apps }}" \
+            --apps "${{ env.SELECTED_APPS }}" \
             --arch "${{ github.event.inputs.architecture }}" \
             --version-selection "${{ github.event.inputs.version_selection }}" \
             --custom-version "${{ github.event.inputs.custom_version }}" \

@@ -3,15 +3,16 @@ name: 🎨 Browzomje Ecosystem Patcher
 on:
   workflow_dispatch:
     inputs:
-      apps:
-        description: 'Select Application to Patch'
+      app_pinterest:
+        description: 'Patch pinterest'
         required: true
-        type: choice
-        default: 'all'
-        options:
-          - all
-          - pinterest
-          - easy-sudoku
+        type: boolean
+        default: false
+      app_easy_sudoku:
+        description: 'Patch easy-sudoku'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -116,6 +117,26 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > custom.keystore
 
+      # --- CHECKBOX COMBINER ENGINE ---
+      - name: Prepare App Selection
+        id: prep_apps
+        run: |
+          APP_LIST=""
+          if [ "${{ github.event.inputs.app_pinterest }}" == "true" ]; then APP_LIST="$APP_LIST,pinterest"; fi
+          if [ "${{ github.event.inputs.app_easy_sudoku }}" == "true" ]; then APP_LIST="$APP_LIST,easy-sudoku"; fi
+          
+          # Remove leading comma (if any)
+          APP_LIST=${APP_LIST#,}
+          
+          # Prevent error if no application is selected
+          if [ -z "$APP_LIST" ]; then
+            echo "::error::No applications selected for patching!"
+            exit 1
+          fi
+          
+          echo "SELECTED_APPS=$APP_LIST" >> $GITHUB_ENV
+          echo "Ready to patch: $APP_LIST"
+
       - name: Execute Chihafuyu Tool
         env:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
@@ -124,7 +145,7 @@ jobs:
         run: |
           python -u chihafuyu_tool.py \
             --ecosystem "browzomje" \
-            --apps "${{ github.event.inputs.apps }}" \
+            --apps "${{ env.SELECTED_APPS }}" \
             --arch "${{ github.event.inputs.architecture }}" \
             --version-selection "${{ github.event.inputs.version_selection }}" \
             --custom-version "${{ github.event.inputs.custom_version }}" \

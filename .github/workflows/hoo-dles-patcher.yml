@@ -3,23 +3,56 @@ name: 🍜 Hoo-dles Ecosystem Patcher
 on:
   workflow_dispatch:
     inputs:
-      apps:
-        description: 'Select Application to Patch'
+      app_adguard:
+        description: 'Patch adguard'
         required: true
-        type: choice
-        default: 'all'
-        options:
-          - all
-          - adguard
-          - ibispaint
-          - wps
-          - camscanner
-          - sleep-as-android
-          - duolingo
-          - mimo
-          - windy
-          - xrecorder
-          - xodo
+        type: boolean
+        default: false
+      app_ibispaint:
+        description: 'Patch ibispaint'
+        required: true
+        type: boolean
+        default: false
+      app_wps:
+        description: 'Patch wps'
+        required: true
+        type: boolean
+        default: false
+      app_camscanner:
+        description: 'Patch camscanner'
+        required: true
+        type: boolean
+        default: false
+      app_sleep_as_android:
+        description: 'Patch sleep-as-android'
+        required: true
+        type: boolean
+        default: false
+      app_duolingo:
+        description: 'Patch duolingo'
+        required: true
+        type: boolean
+        default: false
+      app_mimo:
+        description: 'Patch mimo'
+        required: true
+        type: boolean
+        default: false
+      app_windy:
+        description: 'Patch windy'
+        required: true
+        type: boolean
+        default: false
+      app_xrecorder:
+        description: 'Patch xrecorder'
+        required: true
+        type: boolean
+        default: false
+      app_xodo:
+        description: 'Patch xodo'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -124,6 +157,34 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > custom.keystore
 
+      # --- CHECKBOX COMBINER ENGINE ---
+      - name: Prepare App Selection
+        id: prep_apps
+        run: |
+          APP_LIST=""
+          if [ "${{ github.event.inputs.app_adguard }}" == "true" ]; then APP_LIST="$APP_LIST,adguard"; fi
+          if [ "${{ github.event.inputs.app_ibispaint }}" == "true" ]; then APP_LIST="$APP_LIST,ibispaint"; fi
+          if [ "${{ github.event.inputs.app_wps }}" == "true" ]; then APP_LIST="$APP_LIST,wps"; fi
+          if [ "${{ github.event.inputs.app_camscanner }}" == "true" ]; then APP_LIST="$APP_LIST,camscanner"; fi
+          if [ "${{ github.event.inputs.app_sleep_as_android }}" == "true" ]; then APP_LIST="$APP_LIST,sleep-as-android"; fi
+          if [ "${{ github.event.inputs.app_duolingo }}" == "true" ]; then APP_LIST="$APP_LIST,duolingo"; fi
+          if [ "${{ github.event.inputs.app_mimo }}" == "true" ]; then APP_LIST="$APP_LIST,mimo"; fi
+          if [ "${{ github.event.inputs.app_windy }}" == "true" ]; then APP_LIST="$APP_LIST,windy"; fi
+          if [ "${{ github.event.inputs.app_xrecorder }}" == "true" ]; then APP_LIST="$APP_LIST,xrecorder"; fi
+          if [ "${{ github.event.inputs.app_xodo }}" == "true" ]; then APP_LIST="$APP_LIST,xodo"; fi
+          
+          # Remove leading comma (if any)
+          APP_LIST=${APP_LIST#,}
+          
+          # Prevent error if no application is selected
+          if [ -z "$APP_LIST" ]; then
+            echo "::error::No applications selected for patching!"
+            exit 1
+          fi
+          
+          echo "SELECTED_APPS=$APP_LIST" >> $GITHUB_ENV
+          echo "Ready to patch: $APP_LIST"
+
       - name: Execute Chihafuyu Tool
         env:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
@@ -132,7 +193,7 @@ jobs:
         run: |
           python -u chihafuyu_tool.py \
             --ecosystem "hoo-dles" \
-            --apps "${{ github.event.inputs.apps }}" \
+            --apps "${{ env.SELECTED_APPS }}" \
             --arch "${{ github.event.inputs.architecture }}" \
             --version-selection "${{ github.event.inputs.version_selection }}" \
             --custom-version "${{ github.event.inputs.custom_version }}" \
