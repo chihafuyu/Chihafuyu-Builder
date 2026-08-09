@@ -11,9 +11,9 @@ In the **Custom App Version** text box, type the app name and version separated 
 Occasionally, APK mirroring sites will replace a requested APK with a dummy/stub file due to copyright (DMCA) takedown requests. Our scraper is designed to automatically detect these "traps" and abort the patching process to prevent you from installing a corrupted app. 
 **Solution:** Try selecting a slightly older or newer version of the app, or wait until the upstream source provides a working APK.
 
-### 3. I successfully patched YouTube / YouTube Music, but the app crashes on startup!
-Patched `Google` applications require a framework to spoof `Google Play Services`. Without it, the app will instantly crash or refuse to log in.
-**Solution:** You must install [microG-RE](https://github.com/MorpheApp/MicroG-RE/releases/latest) on your device before opening the patched `Google` apps.
+### 3. I successfully patched `YouTube` and/or `YouTube Music`, but the app crashes on startup!
+Patched `Google` apps require a framework to spoof `Google Play Services`. Without it, the app will instantly crash or refuse to log in.
+**Solution:** You must install [microG-RE](https://github.com/MorpheApp/MicroG-RE/releases/latest) on your device and log in with your `Google account` before opening the patched `Google` apps.
 
 ### 4. How can I enable specific patch options (like "Dynamic color")?
 We use an `options_override` parameter in the `ecosystems.json` file to force specific patches to be enabled or disabled.
