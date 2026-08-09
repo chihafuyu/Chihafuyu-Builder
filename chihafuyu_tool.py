@@ -572,10 +572,29 @@ def write_changelog(ecosystem, repo_url, patches_version, apps_patched, workspac
         file_obj.write("For Google Apps, install [microG-RE]")
         file_obj.write("(https://github.com/MorpheApp/MicroG-RE/releases/latest).\n")
 
-def resolve_target_version(app_data, version_selection, custom_version):
+def parse_custom_versions(custom_version_str):
+    """Parses the custom version string into a dictionary."""
+    parsed_versions = {}
+    if not custom_version_str:
+        return parsed_versions
+
+    if "=" in custom_version_str:
+        parts = custom_version_str.split(',')
+        for part in parts:
+            if "=" in part:
+                key, val = part.split('=', 1)
+                parsed_versions[key.strip()] = val.strip()
+    else:
+        parsed_versions["_global"] = custom_version_str.strip()
+
+    return parsed_versions
+
+def resolve_target_version(app_data, version_selection, app_custom_version):
     """Resolves the target version to download based on user input."""
-    if version_selection == "Custom" and custom_version:
-        return custom_version
+    if version_selection.lower() == "custom":
+        if app_custom_version:
+            return app_custom_version
+        print("[WARN] Custom version missing for this app. Falling back to stable.")
     if version_selection.lower() in ["beta", "pre-release", "latest", "experimental"]:
         if "beta" in app_data and app_data["beta"]:
             return app_data["beta"][0]
@@ -632,9 +651,9 @@ def _generate_options_json(app_name, args, app_data, paths):
         update_options_json(json_file, app_data["options_override"])
     return json_file
 
-def process_single_app(app_name, args, app_data, paths, success_patches):
+def process_single_app(app_name, args, app_data, app_custom_version, paths, success_patches):
     """Processes a single app for downloading and patching."""
-    target_ver = resolve_target_version(app_data, args.version_selection, args.custom_version)
+    target_ver = resolve_target_version(app_data, args.version_selection, app_custom_version)
     arch = app_data.get("force_arch", args.arch)
 
     print(f"\n--- {app_name} ({app_data['package']}) ---")
@@ -685,18 +704,17 @@ def run_patcher(args):
     ecosystem_apps = ECOSYSTEMS[args.ecosystem]["apps"]
     app_list = list(ecosystem_apps.keys()) if args.apps.lower() == "all" else args.apps.split(',')
 
-    if args.version_selection.lower() == "custom" and len(app_list) > 1:
-        print("[FATAL] Custom version mode only supports 1 application per run.")
-        sys.exit(1)
-
+    custom_versions_dict = parse_custom_versions(args.custom_version)
     success_patches = []
     clean_ver = args.patches_version.lstrip('v') if args.patches_version else "unknown"
 
     for app_name in app_list:
-        if app_name.strip() in ecosystem_apps:
+        clean_name = app_name.strip()
+        if clean_name in ecosystem_apps:
+            app_custom_ver = custom_versions_dict.get(clean_name) or custom_versions_dict.get("_global")
             process_single_app(
-                app_name.strip(), args, ecosystem_apps[app_name.strip()],
-                (in_dir, out_dir, workspace, clean_ver), success_patches
+                clean_name, args, ecosystem_apps[clean_name],
+                app_custom_ver, (in_dir, out_dir, workspace, clean_ver), success_patches
             )
 
     if success_patches:
