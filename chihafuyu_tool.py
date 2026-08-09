@@ -243,7 +243,7 @@ def _find_apkmirror_variant(scraper, release_url, arch, ver_code):
 def _download_apkmirror_variant(scraper, var_url, is_bundle, file_meta):
     """Downloads the exact variant from APKMirror."""
     pkg, target_ver, out_dir = file_meta
-    
+
     resp = scraper.get(var_url, timeout=30)
     if resp.status_code in [403, 429]:
         print(f"[WARN] Blocked HTTP {resp.status_code} at variant page")
@@ -251,32 +251,31 @@ def _download_apkmirror_variant(scraper, var_url, is_bundle, file_meta):
 
     soup = BeautifulSoup(resp.text, 'html.parser')
     dl_btn = soup.find('a', class_='downloadButton')
-    
+
     if not dl_btn:
         print("[WARN] Download button not found on APKMirror variant page.")
         return None
 
     dl_page = "https://www.apkmirror.com" + dl_btn['href']
-    
-    page_resp = scraper.get(dl_page, timeout=30)
-    if page_resp.status_code in [403, 429]:
-        print(f"[WARN] Blocked HTTP {page_resp.status_code} at download page")
+
+    resp = scraper.get(dl_page, timeout=30)
+    if resp.status_code in [403, 429]:
+        print(f"[WARN] Blocked HTTP {resp.status_code} at download page")
         return None
-        
-    page_soup = BeautifulSoup(page_resp.text, 'html.parser')
-    direct_link = page_soup.find("a", {"rel": "nofollow"})
+
+    soup = BeautifulSoup(resp.text, 'html.parser')
+    direct_link = soup.find("a", {"rel": "nofollow"})
 
     if direct_link and 'href' in direct_link.attrs:
         direct_url = "https://www.apkmirror.com" + direct_link['href']
-        ext = ".apkm" if is_bundle else ".apk"
-        out_path = os.path.join(out_dir, f"{pkg}_{target_ver}{ext}")
+        out_path = os.path.join(out_dir, f"{pkg}_{target_ver}{'.apkm' if is_bundle else '.apk'}")
         print("[INFO] Downloading from APKMirror...")
         if download_file_stream(scraper, direct_url, out_path, dl_page):
-            print(f"[INFO] Tier 1 Success ({ext})")
+            print(f"[INFO] Tier 1 Success ({'.apkm' if is_bundle else '.apk'})")
             return out_path
     else:
         print("[WARN] Direct download link missing on final APKMirror page.")
-        
+
     return None
 
 def scrape_apkmirror(app_data, target_ver, arch, ver_code, out_dir):
