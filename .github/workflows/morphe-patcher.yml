@@ -91,32 +91,33 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 1. Fetch Morphe Desktop CLI
           if [ "${{ github.event.inputs.cli_track }}" == "Pre-release" ]; then
             CLI_TAG=$(gh api repos/MorpheApp/morphe-desktop/releases | jq -r '.[0].tag_name')
             gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
           else
             gh release download -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
           fi
-          mv morphe-desktop-*-all.jar morphe.jar
           
-          # 2. Hardcoded Ecosystem Repository for Morphe
+          LATEST_JAR=$(ls -v morphe-desktop-*-all.jar | tail -n 1)
+          mv "$LATEST_JAR" morphe.jar
+          
           REPO_URL="MorpheApp/morphe-patches"
           echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> $GITHUB_ENV
           
-          # 3. Fetch Morphe Patches
           if [ "${{ github.event.inputs.patches_track }}" == "Custom Local" ]; then
             cp "Custom-Patches/morphe-custom.mpp" patches.mpp
             echo "PATCHES_VERSION=custom-local" >> $GITHUB_ENV
           elif [ "${{ github.event.inputs.patches_track }}" == "Pre-release" ]; then
             PATCH_TAG=$(gh api repos/$REPO_URL/releases | jq -r '.[0].tag_name')
             gh release download "$PATCH_TAG" -R $REPO_URL --pattern "*.mpp"
-            mv *.mpp patches.mpp
+            LATEST_MPP=$(ls -v *.mpp | tail -n 1)
+            mv "$LATEST_MPP" patches.mpp
             echo "PATCHES_VERSION=$PATCH_TAG" >> $GITHUB_ENV
           else
             PATCH_TAG=$(gh api repos/$REPO_URL/releases/latest | jq -r '.tag_name')
             gh release download "$PATCH_TAG" -R $REPO_URL --pattern "*.mpp"
-            mv *.mpp patches.mpp
+            LATEST_MPP=$(ls -v *.mpp | tail -n 1)
+            mv "$LATEST_MPP" patches.mpp
             echo "PATCHES_VERSION=$PATCH_TAG" >> $GITHUB_ENV
           fi
 
