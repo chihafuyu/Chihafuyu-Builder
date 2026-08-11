@@ -196,20 +196,29 @@ def scrape_archive(app_data, target_ver, arch, out_dir):
     return None
 
 # TIER 1: APKMIRROR
-def _find_apkmirror_release(scraper, pkg, version):
+def _find_apkmirror_release(scraper, app_data, version):
     """Finds the release page URL on APKMirror."""
+    pkg = app_data["package"]
     query = urllib.parse.quote_plus(f"{pkg} {version}")
     url = f"https://www.apkmirror.com/?post_type=app_release&s={query}"
     resp = scraper.get(url, timeout=30)
     if resp.status_code != 200:
         print(f"[WARN] HTTP {resp.status_code} at search page")
         return None
+    
     soup = BeautifulSoup(resp.text, 'html.parser')
-    exclude_kws = ["secondary"]
+    exclude_kws = ["secondary"] + [k.lower() for k in app_data.get("apkm_exclude", [])]
+    include_kws = [k.lower() for k in app_data.get("apkm_include", [])]
+
     for link in soup.find_all('a', class_='fontBlack'):
         link_text = link.text.lower()
-        if version.lower() in link_text and not any(kw in link_text for kw in exclude_kws):
-            return "https://www.apkmirror.com" + link['href']
+        if version.lower() not in link_text:
+            continue
+        if any(kw in link_text for kw in exclude_kws):
+            continue
+        if include_kws and not all(kw in link_text for kw in include_kws):
+            continue
+        return "https://www.apkmirror.com" + link['href']
     return None
 
 def _find_apkmirror_variant(scraper, release_url, arch, ver_code):
@@ -287,7 +296,7 @@ def scrape_apkmirror(app_data, target_ver, arch, ver_code, out_dir):
     scraper = get_scraper()
     pkg = app_data["package"]
     try:
-        rel_url = _find_apkmirror_release(scraper, pkg, target_ver)
+        rel_url = _find_apkmirror_release(scraper, app_data, target_ver)
         if not rel_url:
             print("[WARN] Release not found.")
             return None
