@@ -647,7 +647,7 @@
                 "stable": [
                     "2026.14.0"
                 ],
-                "beta": ["2026.31.1"],
+                "beta": ["2026.32.0"],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
@@ -702,6 +702,111 @@
                 },
                 "strip": true,
                 "force_arch": "arm64-v8a",
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    },
+	"ajstrick81": {
+        "apps": {
+            "disneyplus": {
+                "package": "com.disney.disneyplus",
+                "search_term": "Disney+",
+                "stable": [
+                    "26.12.1+rc1-2026.07.15"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "prime-video": {
+                "package": "com.amazon.amazonvideo.livingroom",
+                "search_term": "Prime Video",
+                "stable": [
+                    "6.23.23+v15.5.0.70-armv7a"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "netflix": {
+                "package": "com.netflix.ninja",
+                "search_term": "Netflix",
+                "stable": [
+                    "13.0.1 build 25028"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "hbo-max": {
+                "package": "com.wbd.hbomax",
+                "search_term": "HBO Max",
+                "stable": [
+                    "7.7.0.78",
+                    "7.5.0.73"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "peacock": {
+                "package": "com.peacocktv.peacockandroid",
+                "search_term": "Peacock",
+                "stable": [
+                    "7.6.100"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "tubi": {
+                "package": "com.tubitv",
+                "search_term": "Tubi",
+                "stable": [
+                    "10.28.5000"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "vix": {
+                "package": "com.univision.prendetv",
+                "search_term": "ViX",
+                "stable": [
+                    "4.47.2_tv"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pluto-tv": {
+                "package": "tv.pluto.android",
+                "search_term": "Pluto TV",
+                "stable": [
+                    "5.66.0-leanback"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "paramount-plus": {
+                "package": "com.cbs.ott",
+                "search_term": "Paramount+",
+                "stable": [
+                    "16.17.0",
+                    "16.8.0"
+                ],
+                "beta": [],
+                "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             }
