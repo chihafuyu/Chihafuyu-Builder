@@ -152,7 +152,9 @@ jobs:
           else
             gh release download -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
           fi
-          mv morphe-desktop-*-all.jar morphe.jar
+          
+          LATEST_JAR=$(ls -v morphe-desktop-*-all.jar | tail -n 1)
+          mv "$LATEST_JAR" morphe.jar
           
           REPO_URL="kiraio-moe/Lain-Patches"
           echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> $GITHUB_ENV
@@ -163,12 +165,14 @@ jobs:
           elif [ "${{ github.event.inputs.patches_track }}" == "Pre-release" ]; then
             PATCH_TAG=$(gh api repos/$REPO_URL/releases | jq -r '.[0].tag_name')
             gh release download "$PATCH_TAG" -R $REPO_URL --pattern "*.mpp"
-            mv *.mpp patches.mpp
+            LATEST_MPP=$(ls -v *.mpp | tail -n 1)
+            mv "$LATEST_MPP" patches.mpp
             echo "PATCHES_VERSION=$PATCH_TAG" >> $GITHUB_ENV
           else
             PATCH_TAG=$(gh api repos/$REPO_URL/releases/latest | jq -r '.tag_name')
             gh release download "$PATCH_TAG" -R $REPO_URL --pattern "*.mpp"
-            mv *.mpp patches.mpp
+            LATEST_MPP=$(ls -v *.mpp | tail -n 1)
+            mv "$LATEST_MPP" patches.mpp
             echo "PATCHES_VERSION=$PATCH_TAG" >> $GITHUB_ENV
           fi
 

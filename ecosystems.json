@@ -718,7 +718,9 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "apkm_include": ["android tv"],
+                "apkm_exclude": ["fire tv", "tablet"]
             },
             "prime-video": {
                 "package": "com.amazon.amazonvideo.livingroom",
