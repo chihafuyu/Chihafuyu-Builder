@@ -205,7 +205,7 @@ def _find_apkmirror_release(scraper, app_data, version):
     if resp.status_code != 200:
         print(f"[WARN] HTTP {resp.status_code} at search page")
         return None
-    
+
     soup = BeautifulSoup(resp.text, 'html.parser')
     exclude_kws = ["secondary"] + [k.lower() for k in app_data.get("apkm_exclude", [])]
     include_kws = [k.lower() for k in app_data.get("apkm_include", [])]
