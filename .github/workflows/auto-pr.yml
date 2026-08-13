@@ -17,12 +17,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Open pull request
-        uses: repo-sync/pull-request@v2
-        with:
-          destination_branch: main
-          pr_title: 'chore: ${{ env.MESSAGE }}'
-          pr_body: |
+      - name: Create Draft Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_TITLE: 'chore: ${{ env.MESSAGE }}'
+          PR_BODY: |
             This pull request will ${{ env.MESSAGE }}.
 
             ## Before merging this PR
@@ -30,5 +29,20 @@ jobs:
             - [ ] Check if the Pylint score is 10/10 🐍
             - [ ] Verify if the multi-tier downloader runs correctly 📥
             - [ ] Ensure options.json injection works ⚙️
-          pr_draft: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if a PR from the current branch to main already exists
+          PR_EXISTS=$(gh pr list --base main --head ${{ github.ref_name }} --json number -q '.[0].number')
+          
+          # If no PR exists, create a new draft PR
+          if [ -z "$PR_EXISTS" ] || [ "$PR_EXISTS" == "null" ]; then
+            gh pr create \
+              --base main \
+              --head ${{ github.ref_name }} \
+              --title "$PR_TITLE" \
+              --body "$PR_BODY" \
+              --draft
+            echo "Draft Pull Request created successfully! 🚀"
+          else
+            # If a PR already exists, skip creation
+            echo "Pull Request already exists: #$PR_EXISTS. Skipping creation."
+          fi
