@@ -8,11 +8,6 @@ on:
         required: true
         type: boolean
         default: false
-      app_rar:
-        description: 'Patch rar'
-        required: true
-        type: boolean
-        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -128,7 +123,6 @@ jobs:
         run: |
           APP_LIST=""
           if [ "${{ github.event.inputs.app_google_photos }}" == "true" ]; then APP_LIST="$APP_LIST,google-photos"; fi
-          if [ "${{ github.event.inputs.app_rar }}" == "true" ]; then APP_LIST="$APP_LIST,rar"; fi
           
           # Remove leading comma (if any)
           APP_LIST=${APP_LIST#,}
