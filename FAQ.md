@@ -29,5 +29,50 @@ If you are a maintainer or have cloned this repository, you can edit the JSON fi
 ### 5. Can I add my own apps to the patcher?
 Yes! The patcher is modular. You can add new apps by editing the `ecosystems.json` file. You need to provide the app's package name, a `search_term`, and at least one `stable` fallback version. The scraper will automatically attempt to fetch the APK from multiple tiers (`Archive.org`, `APKMirror`, `APKCombo`, `Aptoide` and `Uptodown`).
 
-## 6. Why did the workflow fail with `Version defined as 'Any'. Skipping.`?
+### 6. Why did the workflow fail with `Version defined as 'Any'. Skipping.`?
 Some apps (like certain system apps or highly fragmented bundles) are marked with version `"Any"` in our JSON configuration because their versions are too varied to hardcode. Our automated scraper skips these by default to prevent downloading the wrong architecture. You must provide a specific version number using the Custom option to patch them.
+
+### 7. What apps are supported in the `rushiranpise` ecosystem, and how do I select them?
+Because the `rushiranpise` ecosystem supports a massive list of apps, we use a text input box instead of individual checkboxes. To patch them, you can simply type all in the Apps to patch box to process everything. Alternatively, you can double-click to easily copy the specific app names from the list below. *(If you select multiple apps, make sure to separate them with a comma)*:
+
+- `1-1-1-1`
+- `accubattery`
+- `accuweather`
+- `adobe-scan`
+- `aida64`
+- `amoledpix`
+- `ampere`
+- `anime-depth`
+- `apkmirror-installer`
+- `calm`
+- `canva`
+- `colornote`
+- `cpu-z`
+- `electron`
+- `hola-vpn`
+- `http-sniffer`
+- `inure`
+- `kahoot`
+- `kinemaster`
+- `lark-player`
+- `life360`
+- `ml-manager`
+- `mobioffice`
+- `netguard`
+- `network-guru`
+- `ninja-vpn`
+- `proton-vpn`
+- `proxyman`
+- `psiphon-pro`
+- `rar`
+- `sd-maid-se`
+- `stargazing-hub`
+- `stickerly`
+- `strava`
+- `terabox`
+- `turboscan`
+- `uptodown-store`
+- `wallverse`
+- `waze`
+- `windscribe-vpn`
+- `wolfram-alpha`

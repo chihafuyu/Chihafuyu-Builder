@@ -18,10 +18,11 @@
 
 ## 🙏 Credits
 This project uses methods and tools from the following developers:
-- [**Crimera**](https://github.com/crimera) - `APKMirror` bypass technique (Header Spoofing & Referer Injection). Licensed under GPLv3.
+- [**crimera**](https://github.com/crimera) - `APKMirror` bypass technique (Header Spoofing & Referer Injection). Licensed under GPLv3.
 - [**j-hc**](https://github.com/j-hc) - `Uptodown` and `Archive` downloader logic. Licensed under GPLv3.
 - [**Morphe**](https://github.com/MorpheApp) - Patching CLI and base ecosystem. Licensed under GPLv3.
 - [**apkeep**](https://github.com/EFForg/apkeep) - `APKPure` fallback download mechanism. Licensed under MIT.
+- [**Morphe Community Patches**](https://morphe-patches.software/) - Community patches, featuring a bunch of apps. Copyright Morphe (copyrighted and not licensed under open source terms).
 
 ## 📚 Frequently Asked Questions (FAQ)
 
