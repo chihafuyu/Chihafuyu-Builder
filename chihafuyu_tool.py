@@ -524,6 +524,37 @@ def scrape_uptodown(app_data, target_ver, arch, out_dir):
         print(f"[ERROR] Tier 5 failed: {err}")
     return None
 
+# TIER 6: HUGGING FACE DATASETS
+def scrape_huggingface(app_data, target_ver, out_dir):
+    """Scrape the APK directly from Hugging Face Datasets as a final fallback."""
+    hf_repo = app_data.get("hf_repo", f"chihafuyu/{app_data.get('archive_id')}")
+    if not app_data.get("archive_id") and not app_data.get("hf_repo"):
+        return None
+
+    print(f"[TIER 6] Hugging Face: v{target_ver}")
+    time.sleep(1)
+    scraper = get_scraper()
+    pkg = app_data["package"]
+
+    base_url = f"https://huggingface.co/datasets/{hf_repo}/resolve/main"
+
+    for ext in ['.apk', '.xapk', '.apkm', '.apks']:
+        dl_link = f"{base_url}/{pkg}_{target_ver}{ext}"
+        out_path = os.path.join(out_dir, f"{pkg}_{target_ver}{ext}")
+
+        try:
+            head_req = scraper.head(dl_link, timeout=10)
+            if head_req.status_code == 200:
+                print("[INFO] Downloading from Hugging Face Vault...")
+                if download_file_stream(scraper, dl_link, out_path):
+                    print(f"[INFO] Tier 6 Success ({ext})")
+                    return out_path
+        except requests.exceptions.RequestException:
+            continue
+
+    print(f"[WARN] Not found in Hugging Face dataset '{hf_repo}'.")
+    return None
+
 def _download_apkpure(pkg, target_ver, dl_dir):
     """Downloads APK from APKPure via apkeep."""
     print(f"[TIER 2] APKPure: v{target_ver}")
@@ -556,7 +587,8 @@ def download_apk(app_data, target_ver, arch, ver_code, out_dir):
         _download_apkpure(pkg, target_ver, dl_dir) or
         scrape_apkcombo(app_data, target_ver, arch, dl_dir) or
         scrape_aptoide(app_data, target_ver, dl_dir) or
-        scrape_uptodown(app_data, target_ver, arch, dl_dir)
+        scrape_uptodown(app_data, target_ver, arch, dl_dir) or
+        scrape_huggingface(app_data, target_ver, dl_dir)
     )
 
     if path:
