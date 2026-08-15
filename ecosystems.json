@@ -667,7 +667,7 @@
                 "package": "com.twitter.android",
                 "search_term": "X",
                 "stable": [
-                    "12.11.0-release.0"
+                    "12.17.0-release.0"
                 ],
                 "beta": [],
                 "strip": true,
