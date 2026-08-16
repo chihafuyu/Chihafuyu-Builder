@@ -1177,5 +1177,24 @@
                 "options_override": {}
             }
         }
+    },
+	"hxreborn": {
+        "apps": {
+            "projectivy-launcher": {
+                "package": "com.spocky.projengmenu",
+                "stable": ["Any"],
+                "archive_id": "ZeNiX"
+            },
+            "proton-mail": {
+                "package": "ch.protonmail.android",
+                "stable": ["7.10.4"],
+                "archive_id": "ZeNiX"
+            },
+            "symfonium": {
+                "package": "app.symfonik.music.player",
+                "stable": ["14.1.0"],
+                "archive_id": "ZeNiX"
+            }
+        }
     }
 }
