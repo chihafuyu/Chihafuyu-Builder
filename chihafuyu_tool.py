@@ -571,8 +571,8 @@ def _download_apkpure(pkg, target_ver, dl_dir):
     print("[WARN] APKPure failed.")
     return None
 
-def download_apk(app_data, target_ver, arch, ver_code, out_dir):
-    """Fallback mechanism to download APK through multiple sources."""
+def download_apk(app_data, target_ver, arch, out_dir, dl_source="default"):
+    """Fallback mechanism or targeted download for APK through multiple sources."""
     if target_ver.lower() == "any":
         print("[ERROR] Version defined as 'Any'. Skipping.")
         return None
@@ -580,21 +580,40 @@ def download_apk(app_data, target_ver, arch, ver_code, out_dir):
     pkg = app_data["package"]
     dl_dir = os.path.join(out_dir, pkg)
     os.makedirs(dl_dir, exist_ok=True)
+    
+    ver_code = app_data.get("version_codes", {}).get(arch)
+    source = dl_source.lower()
+    path = None
 
-    path = (
-        scrape_archive(app_data, target_ver, arch, dl_dir) or
-        scrape_apkmirror(app_data, target_ver, arch, ver_code, dl_dir) or
-        _download_apkpure(pkg, target_ver, dl_dir) or
-        scrape_apkcombo(app_data, target_ver, arch, dl_dir) or
-        scrape_aptoide(app_data, target_ver, dl_dir) or
-        scrape_uptodown(app_data, target_ver, arch, dl_dir) or
-        scrape_huggingface(app_data, target_ver, dl_dir)
-    )
+    if source == "huggingface":
+        path = scrape_huggingface(app_data, target_ver, dl_dir)
+    elif source == "archive":
+        path = scrape_archive(app_data, target_ver, arch, dl_dir)
+    elif source == "apkmirror":
+        path = scrape_apkmirror(app_data, target_ver, arch, ver_code, dl_dir)
+    elif source == "apkpure":
+        path = _download_apkpure(pkg, target_ver, dl_dir)
+    elif source == "apkcombo":
+        path = scrape_apkcombo(app_data, target_ver, arch, dl_dir)
+    elif source == "aptoide":
+        path = scrape_aptoide(app_data, target_ver, dl_dir)
+    elif source == "uptodown":
+        path = scrape_uptodown(app_data, target_ver, arch, dl_dir)
+    else:
+        path = (
+            scrape_archive(app_data, target_ver, arch, dl_dir) or
+            scrape_apkmirror(app_data, target_ver, arch, ver_code, dl_dir) or
+            _download_apkpure(pkg, target_ver, dl_dir) or
+            scrape_apkcombo(app_data, target_ver, arch, dl_dir) or
+            scrape_aptoide(app_data, target_ver, dl_dir) or
+            scrape_uptodown(app_data, target_ver, arch, dl_dir) or
+            scrape_huggingface(app_data, target_ver, dl_dir)
+        )
 
     if path:
         return process_downloaded_file(path)
 
-    print(f"[FATAL] All download tiers exhausted for {pkg}.")
+    print(f"[FATAL] Exhausted sources or specific source failed for {pkg}.")
     return None
 
 def write_changelog(ecosystem, repo_url, patches_version, apps_patched, workspace):
@@ -698,10 +717,11 @@ def process_single_app(app_name, args, app_data, app_custom_version, state):
     arch = app_data.get("force_arch", args.arch)
 
     print(f"\n--- {app_name} ({app_data['package']}) ---")
+    
     apk_path = download_apk(
-        app_data, target_ver, arch,
-        app_data.get("version_codes", {}).get(arch), state["in_dir"]
+        app_data, target_ver, arch, state["in_dir"], args.download_source
     )
+    
     if not apk_path:
         return
 
@@ -781,6 +801,7 @@ def parse_arguments():
     parser.add_argument("--arch", required=True)
     parser.add_argument("--version-selection", required=True)
     parser.add_argument("--custom-version", default="")
+    parser.add_argument("--download-source", default="default")
     parser.add_argument("--cli", required=True)
     parser.add_argument("--patches", required=True)
     parser.add_argument("--patches-version", required=True)

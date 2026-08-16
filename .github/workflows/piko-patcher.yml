@@ -35,6 +35,20 @@ on:
         description: 'Custom App Version (Required if Custom is selected)'
         required: false
         default: ''
+      download_source:
+        description: 'Download Source'
+        required: true
+        type: choice
+        default: 'default'
+        options:
+          - default
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       cli_track:
         description: 'Morphe CLI Track'
         required: true
@@ -155,6 +169,7 @@ jobs:
             --arch "${{ github.event.inputs.architecture }}" \
             --version-selection "${{ github.event.inputs.version_selection }}" \
             --custom-version "${{ github.event.inputs.custom_version }}" \
+            --download-source "${{ github.event.inputs.download_source }}" \
             --cli "morphe.jar" \
             --patches "patches.mpp" \
             --patches-version "${{ env.PATCHES_VERSION }}" \
