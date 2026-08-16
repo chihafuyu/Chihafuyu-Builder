@@ -543,7 +543,8 @@ def scrape_huggingface(app_data, target_ver, out_dir):
         out_path = os.path.join(out_dir, f"{pkg}_{target_ver}{ext}")
 
         try:
-            head_req = scraper.head(dl_link, timeout=10)
+            # Added allow_redirects=True to handle Hugging Face Git LFS 302 redirects
+            head_req = scraper.head(dl_link, timeout=10, allow_redirects=True)
             if head_req.status_code == 200:
                 print("[INFO] Downloading from Hugging Face Vault...")
                 if download_file_stream(scraper, dl_link, out_path):
