@@ -525,13 +525,13 @@ def scrape_uptodown(app_data, target_ver, arch, out_dir):
     return None
 
 # TIER 6: HUGGING FACE DATASETS
-def scrape_huggingface(app_data, target_ver, out_dir):
+def scrape_huggingface(app_data, target_ver, out_dir, hf_user):
     """Scrape the APK directly from Hugging Face Datasets as a final fallback."""
-    hf_repo = app_data.get("hf_repo", f"chihafuyu/{app_data.get('archive_id')}")
+    hf_repo = app_data.get("hf_repo", f"{hf_user}/{app_data.get('archive_id')}")
     if not app_data.get("archive_id") and not app_data.get("hf_repo"):
         return None
 
-    print(f"[TIER 6] Hugging Face: v{target_ver}")
+    print(f"[TIER 6] HuggingFace: v{target_ver}")
     time.sleep(1)
     scraper = get_scraper()
     pkg = app_data["package"]
@@ -543,17 +543,16 @@ def scrape_huggingface(app_data, target_ver, out_dir):
         out_path = os.path.join(out_dir, f"{pkg}_{target_ver}{ext}")
 
         try:
-            # Added allow_redirects=True to handle Hugging Face Git LFS 302 redirects
             head_req = scraper.head(dl_link, timeout=10, allow_redirects=True)
             if head_req.status_code == 200:
-                print("[INFO] Downloading from Hugging Face Vault...")
+                print("[INFO] Downloading from HuggingFace Vault...")
                 if download_file_stream(scraper, dl_link, out_path):
                     print(f"[INFO] Tier 6 Success ({ext})")
                     return out_path
         except requests.exceptions.RequestException:
             continue
 
-    print(f"[WARN] Not found in Hugging Face dataset '{hf_repo}'.")
+    print(f"[WARN] Not found in HuggingFace dataset '{hf_repo}'.")
     return None
 
 def _download_apkpure(pkg, target_ver, dl_dir):
@@ -572,7 +571,7 @@ def _download_apkpure(pkg, target_ver, dl_dir):
     print("[WARN] APKPure failed.")
     return None
 
-def download_apk(app_data, target_ver, arch, out_dir, dl_source="default"):
+def download_apk(app_data, target_ver, arch, out_dir, args):
     """Fallback mechanism or targeted download for APK through multiple sources."""
     if target_ver.lower() == "any":
         print("[ERROR] Version defined as 'Any'. Skipping.")
@@ -583,11 +582,11 @@ def download_apk(app_data, target_ver, arch, out_dir, dl_source="default"):
     os.makedirs(dl_dir, exist_ok=True)
 
     ver_code = app_data.get("version_codes", {}).get(arch)
-    source = dl_source.lower()
+    source = args.download_source.lower()
     path = None
 
     if source == "huggingface":
-        path = scrape_huggingface(app_data, target_ver, dl_dir)
+        path = scrape_huggingface(app_data, target_ver, dl_dir, args.hf_user)
     elif source == "archive":
         path = scrape_archive(app_data, target_ver, arch, dl_dir)
     elif source == "apkmirror":
@@ -608,7 +607,7 @@ def download_apk(app_data, target_ver, arch, out_dir, dl_source="default"):
             scrape_apkcombo(app_data, target_ver, arch, dl_dir) or
             scrape_aptoide(app_data, target_ver, dl_dir) or
             scrape_uptodown(app_data, target_ver, arch, dl_dir) or
-            scrape_huggingface(app_data, target_ver, dl_dir)
+            scrape_huggingface(app_data, target_ver, dl_dir, args.hf_user)
         )
 
     if path:
@@ -617,13 +616,13 @@ def download_apk(app_data, target_ver, arch, out_dir, dl_source="default"):
     print(f"[FATAL] Exhausted sources or specific source failed for {pkg}.")
     return None
 
-def write_changelog(ecosystem, repo_url, patches_version, apps_patched, workspace):
+def write_changelog(args, apps_patched, workspace, clean_ver):
     """Write the patched apps changelog to a markdown file."""
     log_path = os.path.join(workspace, "changelog.md")
     with open(log_path, "w", encoding="utf-8") as file_obj:
-        file_obj.write(f"## Automatically Patched Applications ({ecosystem})\n\n")
-        file_obj.write(f"Generated using **v{patches_version}** from `{ecosystem}`.\n")
-        file_obj.write(f"**Source:** [Repository]({repo_url})\n\n### Apps:\n")
+        file_obj.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
+        file_obj.write(f"Generated using **v{clean_ver}** from `{args.ecosystem}`.\n")
+        file_obj.write(f"**Source:** [Repository]({args.repo_url})\n\n### Apps:\n")
         for app in apps_patched:
             build = f" (Build: {app['build']})" if app.get('build') else ""
             file_obj.write(
@@ -631,7 +630,7 @@ def write_changelog(ecosystem, repo_url, patches_version, apps_patched, workspac
             )
         file_obj.write("\n---\n### ⚠️ microG Required\n")
         file_obj.write("For Google Apps, install [microG-RE]")
-        file_obj.write("(https://github.com/MorpheApp/MicroG-RE/releases/latest).\n")
+        file_obj.write(f"({args.microg_url}).\n")
 
 def parse_custom_versions(custom_version_str):
     """Parses the custom version string into a dictionary."""
@@ -722,7 +721,7 @@ def process_single_app(app_name, args, app_data, app_custom_version, state):
     print(f"\n--- {app_name} ({app_data['package']}) ---")
 
     apk_path = download_apk(
-        app_data, target_ver, arch, state["in_dir"], args.download_source
+        app_data, target_ver, arch, state["in_dir"], args
     )
 
     if not apk_path:
@@ -791,10 +790,7 @@ def run_patcher(args):
             )
 
     if state["success"]:
-        write_changelog(
-            args.ecosystem, args.repo_url, state["clean_ver"],
-            state["success"], workspace
-        )
+        write_changelog(args, state["success"], workspace, state["clean_ver"])
 
 def parse_arguments():
     """Parses command line arguments."""
@@ -806,6 +802,11 @@ def parse_arguments():
     parser.add_argument("--custom-version", default="")
     parser.add_argument("--download-source", default="default")
     parser.add_argument("--continue-on-error", default="false")
+    parser.add_argument("--hf-user", default="chihafuyu")
+    parser.add_argument(
+        "--microg-url",
+        default="https://github.com/MorpheApp/MicroG-RE/releases/latest"
+    )
     parser.add_argument("--cli", required=True)
     parser.add_argument("--patches", required=True)
     parser.add_argument("--patches-version", required=True)
