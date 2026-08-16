@@ -44,6 +44,11 @@ on:
           - apkcombo
           - aptoide
           - uptodown
+      continue_on_error:
+        description: 'Debug: Continue on patch error'
+        required: true
+        type: boolean
+        default: false
       cli_track:
         description: 'Morphe CLI Track'
         required: true
@@ -131,17 +136,14 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > custom.keystore
 
-      # --- CHECKBOX COMBINER ENGINE ---
       - name: Prepare App Selection
         id: prep_apps
         run: |
           APP_LIST=""
           if [ "${{ github.event.inputs.app_chess }}" == "true" ]; then APP_LIST="$APP_LIST,chess"; fi
           
-          # Remove leading comma (if any)
           APP_LIST=${APP_LIST#,}
           
-          # Prevent error if no application is selected
           if [ -z "$APP_LIST" ]; then
             echo "::error::No applications selected for patching!"
             exit 1
@@ -163,6 +165,7 @@ jobs:
             --version-selection "${{ github.event.inputs.version_selection }}" \
             --custom-version "${{ github.event.inputs.custom_version }}" \
             --download-source "${{ github.event.inputs.download_source }}" \
+            --continue-on-error "${{ github.event.inputs.continue_on_error }}" \
             --cli "morphe.jar" \
             --patches "patches.mpp" \
             --patches-version "${{ env.PATCHES_VERSION }}" \

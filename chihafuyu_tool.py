@@ -1,5 +1,5 @@
 """
-Automated APK Downloader and Patcher using Morphe CLI.
+Automated APK Downloader and Patcher using the CLI.
 Handles multi-tier downloading and dynamic options.json injection.
 """
 
@@ -663,7 +663,7 @@ def resolve_target_version(app_data, version_selection, app_custom_version):
     return app_data["stable"][0]
 
 def build_patch_command(args, app_data, files, target_arch):
-    """Builds the shell command for the Morphe CLI."""
+    """Builds the shell command for the CLI."""
     cmd = [
         "java", "-Xmx4G", "-jar", args.cli, "patch", "--patches", args.patches,
         "--options-file", files[1], "--out", files[2], "--bytecode-mode", "FULL"
@@ -673,6 +673,8 @@ def build_patch_command(args, app_data, files, target_arch):
         cmd.append("--force")
     if app_data.get("strip"):
         cmd.extend(["--striplibs", target_arch])
+    if args.continue_on_error.lower() == "true":
+        cmd.append("--continue-on-error")
     if args.keystore and args.ks_alias and args.ks_pass:
         cmd.extend([
             "--keystore", args.keystore,
@@ -700,7 +702,7 @@ def execute_patch_cli(patch_cmd):
         return proc.returncode, zero_patches
 
 def _generate_options_json(app_name, args, app_data, workspace):
-    """Generates options JSON file using Morphe CLI."""
+    """Generates options JSON file using the CLI."""
     json_file = os.path.join(workspace, f"{app_name}-options.json")
     cmd_opts = [
         "java", "-jar", args.cli, "options-create", "--patches", args.patches,
@@ -733,7 +735,7 @@ def process_single_app(app_name, args, app_data, app_custom_version, state):
     )
     out_apk = os.path.join(state["out_dir"], apk_name)
 
-    print("[INFO] Patching via Morphe CLI...")
+    print("[INFO] Patching via CLI...")
     ret_code, zero_patches = execute_patch_cli(
         build_patch_command(args, app_data, (apk_path, json_file, out_apk), arch)
     )
@@ -803,6 +805,7 @@ def parse_arguments():
     parser.add_argument("--version-selection", required=True)
     parser.add_argument("--custom-version", default="")
     parser.add_argument("--download-source", default="default")
+    parser.add_argument("--continue-on-error", default="false")
     parser.add_argument("--cli", required=True)
     parser.add_argument("--patches", required=True)
     parser.add_argument("--patches-version", required=True)

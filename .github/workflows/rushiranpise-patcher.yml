@@ -44,6 +44,11 @@ on:
           - apkcombo
           - aptoide
           - uptodown
+      continue_on_error:
+        description: 'Debug: Continue on patch error'
+        required: true
+        type: boolean
+        default: false
       cli_track:
         description: 'Morphe CLI Track'
         required: true
@@ -144,6 +149,7 @@ jobs:
             --version-selection "${{ github.event.inputs.version_selection }}" \
             --custom-version "${{ github.event.inputs.custom_version }}" \
             --download-source "${{ github.event.inputs.download_source }}" \
+            --continue-on-error "${{ github.event.inputs.continue_on_error }}" \
             --cli "morphe.jar" \
             --patches "patches.mpp" \
             --patches-version "${{ env.PATCHES_VERSION }}" \
