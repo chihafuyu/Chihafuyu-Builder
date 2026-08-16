@@ -1,10 +1,20 @@
-name: ♟️ PathxmOp Ecosystem Patcher
+name: 🔥 Hxreborn Ecosystem Patcher
 
 on:
   workflow_dispatch:
     inputs:
-      app_chess:
-        description: 'Patch chess'
+      app_projectivy_launcher:
+        description: 'Patch projectivy-launcher'
+        required: true
+        type: boolean
+        default: false
+      app_proton_mail:
+        description: 'Patch proton-mail'
+        required: true
+        type: boolean
+        default: false
+      app_symfonium:
+        description: 'Patch symfonium'
         required: true
         type: boolean
         default: false
@@ -110,11 +120,11 @@ jobs:
           LATEST_JAR=$(ls -v morphe-desktop-*-all.jar | tail -n 1)
           mv "$LATEST_JAR" morphe.jar
           
-          REPO_URL="PathxmOp/patches"
+          REPO_URL="hxreborn/morphe-patches"
           echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> $GITHUB_ENV
           
           if [ "${{ github.event.inputs.patches_track }}" == "Custom Local" ]; then
-            cp "Custom-Patches/PathxmOp-custom.mpp" patches.mpp
+            cp "Custom-Patches/hxreborn-custom.mpp" patches.mpp
             echo "PATCHES_VERSION=custom-local" >> $GITHUB_ENV
           elif [ "${{ github.event.inputs.patches_track }}" == "Pre-release" ]; then
             PATCH_TAG=$(gh api repos/$REPO_URL/releases | jq -r '.[0].tag_name')
@@ -140,7 +150,9 @@ jobs:
         id: prep_apps
         run: |
           APP_LIST=""
-          if [ "${{ github.event.inputs.app_chess }}" == "true" ]; then APP_LIST="$APP_LIST,chess"; fi
+          if [ "${{ github.event.inputs.app_projectivy_launcher }}" == "true" ]; then APP_LIST="$APP_LIST,projectivy-launcher"; fi
+          if [ "${{ github.event.inputs.app_proton_mail }}" == "true" ]; then APP_LIST="$APP_LIST,proton-mail"; fi
+          if [ "${{ github.event.inputs.app_symfonium }}" == "true" ]; then APP_LIST="$APP_LIST,symfonium"; fi
           
           APP_LIST=${APP_LIST#,}
           
@@ -159,7 +171,7 @@ jobs:
           KEYSTORE_SIGNER_NAME: ${{ secrets.KEYSTORE_SIGNER_NAME }}
         run: |
           python -u chihafuyu_tool.py \
-            --ecosystem "PathxmOp" \
+            --ecosystem "hxreborn" \
             --apps "${{ env.SELECTED_APPS }}" \
             --arch "${{ github.event.inputs.architecture }}" \
             --version-selection "${{ github.event.inputs.version_selection }}" \
@@ -182,9 +194,9 @@ jobs:
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v3.0.2
         with:
-          tag_name: PathxmOp-${{ env.DATE_TAG }}
-          name: Patched Apps - PathxmOp (${{ env.DATE_TAG }})
-          body_path: ./PathxmOp/changelog.md
-          files: ./PathxmOp/Output/*.apk
+          tag_name: hxreborn-${{ env.DATE_TAG }}
+          name: Patched Apps - hxreborn (${{ env.DATE_TAG }})
+          body_path: ./hxreborn/changelog.md
+          files: ./hxreborn/Output/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

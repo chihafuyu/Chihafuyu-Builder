@@ -605,7 +605,7 @@
                 "stable": [
                     "21.04.223"
                 ],
-                "beta": ["21.33.321"],
+                "beta": ["21.33.322"],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
@@ -622,8 +622,7 @@
                 "package": "com.google.android.apps.youtube.music",
                 "search_term": "YouTube Music",
                 "stable": [
-                    "9.15.51",
-                    "8.51.51"
+                    "9.15.51"
                 ],
                 "beta": ["9.26.56"],
                 "strip": true,
@@ -668,7 +667,7 @@
                 "package": "com.twitter.android",
                 "search_term": "X",
                 "stable": [
-                    "12.11.0-release.0"
+                    "12.17.0-release.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -848,7 +847,8 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+				"apkm_exclude": ["wear os"]
             },
             "amoledpix": {
                 "package": "com.androholic.amoledpix",
@@ -898,9 +898,10 @@
             "canva": {
                 "package": "com.canva.editor",
                 "search_term": "Canva",
-                "stable": ["5.2.1"],
+                "stable": ["2.372.0"],
                 "beta": [],
                 "strip": true,
+				"uptodown_url": "https://canva.en.uptodown.com/android",
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
@@ -1046,7 +1047,8 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "apkm_exclude": ["amazon", "fire tv", "tablet", "f-droid"]
             },
             "proxyman": {
                 "package": "com.proxyman.proxymanandroid",
@@ -1173,6 +1175,25 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            }
+        }
+    },
+	"hxreborn": {
+        "apps": {
+            "projectivy-launcher": {
+                "package": "com.spocky.projengmenu",
+                "stable": ["Any"],
+                "archive_id": "ZeNiX"
+            },
+            "proton-mail": {
+                "package": "ch.protonmail.android",
+                "stable": ["7.10.4"],
+                "archive_id": "ZeNiX"
+            },
+            "symfonium": {
+                "package": "app.symfonik.music.player",
+                "stable": ["14.1.0"],
+                "archive_id": "ZeNiX"
             }
         }
     }

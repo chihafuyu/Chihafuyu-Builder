@@ -1,5 +1,5 @@
 """
-Automated APK Downloader and Patcher using Morphe CLI.
+Automated APK Downloader and Patcher using the CLI.
 Handles multi-tier downloading and dynamic options.json injection.
 """
 
@@ -524,6 +524,37 @@ def scrape_uptodown(app_data, target_ver, arch, out_dir):
         print(f"[ERROR] Tier 5 failed: {err}")
     return None
 
+# TIER 6: HUGGING FACE DATASETS
+def scrape_huggingface(app_data, target_ver, out_dir, hf_user):
+    """Scrape the APK directly from Hugging Face Datasets as a final fallback."""
+    hf_repo = app_data.get("hf_repo", f"{hf_user}/{app_data.get('archive_id')}")
+    if not app_data.get("archive_id") and not app_data.get("hf_repo"):
+        return None
+
+    print(f"[TIER 6] HuggingFace: v{target_ver}")
+    time.sleep(1)
+    scraper = get_scraper()
+    pkg = app_data["package"]
+
+    base_url = f"https://huggingface.co/datasets/{hf_repo}/resolve/main"
+
+    for ext in ['.apk', '.xapk', '.apkm', '.apks']:
+        dl_link = f"{base_url}/{pkg}_{target_ver}{ext}"
+        out_path = os.path.join(out_dir, f"{pkg}_{target_ver}{ext}")
+
+        try:
+            head_req = scraper.head(dl_link, timeout=10, allow_redirects=True)
+            if head_req.status_code == 200:
+                print("[INFO] Downloading from HuggingFace Vault...")
+                if download_file_stream(scraper, dl_link, out_path):
+                    print(f"[INFO] Tier 6 Success ({ext})")
+                    return out_path
+        except requests.exceptions.RequestException:
+            continue
+
+    print(f"[WARN] Not found in HuggingFace dataset '{hf_repo}'.")
+    return None
+
 def _download_apkpure(pkg, target_ver, dl_dir):
     """Downloads APK from APKPure via apkeep."""
     print(f"[TIER 2] APKPure: v{target_ver}")
@@ -540,8 +571,8 @@ def _download_apkpure(pkg, target_ver, dl_dir):
     print("[WARN] APKPure failed.")
     return None
 
-def download_apk(app_data, target_ver, arch, ver_code, out_dir):
-    """Fallback mechanism to download APK through multiple sources."""
+def download_apk(app_data, target_ver, arch, out_dir, args):
+    """Fallback mechanism or targeted download for APK through multiple sources."""
     if target_ver.lower() == "any":
         print("[ERROR] Version defined as 'Any'. Skipping.")
         return None
@@ -550,28 +581,48 @@ def download_apk(app_data, target_ver, arch, ver_code, out_dir):
     dl_dir = os.path.join(out_dir, pkg)
     os.makedirs(dl_dir, exist_ok=True)
 
-    path = (
-        scrape_archive(app_data, target_ver, arch, dl_dir) or
-        scrape_apkmirror(app_data, target_ver, arch, ver_code, dl_dir) or
-        _download_apkpure(pkg, target_ver, dl_dir) or
-        scrape_apkcombo(app_data, target_ver, arch, dl_dir) or
-        scrape_aptoide(app_data, target_ver, dl_dir) or
-        scrape_uptodown(app_data, target_ver, arch, dl_dir)
-    )
+    ver_code = app_data.get("version_codes", {}).get(arch)
+    source = args.download_source.lower()
+    path = None
+
+    if source == "huggingface":
+        path = scrape_huggingface(app_data, target_ver, dl_dir, args.hf_user)
+    elif source == "archive":
+        path = scrape_archive(app_data, target_ver, arch, dl_dir)
+    elif source == "apkmirror":
+        path = scrape_apkmirror(app_data, target_ver, arch, ver_code, dl_dir)
+    elif source == "apkpure":
+        path = _download_apkpure(pkg, target_ver, dl_dir)
+    elif source == "apkcombo":
+        path = scrape_apkcombo(app_data, target_ver, arch, dl_dir)
+    elif source == "aptoide":
+        path = scrape_aptoide(app_data, target_ver, dl_dir)
+    elif source == "uptodown":
+        path = scrape_uptodown(app_data, target_ver, arch, dl_dir)
+    else:
+        path = (
+            scrape_archive(app_data, target_ver, arch, dl_dir) or
+            scrape_apkmirror(app_data, target_ver, arch, ver_code, dl_dir) or
+            _download_apkpure(pkg, target_ver, dl_dir) or
+            scrape_apkcombo(app_data, target_ver, arch, dl_dir) or
+            scrape_aptoide(app_data, target_ver, dl_dir) or
+            scrape_uptodown(app_data, target_ver, arch, dl_dir) or
+            scrape_huggingface(app_data, target_ver, dl_dir, args.hf_user)
+        )
 
     if path:
         return process_downloaded_file(path)
 
-    print(f"[FATAL] All download tiers exhausted for {pkg}.")
+    print(f"[FATAL] Exhausted sources or specific source failed for {pkg}.")
     return None
 
-def write_changelog(ecosystem, repo_url, patches_version, apps_patched, workspace):
+def write_changelog(args, apps_patched, workspace, clean_ver):
     """Write the patched apps changelog to a markdown file."""
     log_path = os.path.join(workspace, "changelog.md")
     with open(log_path, "w", encoding="utf-8") as file_obj:
-        file_obj.write(f"## Automatically Patched Applications ({ecosystem})\n\n")
-        file_obj.write(f"Generated using **v{patches_version}** from `{ecosystem}`.\n")
-        file_obj.write(f"**Source:** [Repository]({repo_url})\n\n### Apps:\n")
+        file_obj.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
+        file_obj.write(f"Generated using **v{clean_ver}** from `{args.ecosystem}`.\n")
+        file_obj.write(f"**Source:** [Repository]({args.repo_url})\n\n### Apps:\n")
         for app in apps_patched:
             build = f" (Build: {app['build']})" if app.get('build') else ""
             file_obj.write(
@@ -579,7 +630,7 @@ def write_changelog(ecosystem, repo_url, patches_version, apps_patched, workspac
             )
         file_obj.write("\n---\n### ⚠️ microG Required\n")
         file_obj.write("For Google Apps, install [microG-RE]")
-        file_obj.write("(https://github.com/MorpheApp/MicroG-RE/releases/latest).\n")
+        file_obj.write(f"({args.microg_url}).\n")
 
 def parse_custom_versions(custom_version_str):
     """Parses the custom version string into a dictionary."""
@@ -611,7 +662,7 @@ def resolve_target_version(app_data, version_selection, app_custom_version):
     return app_data["stable"][0]
 
 def build_patch_command(args, app_data, files, target_arch):
-    """Builds the shell command for the Morphe CLI."""
+    """Builds the shell command for the CLI."""
     cmd = [
         "java", "-Xmx4G", "-jar", args.cli, "patch", "--patches", args.patches,
         "--options-file", files[1], "--out", files[2], "--bytecode-mode", "FULL"
@@ -621,6 +672,8 @@ def build_patch_command(args, app_data, files, target_arch):
         cmd.append("--force")
     if app_data.get("strip"):
         cmd.extend(["--striplibs", target_arch])
+    if args.continue_on_error.lower() == "true":
+        cmd.append("--continue-on-error")
     if args.keystore and args.ks_alias and args.ks_pass:
         cmd.extend([
             "--keystore", args.keystore,
@@ -648,7 +701,7 @@ def execute_patch_cli(patch_cmd):
         return proc.returncode, zero_patches
 
 def _generate_options_json(app_name, args, app_data, workspace):
-    """Generates options JSON file using Morphe CLI."""
+    """Generates options JSON file using the CLI."""
     json_file = os.path.join(workspace, f"{app_name}-options.json")
     cmd_opts = [
         "java", "-jar", args.cli, "options-create", "--patches", args.patches,
@@ -666,10 +719,11 @@ def process_single_app(app_name, args, app_data, app_custom_version, state):
     arch = app_data.get("force_arch", args.arch)
 
     print(f"\n--- {app_name} ({app_data['package']}) ---")
+
     apk_path = download_apk(
-        app_data, target_ver, arch,
-        app_data.get("version_codes", {}).get(arch), state["in_dir"]
+        app_data, target_ver, arch, state["in_dir"], args
     )
+
     if not apk_path:
         return
 
@@ -680,7 +734,7 @@ def process_single_app(app_name, args, app_data, app_custom_version, state):
     )
     out_apk = os.path.join(state["out_dir"], apk_name)
 
-    print("[INFO] Patching via Morphe CLI...")
+    print("[INFO] Patching via CLI...")
     ret_code, zero_patches = execute_patch_cli(
         build_patch_command(args, app_data, (apk_path, json_file, out_apk), arch)
     )
@@ -736,10 +790,7 @@ def run_patcher(args):
             )
 
     if state["success"]:
-        write_changelog(
-            args.ecosystem, args.repo_url, state["clean_ver"],
-            state["success"], workspace
-        )
+        write_changelog(args, state["success"], workspace, state["clean_ver"])
 
 def parse_arguments():
     """Parses command line arguments."""
@@ -749,6 +800,13 @@ def parse_arguments():
     parser.add_argument("--arch", required=True)
     parser.add_argument("--version-selection", required=True)
     parser.add_argument("--custom-version", default="")
+    parser.add_argument("--download-source", default="default")
+    parser.add_argument("--continue-on-error", default="false")
+    parser.add_argument("--hf-user", default="chihafuyu")
+    parser.add_argument(
+        "--microg-url",
+        default="https://github.com/MorpheApp/MicroG-RE/releases/latest"
+    )
     parser.add_argument("--cli", required=True)
     parser.add_argument("--patches", required=True)
     parser.add_argument("--patches-version", required=True)
