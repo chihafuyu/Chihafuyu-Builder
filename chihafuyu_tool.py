@@ -580,7 +580,7 @@ def download_apk(app_data, target_ver, arch, out_dir, dl_source="default"):
     pkg = app_data["package"]
     dl_dir = os.path.join(out_dir, pkg)
     os.makedirs(dl_dir, exist_ok=True)
-    
+
     ver_code = app_data.get("version_codes", {}).get(arch)
     source = dl_source.lower()
     path = None
@@ -717,11 +717,11 @@ def process_single_app(app_name, args, app_data, app_custom_version, state):
     arch = app_data.get("force_arch", args.arch)
 
     print(f"\n--- {app_name} ({app_data['package']}) ---")
-    
+
     apk_path = download_apk(
         app_data, target_ver, arch, state["in_dir"], args.download_source
     )
-    
+
     if not apk_path:
         return
 
