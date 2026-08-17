@@ -53,6 +53,26 @@ on:
         required: true
         type: boolean
         default: false
+      app_lightroom_mobile:
+        description: 'Patch lightroom-mobile'
+        required: true
+        type: boolean
+        default: false
+      app_myfitnesspal:
+        description: 'Patch myfitnesspal'
+        required: true
+        type: boolean
+        default: false
+      app_pydroid3:
+        description: 'Patch pydroid3'
+        required: true
+        type: boolean
+        default: false
+      app_smart_launcher:
+        description: 'Patch smart-launcher'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -195,6 +215,10 @@ jobs:
           if [ "${{ github.event.inputs.app_windy }}" == "true" ]; then APP_LIST="$APP_LIST,windy"; fi
           if [ "${{ github.event.inputs.app_xrecorder }}" == "true" ]; then APP_LIST="$APP_LIST,xrecorder"; fi
           if [ "${{ github.event.inputs.app_xodo }}" == "true" ]; then APP_LIST="$APP_LIST,xodo"; fi
+          if [ "${{ github.event.inputs.app_lightroom_mobile }}" == "true" ]; then APP_LIST="$APP_LIST,lightroom-mobile"; fi
+          if [ "${{ github.event.inputs.app_myfitnesspal }}" == "true" ]; then APP_LIST="$APP_LIST,myfitnesspal"; fi
+          if [ "${{ github.event.inputs.app_pydroid3 }}" == "true" ]; then APP_LIST="$APP_LIST,pydroid3"; fi
+          if [ "${{ github.event.inputs.app_smart_launcher }}" == "true" ]; then APP_LIST="$APP_LIST,smart-launcher"; fi
           
           APP_LIST=${APP_LIST#,}
           

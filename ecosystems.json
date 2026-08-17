@@ -421,6 +421,50 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "lightroom-mobile": {
+                "package": "com.adobe.lrmobile",
+                "search_term": "Lightroom",
+                "stable": [
+                    "11.4.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "myfitnesspal": {
+                "package": "com.myfitnesspal.android",
+                "search_term": "MyFitnessPal",
+                "stable": [
+                    "26.31.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pydroid3": {
+                "package": "ru.iiec.pydroid3",
+                "search_term": "Pydroid 3",
+                "stable": [
+                    "8.3_arm64"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "smart-launcher": {
+                "package": "ginlemon.flowerfree",
+                "search_term": "Smart Launcher 6",
+                "stable": [
+                    "6.6 build 016"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
