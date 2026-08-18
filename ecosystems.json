@@ -371,7 +371,7 @@
                 "package": "com.duolingo",
                 "search_term": "Duolingo",
                 "stable": [
-                    "6.86.5"
+                    "6.92.5"
                 ],
                 "beta": [],
                 "strip": true,
@@ -393,7 +393,7 @@
                 "package": "com.windyty.android",
                 "search_term": "Windy.com",
                 "stable": [
-                    "50.1.1"
+                    "51.0.1"
                 ],
                 "beta": [],
                 "strip": true,
