@@ -91,9 +91,10 @@ def download_file_stream(scraper, url, out_path, referer=None, check_dmca=False)
                     return False
 
             declared_size = response.headers.get("Content-Length")
-            if declared_size and declared_size.isdigit() and int(declared_size) > MAX_DOWNLOAD_BYTES:
-                print(f"[ERROR] Download exceeds {MAX_DOWNLOAD_BYTES} byte limit.")
-                return False
+            if declared_size and declared_size.isdigit():
+                if int(declared_size) > MAX_DOWNLOAD_BYTES:
+                    print(f"[ERROR] Download exceeds {MAX_DOWNLOAD_BYTES} byte limit.")
+                    return False
 
             out_path = os.path.abspath(out_path)
             os.makedirs(os.path.dirname(out_path), exist_ok=True)
@@ -815,8 +816,9 @@ def process_single_app(app_name, args, app_data, app_custom_version, state):
 
     json_file = _generate_options_json(app_name, args, app_data, state["workspace"])
     apk_name = (
-        f"{_safe_filename(app_name)}_{_safe_filename(args.ecosystem)}_patched_{_safe_filename(target_ver)}-"
-        f"{_safe_filename(arch)}_patches_{_safe_filename(state['clean_ver'])}.apk"
+        f"{_safe_filename(app_name)}_{_safe_filename(args.ecosystem)}_patched_"
+        f"{_safe_filename(target_ver)}-{_safe_filename(arch)}_patches_"
+        f"{_safe_filename(state['clean_ver'])}.apk"
     )
     out_apk = os.path.join(state["out_dir"], apk_name)
 
