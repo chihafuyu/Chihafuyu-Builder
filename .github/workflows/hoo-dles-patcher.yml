@@ -196,8 +196,7 @@ jobs:
             CLI_TAG="$(
               gh api repos/MorpheApp/morphe-desktop/releases \
                 --paginate \
-                --slurp \
-                --jq 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty'
+                --jq 'map(select(.prerelease == true and .draft == false))[0].tag_name // empty'
             )"
 
             if [[ -z "$CLI_TAG" ]]; then
@@ -234,8 +233,7 @@ jobs:
             PATCH_TAG="$(
               gh api "repos/$REPO_URL/releases" \
                 --paginate \
-                --slurp \
-                --jq 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty'
+                --jq 'map(select(.prerelease == true and .draft == false))[0].tag_name // empty'
             )"
 
             if [[ -z "$PATCH_TAG" ]]; then
