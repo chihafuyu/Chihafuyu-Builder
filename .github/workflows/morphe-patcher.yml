@@ -109,7 +109,7 @@ jobs:
           APKEEP_ASSET='apkeep-x86_64-unknown-linux-gnu'
           APKEEP_URL="https://github.com/EFForg/apkeep/releases/download/${APKEEP_VERSION}/${APKEEP_ASSET}"
 
-          wget --fail --show-progress --https-only "$APKEEP_URL" -O apkeep
+          wget -q --show-progress --https-only "$APKEEP_URL" -O apkeep
 
           EXPECTED_SHA256="$(
             gh api "repos/EFForg/apkeep/releases/tags/${APKEEP_VERSION}" \
