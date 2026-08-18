@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
@@ -87,7 +87,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '25'
-          
+
       - name: Initialize Python Environment
         uses: actions/setup-python@v7
         with:
@@ -95,67 +95,158 @@ jobs:
 
       - name: Install Dependencies & apkeep
         run: |
+          set -euo pipefail
+
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          wget -q https://github.com/EFForg/apkeep/releases/latest/download/apkeep-x86_64-unknown-linux-gnu -O apkeep
-          chmod +x apkeep
-          sudo mv apkeep /usr/local/bin/
+          python -m pip install -r requirements.txt
+
+          APKEEP_VERSION='1.0.0'
+          APKEEP_ASSET='apkeep-x86_64-unknown-linux-gnu'
+          APKEEP_URL="https://github.com/EFForg/apkeep/releases/download/${APKEEP_VERSION}/${APKEEP_ASSET}"
+
+          wget -q --show-progress --https-only "$APKEEP_URL" -O apkeep
+
+          EXPECTED_SHA256="$(
+            gh api "repos/EFForg/apkeep/releases/tags/${APKEEP_VERSION}" \
+              --jq '.assets[] | select(.name == "'"$APKEEP_ASSET"'") | .digest' \
+              | sed 's/^sha256://'
+          )"
+
+          if [ -z "$EXPECTED_SHA256" ] || ! printf '%s  %s\n' "$EXPECTED_SHA256" apkeep | sha256sum --check --status; then
+            echo "::error::apkeep SHA-256 verification failed"
+            rm -f apkeep
+            exit 1
+          fi
+
+          chmod 0755 apkeep
+          sudo install -m 0755 apkeep /usr/local/bin/apkeep
+          rm -f apkeep
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Fetch Environment Artifacts
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          CLI_TRACK: ${{ inputs.cli_track }}
+          PATCHES_TRACK: ${{ inputs.patches_track }}
         run: |
-          if [ "${{ github.event.inputs.cli_track }}" == "Pre-release" ]; then
-            CLI_TAG=$(gh api repos/MorpheApp/morphe-desktop/releases | jq -r '.[0].tag_name')
-            gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
+          set -euo pipefail
+
+          if [[ "$CLI_TRACK" == "Pre-release" ]]; then
+            CLI_TAG="$(
+              gh api repos/MorpheApp/morphe-desktop/releases \
+                --paginate \
+                --slurp \
+                --jq 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty'
+            )"
+
+            if [[ -z "$CLI_TAG" ]]; then
+              echo "::error::No Morphe CLI pre-release was found"
+              exit 1
+            fi
+
+            gh release download "$CLI_TAG" \
+              -R MorpheApp/morphe-desktop \
+              --pattern "morphe-desktop-*-all.jar"
           else
-            gh release download -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
+            gh release download \
+              -R MorpheApp/morphe-desktop \
+              --pattern "morphe-desktop-*-all.jar"
           fi
-          
-          LATEST_JAR=$(ls -v morphe-desktop-*-all.jar | tail -n 1)
-          mv "$LATEST_JAR" morphe.jar
-          
+
+          mapfile -t JARS < <(find . -maxdepth 1 -type f -name 'morphe-desktop-*-all.jar' -print | sort -V)
+          if (( ${#JARS[@]} == 0 )); then
+            echo "::error::Morphe CLI JAR was not downloaded"
+            exit 1
+          fi
+
+          LATEST_JAR="${JARS[${#JARS[@]}-1]}"
+          mv -- "$LATEST_JAR" morphe.jar
+
           REPO_URL="browzomje/browzomje-patches"
-          echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> $GITHUB_ENV
-          
-          if [ "${{ github.event.inputs.patches_track }}" == "Custom Local" ]; then
-            cp "Custom-Patches/browzomje-custom.mpp" patches.mpp
-            echo "PATCHES_VERSION=custom-local" >> $GITHUB_ENV
-          elif [ "${{ github.event.inputs.patches_track }}" == "Pre-release" ]; then
-            PATCH_TAG=$(gh api repos/$REPO_URL/releases | jq -r '.[0].tag_name')
-            gh release download "$PATCH_TAG" -R $REPO_URL --pattern "*.mpp"
-            LATEST_MPP=$(ls -v *.mpp | tail -n 1)
-            mv "$LATEST_MPP" patches.mpp
-            echo "PATCHES_VERSION=$PATCH_TAG" >> $GITHUB_ENV
+          echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> "$GITHUB_ENV"
+
+          if [[ "$PATCHES_TRACK" == "Custom Local" ]]; then
+            test -f "Custom-Patches/browzomje-custom.mpp"
+            cp -- "Custom-Patches/browzomje-custom.mpp" patches.mpp
+            echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
+          elif [[ "$PATCHES_TRACK" == "Pre-release" ]]; then
+            PATCH_TAG="$(
+              gh api "repos/$REPO_URL/releases" \
+                --paginate \
+                --slurp \
+                --jq 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty'
+            )"
+
+            if [[ -z "$PATCH_TAG" ]]; then
+              echo "::error::No patches pre-release was found"
+              exit 1
+            fi
+
+            gh release download "$PATCH_TAG" -R "$REPO_URL" --pattern "*.mpp"
+            mapfile -t MPPS < <(find . -maxdepth 1 -type f -name '*.mpp' -print | sort -V)
+            if (( ${#MPPS[@]} == 0 )); then
+              echo "::error::No .mpp patch bundle was downloaded"
+              exit 1
+            fi
+
+            LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
+            mv -- "$LATEST_MPP" patches.mpp
+            echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
           else
-            PATCH_TAG=$(gh api repos/$REPO_URL/releases/latest | jq -r '.tag_name')
-            gh release download "$PATCH_TAG" -R $REPO_URL --pattern "*.mpp"
-            LATEST_MPP=$(ls -v *.mpp | tail -n 1)
-            mv "$LATEST_MPP" patches.mpp
-            echo "PATCHES_VERSION=$PATCH_TAG" >> $GITHUB_ENV
+            PATCH_TAG="$(gh api "repos/$REPO_URL/releases/latest" --jq '.tag_name // empty')"
+
+            if [[ -z "$PATCH_TAG" ]]; then
+              echo "::error::No stable patches release was found"
+              exit 1
+            fi
+
+            gh release download "$PATCH_TAG" -R "$REPO_URL" --pattern "*.mpp"
+            mapfile -t MPPS < <(find . -maxdepth 1 -type f -name '*.mpp' -print | sort -V)
+            if (( ${#MPPS[@]} == 0 )); then
+              echo "::error::No .mpp patch bundle was downloaded"
+              exit 1
+            fi
+
+            LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
+            mv -- "$LATEST_MPP" patches.mpp
+            echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
           fi
 
       - name: Decode Custom Keystore
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > custom.keystore
+          set -euo pipefail
+
+          if [[ -z "$KEYSTORE_BASE64" ]]; then
+            echo "::error::KEYSTORE_BASE64 secret is missing"
+            exit 1
+          fi
+
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > custom.keystore
+          chmod 0600 custom.keystore
 
       - name: Prepare App Selection
         id: prep_apps
+        env:
+          APP_PINTEREST: ${{ inputs.app_pinterest }}
+          APP_EASY_SUDOKU: ${{ inputs.app_easy_sudoku }}
         run: |
+          set -euo pipefail
+
           APP_LIST=""
-          if [ "${{ github.event.inputs.app_pinterest }}" == "true" ]; then APP_LIST="$APP_LIST,pinterest"; fi
-          if [ "${{ github.event.inputs.app_easy_sudoku }}" == "true" ]; then APP_LIST="$APP_LIST,easy-sudoku"; fi
-          
-          APP_LIST=${APP_LIST#,}
-          
-          if [ -z "$APP_LIST" ]; then
+          if [[ "$APP_PINTEREST" == "true" ]]; then APP_LIST="$APP_LIST,pinterest"; fi
+          if [[ "$APP_EASY_SUDOKU" == "true" ]]; then APP_LIST="$APP_LIST,easy-sudoku"; fi
+
+          APP_LIST="${APP_LIST#,}"
+
+          if [[ -z "$APP_LIST" ]]; then
             echo "::error::No applications selected for patching!"
             exit 1
           fi
-          
-          echo "SELECTED_APPS=$APP_LIST" >> $GITHUB_ENV
+
+          echo "SELECTED_APPS=$APP_LIST" >> "$GITHUB_ENV"
           echo "Ready to patch: $APP_LIST"
 
       - name: Execute Chihafuyu Tool
@@ -163,27 +254,48 @@ jobs:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_SIGNER_NAME: ${{ secrets.KEYSTORE_SIGNER_NAME }}
+          SELECTED_APPS: ${{ env.SELECTED_APPS }}
+          ARCHITECTURE: ${{ inputs.architecture }}
+          VERSION_SELECTION: ${{ inputs.version_selection }}
+          CUSTOM_VERSION: ${{ inputs.custom_version }}
+          DOWNLOAD_SOURCE: ${{ inputs.download_source }}
+          CONTINUE_ON_ERROR: ${{ inputs.continue_on_error }}
         run: |
+          set -euo pipefail
+
           python -u chihafuyu_tool.py \
             --ecosystem "browzomje" \
-            --apps "${{ env.SELECTED_APPS }}" \
-            --arch "${{ github.event.inputs.architecture }}" \
-            --version-selection "${{ github.event.inputs.version_selection }}" \
-            --custom-version "${{ github.event.inputs.custom_version }}" \
-            --download-source "${{ github.event.inputs.download_source }}" \
-            --continue-on-error "${{ github.event.inputs.continue_on_error }}" \
+            --apps "$SELECTED_APPS" \
+            --arch "$ARCHITECTURE" \
+            --version-selection "$VERSION_SELECTION" \
+            --custom-version "$CUSTOM_VERSION" \
+            --download-source "$DOWNLOAD_SOURCE" \
+            --continue-on-error "$CONTINUE_ON_ERROR" \
             --cli "morphe.jar" \
             --patches "patches.mpp" \
-            --patches-version "${{ env.PATCHES_VERSION }}" \
-            --repo-url "${{ env.TARGET_REPO_URL }}" \
+            --patches-version "$PATCHES_VERSION" \
+            --repo-url "$TARGET_REPO_URL" \
             --keystore "custom.keystore" \
             --ks-alias "$KEYSTORE_ALIAS" \
             --ks-pass "$KEYSTORE_PASSWORD" \
             --signer "$KEYSTORE_SIGNER_NAME"
 
+      - name: Validate Release Outputs
+        run: |
+          set -euo pipefail
+
+          test -s "./browzomje/changelog.md" || {
+            echo "::error::Missing or empty changelog.md"
+            exit 1
+          }
+
+          compgen -G "./browzomje/Output/*.apk" > /dev/null || {
+            echo "::error::No APK output was produced"
+            exit 1
+          }
+
       - name: Set Release Tag
-        id: vars
-        run: echo "DATE_TAG=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_ENV
+        run: echo "DATE_TAG=$(date -u +'%Y.%m.%d-%H%M%S')-${GITHUB_RUN_ID}" >> "$GITHUB_ENV"
 
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v3.0.2
@@ -193,4 +305,4 @@ jobs:
           body_path: ./browzomje/changelog.md
           files: ./browzomje/Output/*.apk
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
