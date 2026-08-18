@@ -4,6 +4,8 @@ Handles multi-tier downloading and dynamic options.json injection.
 """
 
 import argparse
+import shutil
+import tempfile
 import glob
 import json
 import os
@@ -13,6 +15,7 @@ import time
 import urllib.parse
 import zipfile
 from typing import Dict, Any
+from urllib.parse import urljoin, urlparse
 
 try:
     import requests
@@ -24,16 +27,20 @@ except ImportError:
 
 def load_config():
     """Loads the ecosystem configuration from the JSON file."""
-    if not os.path.exists("ecosystems.json"):
-        print("[FATAL] 'ecosystems.json' not found.")
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ecosystems.json")
+    if not os.path.isfile(config_path):
+        print(f"[FATAL] '{config_path}' not found.")
         sys.exit(1)
-    with open("ecosystems.json", "r", encoding="utf-8") as config_file:
-        try:
-            return json.load(config_file)
-        except json.JSONDecodeError as err:
-            print(f"[FATAL] Invalid JSON: {err}")
-            sys.exit(1)
-    return {}
+    try:
+        with open(config_path, "r", encoding="utf-8") as config_file:
+            data = json.load(config_file)
+    except (OSError, json.JSONDecodeError) as err:
+        print(f"[FATAL] Failed to load configuration: {err}")
+        sys.exit(1)
+    if not isinstance(data, dict):
+        print("[FATAL] ecosystems.json must contain a JSON object.")
+        sys.exit(1)
+    return data
 
 ECOSYSTEMS: Dict[str, Dict[str, Any]] = load_config()
 
@@ -50,34 +57,78 @@ def get_scraper():
     })
     return scraper
 
+MAX_DOWNLOAD_BYTES = 1024 * 1024 * 1024
+CHUNK_SIZE = 1024 * 1024
+
+def _validate_http_url(url):
+    """Accept only HTTP(S) URLs before handing them to requests."""
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise ValueError(f"Unsupported download URL: {url!r}")
+
+def _safe_filename(name, fallback="artifact"):
+    """Returns a filesystem-safe single path component."""
+    cleaned = os.path.basename(str(name)).strip()
+    if not cleaned or cleaned in {".", ".."} or any(ch in cleaned for ch in ('/', '\\', '\x00')):
+        return fallback
+    return cleaned
+
 def download_file_stream(scraper, url, out_path, referer=None, check_dmca=False):
-    """Downloads a file using the scraper and saves it in chunks."""
-    headers = {"Referer": referer} if referer else None
+    """Downloads a file safely with streaming, size limits, and atomic replacement."""
     try:
-        apk_data = scraper.get(url, stream=True, headers=headers, timeout=30)
-        if apk_data.status_code == 200:
+        _validate_http_url(url)
+        headers = {"Referer": referer} if referer else None
+        with scraper.get(
+            url, stream=True, headers=headers, timeout=(10, 60), allow_redirects=True
+        ) as response:
+            if response.status_code != 200:
+                print(f"[ERROR] Download rejected HTTP {response.status_code}")
+                return False
             if check_dmca:
-                content_disp = apk_data.headers.get('Content-Disposition', '').lower()
+                content_disp = response.headers.get('Content-Disposition', '').lower()
                 if 'uptodown-app-store' in content_disp:
                     print("[ERROR] DMCA Trap detected (Store APK).")
                     return False
-            with open(out_path, 'wb') as apk_file:
-                for chunk in apk_data.iter_content(chunk_size=8192):
-                    apk_file.write(chunk)
+
+            declared_size = response.headers.get("Content-Length")
+            if declared_size and declared_size.isdigit() and int(declared_size) > MAX_DOWNLOAD_BYTES:
+                print(f"[ERROR] Download exceeds {MAX_DOWNLOAD_BYTES} byte limit.")
+                return False
+
+            out_path = os.path.abspath(out_path)
+            os.makedirs(os.path.dirname(out_path), exist_ok=True)
+            fd, temp_path = tempfile.mkstemp(prefix=".download-", dir=os.path.dirname(out_path))
+            os.close(fd)
+            total = 0
+            try:
+                with open(temp_path, 'wb') as apk_file:
+                    for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+                        if not chunk:
+                            continue
+                        total += len(chunk)
+                        if total > MAX_DOWNLOAD_BYTES:
+                            raise ValueError(f"download exceeds {MAX_DOWNLOAD_BYTES} byte limit")
+                        apk_file.write(chunk)
+                os.replace(temp_path, out_path)
+            finally:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
             return True
-        print(f"[ERROR] Download rejected HTTP {apk_data.status_code}")
-    except (requests.exceptions.RequestException, OSError) as req_err:
+    except (requests.exceptions.RequestException, OSError, ValueError) as req_err:
         print(f"[ERROR] Request failed: {req_err}")
     return False
 
 def _extract_xapk(file_path, zip_obj, namelist):
-    """Extracts a pure APK from an XAPK or APKM wrapper."""
-    apk_files = [item for item in namelist if item.endswith('.apk')]
-    if len(apk_files) == 1 and not file_path.endswith('.apkm'):
+    """Extracts a single APK from an XAPK/APKM wrapper without loading it into RAM."""
+    apk_files = [item for item in namelist if item.lower().endswith('.apk')]
+    if len(apk_files) == 1 and not file_path.lower().endswith('.apkm'):
         print("[INFO] XAPK Wrapper detected. Extracting APK...")
+        member = zip_obj.getinfo(apk_files[0])
+        if member.file_size > MAX_DOWNLOAD_BYTES:
+            raise ValueError("embedded APK exceeds extraction size limit")
         new_path = file_path.rsplit('.', 1)[0] + '.apk'
-        with zip_obj.open(apk_files[0]) as source, open(new_path, 'wb') as target:
-            target.write(source.read())
+        with zip_obj.open(member) as source, open(new_path, 'wb') as target:
+            shutil.copyfileobj(source, target, length=CHUNK_SIZE)
         os.remove(file_path)
         return new_path
     return file_path
@@ -86,7 +137,8 @@ def process_downloaded_file(file_path):
     """Processes downloaded files, handling pure APKs and XAPK wrappers."""
     try:
         if not zipfile.is_zipfile(file_path):
-            return file_path
+            print("[ERROR] Downloaded artifact is not a valid ZIP/APK container.")
+            return None
         with zipfile.ZipFile(file_path, 'r') as zip_obj:
             namelist = zip_obj.namelist()
             if 'AndroidManifest.xml' in namelist and 'classes.dex' in namelist:
@@ -97,9 +149,9 @@ def process_downloaded_file(file_path):
                     return new_path
                 return file_path
             return _extract_xapk(file_path, zip_obj, namelist)
-    except (zipfile.BadZipFile, OSError) as inspect_error:
+    except (zipfile.BadZipFile, OSError, ValueError) as inspect_error:
         print(f"[WARN] Inspection failed: {inspect_error}")
-    return file_path
+    return None
 
 # ================= OPTIONS.JSON INJECTOR =================
 def _update_patch_options(target_dict, override_data):
@@ -113,18 +165,14 @@ def _update_patch_options(target_dict, override_data):
             target_dict["options"][key] = val
 
 def _search_and_update(obj, patch_name, override_data):
-    """Recursively searches for a patch by name and applies overrides."""
+    """Recursively updates the first matching patch and reports whether it was found."""
     if isinstance(obj, dict):
         if patch_name in obj and isinstance(obj[patch_name], dict):
             _update_patch_options(obj[patch_name], override_data)
             return True
-        for val in obj.values():
-            if _search_and_update(val, patch_name, override_data):
-                return True
-    elif isinstance(obj, list):
-        for item in obj:
-            if _search_and_update(item, patch_name, override_data):
-                return True
+        return any(_search_and_update(val, patch_name, override_data) for val in obj.values())
+    if isinstance(obj, list):
+        return any(_search_and_update(item, patch_name, override_data) for item in obj)
     return False
 
 def update_options_json(filepath, overrides):
@@ -138,11 +186,19 @@ def update_options_json(filepath, overrides):
             if not success:
                 print(f"[WARN] Patch '{patch_name}' not found in JSON!")
 
-        with open(filepath, 'w', encoding='utf-8') as opt_file:
-            json.dump(data, opt_file, indent=4)
+        temp_path = f"{filepath}.tmp"
+        try:
+            with open(temp_path, 'w', encoding='utf-8') as opt_file:
+                json.dump(data, opt_file, indent=4)
+                opt_file.write("\n")
+            os.replace(temp_path, filepath)
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
         print("[INFO] Custom patch options injected successfully.")
-    except (OSError, json.JSONDecodeError) as options_err:
+    except (OSError, json.JSONDecodeError, TypeError, ValueError) as options_err:
         print(f"[WARN] Failed to apply options overrides: {options_err}")
+
 # =========================================================
 
 # TIER 0: ARCHIVE.ORG
@@ -185,7 +241,9 @@ def scrape_archive(app_data, target_ver, arch, out_dir):
             orig_ext = os.path.splitext(dl_link)[1]
             if orig_ext not in ['.apk', '.xapk', '.apkm', '.apks']:
                 orig_ext = '.apk'
-            out_path = os.path.join(out_dir, f"{pkg}_{target_ver}{orig_ext}")
+            out_path = os.path.join(
+                out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{orig_ext}"
+            )
             if download_file_stream(scraper, dl_link, out_path):
                 print(f"[INFO] Tier 0 Success ({orig_ext})")
                 return out_path
@@ -218,7 +276,7 @@ def _find_apkmirror_release(scraper, app_data, version):
             continue
         if include_kws and not all(kw in link_text for kw in include_kws):
             continue
-        return "https://www.apkmirror.com" + link['href']
+        return urljoin("https://www.apkmirror.com", link['href'])
     return None
 
 def _find_apkmirror_variant(scraper, release_url, arch, ver_code):
@@ -237,7 +295,7 @@ def _find_apkmirror_variant(scraper, release_url, arch, ver_code):
                 continue
             link = row.find('a', class_='accent_color')
             if link:
-                return "https://www.apkmirror.com" + link['href'], False
+                return urljoin("https://www.apkmirror.com", link['href']), False
 
     for row in soup.find_all('div', class_='table-row'):
         text = row.text.lower()
@@ -246,7 +304,7 @@ def _find_apkmirror_variant(scraper, release_url, arch, ver_code):
                 continue
             link = row.find('a', class_='accent_color')
             if link:
-                return "https://www.apkmirror.com" + link['href'], True
+                return urljoin("https://www.apkmirror.com", link['href']), True
     return None, False
 
 def _download_apkmirror_variant(scraper, var_url, is_bundle, file_meta):
@@ -263,7 +321,7 @@ def _download_apkmirror_variant(scraper, var_url, is_bundle, file_meta):
         print("[WARN] Download button not found on variant page.")
         return None
 
-    dl_page = "https://www.apkmirror.com" + dl_btn['href']
+    dl_page = urljoin("https://www.apkmirror.com", dl_btn['href'])
 
     resp = scraper.get(dl_page, timeout=30)
     if resp.status_code != 200:
@@ -276,11 +334,12 @@ def _download_apkmirror_variant(scraper, var_url, is_bundle, file_meta):
     if dl_btn and 'href' in dl_btn.attrs:
         out_path = os.path.join(
             file_meta[2],
-            f"{file_meta[0]}_{file_meta[1]}{'.apkm' if is_bundle else '.apk'}"
+            f"{_safe_filename(file_meta[0])}_{_safe_filename(file_meta[1])}"
+            f"{'.apkm' if is_bundle else '.apk'}"
         )
         print("[INFO] Downloading from APKMirror...")
         if download_file_stream(
-            scraper, "https://www.apkmirror.com" + dl_btn['href'], out_path, dl_page
+            scraper, urljoin("https://www.apkmirror.com", dl_btn['href']), out_path, dl_page
         ):
             print(f"[INFO] Tier 1 Success ({'.apkm' if is_bundle else '.apk'})")
             return out_path
@@ -364,7 +423,9 @@ def scrape_apkcombo(app_data, target_ver, arch, out_dir):
         final_dl = _find_apkcombo_dl(scraper, dl_page_url, arch)
         if final_dl:
             ext = ".apks" if "apks" in final_dl else ".apk"
-            out_path = os.path.join(out_dir, f"{pkg}_{target_ver}{ext}")
+            out_path = os.path.join(
+                out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{ext}"
+            )
             print("[INFO] Downloading from APKCombo...")
             if download_file_stream(scraper, final_dl, out_path):
                 print(f"[INFO] Tier 3 Success ({ext})")
@@ -400,7 +461,9 @@ def scrape_aptoide(app_data, target_ver, out_dir):
                 break
 
         if dl_url:
-            out_path = os.path.join(out_dir, f"{pkg}_{target_ver}.apk")
+            out_path = os.path.join(
+                out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}.apk"
+            )
             print("[INFO] Downloading from Aptoide...")
             if download_file_stream(scraper, dl_url, out_path):
                 print("[INFO] Tier 4 Success (.apk)")
@@ -491,7 +554,9 @@ def _download_uptodown_variant(scraper, dl_info, file_meta):
     final_dl = f"https://dw.uptodown.com/dwn/{dl_btn['data-url']}"
     print("[INFO] Downloading from Uptodown...")
     ext = ".xapk" if is_bundle else ".apk"
-    out_path = os.path.join(out_dir, f"{pkg}_{target_ver}{ext}")
+    out_path = os.path.join(
+        out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{ext}"
+    )
 
     if download_file_stream(scraper, final_dl, out_path, v_url, True):
         print(f"[INFO] Tier 5 Success ({ext})")
@@ -540,7 +605,9 @@ def scrape_huggingface(app_data, target_ver, out_dir, hf_user):
 
     for ext in ['.apk', '.xapk', '.apkm', '.apks']:
         dl_link = f"{base_url}/{pkg}_{target_ver}{ext}"
-        out_path = os.path.join(out_dir, f"{pkg}_{target_ver}{ext}")
+        out_path = os.path.join(
+            out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{ext}"
+        )
 
         try:
             head_req = scraper.head(dl_link, timeout=10, allow_redirects=True)
@@ -556,20 +623,32 @@ def scrape_huggingface(app_data, target_ver, out_dir, hf_user):
     return None
 
 def _download_apkpure(pkg, target_ver, dl_dir):
-    """Downloads APK from APKPure via apkeep."""
+    """Downloads APK from APKPure via apkeep, isolated from stale artifacts."""
     print(f"[TIER 2] APKPure: v{target_ver}")
-    subprocess.run(
-        ["apkeep", "-a", f"{pkg}@{target_ver}", "-d", "apk-pure", dl_dir],
-        capture_output=True, text=True, check=False
-    )
-    files = []
-    for ext in ("*.apk", "*.xapk", "*.apkm", "*.apks"):
-        files.extend(glob.glob(os.path.join(dl_dir, ext)))
-    if files:
+    os.makedirs(dl_dir, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="apkeep-") as temp_dir:
+        try:
+            result = subprocess.run(
+                ["apkeep", "-a", f"{pkg}@{target_ver}", "-d", "apk-pure", temp_dir],
+                capture_output=True, text=True, check=False
+            )
+        except OSError as err:
+            print(f"[WARN] Failed to execute apkeep: {err}")
+            return None
+        if result.returncode != 0:
+            print(f"[WARN] APKPure failed (apkeep exit code {result.returncode}).")
+            return None
+        files = []
+        for ext in ("*.apk", "*.xapk", "*.apkm", "*.apks"):
+            files.extend(glob.glob(os.path.join(temp_dir, ext)))
+        if not files:
+            print("[WARN] APKPure returned no package artifact.")
+            return None
+        source = files[0]
+        destination = os.path.join(dl_dir, _safe_filename(os.path.basename(source)))
+        shutil.copy2(source, destination)
         print("[INFO] Tier 2 Success.")
-        return files[0]
-    print("[WARN] APKPure failed.")
-    return None
+        return destination
 
 def download_apk(app_data, target_ver, arch, out_dir, args):
     """Fallback mechanism or targeted download for APK through multiple sources."""
@@ -689,25 +768,32 @@ def build_patch_command(args, app_data, files, target_arch):
 def execute_patch_cli(patch_cmd):
     """Executes the patch command and streams output."""
     zero_patches = False
-    with subprocess.Popen(
-        patch_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
-    ) as proc:
-        if proc.stdout:
-            for line in proc.stdout:
-                print(line, end='')
-                if "Applying 0 patches" in line:
-                    zero_patches = True
-        proc.wait()
-        return proc.returncode, zero_patches
+    try:
+        with subprocess.Popen(
+            patch_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+        ) as proc:
+            if proc.stdout:
+                for line in proc.stdout:
+                    print(line, end='')
+                    if "Applying 0 patches" in line:
+                        zero_patches = True
+            proc.wait()
+            return proc.returncode, zero_patches
+    except OSError as err:
+        print(f"[ERROR] Failed to execute patch CLI: {err}")
+        return 127, zero_patches
 
 def _generate_options_json(app_name, args, app_data, workspace):
     """Generates options JSON file using the CLI."""
-    json_file = os.path.join(workspace, f"{app_name}-options.json")
+    json_file = os.path.join(workspace, f"{_safe_filename(app_name)}-options.json")
     cmd_opts = [
         "java", "-jar", args.cli, "options-create", "--patches", args.patches,
         "--out", json_file, "--filter-package-name", app_data["package"]
     ]
-    subprocess.run(cmd_opts, capture_output=True, check=False)
+    result = subprocess.run(cmd_opts, capture_output=True, text=True, check=False)
+    if result.returncode != 0:
+        stderr = (result.stderr or result.stdout or "").strip()
+        print(f"[WARN] CLI options-create failed (exit {result.returncode}): {stderr[-500:]}")
     if app_data.get("options_override") and os.path.exists(json_file):
         print(f"[INFO] Injecting custom patch options for {app_name}...")
         update_options_json(json_file, app_data["options_override"])
@@ -729,8 +815,8 @@ def process_single_app(app_name, args, app_data, app_custom_version, state):
 
     json_file = _generate_options_json(app_name, args, app_data, state["workspace"])
     apk_name = (
-        f"{app_name}_{args.ecosystem}_patched_{target_ver}-"
-        f"{arch}_patches_{state['clean_ver']}.apk"
+        f"{_safe_filename(app_name)}_{_safe_filename(args.ecosystem)}_patched_{_safe_filename(target_ver)}-"
+        f"{_safe_filename(arch)}_patches_{_safe_filename(state['clean_ver'])}.apk"
     )
     out_apk = os.path.join(state["out_dir"], apk_name)
 
@@ -756,7 +842,11 @@ def process_single_app(app_name, args, app_data, app_custom_version, state):
 
 def run_patcher(args):
     """Main execution function to handle the patching loop."""
-    workspace = f"./{args.ecosystem}"
+    if args.ecosystem not in ECOSYSTEMS:
+        print(f"[FATAL] Ecosystem '{args.ecosystem}' not found in JSON.")
+        sys.exit(1)
+
+    workspace = f"./{_safe_filename(args.ecosystem)}"
     state = {
         "in_dir": f"{workspace}/Input",
         "out_dir": f"{workspace}/Output",
@@ -768,11 +858,10 @@ def run_patcher(args):
     os.makedirs(state["out_dir"], exist_ok=True)
 
     print(f"=== INITIALIZING WORKSPACE: {args.ecosystem.upper()} ===")
-    if args.ecosystem not in ECOSYSTEMS:
-        print(f"[FATAL] Ecosystem '{args.ecosystem}' not found in JSON.")
+    ecosystem_apps = ECOSYSTEMS[args.ecosystem].get("apps")
+    if not isinstance(ecosystem_apps, dict):
+        print(f"[FATAL] Ecosystem '{args.ecosystem}' has no valid 'apps' configuration.")
         sys.exit(1)
-
-    ecosystem_apps = ECOSYSTEMS[args.ecosystem]["apps"]
     app_list = list(ecosystem_apps.keys()) if args.apps.lower() == "all" else args.apps.split(',')
 
     custom_versions_dict = parse_custom_versions(args.custom_version)
@@ -801,7 +890,7 @@ def parse_arguments():
     parser.add_argument("--version-selection", required=True)
     parser.add_argument("--custom-version", default="")
     parser.add_argument("--download-source", default="default")
-    parser.add_argument("--continue-on-error", default="false")
+    parser.add_argument("--continue-on-error", choices=("true", "false"), default="false")
     parser.add_argument("--hf-user", default="chihafuyu")
     parser.add_argument(
         "--microg-url",
