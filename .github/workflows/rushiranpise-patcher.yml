@@ -128,11 +128,7 @@ jobs:
           set -euo pipefail
 
           if [[ "$CLI_TRACK" == "Pre-release" ]]; then
-            CLI_TAG="$(
-              gh api repos/MorpheApp/morphe-desktop/releases \
-                --paginate \
-                --jq 'map(select(.prerelease == true and .draft == false))[0].tag_name // empty'
-            )"
+            CLI_TAG="$(gh api repos/MorpheApp/morphe-desktop/releases --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
 
             if [[ -z "$CLI_TAG" ]]; then
               echo "::error::No Morphe CLI pre-release was found"
@@ -165,11 +161,7 @@ jobs:
             cp -- "Custom-Patches/rushiranpise-custom.mpp" patches.mpp
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
           elif [[ "$PATCHES_TRACK" == "Pre-release" ]]; then
-            PATCH_TAG="$(
-              gh api "repos/$REPO_URL/releases" \
-                --paginate \
-                --jq 'map(select(.prerelease == true and .draft == false))[0].tag_name // empty'
-            )"
+            PATCH_TAG="$(gh api "repos/$REPO_URL/releases" --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
 
             if [[ -z "$PATCH_TAG" ]]; then
               echo "::error::No patches pre-release was found"
@@ -187,7 +179,7 @@ jobs:
             mv -- "$LATEST_MPP" patches.mpp
             echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
           else
-            PATCH_TAG="$(gh api "repos/$REPO_URL/releases/latest" --jq '.tag_name // empty')"
+            PATCH_TAG="$(gh api "repos/$REPO_URL/releases/latest" | jq -r '.tag_name // empty')"
 
             if [[ -z "$PATCH_TAG" ]]; then
               echo "::error::No stable patches release was found"
