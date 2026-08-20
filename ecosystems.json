@@ -267,7 +267,7 @@
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
                 "stable": [
-                    "14.28.0"
+                    "14.32.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -496,11 +496,11 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "audiorelay": {
-                "package": "com.azefsw.audioconnect",
-                "search_term": "AudioRelay",
+            "pixiv": {
+                "package": "jp.pxv.android",
+                "search_term": "pixiv",
                 "stable": [
-                    "0.26.1"
+                    "6.189.0"
                 ],
                 "beta": [],
                 "strip": true,

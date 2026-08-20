@@ -8,8 +8,8 @@ on:
         required: true
         type: boolean
         default: false
-      app_audiorelay:
-        description: 'Patch audiorelay'
+      app_pixiv:
+        description: 'Patch pixiv'
         required: true
         type: boolean
         default: false
@@ -151,7 +151,7 @@ jobs:
       - name: Initialize Python Environment
         uses: actions/setup-python@v7
         with:
-          python-version: '3.14'
+          python-version: '3.12'
 
       - name: Install Dependencies & apkeep
         run: |
@@ -281,7 +281,7 @@ jobs:
         id: prep_apps
         env:
           APP_ATOMIC: ${{ inputs.app_atomic }}
-          APP_AUDIORELAY: ${{ inputs.app_audiorelay }}
+          APP_PIXIV: ${{ inputs.app_pixiv }}
           APP_BOORUSAMA: ${{ inputs.app_boorusama }}
           APP_EPIC: ${{ inputs.app_epic }}
           APP_FAKEGPS: ${{ inputs.app_fakegps }}
@@ -299,7 +299,7 @@ jobs:
 
           APP_LIST=""
           if [[ "$APP_ATOMIC" == "true" ]]; then APP_LIST="$APP_LIST,atomic"; fi
-          if [[ "$APP_AUDIORELAY" == "true" ]]; then APP_LIST="$APP_LIST,audiorelay"; fi
+          if [[ "$APP_PIXIV" == "true" ]]; then APP_LIST="$APP_LIST,pixiv"; fi
           if [[ "$APP_BOORUSAMA" == "true" ]]; then APP_LIST="$APP_LIST,boorusama"; fi
           if [[ "$APP_EPIC" == "true" ]]; then APP_LIST="$APP_LIST,epic"; fi
           if [[ "$APP_FAKEGPS" == "true" ]]; then APP_LIST="$APP_LIST,fakegps"; fi
