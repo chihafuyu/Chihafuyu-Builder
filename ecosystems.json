@@ -649,7 +649,7 @@
                 "stable": [
                     "21.04.223"
                 ],
-                "beta": ["21.33.324"],
+                "beta": ["21.33.322"],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
