@@ -267,7 +267,7 @@
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
                 "stable": [
-                    "14.28.0"
+                    "14.32.0"
                 ],
                 "beta": [],
                 "strip": true,
