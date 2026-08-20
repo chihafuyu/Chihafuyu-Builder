@@ -67,6 +67,12 @@ async def upload_files():
         api_id=API_ID,
         api_hash=API_HASH
     ) as app:
+        
+        if isinstance(target_chat, int):
+            print("Syncing dialogs to resolve Peer ID...", flush=True)
+            async for _ in app.get_dialogs(limit=50):
+                pass
+
         await app.send_media_group(chat_id=target_chat, media=documents)
         print("Upload complete!", flush=True)
 
