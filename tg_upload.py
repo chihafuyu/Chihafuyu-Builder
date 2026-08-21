@@ -6,7 +6,7 @@ from pathlib import Path
 
 from pyrogram import Client
 from pyrogram.types import InputMediaDocument
-from pyrogram.errors import PyrogramError
+from pyrogram.errors import RPCError
 
 API_ID = os.environ.get("API_ID")
 API_HASH = os.environ.get("API_HASH")
@@ -45,7 +45,7 @@ def retry(func):
         for attempt in range(3):
             try:
                 return await func(*args, **kwargs)
-            except (PyrogramError, ConnectionError, TimeoutError) as exc:
+            except (RPCError, ConnectionError, TimeoutError) as exc:
                 print(f"Upload failed: {exc}")
                 if attempt == 2:
                     raise
