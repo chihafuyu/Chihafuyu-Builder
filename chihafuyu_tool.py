@@ -373,6 +373,35 @@ def scrape_apkmirror(app_data, target_ver, arch, ver_code, out_dir):
         print(f"[ERROR] Tier 1 failed: {err}")
     return None
 
+# TIER 2: APKPURE
+def _download_apkpure(pkg, target_ver, dl_dir):
+    """Downloads APK from APKPure via apkeep, isolated from stale artifacts."""
+    print(f"[TIER 2] APKPure: v{target_ver}")
+    os.makedirs(dl_dir, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="apkeep-") as temp_dir:
+        try:
+            result = subprocess.run(
+                ["apkeep", "-a", f"{pkg}@{target_ver}", "-d", "apk-pure", temp_dir],
+                capture_output=True, text=True, check=False
+            )
+        except OSError as err:
+            print(f"[WARN] Failed to execute apkeep: {err}")
+            return None
+        if result.returncode != 0:
+            print(f"[WARN] APKPure failed (apkeep exit code {result.returncode}).")
+            return None
+        files = []
+        for ext in ("*.apk", "*.xapk", "*.apkm", "*.apks"):
+            files.extend(glob.glob(os.path.join(temp_dir, ext)))
+        if not files:
+            print("[WARN] APKPure returned no package artifact.")
+            return None
+        source = files[0]
+        destination = os.path.join(dl_dir, _safe_filename(os.path.basename(source)))
+        shutil.copy2(source, destination)
+        print("[INFO] Tier 2 Success.")
+        return destination
+
 # TIER 3: APKCOMBO
 def _find_apkcombo_page(scraper, pkg, version):
     """Find the APKCombo download page."""
@@ -436,7 +465,7 @@ def scrape_apkcombo(app_data, target_ver, arch, out_dir):
         print(f"[ERROR] Tier 3 failed: {err}")
     return None
 
-# TIER 4: APTOIDE API
+# TIER 4: APTOIDE
 def scrape_aptoide(app_data, target_ver, out_dir):
     """Scrape the APK from Aptoide."""
     print(f"[TIER 4] Aptoide API: v{target_ver}")
@@ -475,7 +504,7 @@ def scrape_aptoide(app_data, target_ver, out_dir):
         print(f"[ERROR] Tier 4 failed: {err}")
     return None
 
-# TIER 5: UPTODOWN API
+# TIER 5: UPTODOWN
 def _find_uptodown_version(scraper, base_url, version):
     """Finds the version URL on Uptodown."""
     soup = BeautifulSoup(scraper.get(base_url, timeout=30).text, 'html.parser')
@@ -623,34 +652,6 @@ def scrape_huggingface(app_data, target_ver, out_dir, hf_user):
     print(f"[WARN] Not found in HuggingFace dataset '{hf_repo}'.")
     return None
 
-def _download_apkpure(pkg, target_ver, dl_dir):
-    """Downloads APK from APKPure via apkeep, isolated from stale artifacts."""
-    print(f"[TIER 2] APKPure: v{target_ver}")
-    os.makedirs(dl_dir, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="apkeep-") as temp_dir:
-        try:
-            result = subprocess.run(
-                ["apkeep", "-a", f"{pkg}@{target_ver}", "-d", "apk-pure", temp_dir],
-                capture_output=True, text=True, check=False
-            )
-        except OSError as err:
-            print(f"[WARN] Failed to execute apkeep: {err}")
-            return None
-        if result.returncode != 0:
-            print(f"[WARN] APKPure failed (apkeep exit code {result.returncode}).")
-            return None
-        files = []
-        for ext in ("*.apk", "*.xapk", "*.apkm", "*.apks"):
-            files.extend(glob.glob(os.path.join(temp_dir, ext)))
-        if not files:
-            print("[WARN] APKPure returned no package artifact.")
-            return None
-        source = files[0]
-        destination = os.path.join(dl_dir, _safe_filename(os.path.basename(source)))
-        shutil.copy2(source, destination)
-        print("[INFO] Tier 2 Success.")
-        return destination
-
 def download_apk(app_data, target_ver, arch, out_dir, args):
     """Fallback mechanism or targeted download for APK through multiple sources."""
     if target_ver.lower() == "any":
@@ -701,6 +702,12 @@ def write_changelog(args, apps_patched, workspace, clean_ver):
     log_path = os.path.join(workspace, "changelog.md")
     with open(log_path, "w", encoding="utf-8") as file_obj:
         file_obj.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
+        
+        # Insert warning if pre-release patches or CLI are utilized
+        if args.is_prerelease.lower() == "true":
+            file_obj.write("> [!WARNING]\n")
+            file_obj.write("> **This application was patched using a pre-release CLI and/or patches for experimental purposes. Use with caution.**\n\n")
+
         file_obj.write(f"Generated using **v{clean_ver}** from `{args.ecosystem}`.\n")
         file_obj.write(f"**Source:** [Repository]({args.repo_url})\n\n### Apps:\n")
         for app in apps_patched:
@@ -906,6 +913,7 @@ def parse_arguments():
     parser.add_argument("--ks-alias")
     parser.add_argument("--ks-pass")
     parser.add_argument("--signer")
+    parser.add_argument("--is-prerelease", default="false")
     return parser.parse_args()
 
 if __name__ == "__main__":

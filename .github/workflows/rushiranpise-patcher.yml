@@ -212,6 +212,14 @@ jobs:
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > custom.keystore
           chmod 0600 custom.keystore
 
+      - name: Evaluate Pre-release Flag
+        run: |
+          if [[ "${{ inputs.cli_track }}" == "Pre-release" || "${{ inputs.patches_track }}" == "Pre-release" ]]; then
+            echo "IS_PRERELEASE=true" >> "$GITHUB_ENV"
+          else
+            echo "IS_PRERELEASE=false" >> "$GITHUB_ENV"
+          fi
+
       - name: Execute Chihafuyu Tool
         env:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
@@ -241,7 +249,8 @@ jobs:
             --keystore "custom.keystore" \
             --ks-alias "$KEYSTORE_ALIAS" \
             --ks-pass "$KEYSTORE_PASSWORD" \
-            --signer "$KEYSTORE_SIGNER_NAME"
+            --signer "$KEYSTORE_SIGNER_NAME" \
+            --is-prerelease "${{ env.IS_PRERELEASE }}"
 
       - name: Validate Release Outputs
         run: |
@@ -267,6 +276,7 @@ jobs:
           name: Patched Apps - rushiranpise (${{ env.DATE_TAG }})
           body_path: ./rushiranpise/changelog.md
           files: ./rushiranpise/Output/*.apk
+          prerelease: ${{ env.IS_PRERELEASE == 'true' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
