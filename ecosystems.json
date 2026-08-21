@@ -679,7 +679,7 @@
                 "stable": [
                     "2026.14.0"
                 ],
-                "beta": ["2026.32.0"],
+                "beta": ["2026.34.0"],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
@@ -1238,6 +1238,41 @@
                 "package": "app.symfonik.music.player",
                 "stable": ["14.1.0"],
                 "archive_id": "ZeNiX"
+            }
+        }
+    },
+    "kveld9": {
+        "apps": {
+            "brave-browser": {
+                "package": "com.brave.browser",
+                "search_term": "Brave Browser",
+                "stable": ["1.93.137"],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    },
+    "dh6k": {
+        "apps": {
+            "quetta-browser": {
+                "package": "net.quetta.browser",
+                "search_term": "Quetta Browser",
+                "stable": ["Any"],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "quetta-browser-official": {
+                "package": "net.quetta.browser.official",
+                "search_term": "Quetta Browser",
+                "stable": ["Any"],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }

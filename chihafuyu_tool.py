@@ -202,56 +202,37 @@ def update_options_json(filepath, overrides):
 
 # =========================================================
 
-# TIER 0: ARCHIVE.ORG
-def _get_archive_link(soup, pkg, target_ver, arch, base_url):
-    """Parses Archive.org soup to find the exact APK link."""
-    valid_archs = [arch.lower(), "universal", "noarch", "all"]
-    for link in soup.find_all('a'):
-        href = link.get('href', '')
-        if pkg in href and target_ver in href:
-            if any(a in href.lower() for a in valid_archs) or arch == "all":
-                return f"{base_url}/{href}"
-    for link in soup.find_all('a'):
-        href = link.get('href', '')
-        if pkg in href and target_ver in href:
-            print(f"[WARN] Arch mismatch fallback: {href}")
-            return f"{base_url}/{href}"
-    return None
-
-def scrape_archive(app_data, target_ver, arch, out_dir):
-    """Scrape the APK from Archive.org."""
-    arch_id = app_data.get("archive_id")
-    if not arch_id:
+# TIER 0: HUGGINGFACE DATASETS
+def scrape_huggingface(app_data, target_ver, out_dir, hf_user):
+    """Scrape the APK directly from HuggingFace Datasets as the primary source."""
+    hf_repo = app_data.get("hf_repo", f"{hf_user}/{app_data.get('archive_id')}")
+    if not app_data.get("archive_id") and not app_data.get("hf_repo"):
         return None
-    print(f"[TIER 0] Archive.org: v{target_ver}")
-    time.sleep(2)
+
+    print(f"[TIER 0] HuggingFace: v{target_ver}")
+    time.sleep(1)
     scraper = get_scraper()
     pkg = app_data["package"]
-    try:
-        base_url = f"https://archive.org/download/{arch_id}"
-        resp = scraper.get(f"{base_url}/", timeout=30)
-        if resp.status_code != 200:
-            print(f"[ERROR] Archive.org HTTP {resp.status_code}")
-            return None
 
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        dl_link = _get_archive_link(soup, pkg, target_ver, arch, base_url)
+    base_url = f"https://huggingface.co/datasets/{hf_repo}/resolve/main"
 
-        if dl_link:
-            print("[INFO] Downloading from Archive...")
-            orig_ext = os.path.splitext(dl_link)[1]
-            if orig_ext not in ['.apk', '.xapk', '.apkm', '.apks']:
-                orig_ext = '.apk'
-            out_path = os.path.join(
-                out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{orig_ext}"
-            )
-            if download_file_stream(scraper, dl_link, out_path):
-                print(f"[INFO] Tier 0 Success ({orig_ext})")
-                return out_path
-        else:
-            print(f"[WARN] Not found. (Did you name it '{pkg}_{target_ver}.apk'?)")
-    except (requests.exceptions.RequestException, OSError) as err:
-        print(f"[ERROR] Tier 0 failed: {err}")
+    for ext in ['.apk', '.xapk', '.apkm', '.apks']:
+        dl_link = f"{base_url}/{pkg}_{target_ver}{ext}"
+        out_path = os.path.join(
+            out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{ext}"
+        )
+
+        try:
+            head_req = scraper.head(dl_link, timeout=10, allow_redirects=True)
+            if head_req.status_code == 200:
+                print("[INFO] Downloading from HuggingFace Vault...")
+                if download_file_stream(scraper, dl_link, out_path):
+                    print(f"[INFO] Tier 0 Success ({ext})")
+                    return out_path
+        except requests.exceptions.RequestException:
+            continue
+
+    print(f"[WARN] Not found in HuggingFace dataset '{hf_repo}'.")
     return None
 
 # TIER 1: APKMIRROR
@@ -373,6 +354,35 @@ def scrape_apkmirror(app_data, target_ver, arch, ver_code, out_dir):
         print(f"[ERROR] Tier 1 failed: {err}")
     return None
 
+# TIER 2: APKPURE
+def _download_apkpure(pkg, target_ver, dl_dir):
+    """Downloads APK from APKPure via apkeep, isolated from stale artifacts."""
+    print(f"[TIER 2] APKPure: v{target_ver}")
+    os.makedirs(dl_dir, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="apkeep-") as temp_dir:
+        try:
+            result = subprocess.run(
+                ["apkeep", "-a", f"{pkg}@{target_ver}", "-d", "apk-pure", temp_dir],
+                capture_output=True, text=True, check=False
+            )
+        except OSError as err:
+            print(f"[WARN] Failed to execute apkeep: {err}")
+            return None
+        if result.returncode != 0:
+            print(f"[WARN] APKPure failed (apkeep exit code {result.returncode}).")
+            return None
+        files = []
+        for ext in ("*.apk", "*.xapk", "*.apkm", "*.apks"):
+            files.extend(glob.glob(os.path.join(temp_dir, ext)))
+        if not files:
+            print("[WARN] APKPure returned no package artifact.")
+            return None
+        source = files[0]
+        destination = os.path.join(dl_dir, _safe_filename(os.path.basename(source)))
+        shutil.copy2(source, destination)
+        print("[INFO] Tier 2 Success.")
+        return destination
+
 # TIER 3: APKCOMBO
 def _find_apkcombo_page(scraper, pkg, version):
     """Find the APKCombo download page."""
@@ -436,7 +446,7 @@ def scrape_apkcombo(app_data, target_ver, arch, out_dir):
         print(f"[ERROR] Tier 3 failed: {err}")
     return None
 
-# TIER 4: APTOIDE API
+# TIER 4: APTOIDE
 def scrape_aptoide(app_data, target_ver, out_dir):
     """Scrape the APK from Aptoide."""
     print(f"[TIER 4] Aptoide API: v{target_ver}")
@@ -475,7 +485,7 @@ def scrape_aptoide(app_data, target_ver, out_dir):
         print(f"[ERROR] Tier 4 failed: {err}")
     return None
 
-# TIER 5: UPTODOWN API
+# TIER 5: UPTODOWN
 def _find_uptodown_version(scraper, base_url, version):
     """Finds the version URL on Uptodown."""
     soup = BeautifulSoup(scraper.get(base_url, timeout=30).text, 'html.parser')
@@ -590,66 +600,57 @@ def scrape_uptodown(app_data, target_ver, arch, out_dir):
         print(f"[ERROR] Tier 5 failed: {err}")
     return None
 
-# TIER 6: HUGGING FACE DATASETS
-def scrape_huggingface(app_data, target_ver, out_dir, hf_user):
-    """Scrape the APK directly from Hugging Face Datasets as a final fallback."""
-    hf_repo = app_data.get("hf_repo", f"{hf_user}/{app_data.get('archive_id')}")
-    if not app_data.get("archive_id") and not app_data.get("hf_repo"):
-        return None
-
-    print(f"[TIER 6] HuggingFace: v{target_ver}")
-    time.sleep(1)
-    scraper = get_scraper()
-    pkg = app_data["package"]
-
-    base_url = f"https://huggingface.co/datasets/{hf_repo}/resolve/main"
-
-    for ext in ['.apk', '.xapk', '.apkm', '.apks']:
-        dl_link = f"{base_url}/{pkg}_{target_ver}{ext}"
-        out_path = os.path.join(
-            out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{ext}"
-        )
-
-        try:
-            head_req = scraper.head(dl_link, timeout=10, allow_redirects=True)
-            if head_req.status_code == 200:
-                print("[INFO] Downloading from HuggingFace Vault...")
-                if download_file_stream(scraper, dl_link, out_path):
-                    print(f"[INFO] Tier 6 Success ({ext})")
-                    return out_path
-        except requests.exceptions.RequestException:
-            continue
-
-    print(f"[WARN] Not found in HuggingFace dataset '{hf_repo}'.")
+# TIER 6: ARCHIVE.ORG
+def _get_archive_link(soup, pkg, target_ver, arch, base_url):
+    """Parses Archive.org soup to find the exact APK link."""
+    valid_archs = [arch.lower(), "universal", "noarch", "all"]
+    for link in soup.find_all('a'):
+        href = link.get('href', '')
+        if pkg in href and target_ver in href:
+            if any(a in href.lower() for a in valid_archs) or arch == "all":
+                return f"{base_url}/{href}"
+    for link in soup.find_all('a'):
+        href = link.get('href', '')
+        if pkg in href and target_ver in href:
+            print(f"[WARN] Arch mismatch fallback: {href}")
+            return f"{base_url}/{href}"
     return None
 
-def _download_apkpure(pkg, target_ver, dl_dir):
-    """Downloads APK from APKPure via apkeep, isolated from stale artifacts."""
-    print(f"[TIER 2] APKPure: v{target_ver}")
-    os.makedirs(dl_dir, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="apkeep-") as temp_dir:
-        try:
-            result = subprocess.run(
-                ["apkeep", "-a", f"{pkg}@{target_ver}", "-d", "apk-pure", temp_dir],
-                capture_output=True, text=True, check=False
+def scrape_archive(app_data, target_ver, arch, out_dir):
+    """Scrape the APK from Archive.org as a final fallback."""
+    arch_id = app_data.get("archive_id")
+    if not arch_id:
+        return None
+    print(f"[TIER 6] Archive.org: v{target_ver}")
+    time.sleep(2)
+    scraper = get_scraper()
+    pkg = app_data["package"]
+    try:
+        base_url = f"https://archive.org/download/{arch_id}"
+        resp = scraper.get(f"{base_url}/", timeout=30)
+        if resp.status_code != 200:
+            print(f"[ERROR] Archive.org HTTP {resp.status_code}")
+            return None
+
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        dl_link = _get_archive_link(soup, pkg, target_ver, arch, base_url)
+
+        if dl_link:
+            print("[INFO] Downloading from Archive...")
+            orig_ext = os.path.splitext(dl_link)[1]
+            if orig_ext not in ['.apk', '.xapk', '.apkm', '.apks']:
+                orig_ext = '.apk'
+            out_path = os.path.join(
+                out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{orig_ext}"
             )
-        except OSError as err:
-            print(f"[WARN] Failed to execute apkeep: {err}")
-            return None
-        if result.returncode != 0:
-            print(f"[WARN] APKPure failed (apkeep exit code {result.returncode}).")
-            return None
-        files = []
-        for ext in ("*.apk", "*.xapk", "*.apkm", "*.apks"):
-            files.extend(glob.glob(os.path.join(temp_dir, ext)))
-        if not files:
-            print("[WARN] APKPure returned no package artifact.")
-            return None
-        source = files[0]
-        destination = os.path.join(dl_dir, _safe_filename(os.path.basename(source)))
-        shutil.copy2(source, destination)
-        print("[INFO] Tier 2 Success.")
-        return destination
+            if download_file_stream(scraper, dl_link, out_path):
+                print(f"[INFO] Tier 6 Success ({orig_ext})")
+                return out_path
+        else:
+            print(f"[WARN] Not found. (Did you name it '{pkg}_{target_ver}.apk'?)")
+    except (requests.exceptions.RequestException, OSError) as err:
+        print(f"[ERROR] Tier 6 failed: {err}")
+    return None
 
 def download_apk(app_data, target_ver, arch, out_dir, args):
     """Fallback mechanism or targeted download for APK through multiple sources."""
@@ -681,13 +682,13 @@ def download_apk(app_data, target_ver, arch, out_dir, args):
         path = scrape_uptodown(app_data, target_ver, arch, dl_dir)
     else:
         path = (
-            scrape_archive(app_data, target_ver, arch, dl_dir) or
+            scrape_huggingface(app_data, target_ver, dl_dir, args.hf_user) or
             scrape_apkmirror(app_data, target_ver, arch, ver_code, dl_dir) or
             _download_apkpure(pkg, target_ver, dl_dir) or
             scrape_apkcombo(app_data, target_ver, arch, dl_dir) or
             scrape_aptoide(app_data, target_ver, dl_dir) or
             scrape_uptodown(app_data, target_ver, arch, dl_dir) or
-            scrape_huggingface(app_data, target_ver, dl_dir, args.hf_user)
+            scrape_archive(app_data, target_ver, arch, dl_dir)
         )
 
     if path:
@@ -701,6 +702,13 @@ def write_changelog(args, apps_patched, workspace, clean_ver):
     log_path = os.path.join(workspace, "changelog.md")
     with open(log_path, "w", encoding="utf-8") as file_obj:
         file_obj.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
+
+        # Insert warning if pre-release patches or CLI are utilized
+        if args.is_prerelease.lower() == "true":
+            file_obj.write("> [!WARNING]\n")
+            file_obj.write("> **This application was patched using a pre-release CLI "
+                           "and/or patches for experimental purposes. Use with caution.**\n\n")
+
         file_obj.write(f"Generated using **v{clean_ver}** from `{args.ecosystem}`.\n")
         file_obj.write(f"**Source:** [Repository]({args.repo_url})\n\n### Apps:\n")
         for app in apps_patched:
@@ -906,6 +914,7 @@ def parse_arguments():
     parser.add_argument("--ks-alias")
     parser.add_argument("--ks-pass")
     parser.add_argument("--signer")
+    parser.add_argument("--is-prerelease", default="false")
     return parser.parse_args()
 
 if __name__ == "__main__":
