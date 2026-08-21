@@ -303,3 +303,16 @@ jobs:
           files: ./hxreborn/Output/*.apk
         env:
           GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Send to Telegram Channel
+        env:
+          API_ID: ${{ secrets.API_ID }}
+          API_HASH: ${{ secrets.API_HASH }}
+          SESSION_STRING: ${{ secrets.SESSION_STRING }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          ECOSYSTEM: "hxreborn"
+        run: |
+          set -euo pipefail
+
+          python -m pip install pyrogram tgcrypto
+          python tg_upload.py
