@@ -702,11 +702,12 @@ def write_changelog(args, apps_patched, workspace, clean_ver):
     log_path = os.path.join(workspace, "changelog.md")
     with open(log_path, "w", encoding="utf-8") as file_obj:
         file_obj.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
-        
+
         # Insert warning if pre-release patches or CLI are utilized
         if args.is_prerelease.lower() == "true":
             file_obj.write("> [!WARNING]\n")
-            file_obj.write("> **This application was patched using a pre-release CLI and/or patches for experimental purposes. Use with caution.**\n\n")
+            file_obj.write("> **This application was patched using a pre-release CLI "
+                           "and/or patches for experimental purposes. Use with caution.**\n\n")
 
         file_obj.write(f"Generated using **v{clean_ver}** from `{args.ecosystem}`.\n")
         file_obj.write(f"**Source:** [Repository]({args.repo_url})\n\n### Apps:\n")
