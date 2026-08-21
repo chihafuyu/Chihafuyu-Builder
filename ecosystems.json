@@ -679,7 +679,7 @@
                 "stable": [
                     "2026.14.0"
                 ],
-                "beta": ["2026.32.0"],
+                "beta": ["2026.34.0"],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
