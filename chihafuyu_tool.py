@@ -242,7 +242,9 @@ def _find_apkmirror_release(scraper, app_data, version):
     search_kw = app_data.get("search_term", pkg)
 
     # Strip architectures or extra strings from the version for better matching
-    base_ver = version.split('-')[0] if '-' in version and version[0].isdigit() else version
+    base_ver = version
+    if '-' in version and version[0].isdigit():
+        base_ver = version.split('-')[0]
 
     query = urllib.parse.quote_plus(f"{search_kw} {base_ver}")
     url = f"https://www.apkmirror.com/?post_type=app_release&s={query}"
@@ -391,7 +393,9 @@ def _download_apkpure(pkg, target_ver, dl_dir):
 # TIER 3: APKCOMBO
 def _find_apkcombo_page(scraper, pkg, version):
     """Find the APKCombo download page."""
-    base_ver = version.split('-')[0] if '-' in version and version[0].isdigit() else version
+    base_ver = version
+    if '-' in version and version[0].isdigit():
+        base_ver = version.split('-')[0]
 
     app_url = f"https://apkcombo.com/a/{pkg}/"
     resp = scraper.get(app_url, timeout=30)
@@ -405,7 +409,8 @@ def _find_apkcombo_page(scraper, pkg, version):
         if btn:
             return btn.get('href')
 
-    v_soup = BeautifulSoup(scraper.get(f"{app_url}old-versions/", timeout=30).text, 'html.parser')
+    old_resp = scraper.get(f"{app_url}old-versions/", timeout=30)
+    v_soup = BeautifulSoup(old_resp.text, 'html.parser')
     for link in v_soup.find_all('a', href=True):
         if pkg in link['href'] and '/download/' in link['href']:
             ver_text = link.find(class_='vername')
@@ -461,7 +466,9 @@ def scrape_aptoide(app_data, target_ver, out_dir):
     scraper = get_scraper()
     pkg = app_data["package"]
 
-    base_ver = target_ver.split('-')[0] if '-' in target_ver and target_ver[0].isdigit() else target_ver
+    base_ver = target_ver
+    if '-' in target_ver and target_ver[0].isdigit():
+        base_ver = target_ver.split('-')[0]
 
     try:
         api_url = f"https://ws75.aptoide.com/api/7/apps/search/query={pkg}/limit=10"
@@ -509,7 +516,9 @@ def _find_uptodown_version(scraper, base_url, version):
     is_bundle = False
     version_url = None
 
-    base_ver = version.split('-')[0] if '-' in version and version[0].isdigit() else version
+    base_ver = version
+    if '-' in version and version[0].isdigit():
+        base_ver = version.split('-')[0]
 
     for i in range(1, 21):
         api_resp = scraper.get(f"{base_url}/apps/{data_code}/versions/{i}", timeout=30)
