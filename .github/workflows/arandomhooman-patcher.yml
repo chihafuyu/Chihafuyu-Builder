@@ -294,7 +294,7 @@ jobs:
 
       - name: Evaluate Pre-release Flag
         run: |
-          if [[ "${{ inputs.cli_track }}" == "Pre-release" || "${{ inputs.patches_track }}" == "Pre-release" ]]; then
+          if [[ "${{ inputs.cli_track }}" == "Pre-release" || "${{ inputs.patches_track }}" == "Pre-release" || "${{ inputs.patches_track }}" == "Custom Local" || "${{ inputs.version_selection }}" == "Beta" ]]; then
             echo "IS_PRERELEASE=true" >> "$GITHUB_ENV"
           else
             echo "IS_PRERELEASE=false" >> "$GITHUB_ENV"
