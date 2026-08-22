@@ -4,13 +4,13 @@ Handles multi-tier downloading and dynamic options.json injection.
 """
 
 import argparse
-import shutil
-import tempfile
 import glob
 import json
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.parse
 import zipfile
