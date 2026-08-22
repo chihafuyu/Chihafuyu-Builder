@@ -240,13 +240,11 @@ def _find_apkmirror_release(scraper, app_data, version):
     """Finds the release page URL on APKMirror."""
     pkg = app_data["package"]
     search_kw = app_data.get("search_term", pkg)
-    
-    # Strip architectures or extra strings from the version for better matching
-    base_version = version
-    if '-' in version and version[0].isdigit():
-        base_version = version.split('-')[0]
 
-    query = urllib.parse.quote_plus(f"{search_kw} {base_version}")
+    # Strip architectures or extra strings from the version for better matching
+    base_ver = version.split('-')[0] if '-' in version and version[0].isdigit() else version
+
+    query = urllib.parse.quote_plus(f"{search_kw} {base_ver}")
     url = f"https://www.apkmirror.com/?post_type=app_release&s={query}"
     resp = scraper.get(url, timeout=30)
     if resp.status_code != 200:
@@ -259,7 +257,7 @@ def _find_apkmirror_release(scraper, app_data, version):
 
     for link in soup.find_all('a', class_='fontBlack'):
         link_text = link.text.lower()
-        if base_version.lower() not in link_text:
+        if base_ver.lower() not in link_text:
             continue
         if any(kw in link_text for kw in exclude_kws):
             continue
@@ -393,9 +391,7 @@ def _download_apkpure(pkg, target_ver, dl_dir):
 # TIER 3: APKCOMBO
 def _find_apkcombo_page(scraper, pkg, version):
     """Find the APKCombo download page."""
-    base_version = version
-    if '-' in version and version[0].isdigit():
-        base_version = version.split('-')[0]
+    base_ver = version.split('-')[0] if '-' in version and version[0].isdigit() else version
 
     app_url = f"https://apkcombo.com/a/{pkg}/"
     resp = scraper.get(app_url, timeout=30)
@@ -404,7 +400,7 @@ def _find_apkcombo_page(scraper, pkg, version):
         return None
     soup = BeautifulSoup(resp.text, 'html.parser')
     ver_tag = soup.find('span', class_='version')
-    if ver_tag and base_version in ver_tag.text:
+    if ver_tag and base_ver in ver_tag.text:
         btn = soup.find('a', class_='button-download')
         if btn:
             return btn.get('href')
@@ -413,7 +409,7 @@ def _find_apkcombo_page(scraper, pkg, version):
     for link in v_soup.find_all('a', href=True):
         if pkg in link['href'] and '/download/' in link['href']:
             ver_text = link.find(class_='vername')
-            if ver_text and base_version in ver_text.text:
+            if ver_text and base_ver in ver_text.text:
                 return link['href']
     return None
 
@@ -464,11 +460,9 @@ def scrape_aptoide(app_data, target_ver, out_dir):
     time.sleep(2)
     scraper = get_scraper()
     pkg = app_data["package"]
-    
-    base_version = target_ver
-    if '-' in target_ver and target_ver[0].isdigit():
-        base_version = target_ver.split('-')[0]
-        
+
+    base_ver = target_ver.split('-')[0] if '-' in target_ver and target_ver[0].isdigit() else target_ver
+
     try:
         api_url = f"https://ws75.aptoide.com/api/7/apps/search/query={pkg}/limit=10"
         resp = scraper.get(api_url, timeout=30)
@@ -484,7 +478,7 @@ def scrape_aptoide(app_data, target_ver, out_dir):
         dl_url = None
         for app in data.get("datalist", {}).get("list", []):
             if app.get("package") == pkg and app.get("file", {}).get("vername") in (
-                target_ver, base_version
+                target_ver, base_ver
             ):
                 dl_url = app.get("file", {}).get("path")
                 break
@@ -515,9 +509,7 @@ def _find_uptodown_version(scraper, base_url, version):
     is_bundle = False
     version_url = None
 
-    base_version = version
-    if '-' in version and version[0].isdigit():
-        base_version = version.split('-')[0]
+    base_ver = version.split('-')[0] if '-' in version and version[0].isdigit() else version
 
     for i in range(1, 21):
         api_resp = scraper.get(f"{base_url}/apps/{data_code}/versions/{i}", timeout=30)
@@ -525,15 +517,16 @@ def _find_uptodown_version(scraper, base_url, version):
             break
         try:
             for v_data in api_resp.json().get("data", []):
-                if v_data.get("version") in (version, base_version):
+                if v_data.get("version") in (version, base_ver):
                     if v_data.get("kindFile") == "xapk":
                         is_bundle = True
                     v_url_obj = v_data.get("versionURL", {})
                     if v_url_obj.get("url") and v_url_obj.get("versionID") != "None":
-                        url_part = v_url_obj['url']
-                        extra = v_url_obj['extraURL']
-                        vid = v_url_obj['versionID']
-                        version_url = f"{url_part}/{extra}/{vid}"
+                        version_url = (
+                            f"{v_url_obj['url']}/"
+                            f"{v_url_obj['extraURL']}/"
+                            f"{v_url_obj['versionID']}"
+                        )
                     break
             if version_url:
                 break
