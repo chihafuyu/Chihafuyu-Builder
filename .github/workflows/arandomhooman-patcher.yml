@@ -146,6 +146,16 @@ on:
           - Stable
           - Pre-release
           - Custom Local
+      upload_github_release:
+        description: 'Upload to GitHub Release'
+        required: true
+        type: boolean
+        default: true
+      send_to_telegram:
+        description: 'Send to Telegram'
+        required: true
+        type: boolean
+        default: true
 
 jobs:
   execute-patching:
@@ -399,9 +409,11 @@ jobs:
           }
 
       - name: Set Release Tag
+        if: inputs.upload_github_release
         run: echo "DATE_TAG=$(date -u +'%Y.%m.%d-%H%M%S')-${GITHUB_RUN_ID}" >> "$GITHUB_ENV"
 
       - name: Publish to GitHub Releases
+        if: inputs.upload_github_release
         uses: softprops/action-gh-release@v3.0.2
         with:
           tag_name: arandomhooman-${{ env.DATE_TAG }}
@@ -413,6 +425,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Send to Telegram Channel
+        if: inputs.send_to_telegram
         env:
           API_ID: ${{ secrets.API_ID }}
           API_HASH: ${{ secrets.API_HASH }}
