@@ -45,8 +45,8 @@ def retry(func):
         for attempt in range(3):
             try:
                 return await func(*args, **kwargs)
-            except (RPCError, ConnectionError, TimeoutError) as exc:
-                print(f"Upload failed: {exc}")
+            except (RPCError, ConnectionError, TimeoutError, ValueError, KeyError) as exc:
+                print(f"Upload failed: {exc}", flush=True)
                 if attempt == 2:
                     raise
     return wrapper
@@ -73,8 +73,16 @@ async def upload_files():
             try:
                 # Bypass slow dialog synchronization by fetching the chat directly
                 await app.get_chat(target_chat)
-            except RPCError as err:
-                print(f"Note: Could not fetch chat directly ({err})", flush=True)
+            except (RPCError, ValueError, KeyError):
+                print("Direct fetch failed. Syncing dialogs (max 15s)...", flush=True)
+                try:
+                    async def sync_dialogs():
+                        async for _ in app.get_dialogs(limit=25):
+                            pass
+                    # Prevent pipeline hangs with a strict 15-second timeout
+                    await asyncio.wait_for(sync_dialogs(), timeout=15.0)
+                except (RPCError, ConnectionError, TimeoutError) as err:
+                    print(f"Sync note: {err}", flush=True)
 
         await app.send_media_group(chat_id=target_chat, media=documents)
         print("Upload complete!", flush=True)
