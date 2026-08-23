@@ -1,12 +1,12 @@
 """Telegram uploader script using Pyrogram."""
 
-import os
 import asyncio
+import os
 from pathlib import Path
 
 from pyrogram import Client
-from pyrogram.types import InputMediaDocument
 from pyrogram.errors import RPCError
+from pyrogram.types import InputMediaDocument
 
 API_ID = os.environ.get("API_ID")
 API_HASH = os.environ.get("API_HASH")
@@ -68,11 +68,13 @@ async def upload_files():
         api_id=API_ID,
         api_hash=API_HASH
     ) as app:
-        
         if isinstance(target_chat, int):
-            print("Syncing dialogs to resolve Peer ID...", flush=True)
-            async for _ in app.get_dialogs(limit=50):
-                pass
+            print(f"Resolving Peer ID for {target_chat}...", flush=True)
+            try:
+                # Bypass slow dialog synchronization by fetching the chat directly
+                await app.get_chat(target_chat)
+            except RPCError as err:
+                print(f"Note: Could not fetch chat directly ({err})", flush=True)
 
         await app.send_media_group(chat_id=target_chat, media=documents)
         print("Upload complete!", flush=True)
