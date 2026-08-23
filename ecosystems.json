@@ -1281,10 +1281,11 @@
             "gboard": {
                 "package": "com.google.android.inputmethod.latin",
                 "search_term": "Gboard",
-                "stable": ["17.7.7.932364120-release-arm64-v8a"],
-                "beta": ["18.0.3.954559732-release-arm64-v8a"],
+                "stable": ["18.0.3.954559732-release-arm64-v8a"],
+                "beta": [],
                 "strip": true,
                 "force_arch": "arm64-v8a",
+                "force_bundle": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             }
