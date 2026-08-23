@@ -241,7 +241,6 @@ def _find_apkmirror_release(scraper, app_data, version):
     pkg = app_data["package"]
     search_kw = app_data.get("search_term", pkg)
 
-    # Strip architectures or extra strings from the version for better matching
     base_ver = version
     if '-' in version and version[0].isdigit():
         base_ver = version.split('-')[0]
@@ -268,7 +267,7 @@ def _find_apkmirror_release(scraper, app_data, version):
         return urljoin("https://www.apkmirror.com", link['href'])
     return None
 
-def _find_apkmirror_variant(scraper, release_url, arch, ver_code):
+def _find_apkmirror_variant(scraper, release_url, arch, ver_code, force_bundle=False):
     """Finds the specific variant download page."""
     resp = scraper.get(release_url, timeout=30)
     if resp.status_code != 200:
@@ -277,14 +276,16 @@ def _find_apkmirror_variant(scraper, release_url, arch, ver_code):
     soup = BeautifulSoup(resp.text, 'html.parser')
     valid_archs = [arch.lower(), "universal", "noarch"]
 
-    for row in soup.find_all('div', class_='table-row'):
-        text = row.text.lower()
-        if "apk" in text and "bundle" not in text and any(a in text for a in valid_archs):
-            if ver_code and str(ver_code) not in text:
-                continue
-            link = row.find('a', class_='accent_color')
-            if link:
-                return urljoin("https://www.apkmirror.com", link['href']), False
+    if not force_bundle:
+        for row in soup.find_all('div', class_='table-row'):
+            text = row.text.lower()
+            is_apk = "apk" in text and "bundle" not in text
+            if is_apk and any(a in text for a in valid_archs):
+                if ver_code and str(ver_code) not in text:
+                    continue
+                link = row.find('a', class_='accent_color')
+                if link:
+                    return urljoin("https://www.apkmirror.com", link['href']), False
 
     for row in soup.find_all('div', class_='table-row'):
         text = row.text.lower()
@@ -349,7 +350,10 @@ def scrape_apkmirror(app_data, target_ver, arch, ver_code, out_dir):
             print("[WARN] Release not found.")
             return None
 
-        var_url, is_bundle = _find_apkmirror_variant(scraper, rel_url, arch, ver_code)
+        force_bundle = app_data.get("force_bundle", False)
+        var_url, is_bundle = _find_apkmirror_variant(
+            scraper, rel_url, arch, ver_code, force_bundle
+        )
         if not var_url:
             print("[WARN] Variant missing.")
             return None
@@ -484,9 +488,8 @@ def scrape_aptoide(app_data, target_ver, out_dir):
 
         dl_url = None
         for app in data.get("datalist", {}).get("list", []):
-            if app.get("package") == pkg and app.get("file", {}).get("vername") in (
-                target_ver, base_ver
-            ):
+            ver_match = app.get("file", {}).get("vername") in (target_ver, base_ver)
+            if app.get("package") == pkg and ver_match:
                 dl_url = app.get("file", {}).get("path")
                 break
 
