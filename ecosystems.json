@@ -1246,7 +1246,7 @@
             "brave-browser": {
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
-                "stable": ["1.93.137"],
+                "stable": ["1.93.138"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
