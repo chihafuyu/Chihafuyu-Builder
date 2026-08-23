@@ -1285,7 +1285,7 @@
                 "beta": [],
                 "strip": true,
                 "force_arch": "arm64-v8a",
-				"force_bundle": true,
+                "force_bundle": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             }
