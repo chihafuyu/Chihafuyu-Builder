@@ -296,7 +296,7 @@
                 "stable": [
                     "Any"
                 ],
-                "beta": [],
+                "beta": ["7.89.0.968035987"],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
