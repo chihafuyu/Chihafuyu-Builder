@@ -32,10 +32,31 @@ Yes! The patcher is modular. You can add new apps by editing the `ecosystems.jso
 ### 6. Why did the workflow fail with `Version defined as 'Any'. Skipping.`?
 Some apps (like certain system apps or highly fragmented bundles) are marked with version `"Any"` in our JSON configuration because their versions are too varied to hardcode. Our automated scraper skips these by default to prevent downloading the wrong architecture. You must provide a specific version number using the Custom option to patch them.
 
-### 7. What apps are supported in the `rushiranpise` ecosystem, and how do I select them?
-Because the `rushiranpise` ecosystem supports a massive list of apps, we use a text input box instead of individual checkboxes. To patch them, you can simply type all in the Apps to patch box to process everything. Alternatively, you can double-click to easily copy the specific app names from the list below. *(If you select multiple apps, make sure to separate them with a comma)*:
+### 7. What apps are supported in large ecosystems like `rushiranpise` and `arandomhooman`, and how do I select them?
 
-- `1-1-1-1`
+Because ecosystems like `rushiranpise` and `arandomhooman` support a massive list of apps, we use a text input box instead of individual checkboxes to bypass GitHub Action limits. To patch them, you can simply type `all` in the `Apps to patch` box to process everything. Alternatively, you can copy specific app names from the list below. (_If you select multiple apps, make sure to separate them with a comma_):
+
+`arandomhooman` Apps:
+- `adm`
+- `alpha-progression`
+- `bandlab`
+- `battery-guru`
+- `cronometer`
+- `directchat`
+- `finch`
+- `flightradar24`
+- `foldersync`
+- `inshot`
+- `liquid-gallery`
+- `poweramp`
+- `smart-audiobook`
+- `symfonium`
+- `tumblr`
+- `video-converter`
+- `webtoon`
+
+`rushiranpise` Apps:
+- 1-1-1-1
 - `accubattery`
 - `accuweather`
 - `adobe-scan`

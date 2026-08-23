@@ -3,91 +3,11 @@ name: 🧑‍ Arandomhooman Ecosystem Patcher
 on:
   workflow_dispatch:
     inputs:
-      app_adm:
-        description: 'Patch adm'
+      apps_to_patch:
+        description: 'Apps to patch (comma-separated, or type "all" for everything)'
         required: true
-        type: boolean
-        default: false
-      app_alpha_progression:
-        description: 'Patch alpha-progression'
-        required: true
-        type: boolean
-        default: false
-      app_bandlab:
-        description: 'Patch bandlab'
-        required: true
-        type: boolean
-        default: false
-      app_battery_guru:
-        description: 'Patch battery-guru'
-        required: true
-        type: boolean
-        default: false
-      app_cronometer:
-        description: 'Patch cronometer'
-        required: true
-        type: boolean
-        default: false
-      app_directchat:
-        description: 'Patch directchat'
-        required: true
-        type: boolean
-        default: false
-      app_finch:
-        description: 'Patch finch'
-        required: true
-        type: boolean
-        default: false
-      app_flightradar24:
-        description: 'Patch flightradar24'
-        required: true
-        type: boolean
-        default: false
-      app_foldersync:
-        description: 'Patch foldersync'
-        required: true
-        type: boolean
-        default: false
-      app_inshot:
-        description: 'Patch inshot'
-        required: true
-        type: boolean
-        default: false
-      app_liquid_gallery:
-        description: 'Patch liquid-gallery'
-        required: true
-        type: boolean
-        default: false
-      app_poweramp:
-        description: 'Patch poweramp'
-        required: true
-        type: boolean
-        default: false
-      app_smart_audiobook:
-        description: 'Patch smart-audiobook'
-        required: true
-        type: boolean
-        default: false
-      app_symfonium:
-        description: 'Patch symfonium'
-        required: true
-        type: boolean
-        default: false
-      app_tumblr:
-        description: 'Patch tumblr'
-        required: true
-        type: boolean
-        default: false
-      app_video_converter:
-        description: 'Patch video-converter'
-        required: true
-        type: boolean
-        default: false
-      app_webtoon:
-        description: 'Patch webtoon'
-        required: true
-        type: boolean
-        default: false
+        type: string
+        default: 'all'
       architecture:
         description: 'Target Architecture'
         required: true
@@ -310,64 +230,12 @@ jobs:
             echo "IS_PRERELEASE=false" >> "$GITHUB_ENV"
           fi
 
-      - name: Prepare App Selection
-        id: prep_apps
-        env:
-          APP_ADM: ${{ inputs.app_adm }}
-          APP_ALPHA_PROGRESSION: ${{ inputs.app_alpha_progression }}
-          APP_BANDLAB: ${{ inputs.app_bandlab }}
-          APP_BATTERY_GURU: ${{ inputs.app_battery_guru }}
-          APP_CRONOMETER: ${{ inputs.app_cronometer }}
-          APP_DIRECTCHAT: ${{ inputs.app_directchat }}
-          APP_FINCH: ${{ inputs.app_finch }}
-          APP_FLIGHTRADAR24: ${{ inputs.app_flightradar24 }}
-          APP_FOLDERSYNC: ${{ inputs.app_foldersync }}
-          APP_INSHOT: ${{ inputs.app_inshot }}
-          APP_LIQUID_GALLERY: ${{ inputs.app_liquid_gallery }}
-          APP_POWERAMP: ${{ inputs.app_poweramp }}
-          APP_SMART_AUDIOBOOK: ${{ inputs.app_smart_audiobook }}
-          APP_SYMFONIUM: ${{ inputs.app_symfonium }}
-          APP_TUMBLR: ${{ inputs.app_tumblr }}
-          APP_VIDEO_CONVERTER: ${{ inputs.app_video_converter }}
-          APP_WEBTOON: ${{ inputs.app_webtoon }}
-        run: |
-          set -euo pipefail
-
-          APP_LIST=""
-          if [[ "$APP_ADM" == "true" ]]; then APP_LIST="$APP_LIST,adm"; fi
-          if [[ "$APP_ALPHA_PROGRESSION" == "true" ]]; then APP_LIST="$APP_LIST,alpha-progression"; fi
-          if [[ "$APP_BANDLAB" == "true" ]]; then APP_LIST="$APP_LIST,bandlab"; fi
-          if [[ "$APP_BATTERY_GURU" == "true" ]]; then APP_LIST="$APP_LIST,battery-guru"; fi
-          if [[ "$APP_CRONOMETER" == "true" ]]; then APP_LIST="$APP_LIST,cronometer"; fi
-          if [[ "$APP_DIRECTCHAT" == "true" ]]; then APP_LIST="$APP_LIST,directchat"; fi
-          if [[ "$APP_FINCH" == "true" ]]; then APP_LIST="$APP_LIST,finch"; fi
-          if [[ "$APP_FLIGHTRADAR24" == "true" ]]; then APP_LIST="$APP_LIST,flightradar24"; fi
-          if [[ "$APP_FOLDERSYNC" == "true" ]]; then APP_LIST="$APP_LIST,foldersync"; fi
-          if [[ "$APP_INSHOT" == "true" ]]; then APP_LIST="$APP_LIST,inshot"; fi
-          if [[ "$APP_LIQUID_GALLERY" == "true" ]]; then APP_LIST="$APP_LIST,liquid-gallery"; fi
-          if [[ "$APP_POWERAMP" == "true" ]]; then APP_LIST="$APP_LIST,poweramp"; fi
-          if [[ "$APP_SMART_AUDIOBOOK" == "true" ]]; then APP_LIST="$APP_LIST,smart-audiobook"; fi
-          if [[ "$APP_SYMFONIUM" == "true" ]]; then APP_LIST="$APP_LIST,symfonium"; fi
-          if [[ "$APP_TUMBLR" == "true" ]]; then APP_LIST="$APP_LIST,tumblr"; fi
-          if [[ "$APP_VIDEO_CONVERTER" == "true" ]]; then APP_LIST="$APP_LIST,video-converter"; fi
-          if [[ "$APP_WEBTOON" == "true" ]]; then APP_LIST="$APP_LIST,webtoon"; fi
-
-          APP_LIST="${APP_LIST#,}"
-
-          if [[ -z "$APP_LIST" ]]; then
-            echo "::error::No applications selected for patching!"
-            exit 1
-          fi
-
-          echo "SELECTED_APPS=$APP_LIST" >> "$GITHUB_ENV"
-          echo "Ready to patch: $APP_LIST"
-
       - name: Execute Chihafuyu Tool
         env:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_SIGNER_NAME: ${{ secrets.KEYSTORE_SIGNER_NAME }}
-          SELECTED_APPS: ${{ env.SELECTED_APPS }}
+          APPS_TO_PATCH: ${{ inputs.apps_to_patch }}
           ARCHITECTURE: ${{ inputs.architecture }}
           VERSION_SELECTION: ${{ inputs.version_selection }}
           CUSTOM_VERSION: ${{ inputs.custom_version }}
@@ -378,7 +246,7 @@ jobs:
 
           python -u chihafuyu_tool.py \
             --ecosystem "arandomhooman" \
-            --apps "$SELECTED_APPS" \
+            --apps "$APPS_TO_PATCH" \
             --arch "$ARCHITECTURE" \
             --version-selection "$VERSION_SELECTION" \
             --custom-version "$CUSTOM_VERSION" \
