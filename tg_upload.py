@@ -11,6 +11,7 @@ from pyrogram.types import InputMediaDocument
 API_ID = os.environ.get("API_ID")
 API_HASH = os.environ.get("API_HASH")
 SESSION_STRING = os.environ.get("SESSION_STRING")
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 ECOSYSTEM = os.environ.get("ECOSYSTEM")
 
@@ -56,34 +57,39 @@ def retry(func):
 async def upload_files():
     """Upload documents to Telegram channel."""
     target_chat = CHAT_ID
+    
+    # Parse CHAT_ID properly if it's numeric
     if target_chat and target_chat.lstrip('-').isdigit():
         target_chat = int(target_chat)
 
     documents = get_documents()
     print("Uploading to Telegram...", flush=True)
 
-    async with Client(
-        "userbot",
-        session_string=SESSION_STRING,
-        api_id=API_ID,
-        api_hash=API_HASH
-    ) as app:
-        if isinstance(target_chat, int):
-            print(f"Resolving Peer ID for {target_chat}...", flush=True)
-            try:
-                # Bypass slow dialog synchronization by fetching the chat directly
-                await app.get_chat(target_chat)
-            except (RPCError, ValueError, KeyError):
-                print("Direct fetch failed. Syncing dialogs (max 15s)...", flush=True)
-                try:
-                    async def sync_dialogs():
-                        async for _ in app.get_dialogs(limit=25):
-                            pass
-                    # Prevent pipeline hangs with a strict 15-second timeout
-                    await asyncio.wait_for(sync_dialogs(), timeout=15.0)
-                except (RPCError, ConnectionError, TimeoutError) as err:
-                    print(f"Sync note: {err}", flush=True)
+    client_kwargs = {
+        "name": "bot" if BOT_TOKEN else "userbot",
+        "api_id": API_ID,
+        "api_hash": API_HASH,
+    }
+    
+    # Prioritize Bot Token over Session String for stability
+    if BOT_TOKEN:
+        client_kwargs["bot_token"] = BOT_TOKEN
+    elif SESSION_STRING:
+        client_kwargs["session_string"] = SESSION_STRING
+    else:
+        raise ValueError("Either BOT_TOKEN or SESSION_STRING is required")
 
+    async with Client(**client_kwargs) as app:
+        # If target_chat is a private invite link (https://t.me/...), resolve instantly
+        if isinstance(target_chat, str) and target_chat.startswith("http"):
+            print("Resolving private invite link...", flush=True)
+            try:
+                chat = await app.get_chat(target_chat)
+                target_chat = chat.id
+            except RPCError as err:
+                print(f"Failed to resolve invite link: {err}", flush=True)
+
+        print(f"Sending media to: {target_chat}", flush=True)
         await app.send_media_group(chat_id=target_chat, media=documents)
         print("Upload complete!", flush=True)
 
