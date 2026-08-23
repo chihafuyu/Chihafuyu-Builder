@@ -1252,7 +1252,14 @@
                 "github_repo": "brave/brave-browser",
                 "github_asset": "Bravemonoarm64.apk",
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Locale PAK Slimmer": {
+                        "enabled": true,
+                        "options": {
+                            "locales": "en-US, id"
+                        }
+                    }
+                }
             }
         }
     },
