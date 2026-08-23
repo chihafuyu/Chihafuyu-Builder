@@ -1249,6 +1249,8 @@
                 "stable": ["1.93.138"],
                 "beta": [],
                 "strip": true,
+                "github_repo": "brave/brave-browser",
+                "github_asset": "Bravemonoarm64.apk",
                 "archive_id": "ZeNiX",
                 "options_override": {}
             }

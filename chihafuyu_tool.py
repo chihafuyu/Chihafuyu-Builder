@@ -679,6 +679,42 @@ def scrape_archive(app_data, target_ver, arch, out_dir):
         print(f"[ERROR] Tier 6 failed: {err}")
     return None
 
+# TIER 7: GITHUB RELEASES
+def scrape_github(app_data, target_ver, out_dir):
+    """Scrape the APK directly from GitHub Releases."""
+    github_repo = app_data.get("github_repo")
+    github_asset = app_data.get("github_asset")
+    if not github_repo or not github_asset:
+        return None
+
+    print(f"[TIER 7] GitHub Releases: v{target_ver}")
+    time.sleep(1)
+    scraper = get_scraper()
+    pkg = app_data["package"]
+
+    tags_to_try = [f"v{target_ver}", target_ver]
+    for tag in tags_to_try:
+        dl_link = (
+            f"https://github.com/{github_repo}/releases/download/"
+            f"{tag}/{github_asset}"
+        )
+        out_path = os.path.join(
+            out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}.apk"
+        )
+
+        try:
+            head_req = scraper.head(dl_link, timeout=10, allow_redirects=True)
+            if head_req.status_code == 200:
+                print("[INFO] Downloading from GitHub Releases...")
+                if download_file_stream(scraper, dl_link, out_path):
+                    print("[INFO] Tier 7 Success (.apk)")
+                    return out_path
+        except requests.exceptions.RequestException:
+            continue
+
+    print(f"[WARN] Not found in GitHub Releases for '{github_repo}'.")
+    return None
+
 def download_apk(app_data, target_ver, arch, out_dir, args):
     """Fallback mechanism or targeted download for APK through multiple sources."""
     if target_ver.lower() == "any":
@@ -707,8 +743,11 @@ def download_apk(app_data, target_ver, arch, out_dir, args):
         path = scrape_aptoide(app_data, target_ver, dl_dir)
     elif source == "uptodown":
         path = scrape_uptodown(app_data, target_ver, arch, dl_dir)
+    elif source == "github":
+        path = scrape_github(app_data, target_ver, dl_dir)
     else:
         path = (
+            scrape_github(app_data, target_ver, dl_dir) or
             scrape_huggingface(app_data, target_ver, dl_dir, args.hf_user) or
             scrape_apkmirror(app_data, target_ver, arch, ver_code, dl_dir) or
             _download_apkpure(pkg, target_ver, dl_dir) or
