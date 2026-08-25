@@ -1,20 +1,43 @@
 <h1 align="center">🛠️ Chihafuyu Builder</h1>
 
 <p align="center">
-  <em>An automated APK downloading and patching pipeline running natively on GitHub Actions.</em>
+  <em>An automated, highly modular APK downloading and patching pipeline running natively on GitHub Actions. Designed to be a customizable template for any patching ecosystem.</em>
 </p>
 
 ---
 
 ## 📖 About
-**Chihafuyu Builder** utilizes GitHub Actions to provide an automated environment for fetching APKs from various sources and patching them using the `Morphe CLI`.
+**Chihafuyu Builder** utilizes GitHub Actions to provide a fully automated environment for fetching APKs from various sources and patching them using the `Morphe CLI`. It is built with modularity in mind—you can easily fork or use this repository as a template to build your own cloud-based APK factory for any patch ecosystem without writing a single line of Python.
 
 ## ✨ Features
 - 🤖 **Automated Workflow:** Trigger the patching process directly from GitHub Actions without requiring local setup.
-- 📥 **Multi-Tier Downloader:** Retrieves APKs using multiple fallback sources (`Archive.org`, `APKMirror`, `APKPure`, `APKCombo`, `Aptoide`, and `Uptodown`).
-- ⚙️ **Dynamic Options Injection:** Automatically generates and modifies the `options.json` file to apply custom patch preferences.
-- 📁 **Local Patch Support:** Allows the use of custom `.mpp` files directly from the repository.
-- 🚀 **Release Generation:** Automatically signs and uploads the finished APKs directly to GitHub Releases.
+- 🎛️ **Granular Dispatch Controls:** Choose to patch specific apps, run the entire ecosystem, and optionally dispatch the output to GitHub Releases or a Telegram Channel.
+- 📥 **7-Tier Smart Downloader:** Retrieves APKs using an aggressive fallback mechanism (`Archive.org`, `APKMirror`, `APKPure`, `APKCombo`, `Aptoide`, `Uptodown`, and direct `GitHub Releases`).
+- 📦 **Split/Bundle Support:** Natively bypasses base-APK limitations to pull specific XAPK/APKM bundles when required by the patches (e.g., Google Apps).
+- ⚙️ **Dynamic Options Injection:** Automatically generates and modifies the `options.json` file on-the-fly to apply custom patch preferences and locale stripping.
+- 📁 **Local Patch Support:** Allows the use of custom `.mpp` files directly from your repository.
+- 🚀 **Seamless Distribution:** Automatically signs and uploads the finished APKs directly to GitHub Releases and your private Telegram channels using Session Strings.
+
+## 🚀 How to Use This Template
+
+Want to build your own automated patcher? Follow these steps:
+
+### 1. Create Your Repository
+Click the green **Use this template** button at the top of this repository to create your own copy.
+
+### 2. Set Up GitHub Secrets
+For the automated workflows to sign your APKs and upload them to Telegram, you MUST configure the following secrets in your repository (`Settings > Secrets and variables > Actions`):
+
+*   **`KEYSTORE_BASE64`**: Your Android Keystore file encoded in Base64 format.
+*   **`KEYSTORE_ALIAS`**: The alias of your Keystore.
+*   **`KEYSTORE_PASSWORD`**: The password for your Keystore and Alias.
+*   **`KEYSTORE_SIGNER_NAME`**: The specific signer name for the CLI.
+*   **`API_ID`** & **`API_HASH`**: Your Telegram API credentials (obtainable from my.telegram.org).
+*   **`SESSION_STRING`**: Your Pyrogram/Telethon session string (Userbot) to bypass the 50MB bot upload limit.
+*   **`CHAT_ID`**: The Target Telegram channel or group ID (or private invite link).
+
+### 3. Customize Ecosystems
+Edit the `ecosystems.json` file to add, remove, or modify the applications you want to track. You can define target architectures, specific search terms, and inject custom patch options effortlessly.
 
 ## 🙏 Credits & Acknowledgements
 This project uses methods and tools from the following developers:
@@ -26,11 +49,10 @@ This project uses methods and tools from the following developers:
 - [**NagramX**](https://github.com/risin42/NagramX) - Original inspiration and base logic for `automating Telegram uploads` via GitHub Actions. Licensed under GPLv3.
 
 ## 📚 Frequently Asked Questions (FAQ)
-
-**Got questions or running into errors?** Check out our [FAQ Page](FAQ.md) first!
+**Got questions or running into errors?** Check out our [FAQ Page](FAQ.md) first to see the full list of supported apps and troubleshooting steps!
 
 ## 📄 License
-Distributed under the **MIT License**.
+Distributed under the **MIT License**
 
 **Copyright (c) 2026 chihafuyu**
 
