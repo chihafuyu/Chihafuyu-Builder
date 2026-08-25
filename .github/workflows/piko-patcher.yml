@@ -13,11 +13,6 @@ on:
         required: true
         type: boolean
         default: false
-      app_x_lite:
-        description: 'Patch x-lite'
-        required: true
-        type: boolean
-        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -76,10 +71,6 @@ on:
           - Stable
           - Pre-release
           - Custom Local
-      custom_patch_filename:
-        description: 'Custom Patch Filename (if Custom Local is selected)'
-        required: false
-        default: 'piko-custom.mpp'
       upload_github_release:
         description: 'Upload to GitHub Release'
         required: true
@@ -181,12 +172,8 @@ jobs:
           echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> "$GITHUB_ENV"
 
           if [[ "$PATCHES_TRACK" == "Custom Local" ]]; then
-            CUSTOM_FILE="${{ inputs.custom_patch_filename }}"
-            if [[ ! -f "Custom-Patches/$CUSTOM_FILE" ]]; then
-              echo "::error::Custom patch file Custom-Patches/$CUSTOM_FILE not found!"
-              exit 1
-            fi
-            cp -- "Custom-Patches/$CUSTOM_FILE" patches.mpp
+            test -f "Custom-Patches/piko-custom.mpp"
+            cp -- "Custom-Patches/piko-custom.mpp" patches.mpp
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
           elif [[ "$PATCHES_TRACK" == "Pre-release" ]]; then
             PATCH_TAG="$(gh api "repos/$REPO_URL/releases" --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
@@ -253,14 +240,12 @@ jobs:
         env:
           APP_X_TWITTER: ${{ inputs.app_x_twitter }}
           APP_INSTAGRAM: ${{ inputs.app_instagram }}
-          APP_X_LITE: ${{ inputs.app_x_lite }}
         run: |
           set -euo pipefail
 
           APP_LIST=""
           if [[ "$APP_X_TWITTER" == "true" ]]; then APP_LIST="$APP_LIST,x-twitter"; fi
           if [[ "$APP_INSTAGRAM" == "true" ]]; then APP_LIST="$APP_LIST,instagram"; fi
-          if [[ "$APP_X_LITE" == "true" ]]; then APP_LIST="$APP_LIST,x-lite"; fi
 
           APP_LIST="${APP_LIST#,}"
 
