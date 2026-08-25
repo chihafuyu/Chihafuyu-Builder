@@ -736,6 +736,17 @@
                 "force_arch": "arm64-v8a",
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "x-lite": {
+                "package": "com.x.android.lite",
+                "search_term": "X-Lite",
+                "stable": [
+                    "12.17.3-release.01"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
