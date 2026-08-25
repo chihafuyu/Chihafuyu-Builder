@@ -25,18 +25,25 @@ Want to build your own automated patcher? Follow these steps:
 ### 1. Create Your Repository
 Click the green **Use this template** button at the top of this repository to create your own copy.
 
-### 2. Set Up GitHub Secrets
-For the automated workflows to sign your APKs and upload them to Telegram, you MUST configure the following secrets in your repository (`Settings > Secrets and variables > Actions`):
+### 2. Generate Your Custom Keystore
+To sign your patched APKs, you will need a cryptographic Keystore. We have included an interactive PowerShell script to make this painless:
+1. Open the repository folder on your Windows PC.
+2. Right-click on **`Generate_Keystore.ps1`** and select **Run with PowerShell**.
+3. Follow the interactive prompts to set your Alias, Password, and Distinguished Name (DNAME).
+4. The script will generate a 4096-bit, 100-year validity Keystore (`.keystore`) and automatically convert it into a Base64 text file (`custom_keystore_base64.txt`).
 
-*   **`KEYSTORE_BASE64`**: Your Android Keystore file encoded in Base64 format.
-*   **`KEYSTORE_ALIAS`**: The alias of your Keystore.
-*   **`KEYSTORE_PASSWORD`**: The password for your Keystore and Alias.
+### 3. Set Up GitHub Secrets
+For the automated workflows to function, you MUST configure the following secrets in your repository (`Settings > Secrets and variables > Actions`):
+
+*   **`KEYSTORE_BASE64`**: Paste the entire contents of the `custom_keystore_base64.txt` generated in Step 2.
+*   **`KEYSTORE_ALIAS`**: The alias you chose during Keystore generation.
+*   **`KEYSTORE_PASSWORD`**: The password you set during Keystore generation.
 *   **`KEYSTORE_SIGNER_NAME`**: The specific signer name for the CLI.
 *   **`API_ID`** & **`API_HASH`**: Your Telegram API credentials (obtainable from my.telegram.org).
 *   **`SESSION_STRING`**: Your Pyrogram/Telethon session string (Userbot) to bypass the 50MB bot upload limit.
 *   **`CHAT_ID`**: The Target Telegram channel or group ID (or private invite link).
 
-### 3. Customize Ecosystems
+### 4. Customize Ecosystems
 Edit the `ecosystems.json` file to add, remove, or modify the applications you want to track. You can define target architectures, specific search terms, and inject custom patch options effortlessly.
 
 ## 🙏 Credits & Acknowledgements
