@@ -307,26 +307,30 @@ def _download_apkmirror_variant(ctx: Context, rel_url: str, ver_code: str, force
     resp = ctx.scraper.get(rel_url, timeout=30)
     if resp.status_code != 200:
         return None
+
     soup = BeautifulSoup(resp.text, 'html.parser')
     valid = [ctx.arch.lower(), "universal", "noarch"]
-    var_url = None
-    is_bundle = False
+    rows = soup.find_all('div', class_='table-row')
 
-    for row in soup.find_all('div', class_='table-row'):
+    if not force_b:
+        for row in rows:
+            text = row.text.lower()
+            if "apk" in text and "bundle" not in text and any(a in text for a in valid):
+                if not ver_code or str(ver_code) in text:
+                    if link := row.find('a', class_='accent_color'):
+                        return _process_apkmirror_variant_page(
+                            ctx, urljoin("https://www.apkmirror.com", link['href']), False
+                        )
+
+    for row in rows:
         text = row.text.lower()
-        is_apk = "apk" in text and "bundle" not in text
-        if (not force_b and is_apk) or ("bundle" in text):
-            if any(a in text for a in valid) and (not ver_code or str(ver_code) in text):
-                link = row.find('a', class_='accent_color')
-                if link:
-                    var_url = urljoin("https://www.apkmirror.com", link['href'])
-                    is_bundle = "bundle" in text
-                    break
-
-    if not var_url:
-        return None
-
-    return _process_apkmirror_variant_page(ctx, var_url, is_bundle)
+        if "bundle" in text and any(a in text for a in valid):
+            if not ver_code or str(ver_code) in text:
+                if link := row.find('a', class_='accent_color'):
+                    return _process_apkmirror_variant_page(
+                        ctx, urljoin("https://www.apkmirror.com", link['href']), True
+                    )
+    return None
 
 def scrape_apkmirror(ctx: Context, ver_code: str):
     """Scrape the APK from APKMirror."""
