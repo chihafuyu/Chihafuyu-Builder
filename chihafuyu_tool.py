@@ -23,8 +23,7 @@ try:
     import cloudscraper
     from bs4 import BeautifulSoup
 except ImportError:
-    print("[FATAL] Missing libs. Run: pip install cloudscraper beautifulsoup4 requests")
-    sys.exit(1)
+    sys.exit("[FATAL] Missing libs. Run: pip install cloudscraper beautifulsoup4 requests")
 
 MAX_DOWNLOAD_BYTES = 1024 * 1024 * 1024
 CHUNK_SIZE = 1024 * 1024
@@ -33,17 +32,14 @@ def load_config() -> Dict[str, Dict[str, Any]]:
     """Loads the ecosystem configuration from the JSON file."""
     config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ecosystems.json")
     if not os.path.isfile(config_path):
-        print(f"[FATAL] '{config_path}' not found.")
-        sys.exit(1)
+        sys.exit(f"[FATAL] '{config_path}' not found.")
     try:
         with open(config_path, "r", encoding="utf-8") as config_file:
             data = json.load(config_file)
     except (OSError, json.JSONDecodeError) as err:
-        print(f"[FATAL] Failed to load configuration: {err}")
-        sys.exit(1)
+        sys.exit(f"[FATAL] Failed to load configuration: {err}")
     if not isinstance(data, dict):
-        print("[FATAL] ecosystems.json must contain a JSON object.")
-        sys.exit(1)
+        sys.exit("[FATAL] ecosystems.json must contain a JSON object.")
     return data
 
 ECOSYSTEMS: Dict[str, Dict[str, Any]] = load_config()
@@ -70,7 +66,7 @@ def _validate_http_url(url: str):
 def _safe_filename(name: str, fallback: str = "artifact") -> str:
     """Returns a filesystem-safe single path component."""
     cleaned = os.path.basename(str(name)).strip()
-    if not cleaned or cleaned in {".", ".."} or any(ch in cleaned for ch in ('/', '\\', '\x00')):
+    if not cleaned or cleaned in {".", ".."} or any(c in cleaned for c in ('/', '\\', '\x00')):
         return fallback
     return cleaned
 
@@ -82,17 +78,17 @@ def download_file_stream(scraper, url: str, out_path: str, referer: str = None,
         headers = {"Referer": referer} if referer else None
         with scraper.get(
             url, stream=True, headers=headers, timeout=(10, 60), allow_redirects=True
-        ) as response:
-            if response.status_code != 200:
-                print(f"[ERROR] Download rejected HTTP {response.status_code}")
+        ) as resp:
+            if resp.status_code != 200:
+                print(f"[ERROR] Download rejected HTTP {resp.status_code}")
                 return False
             if check_dmca:
-                content_disp = response.headers.get('Content-Disposition', '').lower()
+                content_disp = resp.headers.get('Content-Disposition', '').lower()
                 if 'uptodown-app-store' in content_disp:
                     print("[ERROR] DMCA Trap detected (Store APK).")
                     return False
 
-            declared_size = response.headers.get("Content-Length")
+            declared_size = resp.headers.get("Content-Length")
             if declared_size and declared_size.isdigit():
                 if int(declared_size) > MAX_DOWNLOAD_BYTES:
                     print(f"[ERROR] Download exceeds {MAX_DOWNLOAD_BYTES} byte limit.")
@@ -105,20 +101,20 @@ def download_file_stream(scraper, url: str, out_path: str, referer: str = None,
             total = 0
             try:
                 with open(temp_path, 'wb') as apk_file:
-                    for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+                    for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
                         if not chunk:
                             continue
                         total += len(chunk)
                         if total > MAX_DOWNLOAD_BYTES:
-                            raise ValueError(f"download exceeds {MAX_DOWNLOAD_BYTES} byte limit")
+                            raise ValueError(f"download exceeds {MAX_DOWNLOAD_BYTES} limit")
                         apk_file.write(chunk)
                 os.replace(temp_path, out_path)
             finally:
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
             return True
-    except (requests.exceptions.RequestException, OSError, ValueError) as req_err:
-        print(f"[ERROR] Request failed: {req_err}")
+    except (requests.exceptions.RequestException, OSError, ValueError) as err:
+        print(f"[ERROR] Request failed: {err}")
     return False
 
 def _extract_xapk(file_path: str, zip_obj, namelist: list) -> str:
@@ -152,11 +148,11 @@ def process_downloaded_file(file_path: str):
                     return new_path
                 return file_path
             return _extract_xapk(file_path, zip_obj, namelist)
-    except (zipfile.BadZipFile, OSError, ValueError) as inspect_error:
-        print(f"[WARN] Inspection failed: {inspect_error}")
+    except (zipfile.BadZipFile, OSError, ValueError) as err:
+        print(f"[WARN] Inspection failed: {err}")
     return None
 
-# ================= OPTIONS.JSON INJECTOR =================
+# --- Options Injector ---
 def _update_patch_options(target_dict: dict, override_data: dict):
     """Updates the enabled status and options for a specific patch."""
     if "enabled" in override_data:
@@ -185,8 +181,7 @@ def update_options_json(filepath: str, overrides: dict):
             data = json.load(opt_file)
 
         for patch_name, override_data in overrides.items():
-            success = _search_and_update(data, patch_name, override_data)
-            if not success:
+            if not _search_and_update(data, patch_name, override_data):
                 print(f"[WARN] Patch '{patch_name}' not found in JSON!")
 
         temp_path = f"{filepath}.tmp"
@@ -199,12 +194,10 @@ def update_options_json(filepath: str, overrides: dict):
             if os.path.exists(temp_path):
                 os.remove(temp_path)
         print("[INFO] Custom patch options injected successfully.")
-    except (OSError, json.JSONDecodeError, TypeError, ValueError) as options_err:
-        print(f"[WARN] Failed to apply options overrides: {options_err}")
+    except (OSError, json.JSONDecodeError, TypeError, ValueError) as err:
+        print(f"[WARN] Failed to apply options overrides: {err}")
 
-# =========================================================
-
-# TIER 0: HUGGINGFACE DATASETS
+# --- TIER 0: HUGGINGFACE DATASETS ---
 def scrape_huggingface(app_data: dict, target_ver: str, out_dir: str, hf_user: str):
     """Scrape the APK directly from HuggingFace Datasets as the primary source."""
     hf_repo = app_data.get("hf_repo", f"{hf_user}/{app_data.get('archive_id')}")
@@ -215,18 +208,13 @@ def scrape_huggingface(app_data: dict, target_ver: str, out_dir: str, hf_user: s
     time.sleep(1)
     scraper = get_scraper()
     pkg = app_data["package"]
-
     base_url = f"https://huggingface.co/datasets/{hf_repo}/resolve/main"
 
     for ext in ['.apk', '.xapk', '.apkm', '.apks']:
         dl_link = f"{base_url}/{pkg}_{target_ver}{ext}"
-        out_path = os.path.join(
-            out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{ext}"
-        )
-
+        out_path = os.path.join(out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{ext}")
         try:
-            head_req = scraper.head(dl_link, timeout=10, allow_redirects=True)
-            if head_req.status_code == 200:
+            if scraper.head(dl_link, timeout=10, allow_redirects=True).status_code == 200:
                 print("[INFO] Downloading from HuggingFace Vault...")
                 if download_file_stream(scraper, dl_link, out_path):
                     print(f"[INFO] Tier 0 Success ({ext})")
@@ -237,108 +225,76 @@ def scrape_huggingface(app_data: dict, target_ver: str, out_dir: str, hf_user: s
     print(f"[WARN] Not found in HuggingFace dataset '{hf_repo}'.")
     return None
 
-# TIER 1: APKMIRROR
+# --- TIER 1: APKMIRROR ---
 def _find_apkmirror_release(scraper, app_data: dict, version: str):
     """Finds the release page URL on APKMirror."""
     pkg = app_data["package"]
-    search_kw = app_data.get("search_term", pkg)
-
-    base_ver = version
-    if '-' in version and version[0].isdigit():
-        base_ver = version.split('-')[0]
-
-    query = urllib.parse.quote_plus(f"{search_kw} {base_ver}")
+    base_ver = version.split('-')[0] if '-' in version and version[0].isdigit() else version
+    query = urllib.parse.quote_plus(f"{app_data.get('search_term', pkg)} {base_ver}")
     url = f"https://www.apkmirror.com/?post_type=app_release&s={query}"
+    
     resp = scraper.get(url, timeout=30)
     if resp.status_code != 200:
-        print(f"[WARN] HTTP {resp.status_code} at search page")
         return None
 
     soup = BeautifulSoup(resp.text, 'html.parser')
-    exclude_kws = ["secondary"] + [k.lower() for k in app_data.get("apkm_exclude", [])]
-    include_kws = [k.lower() for k in app_data.get("apkm_include", [])]
+    exc_kws = ["secondary"] + [k.lower() for k in app_data.get("apkm_exclude", [])]
+    inc_kws = [k.lower() for k in app_data.get("apkm_include", [])]
 
     for link in soup.find_all('a', class_='fontBlack'):
-        link_text = link.text.lower()
-        if base_ver.lower() not in link_text:
+        text = link.text.lower()
+        if base_ver.lower() not in text or any(kw in text for kw in exc_kws):
             continue
-        if any(kw in link_text for kw in exclude_kws):
-            continue
-        if include_kws and not all(kw in link_text for kw in include_kws):
+        if inc_kws and not all(kw in text for kw in inc_kws):
             continue
         return urljoin("https://www.apkmirror.com", link['href'])
     return None
 
-def _find_apkmirror_variant(scraper, release_url: str, arch: str, ver_code: str, force_bundle=False):
-    """Finds the specific variant download page."""
-    resp = scraper.get(release_url, timeout=30)
+def _download_apkmirror_variant(scraper, rel_url: str, arch: str, ver_code: str, force_b: bool, meta: tuple):
+    """Finds and downloads the specific variant from APKMirror."""
+    resp = scraper.get(rel_url, timeout=30)
     if resp.status_code != 200:
-        print(f"[WARN] HTTP {resp.status_code} at release page")
-        return None, False
+        return None
     soup = BeautifulSoup(resp.text, 'html.parser')
-    valid_archs = [arch.lower(), "universal", "noarch"]
-
-    if not force_bundle:
-        for row in soup.find_all('div', class_='table-row'):
-            text = row.text.lower()
-            is_apk = "apk" in text and "bundle" not in text
-            if is_apk and any(a in text for a in valid_archs):
-                if ver_code and str(ver_code) not in text:
-                    continue
-                link = row.find('a', class_='accent_color')
-                if link:
-                    return urljoin("https://www.apkmirror.com", link['href']), False
+    valid = [arch.lower(), "universal", "noarch"]
+    var_url, is_bundle = None, False
 
     for row in soup.find_all('div', class_='table-row'):
         text = row.text.lower()
-        if "bundle" in text and any(a in text for a in valid_archs):
-            if ver_code and str(ver_code) not in text:
-                continue
-            link = row.find('a', class_='accent_color')
-            if link:
-                return urljoin("https://www.apkmirror.com", link['href']), True
-    return None, False
+        is_apk = "apk" in text and "bundle" not in text
+        if (not force_b and is_apk) or ("bundle" in text):
+            if any(a in text for a in valid) and (not ver_code or str(ver_code) in text):
+                link = row.find('a', class_='accent_color')
+                if link:
+                    var_url, is_bundle = urljoin("https://www.apkmirror.com", link['href']), "bundle" in text
+                    break
 
-def _download_apkmirror_variant(scraper, var_url: str, is_bundle: bool, file_meta: tuple):
-    """Downloads the exact variant from APKMirror."""
-    resp = scraper.get(var_url, timeout=30)
-    if resp.status_code != 200:
-        print(f"[WARN] HTTP {resp.status_code} at variant page")
+    if not var_url:
         return None
 
-    soup = BeautifulSoup(resp.text, 'html.parser')
-    dl_btn = soup.find('a', class_='downloadButton')
-
-    if not dl_btn:
-        print("[WARN] Download button not found on variant page.")
+    v_resp = scraper.get(var_url, timeout=30)
+    if v_resp.status_code != 200:
+        return None
+    v_soup = BeautifulSoup(v_resp.text, 'html.parser')
+    btn = v_soup.find('a', class_='downloadButton')
+    if not btn:
         return None
 
-    dl_page = urljoin("https://www.apkmirror.com", dl_btn['href'])
-
-    resp = scraper.get(dl_page, timeout=30)
-    if resp.status_code != 200:
-        print(f"[WARN] HTTP {resp.status_code} at download page")
+    dl_page = urljoin("https://www.apkmirror.com", btn['href'])
+    d_resp = scraper.get(dl_page, timeout=30)
+    if d_resp.status_code != 200:
         return None
-
-    soup = BeautifulSoup(resp.text, 'html.parser')
-    dl_btn = soup.find("a", {"rel": "nofollow"})
-
+    dl_btn = BeautifulSoup(d_resp.text, 'html.parser').find("a", {"rel": "nofollow"})
+    
     if dl_btn and 'href' in dl_btn.attrs:
-        pkg, target_ver, out_dir = file_meta
-        out_path = os.path.join(
-            out_dir,
-            f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}"
-            f"{'.apkm' if is_bundle else '.apk'}"
-        )
+        pkg, t_ver, out_dir = meta
+        ext = '.apkm' if is_bundle else '.apk'
+        out_path = os.path.join(out_dir, f"{_safe_filename(pkg)}_{_safe_filename(t_ver)}{ext}")
+        dl_url = urljoin("https://www.apkmirror.com", dl_btn['href'])
         print("[INFO] Downloading from APKMirror...")
-        if download_file_stream(
-            scraper, urljoin("https://www.apkmirror.com", dl_btn['href']), out_path, dl_page
-        ):
-            print(f"[INFO] Tier 1 Success ({'.apkm' if is_bundle else '.apk'})")
+        if download_file_stream(scraper, dl_url, out_path, dl_page):
+            print(f"[INFO] Tier 1 Success ({ext})")
             return out_path
-    else:
-        print("[WARN] Direct download link missing.")
-
     return None
 
 def scrape_apkmirror(app_data: dict, target_ver: str, arch: str, ver_code: str, out_dir: str):
@@ -346,171 +302,134 @@ def scrape_apkmirror(app_data: dict, target_ver: str, arch: str, ver_code: str, 
     print(f"[TIER 1] APKMirror: v{target_ver}")
     time.sleep(3)
     scraper = get_scraper()
-    pkg = app_data["package"]
     try:
         rel_url = _find_apkmirror_release(scraper, app_data, target_ver)
         if not rel_url:
             print("[WARN] Release not found.")
             return None
-
-        force_bundle = app_data.get("force_bundle", False)
-        var_url, is_bundle = _find_apkmirror_variant(
-            scraper, rel_url, arch, ver_code, force_bundle
-        )
-        if not var_url:
-            print("[WARN] Variant missing.")
-            return None
-
+        force_b = app_data.get("force_bundle", False)
         return _download_apkmirror_variant(
-            scraper, var_url, is_bundle, (pkg, target_ver, out_dir)
+            scraper, rel_url, arch, ver_code, force_b, (app_data["package"], target_ver, out_dir)
         )
     except (requests.exceptions.RequestException, OSError) as err:
         print(f"[ERROR] Tier 1 failed: {err}")
     return None
 
-# TIER 2: APKPURE
+# --- TIER 2: APKPURE ---
 def _download_apkpure(pkg: str, target_ver: str, dl_dir: str):
-    """Downloads APK from APKPure via apkeep, isolated from stale artifacts."""
+    """Downloads APK from APKPure via apkeep."""
     print(f"[TIER 2] APKPure: v{target_ver}")
     os.makedirs(dl_dir, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="apkeep-") as temp_dir:
+    with tempfile.TemporaryDirectory(prefix="apkeep-") as tmp:
         try:
-            result = subprocess.run(
-                ["apkeep", "-a", f"{pkg}@{target_ver}", "-d", "apk-pure", temp_dir],
-                capture_output=True, text=True, check=False
-            )
+            cmd = ["apkeep", "-a", f"{pkg}@{target_ver}", "-d", "apk-pure", tmp]
+            if subprocess.run(cmd, capture_output=True, check=False).returncode != 0:
+                print("[WARN] APKPure failed.")
+                return None
         except OSError as err:
-            print(f"[WARN] Failed to execute apkeep: {err}")
+            print(f"[WARN] apkeep execution failed: {err}")
             return None
-        if result.returncode != 0:
-            print(f"[WARN] APKPure failed (apkeep exit code {result.returncode}).")
-            return None
+        
         files = []
         for ext in ("*.apk", "*.xapk", "*.apkm", "*.apks"):
-            files.extend(glob.glob(os.path.join(temp_dir, ext)))
+            files.extend(glob.glob(os.path.join(tmp, ext)))
         if not files:
-            print("[WARN] APKPure returned no package artifact.")
             return None
-        source = files[0]
-        destination = os.path.join(dl_dir, _safe_filename(os.path.basename(source)))
-        shutil.copy2(source, destination)
+            
+        dst = os.path.join(dl_dir, _safe_filename(os.path.basename(files[0])))
+        shutil.copy2(files[0], dst)
         print("[INFO] Tier 2 Success.")
-        return destination
+        return dst
 
-# TIER 3: APKCOMBO
+# --- TIER 3: APKCOMBO ---
 def _find_apkcombo_page(scraper, pkg: str, version: str):
     """Find the APKCombo download page."""
-    base_ver = version
-    if '-' in version and version[0].isdigit():
-        base_ver = version.split('-')[0]
-
+    base_ver = version.split('-')[0] if '-' in version and version[0].isdigit() else version
     app_url = f"https://apkcombo.com/a/{pkg}/"
     resp = scraper.get(app_url, timeout=30)
-    if resp.status_code != 200:
-        print(f"[ERROR] HTTP {resp.status_code}")
-        return None
-    soup = BeautifulSoup(resp.text, 'html.parser')
-    ver_tag = soup.find('span', class_='version')
-    if ver_tag and base_ver in ver_tag.text:
-        btn = soup.find('a', class_='button-download')
-        if btn:
-            return btn.get('href')
+    if resp.status_code == 200:
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        ver_tag = soup.find('span', class_='version')
+        if ver_tag and base_ver in ver_tag.text:
+            btn = soup.find('a', class_='button-download')
+            if btn: return btn.get('href')
 
     old_resp = scraper.get(f"{app_url}old-versions/", timeout=30)
-    v_soup = BeautifulSoup(old_resp.text, 'html.parser')
-    for link in v_soup.find_all('a', href=True):
-        if pkg in link['href'] and '/download/' in link['href']:
-            ver_text = link.find(class_='vername')
-            if ver_text and base_ver in ver_text.text:
-                return link['href']
+    if old_resp.status_code == 200:
+        for link in BeautifulSoup(old_resp.text, 'html.parser').find_all('a', href=True):
+            if pkg in link['href'] and '/download/' in link['href']:
+                v_text = link.find(class_='vername')
+                if v_text and base_ver in v_text.text:
+                    return link['href']
     return None
-
-def _find_apkcombo_dl(scraper, page_url: str, arch: str):
-    """Extracts the exact download link from APKCombo."""
-    if not page_url.startswith('http'):
-        page_url = "https://apkcombo.com" + page_url
-    soup = BeautifulSoup(scraper.get(page_url, timeout=30).text, 'html.parser')
-    for link in soup.select('ul.list-download li a'):
-        href, text = link.get('href', ''), link.text.lower()
-        if href.endswith(('.apk', '.apks')) or '&fp=' in href:
-            if arch.lower() in text or 'universal' in text or 'armeabi' in text:
-                return href
-    first_link = soup.select_one('ul.list-download li a')
-    return first_link.get('href') if first_link else None
 
 def scrape_apkcombo(app_data: dict, target_ver: str, arch: str, out_dir: str):
     """Scrape the APK from APKCombo."""
     print(f"[TIER 3] APKCombo: v{target_ver}")
     time.sleep(3)
-    scraper = get_scraper()
-    pkg = app_data["package"]
+    scraper, pkg = get_scraper(), app_data["package"]
     try:
         dl_page_url = _find_apkcombo_page(scraper, pkg, target_ver)
         if not dl_page_url:
             print("[WARN] Version not found.")
             return None
 
-        final_dl = _find_apkcombo_dl(scraper, dl_page_url, arch)
+        p_url = "https://apkcombo.com" + dl_page_url if not dl_page_url.startswith('http') else dl_page_url
+        soup = BeautifulSoup(scraper.get(p_url, timeout=30).text, 'html.parser')
+        final_dl = None
+        
+        for link in soup.select('ul.list-download li a'):
+            h, text = link.get('href', ''), link.text.lower()
+            if h.endswith(('.apk', '.apks')) or '&fp=' in h:
+                if arch.lower() in text or 'universal' in text or 'armeabi' in text:
+                    final_dl = h; break
+        
+        if not final_dl and (f_link := soup.select_one('ul.list-download li a')):
+            final_dl = f_link.get('href')
+
         if final_dl:
             ext = ".apks" if "apks" in final_dl else ".apk"
-            out_path = os.path.join(
-                out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{ext}"
-            )
+            out_path = os.path.join(out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{ext}")
             print("[INFO] Downloading from APKCombo...")
             if download_file_stream(scraper, final_dl, out_path):
                 print(f"[INFO] Tier 3 Success ({ext})")
                 return out_path
-        print("[WARN] Extraction failed.")
     except (requests.exceptions.RequestException, OSError) as err:
         print(f"[ERROR] Tier 3 failed: {err}")
     return None
 
-# TIER 4: APTOIDE
+# --- TIER 4: APTOIDE ---
 def scrape_aptoide(app_data: dict, target_ver: str, out_dir: str):
     """Scrape the APK from Aptoide."""
     print(f"[TIER 4] Aptoide API: v{target_ver}")
     time.sleep(2)
-    scraper = get_scraper()
-    pkg = app_data["package"]
-
-    base_ver = target_ver
-    if '-' in target_ver and target_ver[0].isdigit():
-        base_ver = target_ver.split('-')[0]
+    scraper, pkg = get_scraper(), app_data["package"]
+    base_ver = target_ver.split('-')[0] if '-' in target_ver and target_ver[0].isdigit() else target_ver
 
     try:
         api_url = f"https://ws75.aptoide.com/api/7/apps/search/query={pkg}/limit=10"
         resp = scraper.get(api_url, timeout=30)
         if resp.status_code != 200:
-            print(f"[ERROR] Aptoide API failed (HTTP {resp.status_code}).")
             return None
-        try:
-            data = resp.json()
-        except ValueError:
-            print("[WARN] Blocked by Cloudflare.")
-            return None
-
-        dl_url = None
-        for app in data.get("datalist", {}).get("list", []):
-            ver_match = app.get("file", {}).get("vername") in (target_ver, base_ver)
-            if app.get("package") == pkg and ver_match:
-                dl_url = app.get("file", {}).get("path")
-                break
+        
+        data = resp.json()
+        dl_url = next((
+            app.get("file", {}).get("path") for app in data.get("datalist", {}).get("list", [])
+            if app.get("package") == pkg and app.get("file", {}).get("vername") in (target_ver, base_ver)
+        ), None)
 
         if dl_url:
-            out_path = os.path.join(
-                out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}.apk"
-            )
+            out_path = os.path.join(out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}.apk")
             print("[INFO] Downloading from Aptoide...")
             if download_file_stream(scraper, dl_url, out_path):
                 print("[INFO] Tier 4 Success (.apk)")
                 return out_path
-        else:
-            print("[WARN] Version not found.")
+        print("[WARN] Version not found.")
     except (requests.exceptions.RequestException, ValueError, OSError) as err:
         print(f"[ERROR] Tier 4 failed: {err}")
     return None
 
-# TIER 5: UPTODOWN
+# --- TIER 5: UPTODOWN ---
 def _find_uptodown_version(scraper, base_url: str, version: str):
     """Finds the version URL on Uptodown."""
     soup = BeautifulSoup(scraper.get(base_url, timeout=30).text, 'html.parser')
@@ -518,204 +437,133 @@ def _find_uptodown_version(scraper, base_url: str, version: str):
     if not app_elem or not app_elem.has_attr("data-code"):
         return None, None, False
 
-    data_code = app_elem["data-code"]
-    is_bundle = False
-    version_url = None
-
-    base_ver = version
-    if '-' in version and version[0].isdigit():
-        base_ver = version.split('-')[0]
+    d_code = app_elem["data-code"]
+    base_ver = version.split('-')[0] if '-' in version and version[0].isdigit() else version
 
     for i in range(1, 21):
-        api_resp = scraper.get(f"{base_url}/apps/{data_code}/versions/{i}", timeout=30)
-        if api_resp.status_code != 200:
-            break
+        resp = scraper.get(f"{base_url}/apps/{d_code}/versions/{i}", timeout=30)
+        if resp.status_code != 200: break
         try:
-            for v_data in api_resp.json().get("data", []):
+            for v_data in resp.json().get("data", []):
                 if v_data.get("version") in (version, base_ver):
-                    if v_data.get("kindFile") == "xapk":
-                        is_bundle = True
-                    v_url_obj = v_data.get("versionURL", {})
-                    if v_url_obj.get("url") and v_url_obj.get("versionID") != "None":
-                        version_url = (
-                            f"{v_url_obj['url']}/"
-                            f"{v_url_obj['extraURL']}/"
-                            f"{v_url_obj['versionID']}"
-                        )
-                    break
-            if version_url:
-                break
-        except ValueError:
-            continue
-    return version_url, data_code, is_bundle
-
-def _extract_uptodown_file_id(f_soup, arch: str):
-    """Extracts the precise file ID for a specific architecture."""
-    sel_id = None
-    for variant in f_soup.find_all('div', class_='variant'):
-        text = variant.text.lower()
-        if arch.lower() in text or 'universal' in text:
-            rep = variant.find(class_='v-report')
-            if rep and rep.has_attr('data-file-id'):
-                sel_id = rep['data-file-id']
-                break
-    if not sel_id:
-        rep = f_soup.find(class_='v-report')
-        if rep and rep.has_attr('data-file-id'):
-            sel_id = rep['data-file-id']
-    return sel_id
-
-def _get_uptodown_dl_btn(scraper, base_url: str, version_url: str, data_code: str, arch: str):
-    """Extracts the final download button element."""
-    soup = BeautifulSoup(scraper.get(version_url, timeout=30).text, 'html.parser')
-    dl_btn = soup.find(id="detail-download-button")
-    if dl_btn:
-        return dl_btn
-
-    v_btn = soup.find(class_="button variants")
-    if v_btn and v_btn.has_attr("data-version"):
-        v_url = (
-            f"https://en.uptodown.com/android/app/{data_code}"
-            f"/version/{v_btn['data-version']}/files"
-        )
-        files_resp = scraper.get(v_url, timeout=30)
-        if files_resp.status_code == 200:
-            f_soup = BeautifulSoup(files_resp.json().get("content", ""), 'html.parser')
-            sel_id = _extract_uptodown_file_id(f_soup, arch)
-            if sel_id:
-                d_url = f"{base_url}/download/{sel_id}-x"
-                d_soup = BeautifulSoup(scraper.get(d_url, timeout=30).text, 'html.parser')
-                return d_soup.find(id="detail-download-button")
-    return None
-
-def _download_uptodown_variant(scraper, dl_info: tuple, file_meta: tuple):
-    """Downloads the exact variant from Uptodown."""
-    dl_btn, v_url, is_bundle = dl_info
-    pkg, target_ver, out_dir = file_meta
-    final_dl = f"https://dw.uptodown.com/dwn/{dl_btn['data-url']}"
-    print("[INFO] Downloading from Uptodown...")
-    ext = ".xapk" if is_bundle else ".apk"
-    out_path = os.path.join(
-        out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{ext}"
-    )
-
-    if download_file_stream(scraper, final_dl, out_path, v_url, True):
-        print(f"[INFO] Tier 5 Success ({ext})")
-        return out_path
-    return None
+                    v_obj = v_data.get("versionURL", {})
+                    if v_obj.get("url") and v_obj.get("versionID") != "None":
+                        v_url = f"{v_obj['url']}/{v_obj['extraURL']}/{v_obj['versionID']}"
+                        return v_url, d_code, v_data.get("kindFile") == "xapk"
+        except ValueError: continue
+    return None, None, False
 
 def scrape_uptodown(app_data: dict, target_ver: str, arch: str, out_dir: str):
     """Scrape the APK from Uptodown."""
     print(f"[TIER 5] Uptodown API: v{target_ver}")
     time.sleep(3)
-    scraper = get_scraper()
-    pkg = app_data["package"]
+    scraper, pkg = get_scraper(), app_data["package"]
     search = app_data.get("search_term", pkg.replace('-', ' '))
-    up_url = app_data.get("uptodown_url")
-    base_url = up_url or f"https://{search.lower().replace(' ', '-')}.en.uptodown.com/android"
+    base_url = app_data.get("uptodown_url") or f"https://{search.lower().replace(' ', '-')}.en.uptodown.com/android"
 
     try:
         if scraper.get(base_url, timeout=30).status_code == 410:
-            print("[ERROR] HTTP 410 (Gone). Region-blocked or DMCA.")
             return None
         v_url, d_code, is_bundle = _find_uptodown_version(scraper, base_url, target_ver)
-        if v_url:
-            dl_btn = _get_uptodown_dl_btn(scraper, base_url, v_url, d_code, arch)
-            if dl_btn and dl_btn.has_attr("data-url"):
-                return _download_uptodown_variant(
-                    scraper, (dl_btn, v_url, is_bundle), (pkg, target_ver, out_dir)
-                )
-        print("[WARN] Version not found.")
+        if not v_url:
+            print("[WARN] Version not found.")
+            return None
+
+        soup = BeautifulSoup(scraper.get(v_url, timeout=30).text, 'html.parser')
+        dl_btn = soup.find(id="detail-download-button")
+        
+        if not dl_btn and (v_btn := soup.find(class_="button variants")) and v_btn.has_attr("data-version"):
+            f_url = f"https://en.uptodown.com/android/app/{d_code}/version/{v_btn['data-version']}/files"
+            f_resp = scraper.get(f_url, timeout=30)
+            if f_resp.status_code == 200:
+                f_soup = BeautifulSoup(f_resp.json().get("content", ""), 'html.parser')
+                sel_id = None
+                for var in f_soup.find_all('div', class_='variant'):
+                    if arch.lower() in var.text.lower() or 'universal' in var.text.lower():
+                        if (rep := var.find(class_='v-report')) and rep.has_attr('data-file-id'):
+                            sel_id = rep['data-file-id']; break
+                if not sel_id and (rep := f_soup.find(class_='v-report')) and rep.has_attr('data-file-id'):
+                    sel_id = rep['data-file-id']
+                if sel_id:
+                    d_soup = BeautifulSoup(scraper.get(f"{base_url}/download/{sel_id}-x", timeout=30).text, 'html.parser')
+                    dl_btn = d_soup.find(id="detail-download-button")
+
+        if dl_btn and dl_btn.has_attr("data-url"):
+            ext = ".xapk" if is_bundle else ".apk"
+            out_path = os.path.join(out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{ext}")
+            print("[INFO] Downloading from Uptodown...")
+            if download_file_stream(scraper, f"https://dw.uptodown.com/dwn/{dl_btn['data-url']}", out_path, v_url, True):
+                print(f"[INFO] Tier 5 Success ({ext})")
+                return out_path
     except (requests.exceptions.RequestException, OSError) as err:
         print(f"[ERROR] Tier 5 failed: {err}")
     return None
 
-# TIER 6: ARCHIVE.ORG
-def _get_archive_link(soup, pkg: str, target_ver: str, arch: str, base_url: str):
-    """Parses Archive.org soup to find the exact APK link."""
-    valid_archs = [arch.lower(), "universal", "noarch", "all"]
-    for link in soup.find_all('a'):
-        href = link.get('href', '')
-        if pkg in href and target_ver in href:
-            if any(a in href.lower() for a in valid_archs) or arch == "all":
-                return f"{base_url}/{href}"
-    for link in soup.find_all('a'):
-        href = link.get('href', '')
-        if pkg in href and target_ver in href:
-            print(f"[WARN] Arch mismatch fallback: {href}")
-            return f"{base_url}/{href}"
-    return None
-
+# --- TIER 6: ARCHIVE.ORG ---
 def scrape_archive(app_data: dict, target_ver: str, arch: str, out_dir: str):
     """Scrape the APK from Archive.org as a final fallback."""
     arch_id = app_data.get("archive_id")
-    if not arch_id:
-        return None
+    if not arch_id: return None
+    
     print(f"[TIER 6] Archive.org: v{target_ver}")
     time.sleep(2)
-    scraper = get_scraper()
-    pkg = app_data["package"]
+    scraper, pkg = get_scraper(), app_data["package"]
+    base_url = f"https://archive.org/download/{arch_id}"
+    
     try:
-        base_url = f"https://archive.org/download/{arch_id}"
         resp = scraper.get(f"{base_url}/", timeout=30)
-        if resp.status_code != 200:
-            print(f"[ERROR] Archive.org HTTP {resp.status_code}")
-            return None
+        if resp.status_code != 200: return None
 
         soup = BeautifulSoup(resp.text, 'html.parser')
-        dl_link = _get_archive_link(soup, pkg, target_ver, arch, base_url)
+        valid = [arch.lower(), "universal", "noarch", "all"]
+        dl_link = None
+        
+        for link in soup.find_all('a'):
+            h = link.get('href', '')
+            if pkg in h and target_ver in h and (any(v in h.lower() for v in valid) or arch == "all"):
+                dl_link = f"{base_url}/{h}"; break
+                
+        if not dl_link:
+            for link in soup.find_all('a'):
+                h = link.get('href', '')
+                if pkg in h and target_ver in h:
+                    dl_link = f"{base_url}/{h}"; break
 
         if dl_link:
-            print("[INFO] Downloading from Archive...")
             orig_ext = os.path.splitext(dl_link)[1]
-            if orig_ext not in ['.apk', '.xapk', '.apkm', '.apks']:
-                orig_ext = '.apk'
-            out_path = os.path.join(
-                out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{orig_ext}"
-            )
+            orig_ext = orig_ext if orig_ext in ['.apk', '.xapk', '.apkm', '.apks'] else '.apk'
+            out_path = os.path.join(out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}{orig_ext}")
+            print("[INFO] Downloading from Archive...")
             if download_file_stream(scraper, dl_link, out_path):
                 print(f"[INFO] Tier 6 Success ({orig_ext})")
                 return out_path
-        else:
-            print(f"[WARN] Not found. (Did you name it '{pkg}_{target_ver}.apk'?)")
+        print(f"[WARN] Not found. (Did you name it '{pkg}_{target_ver}.apk'?)")
     except (requests.exceptions.RequestException, OSError) as err:
         print(f"[ERROR] Tier 6 failed: {err}")
     return None
 
-# TIER 7: GITHUB RELEASES
+# --- TIER 7: GITHUB RELEASES ---
 def scrape_github(app_data: dict, target_ver: str, out_dir: str):
     """Scrape the APK directly from GitHub Releases."""
-    github_repo = app_data.get("github_repo")
-    github_asset = app_data.get("github_asset")
-    if not github_repo or not github_asset:
-        return None
+    gh_repo, gh_asset = app_data.get("github_repo"), app_data.get("github_asset")
+    if not gh_repo or not gh_asset: return None
 
     print(f"[TIER 7] GitHub Releases: v{target_ver}")
     time.sleep(1)
-    scraper = get_scraper()
-    pkg = app_data["package"]
+    scraper, pkg = get_scraper(), app_data["package"]
 
-    tags_to_try = [f"v{target_ver}", target_ver]
-    for tag in tags_to_try:
-        dl_link = (
-            f"https://github.com/{github_repo}/releases/download/"
-            f"{tag}/{github_asset}"
-        )
-        out_path = os.path.join(
-            out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}.apk"
-        )
-
+    for tag in [f"v{target_ver}", target_ver]:
+        dl_link = f"https://github.com/{gh_repo}/releases/download/{tag}/{gh_asset}"
+        out_path = os.path.join(out_dir, f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}.apk")
         try:
-            head_req = scraper.head(dl_link, timeout=10, allow_redirects=True)
-            if head_req.status_code == 200:
+            if scraper.head(dl_link, timeout=10, allow_redirects=True).status_code == 200:
                 print("[INFO] Downloading from GitHub Releases...")
                 if download_file_stream(scraper, dl_link, out_path):
                     print("[INFO] Tier 7 Success (.apk)")
                     return out_path
         except requests.exceptions.RequestException:
             continue
-
-    print(f"[WARN] Not found in GitHub Releases for '{github_repo}'.")
+    print(f"[WARN] Not found in GitHub Releases for '{gh_repo}'.")
     return None
 
 def download_apk(app_data: dict, target_ver: str, arch: str, out_dir: str, args):
@@ -724,41 +572,27 @@ def download_apk(app_data: dict, target_ver: str, arch: str, out_dir: str, args)
         print("[ERROR] Version defined as 'Any'. Skipping.")
         return None
 
-    pkg = app_data["package"]
+    pkg, src = app_data["package"], args.download_source.lower()
     dl_dir = os.path.join(out_dir, pkg)
     os.makedirs(dl_dir, exist_ok=True)
+    v_code = app_data.get("version_codes", {}).get(arch)
 
-    ver_code = app_data.get("version_codes", {}).get(arch)
-    source = args.download_source.lower()
-    path = None
+    funcs = {
+        "huggingface": lambda: scrape_huggingface(app_data, target_ver, dl_dir, args.hf_user),
+        "archive": lambda: scrape_archive(app_data, target_ver, arch, dl_dir),
+        "apkmirror": lambda: scrape_apkmirror(app_data, target_ver, arch, v_code, dl_dir),
+        "apkpure": lambda: _download_apkpure(pkg, target_ver, dl_dir),
+        "apkcombo": lambda: scrape_apkcombo(app_data, target_ver, arch, dl_dir),
+        "aptoide": lambda: scrape_aptoide(app_data, target_ver, dl_dir),
+        "uptodown": lambda: scrape_uptodown(app_data, target_ver, arch, dl_dir),
+        "github": lambda: scrape_github(app_data, target_ver, dl_dir)
+    }
 
-    if source == "huggingface":
-        path = scrape_huggingface(app_data, target_ver, dl_dir, args.hf_user)
-    elif source == "archive":
-        path = scrape_archive(app_data, target_ver, arch, dl_dir)
-    elif source == "apkmirror":
-        path = scrape_apkmirror(app_data, target_ver, arch, ver_code, dl_dir)
-    elif source == "apkpure":
-        path = _download_apkpure(pkg, target_ver, dl_dir)
-    elif source == "apkcombo":
-        path = scrape_apkcombo(app_data, target_ver, arch, dl_dir)
-    elif source == "aptoide":
-        path = scrape_aptoide(app_data, target_ver, dl_dir)
-    elif source == "uptodown":
-        path = scrape_uptodown(app_data, target_ver, arch, dl_dir)
-    elif source == "github":
-        path = scrape_github(app_data, target_ver, dl_dir)
-    else:
-        path = (
-            scrape_github(app_data, target_ver, dl_dir) or
-            scrape_huggingface(app_data, target_ver, dl_dir, args.hf_user) or
-            scrape_apkmirror(app_data, target_ver, arch, ver_code, dl_dir) or
-            _download_apkpure(pkg, target_ver, dl_dir) or
-            scrape_apkcombo(app_data, target_ver, arch, dl_dir) or
-            scrape_aptoide(app_data, target_ver, dl_dir) or
-            scrape_uptodown(app_data, target_ver, arch, dl_dir) or
-            scrape_archive(app_data, target_ver, arch, dl_dir)
-        )
+    path = funcs.get(src, lambda: None)() if src != "default" else (
+        funcs["github"]() or funcs["huggingface"]() or funcs["apkmirror"]() or
+        funcs["apkpure"]() or funcs["apkcombo"]() or funcs["aptoide"]() or
+        funcs["uptodown"]() or funcs["archive"]()
+    )
 
     if path:
         return process_downloaded_file(path)
@@ -768,88 +602,66 @@ def download_apk(app_data: dict, target_ver: str, arch: str, out_dir: str, args)
 
 def write_changelog(args, apps_patched: list, workspace: str, clean_ver: str):
     """Write the patched apps changelog to a markdown file."""
-    log_path = os.path.join(workspace, "changelog.md")
-    with open(log_path, "w", encoding="utf-8") as file_obj:
-        file_obj.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
-
+    with open(os.path.join(workspace, "changelog.md"), "w", encoding="utf-8") as f:
+        f.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
         if args.is_prerelease.lower() == "true":
-            file_obj.write("> [!WARNING]\n")
-            file_obj.write("> **This application was patched using a pre-release CLI "
-                           "and/or patches for experimental purposes. Use with caution.**\n\n")
-
-        file_obj.write(f"Generated using **v{clean_ver}** from `{args.ecosystem}`.\n")
-        file_obj.write(f"**Source:** [Repository]({args.repo_url})\n\n### Apps:\n")
+            f.write("> [!WARNING]\n> **Patched using pre-release tools. Use with caution.**\n\n")
+        f.write(f"Generated using **v{clean_ver}** from `{args.ecosystem}`.\n")
+        f.write(f"**Source:** [Repository]({args.repo_url})\n\n### Apps:\n")
         for app in apps_patched:
-            build = f" (Build: {app['build']})" if app.get('build') else ""
-            file_obj.write(
-                f"- **{app['name']}** (v{app['version']}{build} - `{app['arch']}`)\n"
-            )
-        file_obj.write("\n---\n### ⚠️ microG Required\n")
-        file_obj.write("For Google Apps, install [microG-RE]")
-        file_obj.write(f"({args.microg_url}).\n")
+            b_str = f" (Build: {app['build']})" if app.get('build') else ""
+            f.write(f"- **{app['name']}** (v{app['version']}{b_str} - `{app['arch']}`)\n")
+        f.write(f"\n---\n### ⚠️ microG Required\nFor Google Apps, install [microG-RE]")
+        f.write(f"({args.microg_url}).\n")
 
 def parse_custom_versions(custom_version_str: str) -> dict:
     """Parses the custom version string into a dictionary."""
-    parsed_versions = {}
-    if not custom_version_str:
-        return parsed_versions
-
+    parsed = {}
+    if not custom_version_str: return parsed
     if "=" in custom_version_str:
-        parts = custom_version_str.split(',')
-        for part in parts:
+        for part in custom_version_str.split(','):
             if "=" in part:
-                key, val = part.split('=', 1)
-                parsed_versions[key.strip()] = val.strip()
+                k, v = part.split('=', 1)
+                parsed[k.strip()] = v.strip()
     else:
-        parsed_versions["_global"] = custom_version_str.strip()
+        parsed["_global"] = custom_version_str.strip()
+    return parsed
 
-    return parsed_versions
-
-def resolve_target_version(app_data: dict, version_selection: str, app_custom_version: str) -> str:
+def resolve_target_version(app_data: dict, selection: str, custom_ver: str) -> str:
     """Resolves the target version to download based on user input."""
-    if version_selection.lower() == "custom":
-        if app_custom_version:
-            return app_custom_version
-        print("[WARN] Custom version missing for this app. Falling back to stable.")
-    if version_selection.lower() in ["beta", "pre-release", "latest", "experimental"]:
-        if "beta" in app_data and app_data["beta"]:
-            return app_data["beta"][0]
+    if selection.lower() == "custom":
+        if custom_ver: return custom_ver
+        print("[WARN] Custom version missing. Falling back to stable.")
+    if selection.lower() in ["beta", "pre-release", "latest", "experimental"]:
+        if app_data.get("beta"): return app_data["beta"][0]
         print("[WARN] No beta version defined. Falling back to stable.")
     return app_data["stable"][0]
 
-def build_patch_command(args, app_data: dict, file_paths: tuple, target_arch: str) -> list:
+def build_patch_command(args, app_data: dict, paths: tuple, target_arch: str) -> list:
     """Builds the shell command for the CLI, including exclusive patch handling."""
-    input_apk, json_file, out_apk = file_paths
-
+    input_apk, json_file, out_apk = paths
     cmd = [
         "java", "-Xmx4G", "-jar", args.cli, "patch", "--patches", args.patches,
         "--options-file", json_file, "--out", out_apk, "--bytecode-mode", "FULL"
     ]
-    ver_sel = args.version_selection.lower()
-    if ver_sel in ("beta", "pre-release", "latest", "experimental", "custom"):
+    if args.version_selection.lower() in ("beta", "pre-release", "latest", "experimental", "custom"):
         cmd.append("--force")
     if app_data.get("strip"):
         cmd.extend(["--striplibs", target_arch])
     if args.continue_on_error.lower() == "true":
         cmd.append("--continue-on-error")
 
-    # Appends keystore credentials if provided
     if args.keystore and args.ks_alias and args.ks_pass:
         cmd.extend([
-            "--keystore", args.keystore,
-            "--keystore-entry-alias", args.ks_alias,
-            "--keystore-password", args.ks_pass,
-            "--keystore-entry-password", args.ks_pass
+            "--keystore", args.keystore, "--keystore-entry-alias", args.ks_alias,
+            "--keystore-password", args.ks_pass, "--keystore-entry-password", args.ks_pass
         ])
-        if args.signer:
-            cmd.extend(["--signer", args.signer])
+        if args.signer: cmd.extend(["--signer", args.signer])
 
-    # Dynamic exclusive patch inclusion from ecosystems.json
-    exclusive_list = app_data.get("exclusive_patches", [])
-    if exclusive_list:
+    if exc_list := app_data.get("exclusive_patches", []):
         print("[INFO] Exclusive mode detected. Generating targeted patch command...")
         cmd.append("--exclusive")
-        for patch_name in exclusive_list:
+        for patch_name in exc_list:
             cmd.extend(["-e", patch_name])
 
     cmd.append(input_apk)
@@ -859,9 +671,8 @@ def execute_patch_cli(patch_cmd: list) -> tuple:
     """Executes the patch command and streams output."""
     zero_patches = False
     try:
-        with subprocess.Popen(
-            patch_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
-        ) as proc:
+        with subprocess.Popen(patch_cmd, stdout=subprocess.PIPE, 
+                              stderr=subprocess.STDOUT, text=True) as proc:
             if proc.stdout:
                 for line in proc.stdout:
                     print(line, end='')
@@ -876,37 +687,32 @@ def execute_patch_cli(patch_cmd: list) -> tuple:
 def _generate_options_json(app_name: str, args, app_data: dict, workspace: str) -> str:
     """Generates options JSON file using the CLI."""
     json_file = os.path.join(workspace, f"{_safe_filename(app_name)}-options.json")
-    cmd_opts = [
+    cmd = [
         "java", "-jar", args.cli, "options-create", "--patches", args.patches,
         "--out", json_file, "--filter-package-name", app_data["package"]
     ]
-    result = subprocess.run(cmd_opts, capture_output=True, text=True, check=False)
-    if result.returncode != 0:
-        stderr = (result.stderr or result.stdout or "").strip()
-        print(f"[WARN] CLI options-create failed (exit {result.returncode}): {stderr[-500:]}")
+    res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    if res.returncode != 0:
+        err_str = (res.stderr or res.stdout or "").strip()
+        print(f"[WARN] CLI options-create failed (exit {res.returncode}): {err_str[-500:]}")
     if app_data.get("options_override") and os.path.exists(json_file):
         print(f"[INFO] Injecting custom patch options for {app_name}...")
         update_options_json(json_file, app_data["options_override"])
     return json_file
 
-def process_single_app(app_name: str, args, app_data: dict, app_custom_version: str, state: dict):
+def process_single_app(app_name: str, args, app_data: dict, custom_ver: str, state: dict):
     """Processes a single app for downloading and patching."""
-    target_ver = resolve_target_version(app_data, args.version_selection, app_custom_version)
+    t_ver = resolve_target_version(app_data, args.version_selection, custom_ver)
     arch = app_data.get("force_arch", args.arch)
 
     print(f"\n--- {app_name} ({app_data['package']}) ---")
-
-    apk_path = download_apk(
-        app_data, target_ver, arch, state["in_dir"], args
-    )
-
-    if not apk_path:
-        return
+    apk_path = download_apk(app_data, t_ver, arch, state["in_dir"], args)
+    if not apk_path: return
 
     json_file = _generate_options_json(app_name, args, app_data, state["workspace"])
     apk_name = (
         f"{_safe_filename(app_name)}_{_safe_filename(args.ecosystem)}_patched_"
-        f"{_safe_filename(target_ver)}-{_safe_filename(arch)}_patches_"
+        f"{_safe_filename(t_ver)}-{_safe_filename(arch)}_patches_"
         f"{_safe_filename(state['clean_ver'])}.apk"
     )
     out_apk = os.path.join(state["out_dir"], apk_name)
@@ -919,23 +725,19 @@ def process_single_app(app_name: str, args, app_data: dict, app_custom_version: 
     if ret_code == 0 and not zero_patches:
         print(f"\n[INFO] SUCCESS: {app_name}")
         state["success"].append({
-            "name": app_name,
-            "version": target_ver,
-            "build": app_data.get("version_codes", {}).get(arch),
-            "arch": arch
+            "name": app_name, "version": t_ver,
+            "build": app_data.get("version_codes", {}).get(arch), "arch": arch
         })
     else:
         reason = "DMCA Trap" if zero_patches else f"Exit code {ret_code}"
         print(f"\n[ERROR] FAILED: {app_name}. Reason: {reason}")
-        if os.path.exists(out_apk):
-            os.remove(out_apk)
+        if os.path.exists(out_apk): os.remove(out_apk)
     time.sleep(5)
 
 def run_patcher(args):
     """Main execution function to handle the patching loop."""
     if args.ecosystem not in ECOSYSTEMS:
-        print(f"[FATAL] Ecosystem '{args.ecosystem}' not found in JSON.")
-        sys.exit(1)
+        sys.exit(f"[FATAL] Ecosystem '{args.ecosystem}' not found in JSON.")
 
     workspace = f"./{_safe_filename(args.ecosystem)}"
     state = {
@@ -951,23 +753,15 @@ def run_patcher(args):
     print(f"=== INITIALIZING WORKSPACE: {args.ecosystem.upper()} ===")
     ecosystem_apps = ECOSYSTEMS[args.ecosystem].get("apps")
     if not isinstance(ecosystem_apps, dict):
-        print(f"[FATAL] Ecosystem '{args.ecosystem}' has no valid 'apps' configuration.")
-        sys.exit(1)
+        sys.exit(f"[FATAL] '{args.ecosystem}' has no valid 'apps' config.")
+        
     app_list = list(ecosystem_apps.keys()) if args.apps.lower() == "all" else args.apps.split(',')
+    custom_vers = parse_custom_versions(args.custom_version)
 
-    custom_versions_dict = parse_custom_versions(args.custom_version)
-
-    for app_name in app_list:
-        clean_name = app_name.strip()
-        if clean_name in ecosystem_apps:
-            app_custom_ver = (
-                custom_versions_dict.get(clean_name) or
-                custom_versions_dict.get("_global")
-            )
-            process_single_app(
-                clean_name, args, ecosystem_apps[clean_name],
-                app_custom_ver, state
-            )
+    for app_name in [a.strip() for a in app_list]:
+        if app_name in ecosystem_apps:
+            c_ver = custom_vers.get(app_name) or custom_vers.get("_global")
+            process_single_app(app_name, args, ecosystem_apps[app_name], c_ver, state)
 
     if state["success"]:
         write_changelog(args, state["success"], workspace, state["clean_ver"])
@@ -983,10 +777,7 @@ def parse_arguments():
     parser.add_argument("--download-source", default="default")
     parser.add_argument("--continue-on-error", choices=("true", "false"), default="false")
     parser.add_argument("--hf-user", default="chihafuyu")
-    parser.add_argument(
-        "--microg-url",
-        default="https://github.com/MorpheApp/MicroG-RE/releases/latest"
-    )
+    parser.add_argument("--microg-url", default="https://github.com/MorpheApp/MicroG-RE/releases/latest")
     parser.add_argument("--cli", required=True)
     parser.add_argument("--patches", required=True)
     parser.add_argument("--patches-version", required=True)
