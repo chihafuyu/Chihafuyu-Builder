@@ -722,6 +722,46 @@
                     }
                 }
             },
+            "newx-twitter": {
+                "package": "com.twitter.android",
+                "search_term": "X",
+                "stable": [
+                    "12.19.1-release.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "exclusive_patches": [
+                    "NewX: Remove ads",
+                    "NewX: Browse tweet object",
+                    "NewX: Share post as image",
+                    "NewX: Disable automatic timeline refresh",
+                    "NewX: Restore timeline position",
+                    "NewX: Customize inline actions",
+                    "NewX: Unlock downloads",
+                    "NewX: Hide new posts pill",
+                    "NewX: Filter posts by keyword",
+                    "NewX: Customize navigation bar items",
+                    "NewX: Hide premium upsell",
+                    "NewX: Hide compose button",
+                    "NewX: Customize drawer items",
+                    "NewX: Inline download button",
+                    "NewX: Hide Spaces bar",
+                    "NewX: Feature switch overrides",
+                    "NewX: Show sensitive media",
+                    "NewX: Dynamic color",
+                    "NewX: Customize default reply sorting",
+                    "NewX: Hide Discover more",
+                    "NewX: Hide who to follow",
+                    "NewX: Hide AI-generated posts",
+                    "NewX: Customize default media tab",
+                    "NewX: Custom font",
+                    "NewX: Open canonical URLs",
+                    "NewX: Filter For You by topic",
+                    "NewX: Custom sharing domain"
+                ],
+                "options_override": {}
+            },
             "instagram": {
                 "package": "com.instagram.android",
                 "search_term": "Instagram",

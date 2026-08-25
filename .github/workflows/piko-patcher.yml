@@ -8,6 +8,11 @@ on:
         required: true
         type: boolean
         default: false
+      app_newx_twitter:
+        description: 'Patch NewX Twitter'
+        required: true
+        type: boolean
+        default: false
       app_instagram:
         description: 'Patch instagram'
         required: true
@@ -239,12 +244,14 @@ jobs:
         id: prep_apps
         env:
           APP_X_TWITTER: ${{ inputs.app_x_twitter }}
+          APP_NEWX_TWITTER: ${{ inputs.app_newx_twitter }}
           APP_INSTAGRAM: ${{ inputs.app_instagram }}
         run: |
           set -euo pipefail
 
           APP_LIST=""
           if [[ "$APP_X_TWITTER" == "true" ]]; then APP_LIST="$APP_LIST,x-twitter"; fi
+          if [[ "$APP_NEWX_TWITTER" == "true" ]]; then APP_LIST="$APP_LIST,newx-twitter"; fi
           if [[ "$APP_INSTAGRAM" == "true" ]]; then APP_LIST="$APP_LIST,instagram"; fi
 
           APP_LIST="${APP_LIST#,}"

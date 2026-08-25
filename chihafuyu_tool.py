@@ -1,6 +1,7 @@
 """
 Automated APK Downloader and Patcher using the CLI.
-Handles multi-tier downloading and dynamic options.json injection.
+Handles multi-tier downloading, dynamic options.json injection,
+and exclusive patch execution.
 """
 
 import argparse
@@ -25,7 +26,10 @@ except ImportError:
     print("[FATAL] Missing libs. Run: pip install cloudscraper beautifulsoup4 requests")
     sys.exit(1)
 
-def load_config():
+MAX_DOWNLOAD_BYTES = 1024 * 1024 * 1024
+CHUNK_SIZE = 1024 * 1024
+
+def load_config() -> Dict[str, Dict[str, Any]]:
     """Loads the ecosystem configuration from the JSON file."""
     config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ecosystems.json")
     if not os.path.isfile(config_path):
@@ -44,7 +48,7 @@ def load_config():
 
 ECOSYSTEMS: Dict[str, Dict[str, Any]] = load_config()
 
-def get_scraper():
+def get_scraper() -> cloudscraper.CloudScraper:
     """Initializes and returns a cloudscraper instance."""
     scraper = cloudscraper.create_scraper(
         browser={'browser': 'chrome', 'platform': 'windows', 'desktop': True}
@@ -57,23 +61,21 @@ def get_scraper():
     })
     return scraper
 
-MAX_DOWNLOAD_BYTES = 1024 * 1024 * 1024
-CHUNK_SIZE = 1024 * 1024
-
-def _validate_http_url(url):
+def _validate_http_url(url: str):
     """Accept only HTTP(S) URLs before handing them to requests."""
     parsed = urlparse(url)
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
         raise ValueError(f"Unsupported download URL: {url!r}")
 
-def _safe_filename(name, fallback="artifact"):
+def _safe_filename(name: str, fallback: str = "artifact") -> str:
     """Returns a filesystem-safe single path component."""
     cleaned = os.path.basename(str(name)).strip()
     if not cleaned or cleaned in {".", ".."} or any(ch in cleaned for ch in ('/', '\\', '\x00')):
         return fallback
     return cleaned
 
-def download_file_stream(scraper, url, out_path, referer=None, check_dmca=False):
+def download_file_stream(scraper, url: str, out_path: str, referer: str = None,
+                         check_dmca: bool = False) -> bool:
     """Downloads a file safely with streaming, size limits, and atomic replacement."""
     try:
         _validate_http_url(url)
@@ -119,7 +121,7 @@ def download_file_stream(scraper, url, out_path, referer=None, check_dmca=False)
         print(f"[ERROR] Request failed: {req_err}")
     return False
 
-def _extract_xapk(file_path, zip_obj, namelist):
+def _extract_xapk(file_path: str, zip_obj, namelist: list) -> str:
     """Extracts a single APK from an XAPK/APKM wrapper without loading it into RAM."""
     apk_files = [item for item in namelist if item.lower().endswith('.apk')]
     if len(apk_files) == 1 and not file_path.lower().endswith('.apkm'):
@@ -134,7 +136,7 @@ def _extract_xapk(file_path, zip_obj, namelist):
         return new_path
     return file_path
 
-def process_downloaded_file(file_path):
+def process_downloaded_file(file_path: str):
     """Processes downloaded files, handling pure APKs and XAPK wrappers."""
     try:
         if not zipfile.is_zipfile(file_path):
@@ -155,7 +157,7 @@ def process_downloaded_file(file_path):
     return None
 
 # ================= OPTIONS.JSON INJECTOR =================
-def _update_patch_options(target_dict, override_data):
+def _update_patch_options(target_dict: dict, override_data: dict):
     """Updates the enabled status and options for a specific patch."""
     if "enabled" in override_data:
         target_dict["enabled"] = override_data["enabled"]
@@ -165,7 +167,7 @@ def _update_patch_options(target_dict, override_data):
         for key, val in override_data["options"].items():
             target_dict["options"][key] = val
 
-def _search_and_update(obj, patch_name, override_data):
+def _search_and_update(obj, patch_name: str, override_data: dict) -> bool:
     """Recursively updates the first matching patch and reports whether it was found."""
     if isinstance(obj, dict):
         if patch_name in obj and isinstance(obj[patch_name], dict):
@@ -176,7 +178,7 @@ def _search_and_update(obj, patch_name, override_data):
         return any(_search_and_update(item, patch_name, override_data) for item in obj)
     return False
 
-def update_options_json(filepath, overrides):
+def update_options_json(filepath: str, overrides: dict):
     """Injects custom options into the CLI-generated JSON file."""
     try:
         with open(filepath, 'r', encoding='utf-8') as opt_file:
@@ -203,7 +205,7 @@ def update_options_json(filepath, overrides):
 # =========================================================
 
 # TIER 0: HUGGINGFACE DATASETS
-def scrape_huggingface(app_data, target_ver, out_dir, hf_user):
+def scrape_huggingface(app_data: dict, target_ver: str, out_dir: str, hf_user: str):
     """Scrape the APK directly from HuggingFace Datasets as the primary source."""
     hf_repo = app_data.get("hf_repo", f"{hf_user}/{app_data.get('archive_id')}")
     if not app_data.get("archive_id") and not app_data.get("hf_repo"):
@@ -236,7 +238,7 @@ def scrape_huggingface(app_data, target_ver, out_dir, hf_user):
     return None
 
 # TIER 1: APKMIRROR
-def _find_apkmirror_release(scraper, app_data, version):
+def _find_apkmirror_release(scraper, app_data: dict, version: str):
     """Finds the release page URL on APKMirror."""
     pkg = app_data["package"]
     search_kw = app_data.get("search_term", pkg)
@@ -267,7 +269,7 @@ def _find_apkmirror_release(scraper, app_data, version):
         return urljoin("https://www.apkmirror.com", link['href'])
     return None
 
-def _find_apkmirror_variant(scraper, release_url, arch, ver_code, force_bundle=False):
+def _find_apkmirror_variant(scraper, release_url: str, arch: str, ver_code: str, force_bundle=False):
     """Finds the specific variant download page."""
     resp = scraper.get(release_url, timeout=30)
     if resp.status_code != 200:
@@ -297,7 +299,7 @@ def _find_apkmirror_variant(scraper, release_url, arch, ver_code, force_bundle=F
                 return urljoin("https://www.apkmirror.com", link['href']), True
     return None, False
 
-def _download_apkmirror_variant(scraper, var_url, is_bundle, file_meta):
+def _download_apkmirror_variant(scraper, var_url: str, is_bundle: bool, file_meta: tuple):
     """Downloads the exact variant from APKMirror."""
     resp = scraper.get(var_url, timeout=30)
     if resp.status_code != 200:
@@ -322,9 +324,10 @@ def _download_apkmirror_variant(scraper, var_url, is_bundle, file_meta):
     dl_btn = soup.find("a", {"rel": "nofollow"})
 
     if dl_btn and 'href' in dl_btn.attrs:
+        pkg, target_ver, out_dir = file_meta
         out_path = os.path.join(
-            file_meta[2],
-            f"{_safe_filename(file_meta[0])}_{_safe_filename(file_meta[1])}"
+            out_dir,
+            f"{_safe_filename(pkg)}_{_safe_filename(target_ver)}"
             f"{'.apkm' if is_bundle else '.apk'}"
         )
         print("[INFO] Downloading from APKMirror...")
@@ -338,7 +341,7 @@ def _download_apkmirror_variant(scraper, var_url, is_bundle, file_meta):
 
     return None
 
-def scrape_apkmirror(app_data, target_ver, arch, ver_code, out_dir):
+def scrape_apkmirror(app_data: dict, target_ver: str, arch: str, ver_code: str, out_dir: str):
     """Scrape the APK from APKMirror."""
     print(f"[TIER 1] APKMirror: v{target_ver}")
     time.sleep(3)
@@ -366,7 +369,7 @@ def scrape_apkmirror(app_data, target_ver, arch, ver_code, out_dir):
     return None
 
 # TIER 2: APKPURE
-def _download_apkpure(pkg, target_ver, dl_dir):
+def _download_apkpure(pkg: str, target_ver: str, dl_dir: str):
     """Downloads APK from APKPure via apkeep, isolated from stale artifacts."""
     print(f"[TIER 2] APKPure: v{target_ver}")
     os.makedirs(dl_dir, exist_ok=True)
@@ -395,7 +398,7 @@ def _download_apkpure(pkg, target_ver, dl_dir):
         return destination
 
 # TIER 3: APKCOMBO
-def _find_apkcombo_page(scraper, pkg, version):
+def _find_apkcombo_page(scraper, pkg: str, version: str):
     """Find the APKCombo download page."""
     base_ver = version
     if '-' in version and version[0].isdigit():
@@ -422,7 +425,7 @@ def _find_apkcombo_page(scraper, pkg, version):
                 return link['href']
     return None
 
-def _find_apkcombo_dl(scraper, page_url, arch):
+def _find_apkcombo_dl(scraper, page_url: str, arch: str):
     """Extracts the exact download link from APKCombo."""
     if not page_url.startswith('http'):
         page_url = "https://apkcombo.com" + page_url
@@ -435,7 +438,7 @@ def _find_apkcombo_dl(scraper, page_url, arch):
     first_link = soup.select_one('ul.list-download li a')
     return first_link.get('href') if first_link else None
 
-def scrape_apkcombo(app_data, target_ver, arch, out_dir):
+def scrape_apkcombo(app_data: dict, target_ver: str, arch: str, out_dir: str):
     """Scrape the APK from APKCombo."""
     print(f"[TIER 3] APKCombo: v{target_ver}")
     time.sleep(3)
@@ -463,7 +466,7 @@ def scrape_apkcombo(app_data, target_ver, arch, out_dir):
     return None
 
 # TIER 4: APTOIDE
-def scrape_aptoide(app_data, target_ver, out_dir):
+def scrape_aptoide(app_data: dict, target_ver: str, out_dir: str):
     """Scrape the APK from Aptoide."""
     print(f"[TIER 4] Aptoide API: v{target_ver}")
     time.sleep(2)
@@ -508,7 +511,7 @@ def scrape_aptoide(app_data, target_ver, out_dir):
     return None
 
 # TIER 5: UPTODOWN
-def _find_uptodown_version(scraper, base_url, version):
+def _find_uptodown_version(scraper, base_url: str, version: str):
     """Finds the version URL on Uptodown."""
     soup = BeautifulSoup(scraper.get(base_url, timeout=30).text, 'html.parser')
     app_elem = soup.find(id="detail-app-name")
@@ -546,7 +549,7 @@ def _find_uptodown_version(scraper, base_url, version):
             continue
     return version_url, data_code, is_bundle
 
-def _extract_uptodown_file_id(f_soup, arch):
+def _extract_uptodown_file_id(f_soup, arch: str):
     """Extracts the precise file ID for a specific architecture."""
     sel_id = None
     for variant in f_soup.find_all('div', class_='variant'):
@@ -562,7 +565,7 @@ def _extract_uptodown_file_id(f_soup, arch):
             sel_id = rep['data-file-id']
     return sel_id
 
-def _get_uptodown_dl_btn(scraper, base_url, version_url, data_code, arch):
+def _get_uptodown_dl_btn(scraper, base_url: str, version_url: str, data_code: str, arch: str):
     """Extracts the final download button element."""
     soup = BeautifulSoup(scraper.get(version_url, timeout=30).text, 'html.parser')
     dl_btn = soup.find(id="detail-download-button")
@@ -585,7 +588,7 @@ def _get_uptodown_dl_btn(scraper, base_url, version_url, data_code, arch):
                 return d_soup.find(id="detail-download-button")
     return None
 
-def _download_uptodown_variant(scraper, dl_info, file_meta):
+def _download_uptodown_variant(scraper, dl_info: tuple, file_meta: tuple):
     """Downloads the exact variant from Uptodown."""
     dl_btn, v_url, is_bundle = dl_info
     pkg, target_ver, out_dir = file_meta
@@ -601,7 +604,7 @@ def _download_uptodown_variant(scraper, dl_info, file_meta):
         return out_path
     return None
 
-def scrape_uptodown(app_data, target_ver, arch, out_dir):
+def scrape_uptodown(app_data: dict, target_ver: str, arch: str, out_dir: str):
     """Scrape the APK from Uptodown."""
     print(f"[TIER 5] Uptodown API: v{target_ver}")
     time.sleep(3)
@@ -628,7 +631,7 @@ def scrape_uptodown(app_data, target_ver, arch, out_dir):
     return None
 
 # TIER 6: ARCHIVE.ORG
-def _get_archive_link(soup, pkg, target_ver, arch, base_url):
+def _get_archive_link(soup, pkg: str, target_ver: str, arch: str, base_url: str):
     """Parses Archive.org soup to find the exact APK link."""
     valid_archs = [arch.lower(), "universal", "noarch", "all"]
     for link in soup.find_all('a'):
@@ -643,7 +646,7 @@ def _get_archive_link(soup, pkg, target_ver, arch, base_url):
             return f"{base_url}/{href}"
     return None
 
-def scrape_archive(app_data, target_ver, arch, out_dir):
+def scrape_archive(app_data: dict, target_ver: str, arch: str, out_dir: str):
     """Scrape the APK from Archive.org as a final fallback."""
     arch_id = app_data.get("archive_id")
     if not arch_id:
@@ -680,7 +683,7 @@ def scrape_archive(app_data, target_ver, arch, out_dir):
     return None
 
 # TIER 7: GITHUB RELEASES
-def scrape_github(app_data, target_ver, out_dir):
+def scrape_github(app_data: dict, target_ver: str, out_dir: str):
     """Scrape the APK directly from GitHub Releases."""
     github_repo = app_data.get("github_repo")
     github_asset = app_data.get("github_asset")
@@ -715,7 +718,7 @@ def scrape_github(app_data, target_ver, out_dir):
     print(f"[WARN] Not found in GitHub Releases for '{github_repo}'.")
     return None
 
-def download_apk(app_data, target_ver, arch, out_dir, args):
+def download_apk(app_data: dict, target_ver: str, arch: str, out_dir: str, args):
     """Fallback mechanism or targeted download for APK through multiple sources."""
     if target_ver.lower() == "any":
         print("[ERROR] Version defined as 'Any'. Skipping.")
@@ -763,13 +766,12 @@ def download_apk(app_data, target_ver, arch, out_dir, args):
     print(f"[FATAL] Exhausted sources or specific source failed for {pkg}.")
     return None
 
-def write_changelog(args, apps_patched, workspace, clean_ver):
+def write_changelog(args, apps_patched: list, workspace: str, clean_ver: str):
     """Write the patched apps changelog to a markdown file."""
     log_path = os.path.join(workspace, "changelog.md")
     with open(log_path, "w", encoding="utf-8") as file_obj:
         file_obj.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
 
-        # Insert warning if pre-release patches or CLI are utilized
         if args.is_prerelease.lower() == "true":
             file_obj.write("> [!WARNING]\n")
             file_obj.write("> **This application was patched using a pre-release CLI "
@@ -786,7 +788,7 @@ def write_changelog(args, apps_patched, workspace, clean_ver):
         file_obj.write("For Google Apps, install [microG-RE]")
         file_obj.write(f"({args.microg_url}).\n")
 
-def parse_custom_versions(custom_version_str):
+def parse_custom_versions(custom_version_str: str) -> dict:
     """Parses the custom version string into a dictionary."""
     parsed_versions = {}
     if not custom_version_str:
@@ -803,7 +805,7 @@ def parse_custom_versions(custom_version_str):
 
     return parsed_versions
 
-def resolve_target_version(app_data, version_selection, app_custom_version):
+def resolve_target_version(app_data: dict, version_selection: str, app_custom_version: str) -> str:
     """Resolves the target version to download based on user input."""
     if version_selection.lower() == "custom":
         if app_custom_version:
@@ -815,19 +817,23 @@ def resolve_target_version(app_data, version_selection, app_custom_version):
         print("[WARN] No beta version defined. Falling back to stable.")
     return app_data["stable"][0]
 
-def build_patch_command(args, app_data, files, target_arch):
-    """Builds the shell command for the CLI."""
+def build_patch_command(args, app_data: dict, file_paths: tuple, target_arch: str) -> list:
+    """Builds the shell command for the CLI, including exclusive patch handling."""
+    input_apk, json_file, out_apk = file_paths
+
     cmd = [
         "java", "-Xmx4G", "-jar", args.cli, "patch", "--patches", args.patches,
-        "--options-file", files[1], "--out", files[2], "--bytecode-mode", "FULL"
+        "--options-file", json_file, "--out", out_apk, "--bytecode-mode", "FULL"
     ]
     ver_sel = args.version_selection.lower()
-    if ver_sel in ("beta", "pre-release", "latest", "experimental") or ver_sel == "custom":
+    if ver_sel in ("beta", "pre-release", "latest", "experimental", "custom"):
         cmd.append("--force")
     if app_data.get("strip"):
         cmd.extend(["--striplibs", target_arch])
     if args.continue_on_error.lower() == "true":
         cmd.append("--continue-on-error")
+
+    # Appends keystore credentials if provided
     if args.keystore and args.ks_alias and args.ks_pass:
         cmd.extend([
             "--keystore", args.keystore,
@@ -837,10 +843,19 @@ def build_patch_command(args, app_data, files, target_arch):
         ])
         if args.signer:
             cmd.extend(["--signer", args.signer])
-    cmd.append(files[0])
+
+    # Dynamic exclusive patch inclusion from ecosystems.json
+    exclusive_list = app_data.get("exclusive_patches", [])
+    if exclusive_list:
+        print("[INFO] Exclusive mode detected. Generating targeted patch command...")
+        cmd.append("--exclusive")
+        for patch_name in exclusive_list:
+            cmd.extend(["-e", patch_name])
+
+    cmd.append(input_apk)
     return cmd
 
-def execute_patch_cli(patch_cmd):
+def execute_patch_cli(patch_cmd: list) -> tuple:
     """Executes the patch command and streams output."""
     zero_patches = False
     try:
@@ -858,7 +873,7 @@ def execute_patch_cli(patch_cmd):
         print(f"[ERROR] Failed to execute patch CLI: {err}")
         return 127, zero_patches
 
-def _generate_options_json(app_name, args, app_data, workspace):
+def _generate_options_json(app_name: str, args, app_data: dict, workspace: str) -> str:
     """Generates options JSON file using the CLI."""
     json_file = os.path.join(workspace, f"{_safe_filename(app_name)}-options.json")
     cmd_opts = [
@@ -874,7 +889,7 @@ def _generate_options_json(app_name, args, app_data, workspace):
         update_options_json(json_file, app_data["options_override"])
     return json_file
 
-def process_single_app(app_name, args, app_data, app_custom_version, state):
+def process_single_app(app_name: str, args, app_data: dict, app_custom_version: str, state: dict):
     """Processes a single app for downloading and patching."""
     target_ver = resolve_target_version(app_data, args.version_selection, app_custom_version)
     arch = app_data.get("force_arch", args.arch)
