@@ -10,8 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
       - name: Purge Expired Releases and Tags
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -21,6 +25,7 @@ jobs:
           CURRENT_TIME=$(date +%s)
           THRESHOLD_SECONDS=900
 
+          echo "[INFO] Starting Release Janitor..."
           gh release list --limit 100 --json tagName,publishedAt -q '.[] | @base64' | while read -r release_b64; do
             release_json=$(echo "$release_b64" | base64 --decode)
             
@@ -36,5 +41,40 @@ jobs:
               echo "[INFO] Successfully purged release and tag: $TAG_NAME"
             else
               echo "[SKIP] Release '$TAG_NAME' is only $AGE_SECONDS seconds old. Threshold is $THRESHOLD_SECONDS seconds."
+            fi
+          done
+
+      - name: Purge Old Workflow Runs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          CURRENT_TIME=$(date +%s)
+          # Batas umur log workflow yang akan dihapus (86400 detik = 1 hari)
+          RUN_THRESHOLD_SECONDS=86400
+
+          echo "[INFO] Starting Workflow Run Janitor..."
+          gh run list --limit 100 --json databaseId,createdAt -q '.[] | @base64' | while read -r run_b64; do
+            run_json=$(echo "$run_b64" | base64 --decode)
+            
+            RUN_ID=$(echo "$run_json" | jq -r '.databaseId')
+            CREATED_AT=$(echo "$run_json" | jq -r '.createdAt')
+            
+            CREATED_TIME=$(date -d "$CREATED_AT" +%s)
+            AGE_SECONDS=$(( CURRENT_TIME - CREATED_TIME ))
+
+            # Logika anti-bunuh diri: abaikan proses yang sedang berjalan saat ini
+            if [[ "$RUN_ID" == "${{ github.run_id }}" ]]; then
+              echo "[SKIP] Run ID $RUN_ID is the currently active Janitor job."
+              continue
+            fi
+
+            if (( AGE_SECONDS > RUN_THRESHOLD_SECONDS )); then
+              echo "[INFO] Workflow run '$RUN_ID' is $AGE_SECONDS seconds old. Deleting..."
+              gh run delete "$RUN_ID" || true
+              echo "[INFO] Successfully deleted workflow run: $RUN_ID"
+            else
+              echo "[SKIP] Workflow run '$RUN_ID' is only $AGE_SECONDS seconds old. Threshold is $RUN_THRESHOLD_SECONDS seconds."
             fi
           done
