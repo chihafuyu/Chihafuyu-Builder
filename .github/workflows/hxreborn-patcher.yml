@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       app_cx_file_explorer:
-        description: 'Patch Cx File Explorer'
+        description: 'Patch cx-file-explorer'
         required: true
         type: boolean
         default: false
       app_photo_editor_pro:
-        description: 'Patch Photo Editor Pro'
+        description: 'Patch photo-editor-pro'
         required: true
         type: boolean
         default: false
@@ -24,7 +24,7 @@ on:
         type: boolean
         default: false
       app_readera:
-        description: 'Patch ReadEra'
+        description: 'Patch readera'
         required: true
         type: boolean
         default: false

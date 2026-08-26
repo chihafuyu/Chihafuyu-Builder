@@ -9,7 +9,7 @@ on:
         type: boolean
         default: false
       app_newx_twitter:
-        description: 'Patch NewX Twitter'
+        description: 'Patch newx-twitter'
         required: true
         type: boolean
         default: false

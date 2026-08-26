@@ -9,7 +9,7 @@ on:
         type: boolean
         default: false
       app_bunpo:
-        description: 'Patch Bunpo'
+        description: 'Patch bunpo'
         required: true
         type: boolean
         default: false
