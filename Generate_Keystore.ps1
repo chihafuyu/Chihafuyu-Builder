@@ -14,6 +14,7 @@
     Requires Java (JDK) to be installed and 'keytool' to be available in the system PATH.
 #>
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification='Interactive script requires console formatting')]
 [CmdletBinding()]
 param()
 
