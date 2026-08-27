@@ -682,6 +682,9 @@
                             "hideShortsAppShortcut": true,
                             "hideShortsWidget": true
                         }
+                    },
+                    "PoToken provider": {
+                        "enabled": true
                     }
                 }
             },
