@@ -25,9 +25,9 @@ jobs:
       - name: Install Dependencies & Pylint
         run: |
           python -m pip install --upgrade pip
-          pip install pylint kurigram tgcrypto
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install pylint kurigram tgcrypto
+          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
 
       - name: Analyze code with Pylint
         run: |
-          pylint *.py
+          python -m pylint *.py
