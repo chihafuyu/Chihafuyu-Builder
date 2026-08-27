@@ -30,4 +30,4 @@ jobs:
 
       - name: Analyze code with Pylint
         run: |
-          pylint chihafuyu_tool.py
+          pylint *.py
