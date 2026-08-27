@@ -1,0 +1,70 @@
+name: 🧹 Automated Release Janitor
+
+on:
+  schedule:
+    - cron: '0 5,17 * * *'
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Purge Expired Releases and Tags
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          CURRENT_TIME=$(date +%s)
+          THRESHOLD_SECONDS=900
+
+          echo "[INFO] Starting Release Janitor..."
+          gh release list --limit 100 --json tagName,publishedAt -q '.[] | @base64' | while read -r release_b64; do
+            release_json=$(echo "$release_b64" | base64 --decode)
+            
+            TAG_NAME=$(echo "$release_json" | jq -r '.tagName')
+            PUBLISHED_AT=$(echo "$release_json" | jq -r '.publishedAt')
+            
+            PUBLISHED_TIME=$(date -d "$PUBLISHED_AT" +%s)
+            AGE_SECONDS=$(( CURRENT_TIME - PUBLISHED_TIME ))
+
+            if (( AGE_SECONDS > THRESHOLD_SECONDS )); then
+              echo "[INFO] Release '$TAG_NAME' is $AGE_SECONDS seconds old. Initiating deletion..."
+              gh release delete "$TAG_NAME" --yes --cleanup-tag || true
+              echo "[INFO] Successfully purged release and tag: $TAG_NAME"
+            else
+              echo "[SKIP] Release '$TAG_NAME' is only $AGE_SECONDS seconds old. Threshold is $THRESHOLD_SECONDS seconds."
+            fi
+          done
+
+      - name: Purge Old Workflow Runs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          echo "[INFO] Starting Workflow Run Janitor (Keeping top 10)..."
+          
+          RUN_IDS=$(gh run list --limit 1000 --json databaseId -q '.[10:][].databaseId')
+
+          if [[ -z "$RUN_IDS" ]]; then
+            echo "[INFO] No extra workflow runs to delete. The dashboard is clean!"
+          else
+            for RUN_ID in $RUN_IDS; do
+              if [[ "$RUN_ID" == "${{ github.run_id }}" ]]; then
+                echo "[SKIP] Run ID $RUN_ID is the currently active Janitor job."
+                continue
+              fi
+
+              echo "[INFO] Deleting workflow run: $RUN_ID"
+              gh run delete "$RUN_ID" || true
+            done
+            echo "[INFO] Workflow run cleanup complete!"
+          fi

@@ -1,15 +1,15 @@
-name: 🔄 De-Vanced Ecosystem Patcher
+name: 🧩 Riky Ecosystem Patcher
 
 on:
   workflow_dispatch:
     inputs:
-      app_google_photos:
-        description: 'Patch google-photos'
+      app_3bmeteo:
+        description: 'Patch 3Bmeteo'
         required: true
         type: boolean
-        default: true
-      app_strava:
-        description: 'Patch strava'
+        default: false
+      app_capcut:
+        description: 'Patch capcut'
         required: true
         type: boolean
         default: false
@@ -168,12 +168,12 @@ jobs:
           LATEST_JAR="${JARS[${#JARS[@]}-1]}"
           mv -- "$LATEST_JAR" morphe.jar
 
-          REPO_URL="RookieEnough/De-Vanced"
+          REPO_URL="riky-dev/morphe-patches"
           echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> "$GITHUB_ENV"
 
           if [[ "$PATCHES_TRACK" == "Custom Local" ]]; then
-            test -f "Custom-Patches/De-Vanced-custom.mpp"
-            cp -- "Custom-Patches/De-Vanced-custom.mpp" patches.mpp
+            test -f "Custom-Patches/Riky-custom.mpp"
+            cp -- "Custom-Patches/Riky-custom.mpp" patches.mpp
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
           elif [[ "$PATCHES_TRACK" == "Pre-release" ]]; then
             PATCH_TAG="$(gh api "repos/$REPO_URL/releases" --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
@@ -238,14 +238,14 @@ jobs:
       - name: Prepare App Selection
         id: prep_apps
         env:
-          APP_GOOGLE_PHOTOS: ${{ inputs.app_google_photos }}
-          APP_STRAVA: ${{ inputs.app_strava }}
+          APP_3BMETEO: ${{ inputs.app_3bmeteo }}
+          APP_CAPCUT: ${{ inputs.app_capcut }}
         run: |
           set -euo pipefail
 
           APP_LIST=""
-          if [[ "$APP_GOOGLE_PHOTOS" == "true" ]]; then APP_LIST="$APP_LIST,google-photos"; fi
-          if [[ "$APP_STRAVA" == "true" ]]; then APP_LIST="$APP_LIST,strava"; fi
+          if [[ "$APP_3BMETEO" == "true" ]]; then APP_LIST="$APP_LIST,3bmeteo"; fi
+          if [[ "$APP_CAPCUT" == "true" ]]; then APP_LIST="$APP_LIST,capcut"; fi
 
           APP_LIST="${APP_LIST#,}"
 
@@ -272,7 +272,7 @@ jobs:
           set -euo pipefail
 
           python -u chihafuyu_tool.py \
-            --ecosystem "De-Vanced" \
+            --ecosystem "Riky" \
             --apps "$SELECTED_APPS" \
             --arch "$ARCHITECTURE" \
             --version-selection "$VERSION_SELECTION" \
@@ -293,12 +293,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          test -s "./De-Vanced/changelog.md" || {
+          test -s "./Riky/changelog.md" || {
             echo "::error::Missing or empty changelog.md"
             exit 1
           }
 
-          compgen -G "./De-Vanced/Output/*.apk" > /dev/null || {
+          compgen -G "./Riky/Output/*.apk" > /dev/null || {
             echo "::error::No APK output was produced"
             exit 1
           }
@@ -311,10 +311,10 @@ jobs:
         if: inputs.upload_github_release
         uses: softprops/action-gh-release@v3.0.2
         with:
-          tag_name: De-Vanced-${{ env.DATE_TAG }}
-          name: Patched Apps - De-Vanced (${{ env.DATE_TAG }})
-          body_path: ./De-Vanced/changelog.md
-          files: ./De-Vanced/Output/*.apk
+          tag_name: Riky-${{ env.DATE_TAG }}
+          name: Patched Apps - Riky (${{ env.DATE_TAG }})
+          body_path: ./Riky/changelog.md
+          files: ./Riky/Output/*.apk
           prerelease: ${{ env.IS_PRERELEASE == 'true' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -326,7 +326,7 @@ jobs:
           API_HASH: ${{ secrets.API_HASH }}
           SESSION_STRING: ${{ secrets.SESSION_STRING }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-          ECOSYSTEM: "De-Vanced"
+          ECOSYSTEM: "Riky"
         run: |
           set -euo pipefail
 

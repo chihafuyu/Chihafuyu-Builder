@@ -3,6 +3,16 @@ name: 🔥 Hxreborn Ecosystem Patcher
 on:
   workflow_dispatch:
     inputs:
+      app_cx_file_explorer:
+        description: 'Patch cx-file-explorer'
+        required: true
+        type: boolean
+        default: false
+      app_photo_editor_pro:
+        description: 'Patch photo-editor-pro'
+        required: true
+        type: boolean
+        default: false
       app_projectivy_launcher:
         description: 'Patch projectivy-launcher'
         required: true
@@ -10,6 +20,11 @@ on:
         default: false
       app_proton_mail:
         description: 'Patch proton-mail'
+        required: true
+        type: boolean
+        default: false
+      app_readera:
+        description: 'Patch readera'
         required: true
         type: boolean
         default: false
@@ -243,15 +258,21 @@ jobs:
       - name: Prepare App Selection
         id: prep_apps
         env:
+          APP_CX_FILE_EXPLORER: ${{ inputs.app_cx_file_explorer }}
+          APP_PHOTO_EDITOR_PRO: ${{ inputs.app_photo_editor_pro }}
           APP_PROJECTIVY_LAUNCHER: ${{ inputs.app_projectivy_launcher }}
           APP_PROTON_MAIL: ${{ inputs.app_proton_mail }}
+          APP_READERA: ${{ inputs.app_readera }}
           APP_SYMFONIUM: ${{ inputs.app_symfonium }}
         run: |
           set -euo pipefail
 
           APP_LIST=""
+          if [[ "$APP_CX_FILE_EXPLORER" == "true" ]]; then APP_LIST="$APP_LIST,cx-file-explorer"; fi
+          if [[ "$APP_PHOTO_EDITOR_PRO" == "true" ]]; then APP_LIST="$APP_LIST,photo-editor-pro"; fi
           if [[ "$APP_PROJECTIVY_LAUNCHER" == "true" ]]; then APP_LIST="$APP_LIST,projectivy-launcher"; fi
           if [[ "$APP_PROTON_MAIL" == "true" ]]; then APP_LIST="$APP_LIST,proton-mail"; fi
+          if [[ "$APP_READERA" == "true" ]]; then APP_LIST="$APP_LIST,readera"; fi
           if [[ "$APP_SYMFONIUM" == "true" ]]; then APP_LIST="$APP_LIST,symfonium"; fi
 
           APP_LIST="${APP_LIST#,}"
