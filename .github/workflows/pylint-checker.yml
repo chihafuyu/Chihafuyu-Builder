@@ -24,10 +24,13 @@ jobs:
 
       - name: Install Dependencies & Pylint
         run: |
+          python -m venv venv
+          source venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install pylint kurigram tgcrypto
-          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
+          pip install pylint kurigram tgcrypto
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Analyze code with Pylint
         run: |
-          python -m pylint *.py
+          source venv/bin/activate
+          pylint *.py
