@@ -1,12 +1,12 @@
-"""Telegram uploader script using Kurigram."""
+"""Telegram uploader script using Kurigram (Pyrogram fork)."""
 
 import asyncio
 import os
 from pathlib import Path
 
-from kurigram import Client
-from kurigram.errors import RPCError
-from kurigram.types import InputMediaDocument
+from pyrogram import Client
+from pyrogram.errors import RPCError
+from pyrogram.types import InputMediaDocument
 
 
 def get_documents() -> list:

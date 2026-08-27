@@ -1,10 +1,10 @@
 """
-Generates a Telegram session string securely using Kurigram.
+Generates a Telegram session string securely using Kurigram (Pyrogram fork).
 """
 
 import asyncio
 import sys
-from kurigram import Client
+from pyrogram import Client
 
 if sys.platform == "win32":
     POLICY = getattr(asyncio, "WindowsSelectorEventLoopPolicy", None)
