@@ -7,10 +7,9 @@ import sys
 from kurigram import Client
 
 if sys.platform == "win32":
-    # Dynamically fetch the policy to avoid static linter deprecation warnings
-    policy = getattr(asyncio, "WindowsSelectorEventLoopPolicy", None)
-    if policy is not None:
-        asyncio.set_event_loop_policy(policy())
+    POLICY = getattr(asyncio, "WindowsSelectorEventLoopPolicy", None)
+    if POLICY is not None:
+        asyncio.set_event_loop_policy(POLICY())
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
