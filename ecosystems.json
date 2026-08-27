@@ -336,7 +336,7 @@
                 "package": "com.bunpoapp",
                 "search_term": "Bunpo",
                 "stable": [
-                    "3.20.0"
+                    "3.21.0"
                 ],
                 "beta": [],
                 "strip": true,
