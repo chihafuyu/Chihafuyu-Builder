@@ -163,7 +163,7 @@ jobs:
           LATEST_JAR="${JARS[${#JARS[@]}-1]}"
           mv -- "$LATEST_JAR" morphe.jar
 
-          REPO_URL="PathxmOp/patches"
+          REPO_URL="PrathxmOp/Prathxm-Patches"
           echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> "$GITHUB_ENV"
 
           if [[ "$PATCHES_TRACK" == "Custom Local" ]]; then

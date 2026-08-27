@@ -89,7 +89,6 @@ Because ecosystems like `rushiranpise` and `arandomhooman` support a massive lis
 - `sd-maid-se`
 - `stargazing-hub`
 - `stickerly`
-- `strava`
 - `terabox`
 - `turboscan`
 - `uptodown-store`

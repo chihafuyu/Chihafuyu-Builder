@@ -1,80 +1,15 @@
-name: 🍜 Hoo-dles Ecosystem Patcher
+name: 🧩 Riky Ecosystem Patcher
 
 on:
   workflow_dispatch:
     inputs:
-      app_adguard:
-        description: 'Patch adguard'
+      app_3bmeteo:
+        description: 'Patch 3Bmeteo'
         required: true
         type: boolean
         default: false
-      app_bunpo:
-        description: 'Patch bunpo'
-        required: true
-        type: boolean
-        default: false
-      app_camscanner:
-        description: 'Patch camscanner'
-        required: true
-        type: boolean
-        default: false
-      app_duolingo:
-        description: 'Patch duolingo'
-        required: true
-        type: boolean
-        default: false
-      app_ibispaint:
-        description: 'Patch ibispaint'
-        required: true
-        type: boolean
-        default: false
-      app_lightroom_mobile:
-        description: 'Patch lightroom-mobile'
-        required: true
-        type: boolean
-        default: false
-      app_mimo:
-        description: 'Patch mimo'
-        required: true
-        type: boolean
-        default: false
-      app_myfitnesspal:
-        description: 'Patch myfitnesspal'
-        required: true
-        type: boolean
-        default: false
-      app_pydroid3:
-        description: 'Patch pydroid3'
-        required: true
-        type: boolean
-        default: false
-      app_sleep_as_android:
-        description: 'Patch sleep-as-android'
-        required: true
-        type: boolean
-        default: false
-      app_smart_launcher:
-        description: 'Patch smart-launcher'
-        required: true
-        type: boolean
-        default: false
-      app_windy:
-        description: 'Patch windy'
-        required: true
-        type: boolean
-        default: false
-      app_wps:
-        description: 'Patch wps'
-        required: true
-        type: boolean
-        default: false
-      app_xodo:
-        description: 'Patch xodo'
-        required: true
-        type: boolean
-        default: false
-      app_xrecorder:
-        description: 'Patch xrecorder'
+      app_capcut:
+        description: 'Patch capcut'
         required: true
         type: boolean
         default: false
@@ -166,7 +101,7 @@ jobs:
       - name: Initialize Python Environment
         uses: actions/setup-python@v7
         with:
-          python-version: '3.14'
+          python-version: '3.12'
 
       - name: Install Dependencies & apkeep
         run: |
@@ -233,12 +168,12 @@ jobs:
           LATEST_JAR="${JARS[${#JARS[@]}-1]}"
           mv -- "$LATEST_JAR" morphe.jar
 
-          REPO_URL="hoo-dles/morphe-patches"
+          REPO_URL="riky-dev/morphe-patches"
           echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> "$GITHUB_ENV"
 
           if [[ "$PATCHES_TRACK" == "Custom Local" ]]; then
-            test -f "Custom-Patches/hoo-dles-custom.mpp"
-            cp -- "Custom-Patches/hoo-dles-custom.mpp" patches.mpp
+            test -f "Custom-Patches/Riky-custom.mpp"
+            cp -- "Custom-Patches/Riky-custom.mpp" patches.mpp
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
           elif [[ "$PATCHES_TRACK" == "Pre-release" ]]; then
             PATCH_TAG="$(gh api "repos/$REPO_URL/releases" --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
@@ -303,40 +238,14 @@ jobs:
       - name: Prepare App Selection
         id: prep_apps
         env:
-          APP_ADGUARD: ${{ inputs.app_adguard }}
-          APP_BUNPO: ${{ inputs.app_bunpo }}
-          APP_CAMSCANNER: ${{ inputs.app_camscanner }}
-          APP_DUOLINGO: ${{ inputs.app_duolingo }}
-          APP_IBISPAINT: ${{ inputs.app_ibispaint }}
-          APP_LIGHTROOM_MOBILE: ${{ inputs.app_lightroom_mobile }}
-          APP_MIMO: ${{ inputs.app_mimo }}
-          APP_MYFITNESSPAL: ${{ inputs.app_myfitnesspal }}
-          APP_PYDROID3: ${{ inputs.app_pydroid3 }}
-          APP_SLEEP_AS_ANDROID: ${{ inputs.app_sleep_as_android }}
-          APP_SMART_LAUNCHER: ${{ inputs.app_smart_launcher }}
-          APP_WINDY: ${{ inputs.app_windy }}
-          APP_WPS: ${{ inputs.app_wps }}
-          APP_XODO: ${{ inputs.app_xodo }}
-          APP_XRECORDER: ${{ inputs.app_xrecorder }}
+          APP_3BMETEO: ${{ inputs.app_3bmeteo }}
+          APP_CAPCUT: ${{ inputs.app_capcut }}
         run: |
           set -euo pipefail
 
           APP_LIST=""
-          if [[ "$APP_ADGUARD" == "true" ]]; then APP_LIST="$APP_LIST,adguard"; fi
-          if [[ "$APP_BUNPO" == "true" ]]; then APP_LIST="$APP_LIST,bunpo"; fi
-          if [[ "$APP_CAMSCANNER" == "true" ]]; then APP_LIST="$APP_LIST,camscanner"; fi
-          if [[ "$APP_DUOLINGO" == "true" ]]; then APP_LIST="$APP_LIST,duolingo"; fi
-          if [[ "$APP_IBISPAINT" == "true" ]]; then APP_LIST="$APP_LIST,ibispaint"; fi
-          if [[ "$APP_LIGHTROOM_MOBILE" == "true" ]]; then APP_LIST="$APP_LIST,lightroom-mobile"; fi
-          if [[ "$APP_MIMO" == "true" ]]; then APP_LIST="$APP_LIST,mimo"; fi
-          if [[ "$APP_MYFITNESSPAL" == "true" ]]; then APP_LIST="$APP_LIST,myfitnesspal"; fi
-          if [[ "$APP_PYDROID3" == "true" ]]; then APP_LIST="$APP_LIST,pydroid3"; fi
-          if [[ "$APP_SLEEP_AS_ANDROID" == "true" ]]; then APP_LIST="$APP_LIST,sleep-as-android"; fi
-          if [[ "$APP_SMART_LAUNCHER" == "true" ]]; then APP_LIST="$APP_LIST,smart-launcher"; fi
-          if [[ "$APP_WINDY" == "true" ]]; then APP_LIST="$APP_LIST,windy"; fi
-          if [[ "$APP_WPS" == "true" ]]; then APP_LIST="$APP_LIST,wps"; fi
-          if [[ "$APP_XODO" == "true" ]]; then APP_LIST="$APP_LIST,xodo"; fi
-          if [[ "$APP_XRECORDER" == "true" ]]; then APP_LIST="$APP_LIST,xrecorder"; fi
+          if [[ "$APP_3BMETEO" == "true" ]]; then APP_LIST="$APP_LIST,3bmeteo"; fi
+          if [[ "$APP_CAPCUT" == "true" ]]; then APP_LIST="$APP_LIST,capcut"; fi
 
           APP_LIST="${APP_LIST#,}"
 
@@ -363,7 +272,7 @@ jobs:
           set -euo pipefail
 
           python -u chihafuyu_tool.py \
-            --ecosystem "hoo-dles" \
+            --ecosystem "Riky" \
             --apps "$SELECTED_APPS" \
             --arch "$ARCHITECTURE" \
             --version-selection "$VERSION_SELECTION" \
@@ -384,12 +293,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          test -s "./hoo-dles/changelog.md" || {
+          test -s "./Riky/changelog.md" || {
             echo "::error::Missing or empty changelog.md"
             exit 1
           }
 
-          compgen -G "./hoo-dles/Output/*.apk" > /dev/null || {
+          compgen -G "./Riky/Output/*.apk" > /dev/null || {
             echo "::error::No APK output was produced"
             exit 1
           }
@@ -402,10 +311,10 @@ jobs:
         if: inputs.upload_github_release
         uses: softprops/action-gh-release@v3.0.2
         with:
-          tag_name: hoo-dles-${{ env.DATE_TAG }}
-          name: Patched Apps - hoo-dles (${{ env.DATE_TAG }})
-          body_path: ./hoo-dles/changelog.md
-          files: ./hoo-dles/Output/*.apk
+          tag_name: Riky-${{ env.DATE_TAG }}
+          name: Patched Apps - Riky (${{ env.DATE_TAG }})
+          body_path: ./Riky/changelog.md
+          files: ./Riky/Output/*.apk
           prerelease: ${{ env.IS_PRERELEASE == 'true' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -417,9 +326,9 @@ jobs:
           API_HASH: ${{ secrets.API_HASH }}
           SESSION_STRING: ${{ secrets.SESSION_STRING }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-          ECOSYSTEM: "hoo-dles"
+          ECOSYSTEM: "Riky"
         run: |
           set -euo pipefail
 
-          python -m pip install kurigram tgcrypto
+          python -m pip install pyrogram tgcrypto
           python tg_upload.py

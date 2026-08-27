@@ -32,7 +32,16 @@ To sign your patched APKs, you will need a cryptographic Keystore. We have inclu
 3. Follow the interactive prompts to set your Alias, Password, and Distinguished Name (DNAME).
 4. The script will generate a 4096-bit, 100-year validity Keystore (`.keystore`) and automatically convert it into a Base64 text file (`custom_keystore_base64.txt`).
 
-### 3. Set Up GitHub Secrets
+### 3. Generate Telegram Session String (Optional)
+If you want the workflow to automatically upload patched APKs to Telegram, you need a Pyrogram session string to bypass the 50MB bot upload limit. We have provided a secure script for this:
+1. Ensure you have Python 3.12.x installed on your PC.
+2. Open your terminal in the repository folder and install the required library: `pip install pyrogram`
+3. Run the script: `python generate_session.py`
+4. Enter your `API_ID` and `API_HASH` (obtainable from my.telegram.org) when prompted.
+5. Follow the Telegram login steps in the terminal.
+6. The script will output your Session String. Copy it immediately.
+
+### 4. Set Up GitHub Secrets
 For the automated workflows to function, you MUST configure the following secrets in your repository (`Settings > Secrets and variables > Actions`):
 
 *   **`KEYSTORE_BASE64`**: Paste the entire contents of the `custom_keystore_base64.txt` generated in Step 2.
@@ -40,10 +49,10 @@ For the automated workflows to function, you MUST configure the following secret
 *   **`KEYSTORE_PASSWORD`**: The password you set during Keystore generation.
 *   **`KEYSTORE_SIGNER_NAME`**: The specific signer name for the CLI.
 *   **`API_ID`** & **`API_HASH`**: Your Telegram API credentials (obtainable from my.telegram.org).
-*   **`SESSION_STRING`**: Your Pyrogram/Telethon session string (Userbot) to bypass the 50MB bot upload limit.
+*   **`SESSION_STRING`**: The string generated in Step 3.
 *   **`CHAT_ID`**: The Target Telegram channel or group ID (or private invite link).
 
-### 4. Customize Ecosystems
+### 5. Customize Ecosystems
 Edit the `ecosystems.json` file to add, remove, or modify the applications you want to track. You can define target architectures, specific search terms, and inject custom patch options effortlessly.
 
 ## 🙏 Credits & Acknowledgements

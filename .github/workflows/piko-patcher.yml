@@ -9,7 +9,7 @@ on:
         type: boolean
         default: false
       app_newx_twitter:
-        description: 'Patch NewX Twitter'
+        description: 'Patch newx-twitter'
         required: true
         type: boolean
         default: false
@@ -177,9 +177,21 @@ jobs:
           echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> "$GITHUB_ENV"
 
           if [[ "$PATCHES_TRACK" == "Custom Local" ]]; then
-            test -f "Custom-Patches/piko-custom.mpp"
-            cp -- "Custom-Patches/piko-custom.mpp" patches.mpp
-            echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
+            if [[ "${{ inputs.app_newx_twitter }}" == "true" ]]; then
+              # Safeguard: Prevent merging newx build with other apps on Custom Local
+              if [[ "${{ inputs.app_x_twitter }}" == "true" || "${{ inputs.app_instagram }}" == "true" ]]; then
+                echo "::error::Cannot combine NewX build with other apps when using Custom Local track. Please run them separately."
+                exit 1
+              fi
+              test -f "Custom-Patches/piko-newx.mpp"
+              cp -- "Custom-Patches/piko-newx.mpp" patches.mpp
+              echo "PATCHES_VERSION=custom-local-newx" >> "$GITHUB_ENV"
+            else
+              # Default fallback for regular Twitter and Instagram
+              test -f "Custom-Patches/piko-custom.mpp"
+              cp -- "Custom-Patches/piko-custom.mpp" patches.mpp
+              echo "PATCHES_VERSION=custom-local-regular" >> "$GITHUB_ENV"
+            fi
           elif [[ "$PATCHES_TRACK" == "Pre-release" ]]; then
             PATCH_TAG="$(gh api "repos/$REPO_URL/releases" --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
 
