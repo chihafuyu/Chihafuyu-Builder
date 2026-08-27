@@ -1,13 +1,16 @@
 """
-Generates a Telegram session string securely using Pyrogram.
+Generates a Telegram session string securely using Kurigram.
 """
 
 import asyncio
 import sys
-from pyrogram import Client
+from kurigram import Client
 
-if sys.platform == 'win32':
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+if sys.platform == "win32":
+    # Dynamically fetch the policy to avoid static linter deprecation warnings
+    policy = getattr(asyncio, "WindowsSelectorEventLoopPolicy", None)
+    if policy is not None:
+        asyncio.set_event_loop_policy(policy())
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
@@ -16,7 +19,7 @@ API_ID = int(input("Enter your Telegram API_ID: "))
 API_HASH = input("Enter your Telegram API_HASH: ")
 
 
-async def main():
+async def main() -> None:
     """
     Main asynchronous function to authenticate and export the session string.
     """

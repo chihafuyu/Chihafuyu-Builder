@@ -1,24 +1,18 @@
-"""Telegram uploader script using Pyrogram."""
+"""Telegram uploader script using Kurigram."""
 
 import asyncio
 import os
 from pathlib import Path
 
-from pyrogram import Client
-from pyrogram.errors import RPCError
-from pyrogram.types import InputMediaDocument
-
-API_ID = os.environ.get("API_ID")
-API_HASH = os.environ.get("API_HASH")
-SESSION_STRING = os.environ.get("SESSION_STRING")
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-CHAT_ID = os.environ.get("CHAT_ID")
-ECOSYSTEM = os.environ.get("ECOSYSTEM")
+from kurigram import Client
+from kurigram.errors import RPCError
+from kurigram.types import InputMediaDocument
 
 
-def get_documents():
+def get_documents() -> list:
     """Retrieve APK files and changelog to be uploaded."""
-    apk_dir = Path(f"{ECOSYSTEM}/Output")
+    ecosystem = os.environ.get("ECOSYSTEM", "")
+    apk_dir = Path(f"{ecosystem}/Output")
     documents = []
 
     for apk in apk_dir.glob("*.apk"):
@@ -27,7 +21,7 @@ def get_documents():
     if not documents:
         raise FileNotFoundError("No APKs found.")
 
-    changelog_path = Path(f"{ECOSYSTEM}/changelog.md")
+    changelog_path = Path(f"{ecosystem}/changelog.md")
     if changelog_path.exists():
         caption = changelog_path.read_text(encoding="utf-8")
     else:
@@ -50,37 +44,41 @@ def retry(func):
                 print(f"Upload failed: {exc}", flush=True)
                 if attempt == 2:
                     raise
+        return None
     return wrapper
 
 
 @retry
-async def upload_files():
+async def upload_files() -> None:
     """Upload documents to Telegram channel."""
-    target_chat = CHAT_ID
-    
-    # Parse CHAT_ID properly if it's numeric
-    if target_chat and target_chat.lstrip('-').isdigit():
-        target_chat = int(target_chat)
+    api_id = os.environ.get("API_ID")
+    api_hash = os.environ.get("API_HASH")
+    session_string = os.environ.get("SESSION_STRING")
+    bot_token = os.environ.get("BOT_TOKEN")
+    chat_env = os.environ.get("CHAT_ID", "")
+
+    if chat_env.lstrip('-').isdigit():
+        target_chat = int(chat_env)
+    else:
+        target_chat = chat_env
 
     documents = get_documents()
     print("Uploading to Telegram...", flush=True)
 
     client_kwargs = {
-        "name": "bot" if BOT_TOKEN else "userbot",
-        "api_id": API_ID,
-        "api_hash": API_HASH,
+        "name": "bot" if bot_token else "userbot",
+        "api_id": api_id,
+        "api_hash": api_hash,
     }
-    
-    # Prioritize Bot Token over Session String for stability
-    if BOT_TOKEN:
-        client_kwargs["bot_token"] = BOT_TOKEN
-    elif SESSION_STRING:
-        client_kwargs["session_string"] = SESSION_STRING
+
+    if bot_token:
+        client_kwargs["bot_token"] = bot_token
+    elif session_string:
+        client_kwargs["session_string"] = session_string
     else:
         raise ValueError("Either BOT_TOKEN or SESSION_STRING is required")
 
     async with Client(**client_kwargs) as app:
-        # If target_chat is a private invite link (https://t.me/...), resolve instantly
         if isinstance(target_chat, str) and target_chat.startswith("http"):
             print("Resolving private invite link...", flush=True)
             try:
