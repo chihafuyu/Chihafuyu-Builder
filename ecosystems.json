@@ -300,6 +300,17 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "strava": {
+                "package": "com.strava",
+                "search_term": "Strava",
+                "stable": [
+                    "477.14"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
@@ -1196,15 +1207,6 @@
                 "package": "com.snowcorp.stickerly.android",
                 "search_term": "Sticker.ly",
                 "stable": ["3.36.1"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "strava": {
-                "package": "com.strava",
-                "search_term": "Strava",
-                "stable": ["474.14"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",

@@ -8,6 +8,11 @@ on:
         required: true
         type: boolean
         default: true
+      app_strava:
+        description: 'Patch strava'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -234,11 +239,13 @@ jobs:
         id: prep_apps
         env:
           APP_GOOGLE_PHOTOS: ${{ inputs.app_google_photos }}
+          APP_STRAVA: ${{ inputs.app_strava }}
         run: |
           set -euo pipefail
 
           APP_LIST=""
           if [[ "$APP_GOOGLE_PHOTOS" == "true" ]]; then APP_LIST="$APP_LIST,google-photos"; fi
+          if [[ "$APP_STRAVA" == "true" ]]; then APP_LIST="$APP_LIST,strava"; fi
 
           APP_LIST="${APP_LIST#,}"
 
