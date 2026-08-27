@@ -20,17 +20,14 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.14'
+          python-version: '3.12'
 
       - name: Install Dependencies & Pylint
         run: |
-          python -m venv venv
-          source venv/bin/activate
           python -m pip install --upgrade pip
-          pip install pylint kurigram tgcrypto
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install pylint kurigram tgcrypto
+          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
 
       - name: Analyze code with Pylint
         run: |
-          source venv/bin/activate
-          pylint *.py
+          python -m pylint *.py
