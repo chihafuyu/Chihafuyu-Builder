@@ -94,7 +94,7 @@ jobs:
       - name: Initialize Python Environment
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
       - name: Install Dependencies & apkeep
         run: |
@@ -321,5 +321,5 @@ jobs:
         run: |
           set -euo pipefail
 
-          python -m pip install pyrogram tgcrypto
+          python -m pip install kurigram tgcrypto
           python tg_upload.py
