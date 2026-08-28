@@ -1001,6 +1001,11 @@
                 "beta": [
                     "21.34.243"
                 ],
+                "version_codes": {
+                    "arm64-v8a": "1561292962",
+                    "armeabi-v7a": "1561292962",
+                    "x86_64": "1561292962"
+                },
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
