@@ -8,6 +8,11 @@ on:
         required: true
         type: boolean
         default: true
+      app_vivaldi_snapshot:
+        description: 'Patch vivaldi-snapshot'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -234,11 +239,13 @@ jobs:
         id: prep_apps
         env:
           APP_BRAVE_BROWSER: ${{ inputs.app_brave_browser }}
+          APP_VIVALDI_SNAPSHOT: ${{ inputs.app_vivaldi_snapshot }}
         run: |
           set -euo pipefail
 
           APP_LIST=""
           if [[ "$APP_BRAVE_BROWSER" == "true" ]]; then APP_LIST="$APP_LIST,brave-browser"; fi
+          if [[ "$APP_VIVALDI_SNAPSHOT" == "true" ]]; then APP_LIST="$APP_LIST,vivaldi-snapshot"; fi
 
           APP_LIST="${APP_LIST#,}"
 

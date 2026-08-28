@@ -320,13 +320,13 @@
                 "package": "com.adguard.android",
                 "search_term": "AdGuard",
                 "stable": [
-                    "4.13.1"
+                    "4.13.2"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "42118001",
-                    "armeabi-v7a": "42118001",
-                    "x86_64": "42118001"
+                    "arm64-v8a": "42119001",
+                    "armeabi-v7a": "42119001",
+                    "x86_64": "42119001"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -406,6 +406,17 @@
                 "search_term": "MyFitnessPal",
                 "stable": [
                     "26.31.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "niagara-launcher": {
+                "package": "bitpit.launcher",
+                "search_term": "Niagara Launcher",
+                "stable": [
+                    "1.16.24"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1345,6 +1356,16 @@
                         }
                     }
                 }
+            },
+            "vivaldi-snapshot": {
+                "package": "com.vivaldi.browser.snapshot",
+                "search_term": "Vivaldi Browser Snapshot",
+                "stable": ["8.2.4143.3"],
+                "beta": [],
+                "strip": true,
+                "force_arch": "arm64-v8a",
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },

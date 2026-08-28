@@ -43,6 +43,11 @@ on:
         required: true
         type: boolean
         default: false
+      app_niagara_launcher:
+        description: 'Patch niagara-launcher'
+        required: true
+        type: boolean
+        default: false
       app_pydroid3:
         description: 'Patch pydroid3'
         required: true
@@ -311,6 +316,7 @@ jobs:
           APP_LIGHTROOM_MOBILE: ${{ inputs.app_lightroom_mobile }}
           APP_MIMO: ${{ inputs.app_mimo }}
           APP_MYFITNESSPAL: ${{ inputs.app_myfitnesspal }}
+          APP_NIAGARA_LAUNCHER: ${{ inputs.app_niagara_launcher }}
           APP_PYDROID3: ${{ inputs.app_pydroid3 }}
           APP_SLEEP_AS_ANDROID: ${{ inputs.app_sleep_as_android }}
           APP_SMART_LAUNCHER: ${{ inputs.app_smart_launcher }}
@@ -330,6 +336,7 @@ jobs:
           if [[ "$APP_LIGHTROOM_MOBILE" == "true" ]]; then APP_LIST="$APP_LIST,lightroom-mobile"; fi
           if [[ "$APP_MIMO" == "true" ]]; then APP_LIST="$APP_LIST,mimo"; fi
           if [[ "$APP_MYFITNESSPAL" == "true" ]]; then APP_LIST="$APP_LIST,myfitnesspal"; fi
+          if [[ "$APP_NIAGARA_LAUNCHER" == "true" ]]; then APP_LIST="$APP_LIST,niagara-launcher"; fi
           if [[ "$APP_PYDROID3" == "true" ]]; then APP_LIST="$APP_LIST,pydroid3"; fi
           if [[ "$APP_SLEEP_AS_ANDROID" == "true" ]]; then APP_LIST="$APP_LIST,sleep-as-android"; fi
           if [[ "$APP_SMART_LAUNCHER" == "true" ]]; then APP_LIST="$APP_LIST,smart-launcher"; fi
