@@ -293,7 +293,7 @@ def _find_apkmirror_release(ctx: Context) -> str | None:
     url = f"https://www.apkmirror.com/?post_type=app_release&s={query}"
 
     ctx.limiter.wait()
-    resp = ctx.scraper.get(url, timeout=30)
+    resp = ctx.scraper.get(url, timeout=60)
     if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
         return None
 
@@ -314,7 +314,7 @@ def _find_apkmirror_release(ctx: Context) -> str | None:
 def _process_apkmirror_variant_page(ctx: Context, var_url: str, is_bundle: bool) -> str | None:
     """Processes the specific variant download page and retrieves the file."""
     ctx.limiter.wait()
-    v_resp = ctx.scraper.get(var_url, timeout=30)
+    v_resp = ctx.scraper.get(var_url, timeout=60)
     if _is_waf_blocked(v_resp.status_code, v_resp.text) or v_resp.status_code != 200:
         return None
 
@@ -324,7 +324,7 @@ def _process_apkmirror_variant_page(ctx: Context, var_url: str, is_bundle: bool)
 
     dl_page = urljoin("https://www.apkmirror.com", btn['href'])
     ctx.limiter.wait()
-    d_resp = ctx.scraper.get(dl_page, timeout=30)
+    d_resp = ctx.scraper.get(dl_page, timeout=60)
     if _is_waf_blocked(d_resp.status_code, d_resp.text) or d_resp.status_code != 200:
         return None
 
@@ -358,7 +358,7 @@ def _download_apkmirror_variant(ctx: Context, rel_url: str,
                                 ver_code: str, force_b: bool) -> str | None:
     """Finds and routes the specific variant from APKMirror."""
     ctx.limiter.wait()
-    resp = ctx.scraper.get(rel_url, timeout=30)
+    resp = ctx.scraper.get(rel_url, timeout=60)
     if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
         return None
 
@@ -425,7 +425,7 @@ def _find_apkcombo_page(ctx: Context) -> str | None:
     app_url = f"https://apkcombo.com/a/{ctx.pkg}/"
 
     ctx.limiter.wait()
-    resp = ctx.scraper.get(app_url, timeout=30)
+    resp = ctx.scraper.get(app_url, timeout=60)
     if _is_waf_blocked(resp.status_code, resp.text):
         return None
     if resp.status_code == 200:
@@ -435,7 +435,7 @@ def _find_apkcombo_page(ctx: Context) -> str | None:
                 return btn.get('href')
 
     ctx.limiter.wait()
-    old_resp = ctx.scraper.get(f"{app_url}old-versions/", timeout=30)
+    old_resp = ctx.scraper.get(f"{app_url}old-versions/", timeout=60)
     if _is_waf_blocked(old_resp.status_code, old_resp.text) or old_resp.status_code != 200:
         return None
     for link in BeautifulSoup(old_resp.text, 'html.parser').find_all('a', href=True):
@@ -450,7 +450,7 @@ def _find_apkcombo_dl(ctx: Context, page_url: str) -> str | None:
     """Extracts the exact download link from APKCombo."""
     p_url = page_url if page_url.startswith('http') else f"https://apkcombo.com{page_url}"
     ctx.limiter.wait()
-    resp = ctx.scraper.get(p_url, timeout=30)
+    resp = ctx.scraper.get(p_url, timeout=60)
     if _is_waf_blocked(resp.status_code, resp.text):
         return None
 
@@ -495,7 +495,7 @@ def scrape_aptoide(ctx: Context) -> str | None:
     try:
         ctx.limiter.wait()
         req_url = f"https://ws75.aptoide.com/api/7/apps/search/query={ctx.pkg}/limit=10"
-        resp = ctx.scraper.get(req_url, timeout=30)
+        resp = ctx.scraper.get(req_url, timeout=60)
         if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
             return None
 
@@ -523,7 +523,7 @@ def _resolve_bing_uptodown_fallback(ctx: Context) -> str | None:
     query = quote_plus(f'site:uptodown.com/android/download "{ctx.pkg}"')
     try:
         ctx.limiter.wait()
-        resp = ctx.scraper.get(f"https://www.bing.com/search?q={query}", timeout=30)
+        resp = ctx.scraper.get(f"https://www.bing.com/search?q={query}", timeout=60)
         if resp.status_code == 200:
             matches = re.findall(r'https://[a-z0-9-]+\.en\.uptodown\.com/android/download',
                                  resp.text)
@@ -538,7 +538,7 @@ def _resolve_bing_uptodown_fallback(ctx: Context) -> str | None:
 def _fetch_uptodown_page(ctx: Context, base_url: str) -> Tuple[str | None, str | None]:
     """Handles WAF checks and Bing fallback for Uptodown."""
     ctx.limiter.wait()
-    resp = ctx.scraper.get(base_url, timeout=30)
+    resp = ctx.scraper.get(base_url, timeout=60)
     if _is_waf_blocked(resp.status_code, resp.text):
         return None, None
 
@@ -548,7 +548,7 @@ def _fetch_uptodown_page(ctx: Context, base_url: str) -> Tuple[str | None, str |
         if not fallback_url:
             return None, None
         ctx.limiter.wait()
-        f_resp = ctx.scraper.get(fallback_url, timeout=30)
+        f_resp = ctx.scraper.get(fallback_url, timeout=60)
         if _is_waf_blocked(f_resp.status_code, f_resp.text):
             return None, None
         return f_resp.text, fallback_url
@@ -567,7 +567,7 @@ def _find_uptodown_version(ctx: Context, base_url: str, html_text: str) -> Tuple
 
     for i in range(1, 21):
         ctx.limiter.wait()
-        resp = ctx.scraper.get(f"{base_url}/apps/{d_code}/versions/{i}", timeout=30)
+        resp = ctx.scraper.get(f"{base_url}/apps/{d_code}/versions/{i}", timeout=60)
         if resp.status_code != 200:
             break
         try:
@@ -589,7 +589,7 @@ def _resolve_uptodown_variants(ctx: Context, soup: BeautifulSoup,
     if v_btn and v_btn.has_attr("data-version"):
         ctx.limiter.wait()
         url = f"https://en.uptodown.com/android/app/{d_code}/version/{v_btn['data-version']}/files"
-        f_resp = ctx.scraper.get(url, timeout=30)
+        f_resp = ctx.scraper.get(url, timeout=60)
         if f_resp.status_code == 200:
             f_soup = BeautifulSoup(f_resp.json().get("content", ""), 'html.parser')
             sel_id = next(
@@ -606,7 +606,7 @@ def _resolve_uptodown_variants(ctx: Context, soup: BeautifulSoup,
             if sel_id:
                 ctx.limiter.wait()
                 url2 = f"{base_url}/download/{sel_id}-x"
-                d_soup = BeautifulSoup(ctx.scraper.get(url2, timeout=30).text, 'html.parser')
+                d_soup = BeautifulSoup(ctx.scraper.get(url2, timeout=60).text, 'html.parser')
                 return d_soup.find(id="detail-download-button")
     return None
 
@@ -629,7 +629,7 @@ def scrape_uptodown(ctx: Context) -> str | None:
             return None
 
         ctx.limiter.wait()
-        soup = BeautifulSoup(ctx.scraper.get(v_url, timeout=30).text, 'html.parser')
+        soup = BeautifulSoup(ctx.scraper.get(v_url, timeout=60).text, 'html.parser')
         dl_btn = soup.find(id="detail-download-button")
         if not dl_btn:
             dl_btn = _resolve_uptodown_variants(ctx, soup, d_code, valid_url)
@@ -672,7 +672,7 @@ def scrape_archive(ctx: Context) -> str | None:
     base_url = f"https://archive.org/download/{arch_id}"
 
     try:
-        resp = ctx.scraper.get(f"{base_url}/", timeout=30)
+        resp = ctx.scraper.get(f"{base_url}/", timeout=60)
         if resp.status_code != 200:
             return None
 
@@ -763,7 +763,7 @@ def write_changelog(args: Any, apps_patched: list, workspace: str, clean_ver: st
             b_str = f" (Build: {app['build']})" if app.get('build') else ""
             line = f"- **{app['name']}** (v{app['version']}{b_str} - `{app['arch']}`)\n"
             f_obj.write(line)
-        f_obj.write("\n---\n### \u26a0\ufe0f microG Required\n")
+        f_obj.write("\n---\n### ⚠️ microG Required\n")
         f_obj.write(f"For Google Apps, install [microG-RE]({args.microg_url}).\n")
 
 
