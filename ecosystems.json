@@ -1364,6 +1364,7 @@
                 "beta": [],
                 "strip": true,
                 "force_arch": "arm64-v8a",
+                "direct_url": "https://downloads.vivaldi.com/snapshot/Vivaldi.[VERSI]_[ARCH].apk",
                 "archive_id": "ZeNiX",
                 "options_override": {}
             }

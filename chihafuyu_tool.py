@@ -330,8 +330,7 @@ def _process_apkmirror_variant_page(ctx: Context, var_url: str, is_bundle: bool)
 
     dl_btn = BeautifulSoup(d_resp.text, 'html.parser').find("a", {"rel": "nofollow"})
     if dl_btn and 'href' in dl_btn.attrs:
-        ext = '.apkm' if is_bundle else '.apk'
-        out_path = ctx.get_out_path(ext)
+        out_path = ctx.get_out_path('.apkm' if is_bundle else '.apk')
         dl_url = urljoin("https://www.apkmirror.com", dl_btn['href'])
         print("[INFO] Downloading from APKMirror...")
         if download_file_stream(ctx.scraper, dl_url, out_path, dl_page):
@@ -476,8 +475,7 @@ def scrape_apkcombo(ctx: Context) -> str | None:
             print("[WARN] Version not found.")
             return None
         if final_dl := _find_apkcombo_dl(ctx, dl_page_url):
-            ext = ".apks" if "apks" in final_dl else ".apk"
-            out_path = ctx.get_out_path(ext)
+            out_path = ctx.get_out_path(".apks" if "apks" in final_dl else ".apk")
             print("[INFO] Downloading from APKCombo...")
             if download_file_stream(ctx.scraper, final_dl, out_path):
                 return out_path
@@ -635,8 +633,7 @@ def scrape_uptodown(ctx: Context) -> str | None:
             dl_btn = _resolve_uptodown_variants(ctx, soup, d_code, valid_url)
 
         if dl_btn and dl_btn.has_attr("data-url"):
-            ext = ".xapk" if is_bundle else ".apk"
-            out_path = ctx.get_out_path(ext)
+            out_path = ctx.get_out_path(".xapk" if is_bundle else ".apk")
             print("[INFO] Downloading from Uptodown...")
             url2 = f"https://dw.uptodown.com/dwn/{dl_btn['data-url']}"
             if download_file_stream(ctx.scraper, url2, out_path, v_url, True):
@@ -712,6 +709,49 @@ def scrape_github(ctx: Context) -> str | None:
     return None
 
 
+# --- TIER 8: DIRECT URL ---
+def scrape_direct(ctx: Context) -> str | None:
+    """Scrape the APK directly from a patterned URL."""
+    tmpl = ctx.app_data.get("direct_url")
+    if not tmpl:
+        return None
+
+    print(f"[TIER 8] Direct URL: v{ctx.target_ver}")
+    dl_link = tmpl.replace("[VERSI]", ctx.target_ver).replace("[ARCH]", ctx.arch)
+    out_path = ctx.get_out_path(".apk")
+
+    ctx.limiter.wait()
+    try:
+        if ctx.scraper.head(dl_link, timeout=10, allow_redirects=True).status_code == 200:
+            print("[INFO] Downloading from Direct URL...")
+            if download_file_stream(ctx.scraper, dl_link, out_path):
+                return out_path
+    except requests.exceptions.RequestException:
+        pass
+
+    print(f"[WARN] Direct link not reachable: {dl_link}")
+    return None
+
+
+def _run_scraper(name: str, ctx: Context, args: Any, v_code: Any) -> str | None:
+    """Routes the download to the correct scraper."""
+    scrapers = {
+        "direct": lambda: scrape_direct(ctx),
+        "github": lambda: scrape_github(ctx),
+        "huggingface": lambda: scrape_huggingface(ctx, args.hf_user),
+        "apkmirror": lambda: scrape_apkmirror(ctx, v_code),
+        "apkpure": lambda: scrape_apkpure(ctx),
+        "apkcombo": lambda: scrape_apkcombo(ctx),
+        "aptoide": lambda: scrape_aptoide(ctx),
+        "uptodown": lambda: scrape_uptodown(ctx),
+        "archive": lambda: scrape_archive(ctx)
+    }
+    func = scrapers.get(name)
+    if func:
+        return func()
+    return None
+
+
 def download_apk(ctx: Context, args: Any) -> str | None:
     """Fallback mechanism or targeted download for APK through multiple sources."""
     if ctx.target_ver.lower() == "any":
@@ -721,30 +761,17 @@ def download_apk(ctx: Context, args: Any) -> str | None:
     os.makedirs(os.path.join(ctx.out_dir, ctx.pkg), exist_ok=True)
     v_code = ctx.app_data.get("version_codes", {}).get(ctx.arch)
 
-    downloaders = {
-        "huggingface": lambda: scrape_huggingface(ctx, args.hf_user),
-        "archive": lambda: scrape_archive(ctx),
-        "apkmirror": lambda: scrape_apkmirror(ctx, v_code),
-        "apkpure": lambda: scrape_apkpure(ctx),
-        "apkcombo": lambda: scrape_apkcombo(ctx),
-        "aptoide": lambda: scrape_aptoide(ctx),
-        "uptodown": lambda: scrape_uptodown(ctx),
-        "github": lambda: scrape_github(ctx),
-    }
-
-    path = downloaders.get(args.download_source.lower(), lambda: None)()
+    path = _run_scraper(args.download_source.lower(), ctx, args, v_code)
     if not path:
-        for func in [
-            lambda: scrape_github(ctx), lambda: scrape_huggingface(ctx, args.hf_user),
-            lambda: scrape_apkmirror(ctx, v_code), lambda: scrape_apkpure(ctx),
-            lambda: scrape_apkcombo(ctx), lambda: scrape_aptoide(ctx),
-            lambda: scrape_uptodown(ctx), lambda: scrape_archive(ctx)
-        ]:
-            if path := func():
+        for src in ["direct", "github", "huggingface", "apkmirror", "apkpure",
+                    "apkcombo", "aptoide", "uptodown", "archive"]:
+            path = _run_scraper(src, ctx, args, v_code)
+            if path:
                 break
 
     if path:
         return process_downloaded_file(path)
+
     print(f"[FATAL] Exhausted sources or specific source failed for {ctx.pkg}.")
     return None
 
