@@ -4,8 +4,6 @@ Handles multi-tier downloading, dynamic options.json injection,
 exclusive patch execution, and WAF/Captcha evasions.
 """
 
-# pylint: disable=too-many-lines
-
 import argparse
 import glob
 import json
@@ -35,7 +33,6 @@ CHUNK_SIZE = 1024 * 1024
 class RateLimiter:
     """Ensures a minimum delay between requests to avoid rate limits."""
 
-    # pylint: disable=too-few-public-methods
     def __init__(self, delay: float):
         self.delay = delay
         self.last_req = 0.0
@@ -345,10 +342,11 @@ def _process_apkmirror_variant_page(ctx: Context, var_url: str, is_bundle: bool)
 def _extract_apkm_row(ctx: Context, row: Any, is_bundle: bool, ver_code: str) -> str | None:
     """Checks if a row matches the required variant criteria."""
     text = row.text.lower()
-    valid = [ctx.arch.lower(), "universal", "noarch"]
+    has_valid = any(a in text for a in (ctx.arch.lower(), "universal", "noarch"))
+    has_any = any(a in text for a in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi"))
 
-    kind_match = ("bundle" in text) if is_bundle else ("apk" in text and "bundle" not in text)
-    if kind_match and any(a in text for a in valid):
+    kind_match = ("bundle" in text) if is_bundle else ("bundle" not in text)
+    if kind_match and (has_valid or not has_any):
         if not ver_code or str(ver_code) in text:
             if link := row.find('a', class_='accent_color'):
                 rel_url = urljoin("https://www.apkmirror.com", link['href'])
@@ -364,13 +362,18 @@ def _download_apkmirror_variant(ctx: Context, rel_url: str,
     if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
         return None
 
-    rows = BeautifulSoup(resp.text, 'html.parser').find_all('div', class_='table-row')
-    bundle_passes = (False, True) if not force_b else (True,)
-
-    for is_bundle in bundle_passes:
-        for row in rows:
-            if out := _extract_apkm_row(ctx, row, is_bundle, ver_code):
-                return out
+    soup = BeautifulSoup(resp.text, 'html.parser')
+    if rows := soup.find_all('div', class_='table-row'):
+        for is_bndl in ((False, True) if not force_b else (True,)):
+            for row in rows:
+                if out := _extract_apkm_row(ctx, row, is_bndl, ver_code):
+                    return out
+    elif btn := soup.find('a', class_='downloadButton'):
+        is_bndl = "bundle" in btn.text.lower()
+        if not force_b or is_bndl:
+            return _process_apkmirror_variant_page(
+                ctx, urljoin("https://www.apkmirror.com", btn['href']), is_bndl
+            )
     return None
 
 
@@ -737,8 +740,7 @@ def download_apk(ctx: Context, args: Any) -> str | None:
             lambda: scrape_apkcombo(ctx), lambda: scrape_aptoide(ctx),
             lambda: scrape_uptodown(ctx), lambda: scrape_archive(ctx)
         ]:
-            path = func()
-            if path:
+            if path := func():
                 break
 
     if path:
@@ -759,8 +761,9 @@ def write_changelog(args: Any, apps_patched: list, workspace: str, clean_ver: st
         f_obj.write(f"**Source:** [Repository]({args.repo_url})\n\n### Apps:\n")
         for app in apps_patched:
             b_str = f" (Build: {app['build']})" if app.get('build') else ""
-            f_obj.write(f"- **{app['name']}** (v{app['version']}{b_str} - `{app['arch']}`)\n")
-        f_obj.write("\n---\n### ⚠️ microG Required\n")
+            line = f"- **{app['name']}** (v{app['version']}{b_str} - `{app['arch']}`)\n"
+            f_obj.write(line)
+        f_obj.write("\n---\n### \u26a0\ufe0f microG Required\n")
         f_obj.write(f"For Google Apps, install [microG-RE]({args.microg_url}).\n")
 
 
@@ -774,6 +777,17 @@ def _parse_custom_versions(ver_str: str) -> dict:
             for p in ver_str.split(',')
         }
     return {"_global": ver_str.strip()}
+
+
+def _get_patched_apk_path(app: str, ver: str, arch: str, args: Any, state: dict) -> str:
+    """Generates the output path for the patched APK."""
+    s_app = _safe_filename(app)
+    s_eco = _safe_filename(args.ecosystem)
+    s_ver = _safe_filename(ver)
+    s_arc = _safe_filename(arch)
+    s_cln = _safe_filename(state['clean_ver'])
+    f_name = f"{s_app}_{s_eco}_patched_{s_ver}-{s_arc}_patches_{s_cln}.apk"
+    return os.path.join(state["out_dir"], f_name)
 
 
 def build_patch_command(args: Any, app_data: dict, paths: tuple, target_arch: str) -> list:
@@ -848,18 +862,11 @@ def process_single_app(app_name: str, args: Any, app_data: dict,
     print(f"\n--- {app_name} ({app_data['package']}) ---")
 
     ctx = Context(get_scraper(), app_data, t_ver, arch, state["in_dir"], RateLimiter(delay=3.0))
-    apk_path = download_apk(ctx, args)
-    if not apk_path:
+    if not (apk_path := download_apk(ctx, args)):
         return
 
     json_file = _generate_options_json(app_name, args, app_data, state["workspace"])
-
-    out_apk = os.path.join(
-        state["out_dir"],
-        f"{_safe_filename(app_name)}_{_safe_filename(args.ecosystem)}_patched_"
-        f"{_safe_filename(t_ver)}-{_safe_filename(arch)}_patches_"
-        f"{_safe_filename(state['clean_ver'])}.apk"
-    )
+    out_apk = _get_patched_apk_path(app_name, t_ver, arch, args, state)
 
     print("[INFO] Patching via CLI...")
     cmd = build_patch_command(args, app_data, (apk_path, json_file, out_apk), arch)
