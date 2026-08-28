@@ -1,4 +1,131 @@
 {
+    "ajstrick81": {
+        "apps": {
+            "disneyplus": {
+                "package": "com.disney.disneyplus",
+                "search_term": "Disney+",
+                "stable": [
+                    "26.12.1+rc1-2026.07.15"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "apkm_include": [
+                    "android tv"
+                ],
+                "apkm_exclude": [
+                    "fire tv",
+                    "tablet"
+                ]
+            },
+            "hbo-max": {
+                "package": "com.wbd.hbomax",
+                "search_term": "HBO Max",
+                "stable": [
+                    "7.7.0.78",
+                    "7.5.0.73"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "netflix": {
+                "package": "com.netflix.ninja",
+                "search_term": "Netflix",
+                "stable": [
+                    "13.0.1 build 25028"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "paramount-plus": {
+                "package": "com.cbs.ott",
+                "search_term": "Paramount+",
+                "stable": [
+                    "16.17.0",
+                    "16.8.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "peacock": {
+                "package": "com.peacocktv.peacockandroid",
+                "search_term": "Peacock",
+                "stable": [
+                    "7.6.100"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pluto-tv": {
+                "package": "tv.pluto.android",
+                "search_term": "Pluto TV",
+                "stable": [
+                    "5.66.0-leanback"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "prime-video": {
+                "package": "com.amazon.amazonvideo.livingroom",
+                "search_term": "Prime Video",
+                "stable": [
+                    "6.23.23+v15.5.0.70-armv7a"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "tubi": {
+                "package": "com.tubitv",
+                "search_term": "Tubi",
+                "stable": [
+                    "10.28.5000"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "vix": {
+                "package": "com.univision.prendetv",
+                "search_term": "ViX",
+                "stable": [
+                    "4.47.2_tv"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    },
+    "anxyis": {
+        "apps": {
+            "alight-motion": {
+                "package": "com.alightcreative.motion",
+                "search_term": "Alight Motion",
+                "stable": [
+                    "5.0.273.1028425"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    },
     "arandomhooman": {
         "apps": {
             "adm": {
@@ -193,6 +320,39 @@
     },
     "BholeyKaBhakt": {
         "apps": {
+            "backdrops": {
+                "package": "com.backdrops.wallpapers",
+                "search_term": "Backdrops",
+                "stable": [
+                    "6.1.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "proto": {
+                "package": "com.proto.circuitsimulator",
+                "search_term": "PROTO",
+                "stable": [
+                    "1.49.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "solid-explorer": {
+                "package": "pl.solidexplorer2",
+                "search_term": "Solid Explorer",
+                "stable": [
+                    "3.4.10"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "speedtest": {
                 "package": "org.zwanoo.android.speedtest",
                 "search_term": "Speedtest by Ookla",
@@ -215,17 +375,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "proto": {
-                "package": "com.proto.circuitsimulator",
-                "search_term": "PROTO",
-                "stable": [
-                    "1.49.0"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "vpnify": {
                 "package": "com.vpn.free.hotspot.secure.vpnify",
                 "search_term": "vpnify",
@@ -236,33 +385,22 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
-            },
-            "backdrops": {
-                "package": "com.backdrops.wallpapers",
-                "search_term": "Backdrops",
-                "stable": [
-                    "6.1.2"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "solid-explorer": {
-                "package": "pl.solidexplorer2",
-                "search_term": "Solid Explorer",
-                "stable": [
-                    "3.4.10"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
             }
         }
     },
     "browzomje": {
         "apps": {
+            "easy-sudoku": {
+                "package": "easy.sudoku.puzzle.solver.free",
+                "search_term": "Easy Sudoku",
+                "stable": [
+                    "5.70.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "pinterest": {
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
@@ -272,17 +410,6 @@
                 "beta": [],
                 "strip": true,
                 "uptodown_url": "https://pinterest.en.uptodown.com/android",
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "easy-sudoku": {
-                "package": "easy.sudoku.puzzle.solver.free",
-                "search_term": "Easy Sudoku",
-                "stable": [
-                    "5.70.0"
-                ],
-                "beta": [],
-                "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             }
@@ -296,7 +423,9 @@
                 "stable": [
                     "Any"
                 ],
-                "beta": ["7.89.0.968035987"],
+                "beta": [
+                    "7.89.0.968035987"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -306,6 +435,32 @@
                 "search_term": "Strava",
                 "stable": [
                     "477.14"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    },
+    "dh6k": {
+        "apps": {
+            "quetta-browser": {
+                "package": "net.quetta.browser",
+                "search_term": "Quetta Browser",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "quetta-browser-official": {
+                "package": "net.quetta.browser.official",
+                "search_term": "Quetta Browser",
+                "stable": [
+                    "Any"
                 ],
                 "beta": [],
                 "strip": true,
@@ -502,6 +657,64 @@
             }
         }
     },
+    "hxreborn": {
+        "apps": {
+            "cx-file-explorer": {
+                "package": "com.cxinventor.file.explorer",
+                "search_term": "Cx File Explorer",
+                "stable": [
+                    "2.7.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "photo-editor-pro": {
+                "package": "photo.editor.photoeditor.photoeditorpro",
+                "search_term": "Photo Editor Pro",
+                "stable": [
+                    "1.791.265"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "projectivy-launcher": {
+                "package": "com.spocky.projengmenu",
+                "stable": [
+                    "Any"
+                ],
+                "archive_id": "ZeNiX"
+            },
+            "proton-mail": {
+                "package": "ch.protonmail.android",
+                "stable": [
+                    "7.10.4"
+                ],
+                "archive_id": "ZeNiX"
+            },
+            "readera": {
+                "package": "org.readera",
+                "search_term": "ReadEra",
+                "stable": [
+                    "26.05.20+2300"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "symfonium": {
+                "package": "app.symfonik.music.player",
+                "stable": [
+                    "14.1.0"
+                ],
+                "archive_id": "ZeNiX"
+            }
+        }
+    },
     "icysymmetra": {
         "apps": {
             "tiktok": {
@@ -517,6 +730,23 @@
             }
         }
     },
+    "jasonwu1994": {
+        "apps": {
+            "gboard": {
+                "package": "com.google.android.inputmethod.latin",
+                "search_term": "Gboard",
+                "stable": [
+                    "18.0.3.954559732-release-arm64-v8a"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_arch": "arm64-v8a",
+                "force_bundle": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    },
     "kiraio-moe": {
         "apps": {
             "atomic": {
@@ -525,18 +755,9 @@
                 "stable": [
                     "4.7.0m"
                 ],
-                "beta": ["5.0.1m"],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "pixiv": {
-                "package": "jp.pxv.android",
-                "search_term": "pixiv",
-                "stable": [
-                    "6.189.0"
+                "beta": [
+                    "5.0.1m"
                 ],
-                "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -558,7 +779,9 @@
                 "stable": [
                     "3.141.43"
                 ],
-                "beta": ["3.141.44"],
+                "beta": [
+                    "3.141.44"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -569,7 +792,9 @@
                 "stable": [
                     "113.0"
                 ],
-                "beta": ["125.0"],
+                "beta": [
+                    "125.0"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -635,7 +860,20 @@
                 "stable": [
                     "2.4.1"
                 ],
-                "beta": ["2.6.1"],
+                "beta": [
+                    "2.6.1"
+                ],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "nekopoi": {
+                "package": "com.kcstream.cing",
+                "search_term": "Nekopoi",
+                "stable": [
+                    "2.5.3-build01"
+                ],
+                "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -645,6 +883,17 @@
                 "search_term": "PixelLab",
                 "stable": [
                     "2.1.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pixiv": {
+                "package": "jp.pxv.android",
+                "search_term": "pixiv",
+                "stable": [
+                    "6.189.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -661,12 +910,16 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
-            },
-            "nekopoi": {
-                "package": "com.kcstream.cing",
-                "search_term": "Nekopoi",
+            }
+        }
+    },
+    "kuchingneko28": {
+        "apps": {
+            "ipusnas": {
+                "package": "mam.reader.ipusnas",
+                "search_term": "iPusnas",
                 "stable": [
-                    "2.5.3-build01"
+                    "2.1.4"
                 ],
                 "beta": [],
                 "strip": true,
@@ -675,15 +928,79 @@
             }
         }
     },
+    "kveld9": {
+        "apps": {
+            "brave-browser": {
+                "package": "com.brave.browser",
+                "search_term": "Brave Browser",
+                "stable": [
+                    "1.93.138"
+                ],
+                "beta": [],
+                "strip": true,
+                "github_repo": "brave/brave-browser",
+                "github_asset": "Bravemonoarm64.apk",
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Locale PAK Slimmer": {
+                        "enabled": true,
+                        "options": {
+                            "locales": "en-US, id"
+                        }
+                    }
+                }
+            },
+            "vivaldi-snapshot": {
+                "package": "com.vivaldi.browser.snapshot",
+                "search_term": "Vivaldi Browser Snapshot",
+                "stable": [
+                    "8.2.4143.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_arch": "arm64-v8a",
+                "direct_url": "https://downloads.vivaldi.com/snapshot/Vivaldi.[VERSI]_[ARCH].apk",
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Locale PAK Slimmer": {
+                        "enabled": true,
+                        "options": {
+                            "locales": "en, en-US, id"
+                        }
+                    }
+                }
+            }
+        }
+    },
     "morphe": {
         "apps": {
+            "reddit": {
+                "package": "com.reddit.frontpage",
+                "search_term": "Reddit",
+                "stable": [
+                    "2026.14.0"
+                ],
+                "beta": [
+                    "2026.35.0"
+                ],
+                "strip": true,
+                "force_bundle": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Disable Play Store updates": {
+                        "enabled": true
+                    }
+                }
+            },
             "youtube": {
                 "package": "com.google.android.youtube",
                 "search_term": "YouTube",
                 "stable": [
                     "21.04.223"
                 ],
-                "beta": ["21.34.243"],
+                "beta": [
+                    "21.34.243"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
@@ -693,9 +1010,6 @@
                             "hideShortsAppShortcut": true,
                             "hideShortsWidget": true
                         }
-                    },
-                    "PoToken provider": {
-                        "enabled": true
                     }
                 }
             },
@@ -705,26 +1019,12 @@
                 "stable": [
                     "9.15.51"
                 ],
-                "beta": ["9.26.56"],
+                "beta": [
+                    "9.26.56"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
-            },
-            "reddit": {
-                "package": "com.reddit.frontpage",
-                "search_term": "Reddit",
-                "stable": [
-                    "2026.14.0"
-                ],
-                "beta": ["2026.34.0"],
-                "strip": true,
-                "force_bundle": true,
-                "archive_id": "ZeNiX",
-                "options_override": {
-                    "Disable Play Store updates": {
-                        "enabled": true
-                    }
-                }
             }
         }
     },
@@ -745,20 +1045,20 @@
     },
     "piko": {
         "apps": {
-            "x-twitter": {
-                "package": "com.twitter.android",
-                "search_term": "X",
+            "instagram": {
+                "package": "com.instagram.android",
+                "search_term": "Instagram",
                 "stable": [
-                    "12.17.0-release.0"
+                    "439.0.0.37.89"
                 ],
                 "beta": [],
+                "version_codes": {
+                    "arm64-v8a": "384510827"
+                },
                 "strip": true,
+                "force_arch": "arm64-v8a",
                 "archive_id": "ZeNiX",
-                "options_override": {
-                    "Dynamic color": {
-                        "enabled": true
-                    }
-                }
+                "options_override": {}
             },
             "newx-twitter": {
                 "package": "com.twitter.android",
@@ -779,7 +1079,7 @@
                     "NewX: Customize inline actions",
                     "NewX: Customize navigation bar items",
                     "NewX: Disable automatic timeline refresh",
-					"NewX: Disable video player scrolling",
+                    "NewX: Disable video player scrolling",
                     "NewX: Dynamic color",
                     "NewX: Feature switch overrides",
                     "NewX: Filter For You by topic",
@@ -802,647 +1102,24 @@
                 ],
                 "options_override": {}
             },
-            "instagram": {
-                "package": "com.instagram.android",
-                "search_term": "Instagram",
+            "x-twitter": {
+                "package": "com.twitter.android",
+                "search_term": "X",
                 "stable": [
-                    "439.0.0.37.89"
-                ],
-                "beta": [],
-                "version_codes": {
-                    "arm64-v8a": "384510827"
-                },
-                "strip": true,
-                "force_arch": "arm64-v8a",
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            }
-        }
-    },
-	"ajstrick81": {
-        "apps": {
-            "disneyplus": {
-                "package": "com.disney.disneyplus",
-                "search_term": "Disney+",
-                "stable": [
-                    "26.12.1+rc1-2026.07.15"
+                    "12.17.0-release.0"
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "apkm_include": ["android tv"],
-                "apkm_exclude": ["fire tv", "tablet"]
-            },
-            "prime-video": {
-                "package": "com.amazon.amazonvideo.livingroom",
-                "search_term": "Prime Video",
-                "stable": [
-                    "6.23.23+v15.5.0.70-armv7a"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "netflix": {
-                "package": "com.netflix.ninja",
-                "search_term": "Netflix",
-                "stable": [
-                    "13.0.1 build 25028"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "hbo-max": {
-                "package": "com.wbd.hbomax",
-                "search_term": "HBO Max",
-                "stable": [
-                    "7.7.0.78",
-                    "7.5.0.73"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "peacock": {
-                "package": "com.peacocktv.peacockandroid",
-                "search_term": "Peacock",
-                "stable": [
-                    "7.6.100"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "tubi": {
-                "package": "com.tubitv",
-                "search_term": "Tubi",
-                "stable": [
-                    "10.28.5000"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "vix": {
-                "package": "com.univision.prendetv",
-                "search_term": "ViX",
-                "stable": [
-                    "4.47.2_tv"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "pluto-tv": {
-                "package": "tv.pluto.android",
-                "search_term": "Pluto TV",
-                "stable": [
-                    "5.66.0-leanback"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "paramount-plus": {
-                "package": "com.cbs.ott",
-                "search_term": "Paramount+",
-                "stable": [
-                    "16.17.0",
-                    "16.8.0"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            }
-        }
-    },
-	"rushiranpise": {
-        "apps": {
-            "1-1-1-1": {
-                "package": "com.cloudflare.onedotonedotonedotone",
-                "search_term": "1.1.1.1",
-                "stable": ["6.38.8"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "accubattery": {
-                "package": "com.digibites.accubattery",
-                "search_term": "AccuBattery",
-                "stable": ["2.1.8"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "accuweather": {
-                "package": "com.accuweather.android",
-                "search_term": "AccuWeather",
-                "stable": ["21.1.14-5-rc"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "adobe-scan": {
-                "package": "com.adobe.scan.android",
-                "search_term": "Adobe Scan",
-                "stable": ["26.08.01"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "aida64": {
-                "package": "com.finalwire.aida64",
-                "search_term": "AIDA64",
-                "stable": ["2.21"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-				"apkm_exclude": ["wear os"]
-            },
-            "amoledpix": {
-                "package": "com.androholic.amoledpix",
-                "search_term": "AmoledPix",
-                "stable": ["7.3"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "ampere": {
-                "package": "com.gombosdev.ampere",
-                "search_term": "Ampere",
-                "stable": ["v4.37.0"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "anime-depth": {
-                "package": "com.jndapp.anime.depth.live.wallpaper",
-                "search_term": "Anime Depth Wallpapers",
-                "stable": ["1.0.4"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "apkmirror-installer": {
-                "package": "com.apkmirror.helper.prod",
-                "search_term": "APKMirror Installer",
-                "stable": ["2.0.3 (41-d04e542)"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "calm": {
-                "package": "com.calm.android",
-                "search_term": "Calm",
-                "stable": ["6.101.1"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "canva": {
-                "package": "com.canva.editor",
-                "search_term": "Canva",
-                "stable": ["2.372.0"],
-                "beta": [],
-                "strip": true,
-				"uptodown_url": "https://canva.en.uptodown.com/android",
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "colornote": {
-                "package": "com.socialnmobile.dictapps.notepad.color.note",
-                "search_term": "ColorNote",
-                "stable": ["4.8.6"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "cpu-z": {
-                "package": "com.cpuid.cpu_z",
-                "search_term": "CPU-Z",
-                "stable": ["1.60"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "electron": {
-                "package": "com.mahersafadi.electron",
-                "search_term": "Electron",
-                "stable": ["3.0.3"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "hola-vpn": {
-                "package": "org.hola.play",
-                "search_term": "Hola VPN Proxy Plus",
-                "stable": ["AARCH64_1.248.400"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "http-sniffer": {
-                "package": "com.anetcapture.mock",
-                "search_term": "HTTP Sniffer",
-                "stable": ["2.11.7-ad_mob"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "inure": {
-                "package": "app.simple.inure.play",
-                "search_term": "Inure App Manager",
-                "stable": ["build107.2.0"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "kahoot": {
-                "package": "no.mobitroll.kahoot.android",
-                "search_term": "Kahoot!",
-                "stable": ["6.6.7"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "kinemaster": {
-                "package": "com.nexstreaming.app.kinemasterfree",
-                "search_term": "KineMaster",
-                "stable": ["8.1.13.36552.GP"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "lark-player": {
-                "package": "com.dywx.larkplayer",
-                "search_term": "Lark Player",
-                "stable": ["2026.12.5"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "life360": {
-                "package": "com.life360.android.safetymapd",
-                "search_term": "Life360",
-                "stable": ["26.29.0"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "ml-manager": {
-                "package": "com.javiersantos.mlmanager",
-                "search_term": "ML Manager",
-                "stable": ["5.0"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "mobioffice": {
-                "package": "com.mobisystems.office",
-                "search_term": "MobiOffice",
-                "stable": ["16.5.60515"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "netguard": {
-                "package": "eu.faircode.netguard",
-                "search_term": "NetGuard",
-                "stable": ["2.337"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "network-guru": {
-                "package": "com.paget96.netspeedindicator",
-                "search_term": "Network Guru",
-                "stable": ["2.0"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "ninja-vpn": {
-                "package": "app.ninjavpn.android",
-                "search_term": "Ninja VPN",
-                "stable": ["1.4.7"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "proton-vpn": {
-                "package": "ch.protonvpn.android",
-                "search_term": "Proton VPN",
-                "stable": ["5.19.78.0"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "apkm_exclude": ["amazon", "fire tv", "tablet", "f-droid"]
-            },
-            "proxyman": {
-                "package": "com.proxyman.proxymanandroid",
-                "search_term": "Proxyman",
-                "stable": ["1.21.0"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "psiphon-pro": {
-                "package": "com.psiphon3.subscription",
-                "search_term": "Psiphon Pro",
-                "stable": ["479"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "rar": {
-                "package": "com.rarlab.rar",
-                "search_term": "RAR",
-                "stable": ["7.23.build134"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "sd-maid-se": {
-                "package": "eu.darken.sdmse",
-                "search_term": "SD Maid SE",
-                "stable": ["1.7.5-rc0"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "stargazing-hub": {
-                "package": "com.twtapp",
-                "search_term": "Stargazing Hub",
-                "stable": ["3.3.3"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "stickerly": {
-                "package": "com.snowcorp.stickerly.android",
-                "search_term": "Sticker.ly",
-                "stable": ["3.36.1"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "terabox": {
-                "package": "com.dubox.drive",
-                "search_term": "TeraBox",
-                "stable": ["4.22.6"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "turboscan": {
-                "package": "com.piksoft.turboscan.free",
-                "search_term": "TurboScan",
-                "stable": ["1.7.3"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "uptodown-store": {
-                "package": "com.uptodown",
-                "search_term": "Uptodown App Store",
-                "stable": ["7.37"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "wallverse": {
-                "package": "com.wallverse.wallpapers",
-                "search_term": "Wallverse",
-                "stable": ["4.2"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "waze": {
-                "package": "com.waze",
-                "search_term": "Waze",
-                "stable": ["5.22.0.3"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "windscribe-vpn": {
-                "package": "com.windscribe.vpn",
-                "search_term": "Windscribe VPN",
-                "stable": ["4.2.2328"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "wolfram-alpha": {
-                "package": "com.wolfram.android.alphapro",
-                "search_term": "WolframAlpha",
-                "stable": ["1.0.8.20260601651"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            }
-        }
-    },
-	"hxreborn": {
-        "apps": {
-            "cx-file-explorer": {
-                "package": "com.cxinventor.file.explorer",
-                "search_term": "Cx File Explorer",
-                "stable": ["2.7.8"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "photo-editor-pro": {
-                "package": "photo.editor.photoeditor.photoeditorpro",
-                "search_term": "Photo Editor Pro",
-                "stable": ["1.791.265"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "projectivy-launcher": {
-                "package": "com.spocky.projengmenu",
-                "stable": ["Any"],
-                "archive_id": "ZeNiX"
-            },
-            "proton-mail": {
-                "package": "ch.protonmail.android",
-                "stable": ["7.10.4"],
-                "archive_id": "ZeNiX"
-            },
-            "readera": {
-                "package": "org.readera",
-                "search_term": "ReadEra",
-                "stable": ["26.05.20+2300"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "symfonium": {
-                "package": "app.symfonik.music.player",
-                "stable": ["14.1.0"],
-                "archive_id": "ZeNiX"
-            }
-        }
-    },
-    "kveld9": {
-        "apps": {
-            "brave-browser": {
-                "package": "com.brave.browser",
-                "search_term": "Brave Browser",
-                "stable": ["1.93.138"],
-                "beta": [],
-                "strip": true,
-                "github_repo": "brave/brave-browser",
-                "github_asset": "Bravemonoarm64.apk",
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Locale PAK Slimmer": {
-                        "enabled": true,
-                        "options": {
-                            "locales": "en-US, id"
-                        }
-                    }
-                }
-            },
-            "vivaldi-snapshot": {
-                "package": "com.vivaldi.browser.snapshot",
-                "search_term": "Vivaldi Browser Snapshot",
-                "stable": ["8.2.4143.3"],
-                "beta": [],
-                "strip": true,
-                "force_arch": "arm64-v8a",
-                "direct_url": "https://downloads.vivaldi.com/snapshot/Vivaldi.[VERSI]_[ARCH].apk",
-                "archive_id": "ZeNiX",
-                "options_override": {
-                    "Locale PAK Slimmer": {
-                        "enabled": true,
-                        "options": {
-                            "locales": "en, en-US, id"
-                        }
+                    "Dynamic color": {
+                        "enabled": true
                     }
                 }
             }
         }
     },
-    "dh6k": {
-        "apps": {
-            "quetta-browser": {
-                "package": "net.quetta.browser",
-                "search_term": "Quetta Browser",
-                "stable": ["Any"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "quetta-browser-official": {
-                "package": "net.quetta.browser.official",
-                "search_term": "Quetta Browser",
-                "stable": ["Any"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            }
-        }
-    },
-    "jasonwu1994": {
-        "apps": {
-            "gboard": {
-                "package": "com.google.android.inputmethod.latin",
-                "search_term": "Gboard",
-                "stable": ["18.0.3.954559732-release-arm64-v8a"],
-                "beta": [],
-                "strip": true,
-                "force_arch": "arm64-v8a",
-                "force_bundle": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            }
-        }
-    },
-    "anxyis": {
-        "apps": {
-            "alight-motion": {
-                "package": "com.alightcreative.motion",
-                "search_term": "Alight Motion",
-                "stable": ["5.0.273.1028425"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            }
-        }
-    },
-    "kuchingneko28": {
-        "apps": {
-            "ipusnas": {
-                "package": "mam.reader.ipusnas",
-                "search_term": "iPusnas",
-                "stable": ["2.1.4"],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            }
-        }
-    },
-	"Riky": {
+    "Riky": {
         "apps": {
             "3bmeteo": {
                 "package": "com.Meteosolutions.Meteo3b",
@@ -1465,6 +1142,460 @@
                 "version_codes": {
                     "arm64-v8a": "19201600"
                 },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    },
+    "rushiranpise": {
+        "apps": {
+            "1-1-1-1": {
+                "package": "com.cloudflare.onedotonedotonedotone",
+                "search_term": "1.1.1.1",
+                "stable": [
+                    "6.38.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "accubattery": {
+                "package": "com.digibites.accubattery",
+                "search_term": "AccuBattery",
+                "stable": [
+                    "2.1.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "accuweather": {
+                "package": "com.accuweather.android",
+                "search_term": "AccuWeather",
+                "stable": [
+                    "21.1.14-5-rc"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "adobe-scan": {
+                "package": "com.adobe.scan.android",
+                "search_term": "Adobe Scan",
+                "stable": [
+                    "26.08.01"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "aida64": {
+                "package": "com.finalwire.aida64",
+                "search_term": "AIDA64",
+                "stable": [
+                    "2.21"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "apkm_exclude": [
+                    "wear os"
+                ]
+            },
+            "amoledpix": {
+                "package": "com.androholic.amoledpix",
+                "search_term": "AmoledPix",
+                "stable": [
+                    "7.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "ampere": {
+                "package": "com.gombosdev.ampere",
+                "search_term": "Ampere",
+                "stable": [
+                    "v4.37.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "anime-depth": {
+                "package": "com.jndapp.anime.depth.live.wallpaper",
+                "search_term": "Anime Depth Wallpapers",
+                "stable": [
+                    "1.0.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "apkmirror-installer": {
+                "package": "com.apkmirror.helper.prod",
+                "search_term": "APKMirror Installer",
+                "stable": [
+                    "2.0.3 (41-d04e542)"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "calm": {
+                "package": "com.calm.android",
+                "search_term": "Calm",
+                "stable": [
+                    "6.101.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "canva": {
+                "package": "com.canva.editor",
+                "search_term": "Canva",
+                "stable": [
+                    "2.372.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "uptodown_url": "https://canva.en.uptodown.com/android",
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "colornote": {
+                "package": "com.socialnmobile.dictapps.notepad.color.note",
+                "search_term": "ColorNote",
+                "stable": [
+                    "4.8.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "cpu-z": {
+                "package": "com.cpuid.cpu_z",
+                "search_term": "CPU-Z",
+                "stable": [
+                    "1.60"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "electron": {
+                "package": "com.mahersafadi.electron",
+                "search_term": "Electron",
+                "stable": [
+                    "3.0.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "hola-vpn": {
+                "package": "org.hola.play",
+                "search_term": "Hola VPN Proxy Plus",
+                "stable": [
+                    "AARCH64_1.248.400"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "http-sniffer": {
+                "package": "com.anetcapture.mock",
+                "search_term": "HTTP Sniffer",
+                "stable": [
+                    "2.11.7-ad_mob"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "inure": {
+                "package": "app.simple.inure.play",
+                "search_term": "Inure App Manager",
+                "stable": [
+                    "build107.2.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "kahoot": {
+                "package": "no.mobitroll.kahoot.android",
+                "search_term": "Kahoot!",
+                "stable": [
+                    "6.6.7"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "kinemaster": {
+                "package": "com.nexstreaming.app.kinemasterfree",
+                "search_term": "KineMaster",
+                "stable": [
+                    "8.1.13.36552.GP"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "lark-player": {
+                "package": "com.dywx.larkplayer",
+                "search_term": "Lark Player",
+                "stable": [
+                    "2026.12.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "life360": {
+                "package": "com.life360.android.safetymapd",
+                "search_term": "Life360",
+                "stable": [
+                    "26.29.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "ml-manager": {
+                "package": "com.javiersantos.mlmanager",
+                "search_term": "ML Manager",
+                "stable": [
+                    "5.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "mobioffice": {
+                "package": "com.mobisystems.office",
+                "search_term": "MobiOffice",
+                "stable": [
+                    "16.5.60515"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "netguard": {
+                "package": "eu.faircode.netguard",
+                "search_term": "NetGuard",
+                "stable": [
+                    "2.337"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "network-guru": {
+                "package": "com.paget96.netspeedindicator",
+                "search_term": "Network Guru",
+                "stable": [
+                    "2.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "ninja-vpn": {
+                "package": "app.ninjavpn.android",
+                "search_term": "Ninja VPN",
+                "stable": [
+                    "1.4.7"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "proton-vpn": {
+                "package": "ch.protonvpn.android",
+                "search_term": "Proton VPN",
+                "stable": [
+                    "5.19.78.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "apkm_exclude": [
+                    "amazon",
+                    "fire tv",
+                    "tablet",
+                    "f-droid"
+                ]
+            },
+            "proxyman": {
+                "package": "com.proxyman.proxymanandroid",
+                "search_term": "Proxyman",
+                "stable": [
+                    "1.21.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "psiphon-pro": {
+                "package": "com.psiphon3.subscription",
+                "search_term": "Psiphon Pro",
+                "stable": [
+                    "479"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "rar": {
+                "package": "com.rarlab.rar",
+                "search_term": "RAR",
+                "stable": [
+                    "7.23.build134"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "sd-maid-se": {
+                "package": "eu.darken.sdmse",
+                "search_term": "SD Maid SE",
+                "stable": [
+                    "1.7.5-rc0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "stargazing-hub": {
+                "package": "com.twtapp",
+                "search_term": "Stargazing Hub",
+                "stable": [
+                    "3.3.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "stickerly": {
+                "package": "com.snowcorp.stickerly.android",
+                "search_term": "Sticker.ly",
+                "stable": [
+                    "3.36.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "terabox": {
+                "package": "com.dubox.drive",
+                "search_term": "TeraBox",
+                "stable": [
+                    "4.22.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "turboscan": {
+                "package": "com.piksoft.turboscan.free",
+                "search_term": "TurboScan",
+                "stable": [
+                    "1.7.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "uptodown-store": {
+                "package": "com.uptodown",
+                "search_term": "Uptodown App Store",
+                "stable": [
+                    "7.37"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "wallverse": {
+                "package": "com.wallverse.wallpapers",
+                "search_term": "Wallverse",
+                "stable": [
+                    "4.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "waze": {
+                "package": "com.waze",
+                "search_term": "Waze",
+                "stable": [
+                    "5.22.0.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "windscribe-vpn": {
+                "package": "com.windscribe.vpn",
+                "search_term": "Windscribe VPN",
+                "stable": [
+                    "4.2.2328"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "wolfram-alpha": {
+                "package": "com.wolfram.android.alphapro",
+                "search_term": "WolframAlpha",
+                "stable": [
+                    "1.0.8.20260601651"
+                ],
+                "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
