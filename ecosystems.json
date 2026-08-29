@@ -1076,7 +1076,8 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "exclusive_patches": [
-                    "NewX: Browse tweet object",
+                    "Change version code",
+					"NewX: Browse tweet object",
                     "NewX: Custom font",
                     "NewX: Custom sharing domain",
                     "NewX: Customize default media tab",
