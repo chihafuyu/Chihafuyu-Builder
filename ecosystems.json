@@ -1077,7 +1077,7 @@
                 "archive_id": "ZeNiX",
                 "exclusive_patches": [
                     "Change version code",
-					"NewX: Browse tweet object",
+                    "NewX: Browse tweet object",
                     "NewX: Custom font",
                     "NewX: Custom sharing domain",
                     "NewX: Customize default media tab",
@@ -1107,7 +1107,14 @@
                     "NewX: Show sensitive media",
                     "NewX: Unlock downloads"
                 ],
-                "options_override": {}
+                "options_override": {
+                    "Change version code": {
+                        "enabled": true,
+                        "options": {
+                            "versionCode": 2147483647
+                        }
+                    }
+                }
             },
             "x-twitter": {
                 "package": "com.twitter.android",
