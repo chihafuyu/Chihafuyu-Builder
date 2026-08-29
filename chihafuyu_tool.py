@@ -50,7 +50,6 @@ class RateLimiter:
 
 
 def _safe_filename(name: str, fallback: str = "artifact") -> str:
-    """Returns a filesystem-safe single path component."""
     cleaned = os.path.basename(str(name)).strip()
     if not cleaned or cleaned in {".", ".."} or any(c in cleaned for c in ('/', '\\', '\x00')):
         return fallback
@@ -103,28 +102,22 @@ def get_scraper() -> Any:
         browser={'browser': 'chrome', 'platform': 'windows', 'desktop': True}
     )
     scraper.headers.update({
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 Chrome/126.0.0.0"
-        )
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126.0.0"
     })
     return scraper
 
 
 def _validate_http_url(url: str) -> None:
-    """Accept only HTTP(S) URLs before handing them to requests."""
     if urlparse(url).scheme not in {"http", "https"}:
         raise ValueError(f"Unsupported download URL: {url!r}")
 
 
 def _is_waf_blocked(status_code: int, text: str) -> bool:
-    """Checks if the HTTP response is blocked by a WAF or Captcha."""
     if status_code in (429, 503):
         return True
     challenges = (
         "just a moment", "cf-challenge", "challenge-platform", "attention required",
-        "checking your browser", "ddos-guard", "aptcha.execute",
-        "enable javascript and cookies"
+        "checking your browser", "ddos-guard", "aptcha.execute", "enable javascript and cookies"
     )
     return any(c in text.lower() for c in challenges)
 
@@ -172,7 +165,6 @@ def download_file_stream(scraper: Any, url: str, out_path: str,
 
 
 def _extract_xapk(file_path: str, zip_obj: zipfile.ZipFile, namelist: list) -> str:
-    """Extracts a single APK from an XAPK/APKM wrapper."""
     apk_files = [item for item in namelist if item.lower().endswith('.apk')]
     if len(apk_files) == 1 and not file_path.lower().endswith('.apkm'):
         print("[INFO] XAPK Wrapper detected. Extracting APK...")
@@ -208,7 +200,6 @@ def process_downloaded_file(file_path: str) -> str | None:
 
 
 def _update_patch_options(target_dict: dict, override_data: dict) -> None:
-    """Updates the enabled status and options for a specific patch."""
     if "enabled" in override_data:
         target_dict["enabled"] = override_data["enabled"]
     if "options" in override_data:
@@ -219,7 +210,6 @@ def _update_patch_options(target_dict: dict, override_data: dict) -> None:
 
 
 def _search_and_update(obj: Any, patch_name: str, override_data: dict) -> bool:
-    """Recursively updates the first matching patch and reports whether it was found."""
     found = False
     if isinstance(obj, dict):
         if patch_name in obj and isinstance(obj[patch_name], dict):
@@ -238,14 +228,41 @@ def _search_and_update(obj: Any, patch_name: str, override_data: dict) -> bool:
     return found
 
 
-def update_options_json(filepath: str, overrides: dict) -> None:
-    """Injects custom options into the JSON file."""
+def _force_disable_all_except(obj: Any, allowed_patches: list) -> None:
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if isinstance(v, dict) and "enabled" in v:
+                if k not in allowed_patches:
+                    v["enabled"] = False
+            _force_disable_all_except(v, allowed_patches)
+    elif isinstance(obj, list):
+        for item in obj:
+            _force_disable_all_except(item, allowed_patches)
+
+
+def update_options_json(filepath: str, overrides: dict, exclusive_patches: list = None) -> None:
+    """Injects custom options and handles exclusive patch restrictions into the JSON file."""
     try:
         with open(filepath, 'r', encoding='utf-8') as opt_file:
             data = json.load(opt_file)
+
+        if exclusive_patches:
+            print("[INFO] Enforcing exclusive patch states inside options.json...")
+            def _apply_exclusivity(node: Any):
+                if isinstance(node, dict):
+                    for k, v in node.items():
+                        if isinstance(v, dict) and "enabled" in v:
+                            v["enabled"] = k in exclusive_patches
+                        _apply_exclusivity(v)
+                elif isinstance(node, list):
+                    for item in node:
+                        _apply_exclusivity(item)
+            _apply_exclusivity(data)
+
         for patch_name, override_data in overrides.items():
             if not _search_and_update(data, patch_name, override_data):
                 print(f"[WARN] Patch '{patch_name}' not found in JSON!")
+
         temp_path = f"{filepath}.tmp"
         try:
             with open(temp_path, 'w', encoding='utf-8') as opt_file:
@@ -286,7 +303,6 @@ def scrape_huggingface(ctx: Context, hf_user: str) -> str | None:
 
 # --- TIER 1: APKMIRROR ---
 def _find_apkmirror_release(ctx: Context) -> str | None:
-    """Finds the release page URL on APKMirror."""
     raw_ver = ctx.target_ver
     base_ver = raw_ver.split('-')[0] if '-' in raw_ver and raw_ver[0].isdigit() else raw_ver
     query = quote_plus(f"{ctx.app_data.get('search_term', ctx.pkg)} {base_ver}")
@@ -312,7 +328,6 @@ def _find_apkmirror_release(ctx: Context) -> str | None:
 
 
 def _process_apkmirror_variant_page(ctx: Context, var_url: str, is_bundle: bool) -> str | None:
-    """Processes the specific variant download page and retrieves the file."""
     ctx.limiter.wait()
     v_resp = ctx.scraper.get(var_url, timeout=60)
     if _is_waf_blocked(v_resp.status_code, v_resp.text) or v_resp.status_code != 200:
@@ -339,7 +354,6 @@ def _process_apkmirror_variant_page(ctx: Context, var_url: str, is_bundle: bool)
 
 
 def _extract_apkm_row(ctx: Context, row: Any, is_bundle: bool, ver_code: str) -> str | None:
-    """Checks if a row matches the required variant criteria."""
     text = row.text.lower()
     has_valid = any(a in text for a in (ctx.arch.lower(), "universal", "noarch"))
     has_any = any(a in text for a in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi"))
@@ -355,7 +369,6 @@ def _extract_apkm_row(ctx: Context, row: Any, is_bundle: bool, ver_code: str) ->
 
 def _download_apkmirror_variant(ctx: Context, rel_url: str,
                                 ver_code: str, force_b: bool) -> str | None:
-    """Finds and routes the specific variant from APKMirror."""
     ctx.limiter.wait()
     resp = ctx.scraper.get(rel_url, timeout=60)
     if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
@@ -418,7 +431,6 @@ def scrape_apkpure(ctx: Context) -> str | None:
 
 # --- TIER 3: APKCOMBO ---
 def _find_apkcombo_page(ctx: Context) -> str | None:
-    """Find the APKCombo download page."""
     raw_ver = ctx.target_ver
     base_ver = raw_ver.split('-')[0] if '-' in raw_ver and raw_ver[0].isdigit() else raw_ver
     app_url = f"https://apkcombo.com/a/{ctx.pkg}/"
@@ -446,7 +458,6 @@ def _find_apkcombo_page(ctx: Context) -> str | None:
 
 
 def _find_apkcombo_dl(ctx: Context, page_url: str) -> str | None:
-    """Extracts the exact download link from APKCombo."""
     p_url = page_url if page_url.startswith('http') else f"https://apkcombo.com{page_url}"
     ctx.limiter.wait()
     resp = ctx.scraper.get(p_url, timeout=60)
@@ -517,7 +528,6 @@ def scrape_aptoide(ctx: Context) -> str | None:
 
 # --- TIER 5: UPTODOWN ---
 def _resolve_bing_uptodown_fallback(ctx: Context) -> str | None:
-    """Uses Bing search as a fallback to find Uptodown app pages."""
     query = quote_plus(f'site:uptodown.com/android/download "{ctx.pkg}"')
     try:
         ctx.limiter.wait()
@@ -534,7 +544,6 @@ def _resolve_bing_uptodown_fallback(ctx: Context) -> str | None:
 
 
 def _fetch_uptodown_page(ctx: Context, base_url: str) -> Tuple[str | None, str | None]:
-    """Handles WAF checks and Bing fallback for Uptodown."""
     ctx.limiter.wait()
     resp = ctx.scraper.get(base_url, timeout=60)
     if _is_waf_blocked(resp.status_code, resp.text):
@@ -554,7 +563,6 @@ def _fetch_uptodown_page(ctx: Context, base_url: str) -> Tuple[str | None, str |
 
 
 def _find_uptodown_version(ctx: Context, base_url: str, html_text: str) -> Tuple:
-    """Finds the version URL on Uptodown."""
     app_elem = BeautifulSoup(html_text, 'html.parser').find(id="detail-app-name")
     if not app_elem or not app_elem.has_attr("data-code"):
         return None, None, False
@@ -582,7 +590,6 @@ def _find_uptodown_version(ctx: Context, base_url: str, html_text: str) -> Tuple
 
 def _resolve_uptodown_variants(ctx: Context, soup: BeautifulSoup,
                                d_code: str, base_url: str) -> Any:
-    """Resolves variant download buttons for Uptodown."""
     v_btn = soup.find(class_="button variants")
     if v_btn and v_btn.has_attr("data-version"):
         ctx.limiter.wait()
@@ -645,7 +652,6 @@ def scrape_uptodown(ctx: Context) -> str | None:
 
 # --- TIER 6: ARCHIVE.ORG ---
 def _find_archive_link(ctx: Context, soup: BeautifulSoup, base_url: str) -> str | None:
-    """Finds the matching archive link from the page soup."""
     valid = [ctx.arch.lower(), "universal", "noarch", "all"]
     link1 = next((f"{base_url}/{link.get('href')}" for link in soup.find_all('a')
                   if ctx.pkg in link.get('href', '') and ctx.target_ver in link.get('href', '') and
@@ -653,7 +659,6 @@ def _find_archive_link(ctx: Context, soup: BeautifulSoup, base_url: str) -> str 
                  None)
     if link1:
         return link1
-
     return next((f"{base_url}/{link.get('href')}" for link in soup.find_all('a')
                  if ctx.pkg in link.get('href', '') and ctx.target_ver in link.get('href', '')),
                 None)
@@ -734,7 +739,6 @@ def scrape_direct(ctx: Context) -> str | None:
 
 
 def _run_scraper(name: str, ctx: Context, args: Any, v_code: Any) -> str | None:
-    """Routes the download to the correct scraper."""
     scrapers = {
         "direct": lambda: scrape_direct(ctx),
         "github": lambda: scrape_github(ctx),
@@ -747,9 +751,7 @@ def _run_scraper(name: str, ctx: Context, args: Any, v_code: Any) -> str | None:
         "archive": lambda: scrape_archive(ctx)
     }
     func = scrapers.get(name)
-    if func:
-        return func()
-    return None
+    return func() if func else None
 
 
 def download_apk(ctx: Context, args: Any) -> str | None:
@@ -795,19 +797,14 @@ def write_changelog(args: Any, apps_patched: list, workspace: str, clean_ver: st
 
 
 def _parse_custom_versions(ver_str: str) -> dict:
-    """Helper to parse the custom version argument."""
     if not ver_str:
         return {}
     if '=' in ver_str:
-        return {
-            p.split('=', 1)[0].strip(): p.split('=', 1)[1].strip()
-            for p in ver_str.split(',')
-        }
+        return {p.split('=', 1)[0].strip(): p.split('=', 1)[1].strip() for p in ver_str.split(',')}
     return {"_global": ver_str.strip()}
 
 
 def _get_patched_apk_path(app: str, ver: str, arch: str, args: Any, state: dict) -> str:
-    """Generates the output path for the patched APK."""
     s_app = _safe_filename(app)
     s_eco = _safe_filename(args.ecosystem)
     s_ver = _safe_filename(ver)
@@ -864,7 +861,6 @@ def execute_patch_cli(patch_cmd: list) -> tuple:
 
 
 def _generate_options_json(app_name: str, args: Any, app_data: dict, workspace: str) -> str:
-    """Generates options JSON file using the CLI."""
     json_file = os.path.join(workspace, f"{_safe_filename(app_name)}-options.json")
     cmd = ["java", "-jar", args.cli, "options-create", "--patches", args.patches,
            "--out", json_file, "--filter-package-name", app_data["package"]]
@@ -872,9 +868,13 @@ def _generate_options_json(app_name: str, args: Any, app_data: dict, workspace: 
     if res.returncode != 0:
         err_out = (res.stderr or res.stdout or '').strip()[-500:]
         print(f"[WARN] CLI options-create failed (exit {res.returncode}): {err_out}")
-    if app_data.get("options_override") and os.path.exists(json_file):
-        print(f"[INFO] Injecting custom patch options for {app_name}...")
-        update_options_json(json_file, app_data["options_override"])
+    exc_list = app_data.get("exclusive_patches", [])
+    if exc_list or app_data.get("options_override"):
+        if exc_list:
+            print(f"[INFO] Forcing strict exclusive options mapping for {app_name}...")
+        update_options_json(
+            json_file, app_data.get("options_override", {}), exclusive_patches=exc_list
+        )
     return json_file
 
 
