@@ -823,8 +823,8 @@ def build_patch_command(args: Any, app_data: dict, paths: tuple, target_arch: st
         "java", "-Xmx4G", "-jar", args.cli, "patch", "--patches", args.patches,
         "--options-file", paths[1], "--out", paths[2], "--bytecode-mode", "FULL"
     ]
-    if args.version_selection.lower() in ("beta", "pre-release", "latest", "experimental",
-                                          "custom"):
+    if args.is_prerelease.lower() == "true" or args.version_selection.lower() in (
+            "beta", "pre-release", "latest", "experimental", "custom"):
         cmd.append("--force")
     if app_data.get("strip"):
         cmd.extend(["--striplibs", target_arch])
