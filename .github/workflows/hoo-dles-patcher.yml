@@ -8,6 +8,11 @@ on:
         required: true
         type: boolean
         default: false
+      app_bend:
+        description: 'Patch bend'
+        required: true
+        type: boolean
+        default: false
       app_bunpo:
         description: 'Patch bunpo'
         required: true
@@ -309,6 +314,7 @@ jobs:
         id: prep_apps
         env:
           APP_ADGUARD: ${{ inputs.app_adguard }}
+          APP_BEND: ${{ inputs.app_bend }}
           APP_BUNPO: ${{ inputs.app_bunpo }}
           APP_CAMSCANNER: ${{ inputs.app_camscanner }}
           APP_DUOLINGO: ${{ inputs.app_duolingo }}
@@ -329,6 +335,7 @@ jobs:
 
           APP_LIST=""
           if [[ "$APP_ADGUARD" == "true" ]]; then APP_LIST="$APP_LIST,adguard"; fi
+          if [[ "$APP_BEND" == "true" ]]; then APP_LIST="$APP_LIST,bend"; fi
           if [[ "$APP_BUNPO" == "true" ]]; then APP_LIST="$APP_LIST,bunpo"; fi
           if [[ "$APP_CAMSCANNER" == "true" ]]; then APP_LIST="$APP_LIST,camscanner"; fi
           if [[ "$APP_DUOLINGO" == "true" ]]; then APP_LIST="$APP_LIST,duolingo"; fi

@@ -486,6 +486,18 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+			},
+            "bend": {
+                "package": "com.bowerydigital.bend",
+                "search_term": "Bend",
+                "stable": [
+                    "7.6.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_arch": "arm64-v8a",
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "bunpo": {
                 "package": "com.bunpoapp",
