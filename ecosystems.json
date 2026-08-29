@@ -568,17 +568,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "myfitnesspal": {
-                "package": "com.myfitnesspal.android",
-                "search_term": "MyFitnessPal",
-                "stable": [
-                    "26.31.0"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "niagara-launcher": {
                 "package": "bitpit.launcher",
                 "search_term": "Niagara Launcher",
