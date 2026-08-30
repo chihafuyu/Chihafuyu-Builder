@@ -37,8 +37,8 @@ def fetch_pr_diff(repo: str, pr_num: str, gh_token: str) -> str:
         return diff_text[:50000] + '\n\n[...Diff truncated due to size limits...]'
     return diff_text
 
-def analyze_code(safe_diff: str) -> str:
-    """Sends the diff to Gemini and returns the review."""
+def analyze_code(safe_diff: str, api_key: str) -> str:
+    """Sends the diff to Gemini using explicitly provided API key and returns the review."""
     prompt = (
         'You are an expert Python and Android ecosystem reviewer.\n'
         'Your task is ONLY to review the code diff provided within the <pr_diff> tags below.\n'
@@ -50,7 +50,8 @@ def analyze_code(safe_diff: str) -> str:
         f'<pr_diff>\n{safe_diff}\n</pr_diff>'
     )
 
-    client = genai.Client()
+    # Explicit client initialization to prevent implicit environment resolution
+    client = genai.Client(api_key=api_key)
     max_retries = 3
 
     for attempt in range(max_retries):
@@ -107,7 +108,8 @@ def main():
         sys.exit(1)
 
     safe_diff = fetch_pr_diff(repo, pr_num, gh_token)
-    review = analyze_code(safe_diff)
+    # Pass api_key explicitly to the analyzer
+    review = analyze_code(safe_diff, api_key=gemini_api_key)
     post_comment(repo, pr_num, gh_token, review)
 
 if __name__ == "__main__":
