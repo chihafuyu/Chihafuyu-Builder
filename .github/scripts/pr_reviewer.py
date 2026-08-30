@@ -4,6 +4,7 @@ Fetches PR diffs and generates automated code reviews using Google Generative AI
 """
 
 import os
+import re
 import sys
 import time
 import requests
@@ -29,9 +30,9 @@ def fetch_pr_diff(repo: str, pr_num: str, gh_token: str) -> str:
         print("No code changes to review.")
         sys.exit(0)
 
-    # Sanitize fake closing tags dynamically to bypass platform filters
-    closing_tag = "</" + "pr_diff>"
-    diff_text = diff_text.replace(closing_tag, '[REDACTED_TAG]')
+    # Sanitize fake closing tags using RegEx to catch case/space variations
+    closing_tag_pattern = r'</\s*pr_diff\s*>'
+    diff_text = re.sub(closing_tag_pattern, '[REDACTED_TAG]', diff_text, flags=re.IGNORECASE)
 
     # Limit diff text and add truncation indicator
     if len(diff_text) > 50000:
@@ -84,13 +85,14 @@ def post_comment(repo: str, pr_num: str, gh_token: str, review: str) -> None:
     }
     payload = {'body': f"### ✨ Gemini Code Review\n\n{review}"}
 
+    post_resp = None
     try:
         post_resp = requests.post(comment_url, headers=post_headers, json=payload, timeout=15)
         post_resp.raise_for_status()
         print("Review posted successfully!")
     except requests.exceptions.RequestException as e:
         print(f"Failed to post comment due to network error: {e}")
-        if 'post_resp' in locals() and post_resp is not None:
+        if post_resp is not None:
             print(f"Server response: {post_resp.text}")
         sys.exit(1)
 
