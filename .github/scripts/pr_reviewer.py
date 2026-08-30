@@ -11,16 +11,17 @@ from google import genai
 from google.genai import errors
 
 def fetch_pr_diff(repo: str, pr_num: str, gh_token: str) -> str:
-    """Fetches the PR diff from GitHub API."""
+    """Fetches the PR diff from GitHub API with error handling and truncation safety."""
     headers = {
         'Authorization': f'Bearer {gh_token}',
         'Accept': 'application/vnd.github.v3.diff'
     }
     url = f"https://api.github.com/repos/{repo}/pulls/{pr_num}"
-    resp = requests.get(url, headers=headers, timeout=15)
-
-    if resp.status_code != 200:
-        print(f"Failed to fetch diff: {resp.status_code}")
+    try:
+        resp = requests.get(url, headers=headers, timeout=15)
+        resp.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch diff due to network error: {e}")
         sys.exit(1)
 
     diff_text = resp.text
@@ -28,8 +29,13 @@ def fetch_pr_diff(repo: str, pr_num: str, gh_token: str) -> str:
         print("No code changes to review.")
         sys.exit(0)
 
-    # Limit diff text to prevent token limit exhaustion
-    return diff_text[:50000]
+    # Sanitize fake closing tags to prevent Prompt Injection
+    diff_text = diff_text.replace('</pr_diff>', '<fake_tag_removed>')
+
+    # Limit diff text and add truncation indicator
+    if len(diff_text) > 50000:
+        return diff_text[:50000] + '\n\n[...Diff truncated due to size limits...]'
+    return diff_text
 
 def analyze_code(safe_diff: str) -> str:
     """Sends the diff to Gemini and returns the review."""
@@ -68,7 +74,7 @@ def analyze_code(safe_diff: str) -> str:
     return ""
 
 def post_comment(repo: str, pr_num: str, gh_token: str, review: str) -> None:
-    """Posts the review result as a comment on the PR."""
+    """Posts the review result as a comment on the PR with exception handling."""
     comment_url = f"https://api.github.com/repos/{repo}/issues/{pr_num}/comments"
     post_headers = {
         'Authorization': f'Bearer {gh_token}',
@@ -76,12 +82,14 @@ def post_comment(repo: str, pr_num: str, gh_token: str, review: str) -> None:
     }
     payload = {'body': f"### ✨ Gemini Code Review\n\n{review}"}
 
-    post_resp = requests.post(comment_url, headers=post_headers, json=payload, timeout=15)
-
-    if post_resp.status_code == 201:
+    try:
+        post_resp = requests.post(comment_url, headers=post_headers, json=payload, timeout=15)
+        post_resp.raise_for_status()
         print("Review posted successfully!")
-    else:
-        print(f"Failed to post comment: {post_resp.text}")
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to post comment due to network error: {e}")
+        if 'post_resp' in locals() and post_resp is not None:
+            print(f"Server response: {post_resp.text}")
         sys.exit(1)
 
 def main():
