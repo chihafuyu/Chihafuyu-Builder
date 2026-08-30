@@ -26,7 +26,7 @@ jobs:
           python-version: '3.14'
 
       - name: Install Google Generative AI
-        run: pip install google-generativeai requests
+        run: pip install google-genai requests
 
       - name: Run Gemini Code Review
         env:
@@ -37,9 +37,8 @@ jobs:
         run: |
           python -c "
           import os, requests, sys
-          import google.generativeai as genai
+          from google import genai
 
-          genai.configure(api_key=os.environ['GEMINI_API_KEY'])
           repo = os.environ['REPO']
           pr_num = os.environ['PR_NUMBER']
           gh_token = os.environ['GITHUB_TOKEN']
@@ -69,9 +68,15 @@ jobs:
               f'Diff:\n{safe_diff}'
           )
           
-          model = genai.GenerativeModel('gemini-1.5-flash')
+          # Initialize the new SDK client (automatically uses GEMINI_API_KEY env var)
+          client = genai.Client()
+          
           print('Analyzing code with Gemini...')
-          review = model.generate_content(prompt).text
+          response = client.models.generate_content(
+              model='gemini-1.5-flash',
+              contents=prompt
+          )
+          review = response.text
 
           # 3. Post Review Result as PR Comment
           comment_url = f'https://api.github.com/repos/{repo}/issues/{pr_num}/comments'
