@@ -1,0 +1,88 @@
+name: ✨ Gemini PR Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths-ignore:
+      - '*.md'
+      - 'LICENSE'
+      - '.gitignore'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Initialize Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.14'
+
+      - name: Install Google Generative AI
+        run: pip install google-generativeai requests
+
+      - name: Run Gemini Code Review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          python -c "
+          import os, requests, sys
+          import google.generativeai as genai
+
+          genai.configure(api_key=os.environ['GEMINI_API_KEY'])
+          repo = os.environ['REPO']
+          pr_num = os.environ['PR_NUMBER']
+          gh_token = os.environ['GITHUB_TOKEN']
+
+          # 1. Fetch Diff Code from GitHub API
+          headers = {'Authorization': f'token {gh_token}', 'Accept': 'application/vnd.github.v3.diff'}
+          resp = requests.get(f'https://api.github.com/repos/{repo}/pulls/{pr_num}', headers=headers)
+          
+          if resp.status_code != 200:
+              print(f'Failed to fetch diff: {resp.status_code}')
+              sys.exit(1)
+              
+          diff_text = resp.text
+          if not diff_text.strip():
+              print('No code changes to review.')
+              sys.exit(0)
+
+          # Limit diff text (Gemini Flash supports up to 1M tokens)
+          safe_diff = diff_text[:50000]
+
+          # 2. Send Instructions to Gemini 1.5 Flash
+          prompt = (
+              'You are an expert Python and Android ecosystem reviewer. '
+              'Review the following pull request diff. '
+              'Point out bugs, vulnerabilities, logic flaws, or code improvements. '
+              'If the code looks solid, say so. Keep it concise and use bullet points.\n\n'
+              f'Diff:\n{safe_diff}'
+          )
+          
+          model = genai.GenerativeModel('gemini-1.5-flash')
+          print('Analyzing code with Gemini...')
+          review = model.generate_content(prompt).text
+
+          # 3. Post Review Result as PR Comment
+          comment_url = f'https://api.github.com/repos/{repo}/issues/{pr_num}/comments'
+          post_headers = {'Authorization': f'token {gh_token}', 'Accept': 'application/vnd.github+json'}
+          payload = {'body': f'### ✨ Gemini Code Review\n\n{review}'}
+          
+          post_resp = requests.post(comment_url, headers=post_headers, json=payload)
+          
+          if post_resp.status_code == 201:
+              print('Review posted successfully!')
+          else:
+              print(f'Failed to post comment: {post_resp.text}')
+              sys.exit(1)
+          "
