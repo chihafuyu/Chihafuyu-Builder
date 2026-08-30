@@ -97,9 +97,13 @@ def main():
     repo = os.environ.get('REPO')
     pr_num = os.environ.get('PR_NUMBER')
     gh_token = os.environ.get('GITHUB_TOKEN')
+    gemini_api_key = os.environ.get('GEMINI_API_KEY')
 
-    if not all([repo, pr_num, gh_token]):
-        print("Missing required environment variables.")
+    if not all([repo, pr_num, gh_token, gemini_api_key]):
+        print(
+            "Missing required environment variables "
+            "(REPO, PR_NUMBER, GITHUB_TOKEN, or GEMINI_API_KEY)."
+        )
         sys.exit(1)
 
     safe_diff = fetch_pr_diff(repo, pr_num, gh_token)
