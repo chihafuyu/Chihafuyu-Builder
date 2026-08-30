@@ -58,7 +58,7 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
 
     # 2. Sequential fallback if a specific source fails or use the "default"
     fallback_order = [
-        "direct", "github", "huggingface", "aurora_play", "apkmirror",
+        "direct", "github", "huggingface", "google_play", "apkmirror",
         "apkpure", "apkcombo", "aptoide", "uptodown", "archive"
     ]
 
