@@ -8,11 +8,12 @@ import sys
 import time
 import requests
 from google import genai
+from google.genai import errors
 
 def fetch_pr_diff(repo: str, pr_num: str, gh_token: str) -> str:
     """Fetches the PR diff from GitHub API."""
     headers = {
-        'Authorization': f'token {gh_token}',
+        'Authorization': f'Bearer {gh_token}',
         'Accept': 'application/vnd.github.v3.diff'
     }
     url = f"https://api.github.com/repos/{repo}/pulls/{pr_num}"
@@ -54,7 +55,7 @@ def analyze_code(safe_diff: str) -> str:
                 contents=prompt
             )
             return response.text
-        except (ValueError, RuntimeError, ConnectionError, TimeoutError) as err:
+        except (errors.APIError, ConnectionError, TimeoutError) as err:
             print(f"Gemini API error: {err}")
             if attempt < max_retries - 1:
                 sleep_time = (2 ** attempt) * 5
@@ -70,7 +71,7 @@ def post_comment(repo: str, pr_num: str, gh_token: str, review: str) -> None:
     """Posts the review result as a comment on the PR."""
     comment_url = f"https://api.github.com/repos/{repo}/issues/{pr_num}/comments"
     post_headers = {
-        'Authorization': f'token {gh_token}',
+        'Authorization': f'Bearer {gh_token}',
         'Accept': 'application/vnd.github+json'
     }
     payload = {'body': f"### ✨ Gemini Code Review\n\n{review}"}
