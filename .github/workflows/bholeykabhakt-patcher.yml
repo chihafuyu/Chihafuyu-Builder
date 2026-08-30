@@ -62,6 +62,7 @@ on:
         default: 'default'
         options:
           - default
+          - google_play
           - huggingface
           - archive
           - apkmirror
@@ -296,6 +297,9 @@ jobs:
           CUSTOM_VERSION: ${{ inputs.custom_version }}
           DOWNLOAD_SOURCE: ${{ inputs.download_source }}
           CONTINUE_ON_ERROR: ${{ inputs.continue_on_error }}
+          PLAY_EMAIL: ${{ secrets.PLAY_EMAIL }}
+          PLAY_AAS_TOKEN: ${{ secrets.PLAY_AAS_TOKEN }}
+          DEVICE_PROPERTIES_B64: ${{ secrets.DEVICE_PROPERTIES_B64 }}
         run: |
           set -euo pipefail
 
