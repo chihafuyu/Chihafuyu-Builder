@@ -355,7 +355,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          python -u chihafuyu_tool.py \
+          python -u main.py \
             --ecosystem "kiraio-moe" \
             --apps "$SELECTED_APPS" \
             --arch "$ARCHITECTURE" \

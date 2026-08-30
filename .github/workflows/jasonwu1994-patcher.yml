@@ -262,7 +262,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          python -u chihafuyu_tool.py \
+          python -u main.py \
             --ecosystem "jasonwu1994" \
             --apps "$SELECTED_APPS" \
             --arch "$ARCHITECTURE" \

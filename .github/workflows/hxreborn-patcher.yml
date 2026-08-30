@@ -299,7 +299,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          python -u chihafuyu_tool.py \
+          python -u main.py \
             --ecosystem "hxreborn" \
             --apps "$SELECTED_APPS" \
             --arch "$ARCHITECTURE" \

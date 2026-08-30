@@ -369,7 +369,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          python -u chihafuyu_tool.py \
+          python -u main.py \
             --ecosystem "hoo-dles" \
             --apps "$SELECTED_APPS" \
             --arch "$ARCHITECTURE" \
