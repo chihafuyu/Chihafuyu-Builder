@@ -36,7 +36,7 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           python -c "
-          import os, requests, sys
+          import os, requests, sys, time
           from google import genai
 
           repo = os.environ['REPO']
@@ -56,10 +56,9 @@ jobs:
               print('No code changes to review.')
               sys.exit(0)
 
-          # Limit diff text (Gemini Flash supports up to 1M tokens)
           safe_diff = diff_text[:50000]
 
-          # 2. Send Instructions to Gemini 1.5 Flash
+          # 2. Send Instructions to Gemini
           prompt = (
               'You are an expert Python and Android ecosystem reviewer. '
               'Review the following pull request diff. '
@@ -68,15 +67,29 @@ jobs:
               f'Diff:\n{safe_diff}'
           )
           
-          # Initialize the new SDK client (automatically uses GEMINI_API_KEY env var)
           client = genai.Client()
           
-          print('Analyzing code with Gemini...')
-          response = client.models.generate_content(
-              model='gemini-3.6-flash',
-              contents=prompt
-          )
-          review = response.text
+          max_retries = 3
+          review = ''
+          
+          for attempt in range(max_retries):
+              try:
+                  print(f'Analyzing code with Gemini (Attempt {attempt + 1}/{max_retries})...')
+                  response = client.models.generate_content(
+                      model='gemini-3.6-flash',
+                      contents=prompt
+                  )
+                  review = response.text
+                  break
+              except Exception as e:
+                  print(f'Gemini API error: {e}')
+                  if attempt < max_retries - 1:
+                      sleep_time = (2 ** attempt) * 5
+                      print(f'Retrying in {sleep_time} seconds...')
+                      time.sleep(sleep_time)
+                  else:
+                      print('Max retries reached. Failing the workflow.')
+                      sys.exit(1)
 
           # 3. Post Review Result as PR Comment
           comment_url = f'https://api.github.com/repos/{repo}/issues/{pr_num}/comments'
