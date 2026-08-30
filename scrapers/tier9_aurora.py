@@ -31,44 +31,63 @@ class GooglePlayScraper(BaseScraper):
                 return dst
         return None
 
+    def _prepare_cmd(
+        self, ctx: Context, tmp: str, email: str, aas_token: str, props_b64: Optional[str]
+    ) -> list:
+        """Builds the apkeep command and generates required config files."""
+        ini_path = os.path.join(tmp, "apkeep.ini")
+        with open(ini_path, "w", encoding="utf-8") as f_obj:
+            f_obj.write(f"[google]\nemail = {email}\naas_token = {aas_token}\n")
+
+        # Get the specific version code from ecosystems.json
+        version_code = ctx.app_data.get("play_version_code")
+        target_arg = f"{ctx.pkg}@{version_code}" if version_code else ctx.pkg
+
+        cmd = [
+            "apkeep",
+            "-a", target_arg,
+            "-d", "google-play",
+            "-i", ini_path
+        ]
+
+        # Modern apps (Twitter, IG, Reddit, etc) require split_apk=true
+        options = ["split_apk=true"]
+
+        # Decode Base64 to device.properties on the fly
+        if props_b64:
+            props_path = os.path.join(tmp, "device.properties")
+            with open(props_path, "wb") as f_obj:
+                f_obj.write(base64.b64decode(props_b64))
+            options.extend(["device=default", f"device_properties_file={props_path}"])
+
+        cmd.extend(["-o", ",".join(options), tmp])
+        return cmd
+
     def _execute_apkeep(
         self, ctx: Context, dl_dir: str, email: str, aas_token: str, props_b64: Optional[str]
     ) -> Optional[str]:
         """Handles the temporary directory generation and subprocess execution."""
         with tempfile.TemporaryDirectory(prefix="apkeep-play-") as tmp:
             try:
-                # Generate apkeep.ini on the fly
-                ini_path = os.path.join(tmp, "apkeep.ini")
-                with open(ini_path, "w", encoding="utf-8") as f_obj:
-                    f_obj.write(f"[google]\nemail = {email}\naas_token = {aas_token}\n")
-
-                cmd = [
-                    "apkeep",
-                    "-a", f"{ctx.pkg}@{ctx.target_ver}",
-                    "-d", "google-play",
-                    "-i", ini_path
-                ]
-
-                # Decode Base64 to device.properties on the fly
-                if props_b64:
-                    props_path = os.path.join(tmp, "device.properties")
-                    with open(props_path, "wb") as f_obj:
-                        f_obj.write(base64.b64decode(props_b64))
-                    cmd.extend([
-                        "-o", f"device=default,device_properties_file={props_path}"
-                    ])
-
-                cmd.append(tmp)
+                cmd = self._prepare_cmd(ctx, tmp, email, aas_token, props_b64)
                 res = subprocess.run(cmd, capture_output=True, text=True, check=False)
 
                 if res.returncode != 0:
                     print(f"[WARN] Apkeep Play Store failed: {res.stderr.strip()}")
                     return None
+
             except OSError as err:
                 print(f"[ERROR] apkeep execution failed: {err}")
                 return None
 
-            return self._find_and_copy_apk(tmp, dl_dir)
+            copied_file = self._find_and_copy_apk(tmp, dl_dir)
+
+            # Print apkeep logs if it exited with 0 but no APK was found
+            if not copied_file:
+                err_log = res.stderr.strip() or res.stdout.strip()
+                print(f"[WARN] Apkeep skipped silently. Log: {err_log}")
+
+            return copied_file
 
     def scrape(self, ctx: Context) -> Optional[str]:
         """Executes the scraping process via Google Play and Apkeep."""

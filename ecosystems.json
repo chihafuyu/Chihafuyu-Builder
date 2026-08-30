@@ -1068,6 +1068,7 @@
             },
             "newx-twitter": {
                 "package": "com.twitter.android",
+				"play_version_code": "312205001",
                 "search_term": "X",
                 "stable": [
                     "12.20.5-prod.01"
@@ -1084,6 +1085,7 @@
                     "NewX: Customize drawer items",
                     "NewX: Customize inline actions",
                     "NewX: Customize navigation bar items",
+					"NewX: Dynamic color",
                     "NewX: Feature switch overrides",
                     "NewX: Hide AI-generated posts",
                     "NewX: Hide Discover more",
@@ -1092,6 +1094,7 @@
                     "NewX: Hide new posts pill",
                     "NewX: Hide premium upsell",
                     "NewX: Hide who to follow",
+					"NewX: Inline download button",
                     "NewX: Remove ads",
                     "NewX: Share post as image",
                     "NewX: Show sensitive media",
