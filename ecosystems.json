@@ -421,10 +421,10 @@
                 "package": "com.google.android.apps.photos",
                 "search_term": "Google Photos",
                 "stable": [
-                    "Any"
+                    "7.90.0.971743778"
                 ],
                 "beta": [
-                    "7.89.0.968035987"
+                    ""
                 ],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -935,7 +935,7 @@
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
                 "stable": [
-                    "1.93.138"
+                    "1.94.117"
                 ],
                 "beta": [],
                 "strip": true,
@@ -955,7 +955,7 @@
                 "package": "com.vivaldi.browser.snapshot",
                 "search_term": "Vivaldi Browser Snapshot",
                 "stable": [
-                    "8.2.4143.3"
+                    "8.2.4145.4"
                 ],
                 "beta": [],
                 "strip": true,
