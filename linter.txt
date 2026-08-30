@@ -1,0 +1,6 @@
+************* Module main
+main.py:14:0: E0401: Unable to import 'scrapers' (import-error)
+
+------------------------------------------------------------------
+Your code has been rated at 9.73/10 (previous run: 9.62/10, +0.11)
+

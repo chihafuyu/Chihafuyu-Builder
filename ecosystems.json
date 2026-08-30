@@ -1070,7 +1070,7 @@
                 "package": "com.twitter.android",
                 "search_term": "X",
                 "stable": [
-                    "12.19.1-release.0"
+                    "12.20.5-prod.01"
                 ],
                 "beta": [],
                 "strip": true,
