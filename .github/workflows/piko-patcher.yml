@@ -47,6 +47,7 @@ on:
         default: 'default'
         options:
           - default
+          - aurora_play
           - huggingface
           - archive
           - apkmirror
