@@ -21,21 +21,36 @@ class GooglePlayScraper(BaseScraper):
         """Returns the tier identifier."""
         return "google_play"
 
-    def _find_and_copy_apk(self, tmp_dir: str, dl_dir: str) -> Optional[str]:
+    def _find_and_copy_apk(self, ctx: Context, tmp_dir: str, dl_dir: str) -> Optional[str]:
         """Finds the downloaded file or packed split APK directory."""
-        # 1. Search for standalone files
-        for ext in ("*.apk", "*.xapk", "*.apkm", "*.apks", "*.zip"):
+        for ext in ("*.xapk", "*.apkm", "*.apks", "*.zip"):
             found = glob.glob(os.path.join(tmp_dir, ext))
             if found:
                 dst = os.path.join(dl_dir, _safe_filename(os.path.basename(found[0])))
                 shutil.copy2(found[0], dst)
                 return dst
 
-        # 2. Check if apkeep created a directory for split APKs
+        apk_files = glob.glob(os.path.join(tmp_dir, "*.apk"))
+        if apk_files:
+            if len(apk_files) == 1:
+                dst = os.path.join(dl_dir, _safe_filename(os.path.basename(apk_files[0])))
+                shutil.copy2(apk_files[0], dst)
+                return dst
+
+            pack_dir = os.path.join(tmp_dir, "split_pack")
+            os.makedirs(pack_dir, exist_ok=True)
+            for apk in apk_files:
+                shutil.move(apk, pack_dir)
+
+            base_name = os.path.join(dl_dir, _safe_filename(ctx.pkg))
+            shutil.make_archive(base_name, "zip", pack_dir)
+            dst = f"{base_name}.apks"
+            os.replace(f"{base_name}.zip", dst)
+            return dst
+
         for item in os.listdir(tmp_dir):
             item_path = os.path.join(tmp_dir, item)
             if os.path.isdir(item_path):
-                # Pack the directory into an .apks (zip) file
                 base_name = os.path.join(dl_dir, _safe_filename(item))
                 shutil.make_archive(base_name, "zip", item_path)
                 dst = f"{base_name}.apks"
@@ -47,33 +62,26 @@ class GooglePlayScraper(BaseScraper):
     def _prepare_cmd(
         self, ctx: Context, tmp: str, email: str, aas_token: str, props_b64: Optional[str]
     ) -> list:
-        """Builds the apkeep command and generates required config files."""
-        ini_path = os.path.join(tmp, "apkeep.ini")
-        with open(ini_path, "w", encoding="utf-8") as f_obj:
-            f_obj.write(f"[google]\nemail = {email}\naas_token = {aas_token}\n")
-
-        # Get the specific version code from ecosystems.json
-        version_code = ctx.app_data.get("play_version_code")
-        target_arg = f"{ctx.pkg}@{version_code}" if version_code else ctx.pkg
-
+        """Builds the apkeep command adhering strictly to official CLI specs."""
         cmd = [
             "apkeep",
-            "-a", target_arg,
+            "-a", ctx.pkg,
             "-d", "google-play",
-            "-i", ini_path
+            "-e", email,
+            "-t", aas_token
         ]
 
-        # Modern apps (Twitter, IG, Reddit, etc) require split_apk=true
         options = ["split_apk=true"]
 
-        # Decode Base64 to device.properties on the fly
         if props_b64:
             props_path = os.path.join(tmp, "device.properties")
             with open(props_path, "wb") as f_obj:
                 f_obj.write(base64.b64decode(props_b64))
             options.extend(["device=default", f"device_properties_file={props_path}"])
 
-        cmd.extend(["-o", ",".join(options), tmp])
+        cmd.extend(["-o", ",".join(options)])
+        # OUTPATH must always be placed at the very end of the command arguments
+        cmd.append(tmp)
         return cmd
 
     def _execute_apkeep(
@@ -93,9 +101,8 @@ class GooglePlayScraper(BaseScraper):
                 print(f"[ERROR] apkeep execution failed: {err}")
                 return None
 
-            copied_file = self._find_and_copy_apk(tmp, dl_dir)
+            copied_file = self._find_and_copy_apk(ctx, tmp, dl_dir)
 
-            # Print apkeep logs if it exited with 0 but no APK was found
             if not copied_file:
                 err_log = res.stderr.strip() or res.stdout.strip()
                 print(f"[WARN] Apkeep skipped silently. Log: {err_log}")
