@@ -48,7 +48,7 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
 
     os.makedirs(os.path.join(ctx.out_dir, ctx.pkg), exist_ok=True)
 
-    # 1. Coba download dari sumber spesifik jika diminta via argumen CLI
+    # 1. Try downloading from a specific source if prompted via a CLI argument
     req_source = args.download_source.lower()
     if req_source in AVAILABLE_SCRAPERS:
         scraper_instance = AVAILABLE_SCRAPERS[req_source]()
@@ -56,14 +56,14 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
         if path:
             return process_downloaded_file(path)
 
-    # 2. Sequential fallback jika sumber spesifik gagal atau pakai "default"
+    # 2. Sequential fallback if a specific source fails or use the "default"
     fallback_order = [
         "direct", "github", "huggingface", "apkmirror",
         "apkpure", "apkcombo", "aptoide", "uptodown", "archive"
     ]
 
     for src_name in fallback_order:
-        # Skip jika sumber ini sudah dicoba di langkah 1
+        # Skip this if the source was already tried in step 1
         if src_name in AVAILABLE_SCRAPERS and src_name != req_source:
             scraper_instance = AVAILABLE_SCRAPERS[src_name]()
             path = scraper_instance.scrape(ctx)
