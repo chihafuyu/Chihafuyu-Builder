@@ -22,13 +22,26 @@ class GooglePlayScraper(BaseScraper):
         return "google_play"
 
     def _find_and_copy_apk(self, tmp_dir: str, dl_dir: str) -> Optional[str]:
-        """Finds the downloaded file in the temp directory and moves it."""
+        """Finds the downloaded file or packed split APK directory."""
+        # 1. Search for standalone files
         for ext in ("*.apk", "*.xapk", "*.apkm", "*.apks", "*.zip"):
             found = glob.glob(os.path.join(tmp_dir, ext))
             if found:
                 dst = os.path.join(dl_dir, _safe_filename(os.path.basename(found[0])))
                 shutil.copy2(found[0], dst)
                 return dst
+
+        # 2. Check if apkeep created a directory for split APKs
+        for item in os.listdir(tmp_dir):
+            item_path = os.path.join(tmp_dir, item)
+            if os.path.isdir(item_path):
+                # Pack the directory into an .apks (zip) file
+                base_name = os.path.join(dl_dir, _safe_filename(item))
+                shutil.make_archive(base_name, "zip", item_path)
+                dst = f"{base_name}.apks"
+                os.replace(f"{base_name}.zip", dst)
+                return dst
+
         return None
 
     def _prepare_cmd(
