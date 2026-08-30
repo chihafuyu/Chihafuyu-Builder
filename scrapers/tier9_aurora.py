@@ -26,7 +26,7 @@ class AuroraPlaystoreScraper(BaseScraper):
         try:
             # Using the GET endpoint Aurora Store
             resp = requests.get(
-                "https://dispenser.auroraoss.com/api/auth", timeout=15
+                "https://auroraoss.com/api/auth", timeout=15
             )
             if resp.status_code == 200:
                 data = resp.json()
