@@ -958,6 +958,9 @@
                         "options": {
                             "locales": "en-US, id"
                         }
+                    },
+                    "Native Bloat Slimmer": {	
+                        "enabled": true
                     }
                 }
             },
@@ -1131,7 +1134,7 @@
                 "package": "com.twitter.android",
                 "search_term": "X",
                 "stable": [
-                    "12.17.0-release.0"
+                    "12.19.1-release.0"
                 ],
                 "beta": [],
                 "strip": true,
