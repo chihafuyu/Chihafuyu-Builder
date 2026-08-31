@@ -44,6 +44,7 @@ If you want the workflow to automatically upload patched APKs to Telegram, you n
 ### 4. Set Up GitHub Secrets
 For the automated workflows to function, you MUST configure the following secrets in your repository (`Settings > Secrets and variables > Actions`):
 
+*   **`GEMINI_API_KEY`**: Your Google Gemini API key to run the automated pull request code reviewer.
 *   **`KEYSTORE_BASE64`**: Paste the entire contents of the `custom_keystore_base64.txt` generated in Step 2.
 *   **`KEYSTORE_ALIAS`**: The alias you chose during Keystore generation.
 *   **`KEYSTORE_PASSWORD`**: The password you set during Keystore generation.

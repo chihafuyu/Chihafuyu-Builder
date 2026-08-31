@@ -423,9 +423,7 @@
                 "stable": [
                     "7.90.0.971743778"
                 ],
-                "beta": [
-                    ""
-                ],
+                "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -449,7 +447,7 @@
                 "package": "net.quetta.browser",
                 "search_term": "Quetta Browser",
                 "stable": [
-                    "Any"
+                    ""
                 ],
                 "beta": [],
                 "strip": true,
@@ -460,7 +458,7 @@
                 "package": "net.quetta.browser.official",
                 "search_term": "Quetta Browser",
                 "stable": [
-                    "Any"
+                    ""
                 ],
                 "beta": [],
                 "strip": true,
@@ -486,7 +484,7 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
-			},
+            },
             "bend": {
                 "package": "com.bowerydigital.bend",
                 "search_term": "Bend",
@@ -684,17 +682,25 @@
             },
             "projectivy-launcher": {
                 "package": "com.spocky.projengmenu",
+                "search_term": "Projectivy Launcher",
                 "stable": [
-                    "Any"
+                    ""
                 ],
-                "archive_id": "ZeNiX"
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "proton-mail": {
                 "package": "ch.protonmail.android",
+                "search_term": "Proton Mail",
                 "stable": [
                     "7.10.4"
                 ],
-                "archive_id": "ZeNiX"
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "readera": {
                 "package": "org.readera",
@@ -709,10 +715,14 @@
             },
             "symfonium": {
                 "package": "app.symfonik.music.player",
+                "search_term": "Symfonium",
                 "stable": [
                     "14.1.0"
                 ],
-                "archive_id": "ZeNiX"
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     },
@@ -1068,7 +1078,7 @@
             },
             "newx-twitter": {
                 "package": "com.twitter.android",
-				"play_version_code": "312205001",
+                "play_version_code": "312205001",
                 "search_term": "X",
                 "stable": [
                     "12.20.5-prod.01"
@@ -1082,16 +1092,17 @@
                     "NewX: Custom font",
                     "NewX: Custom sharing domain",
                     "NewX: Customize default media tab",
-					"NewX: Customize default reply sorting",
+                    "NewX: Customize default reply sorting",
                     "NewX: Customize drawer items",
                     "NewX: Customize inline actions",
                     "NewX: Customize navigation bar items",
-					"NewX: Disable video player scrolling",
-					"NewX: Dynamic color",
+                    "NewX: Disable automatic timeline refresh",
+                    "NewX: Disable video player scrolling",
+                    "NewX: Dynamic color",
                     "NewX: Feature switch overrides",
-					"NewX: Filter For You by topic",
-					"NewX: Filter posts by keyword",
-					"NewX: Force highest video/audio quality",
+                    "NewX: Filter For You by topic",
+                    "NewX: Filter posts by keyword",
+                    "NewX: Force highest video/audio quality",
                     "NewX: Hide AI-generated posts",
                     "NewX: Hide Discover more",
                     "NewX: Hide Spaces bar",
@@ -1099,8 +1110,10 @@
                     "NewX: Hide new posts pill",
                     "NewX: Hide premium upsell",
                     "NewX: Hide who to follow",
-					"NewX: Inline download button",
+                    "NewX: Inline download button",
+                    "NewX: Open canonical URLs",
                     "NewX: Remove ads",
+                    "NewX: Restore timeline position",
                     "NewX: Share post as image",
                     "NewX: Show sensitive media",
                     "NewX: Unlock downloads"
