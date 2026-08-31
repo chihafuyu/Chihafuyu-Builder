@@ -1132,6 +1132,7 @@
             },
             "x-twitter": {
                 "package": "com.twitter.android",
+                "play_version_code": "312191000",
                 "search_term": "X",
                 "stable": [
                     "12.19.1-release.0"
