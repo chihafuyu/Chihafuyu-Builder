@@ -421,12 +421,12 @@
                 "package": "com.google.android.apps.photos",
                 "search_term": "Google Photos",
                 "stable": [
-                    "7.90.0.971743778"
+                    "7.91.0.973540846"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "52288898",
-                    "armeabi-v7a": "52288898",
-                    "x86_64": "52288898"
+                    "arm64-v8a": "52331956",
+                    "armeabi-v7a": "52331956",
+                    "x86_64": "52331956"
                 },
                 "beta": [],
                 "strip": true,
@@ -754,6 +754,11 @@
                 "stable": [
                     "18.0.3.954559732-release-arm64-v8a"
                 ],
+                "version_codes": {
+                    "arm64-v8a": "175940518",
+                    "armeabi-v7a": "175940518",
+                    "x86_64": "175940518"
+                },
                 "beta": [],
                 "strip": true,
                 "force_arch": "arm64-v8a",
@@ -964,7 +969,7 @@
                             "locales": "en-US, id"
                         }
                     },
-                    "Native Bloat Slimmer": {	
+                    "Native Bloat Slimmer": {
                         "enabled": true
                     }
                 }
