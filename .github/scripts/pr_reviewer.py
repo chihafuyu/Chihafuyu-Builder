@@ -7,9 +7,11 @@ import os
 import re
 import sys
 import time
-import requests
 from google import genai
 from google.genai import errors
+import httpx
+import requests
+
 
 def fetch_pr_diff(repo: str, pr_num: str, gh_token: str) -> str:
     """Fetches the PR diff from GitHub API with error handling and truncation safety."""
@@ -21,8 +23,8 @@ def fetch_pr_diff(repo: str, pr_num: str, gh_token: str) -> str:
     try:
         resp = requests.get(url, headers=headers, timeout=15)
         resp.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to fetch diff due to network error: {e}")
+    except requests.exceptions.RequestException as err:
+        print(f"Failed to fetch diff due to network error: {err}")
         sys.exit(1)
 
     diff_text = resp.text
@@ -38,6 +40,7 @@ def fetch_pr_diff(repo: str, pr_num: str, gh_token: str) -> str:
     if len(diff_text) > 50000:
         return diff_text[:50000] + '\n\n[...Diff truncated due to size limits...]'
     return diff_text
+
 
 def analyze_code(safe_diff: str, api_key: str) -> str:
     """Sends the diff to Gemini using explicitly provided API key and returns the review."""
@@ -64,7 +67,7 @@ def analyze_code(safe_diff: str, api_key: str) -> str:
                 contents=prompt
             )
             return response.text
-        except (errors.APIError, ConnectionError, TimeoutError) as err:
+        except (errors.APIError, httpx.RequestError, ConnectionError, TimeoutError) as err:
             print(f"Gemini API error: {err}")
             if attempt < max_retries - 1:
                 sleep_time = (2 ** attempt) * 5
@@ -75,6 +78,7 @@ def analyze_code(safe_diff: str, api_key: str) -> str:
                 sys.exit(1)
 
     return ""
+
 
 def post_comment(repo: str, pr_num: str, gh_token: str, review: str) -> None:
     """Posts the review result as a comment on the PR with exception handling."""
@@ -90,11 +94,12 @@ def post_comment(repo: str, pr_num: str, gh_token: str, review: str) -> None:
         post_resp = requests.post(comment_url, headers=post_headers, json=payload, timeout=15)
         post_resp.raise_for_status()
         print("Review posted successfully!")
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to post comment due to network error: {e}")
+    except requests.exceptions.RequestException as err:
+        print(f"Failed to post comment due to network error: {err}")
         if post_resp is not None:
             print(f"Server response: {post_resp.text}")
         sys.exit(1)
+
 
 def main():
     """Main execution entrypoint for the PR reviewer."""
@@ -113,6 +118,7 @@ def main():
     safe_diff = fetch_pr_diff(repo, pr_num, gh_token)
     review = analyze_code(safe_diff, api_key=gemini_api_key)
     post_comment(repo, pr_num, gh_token, review)
+
 
 if __name__ == "__main__":
     main()
