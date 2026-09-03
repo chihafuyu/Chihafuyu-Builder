@@ -26,9 +26,7 @@
             "projectivy-launcher": {
                 "package": "com.spocky.projengmenu",
                 "search_term": "Projectivy Launcher",
-                "stable": [
-                    ""
-                ],
+                "stable": [],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
