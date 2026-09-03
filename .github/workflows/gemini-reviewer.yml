@@ -26,7 +26,7 @@ jobs:
           python-version: '3.14'
 
       - name: Install Google Generative AI
-        run: pip install google-genai requests
+        run: pip install google-genai requests httpx
 
       - name: Run Gemini Code Review
         env:
