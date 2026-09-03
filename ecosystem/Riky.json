@@ -1,0 +1,31 @@
+{
+    "Riky": {
+        "apps": {
+            "3bmeteo": {
+                "package": "com.Meteosolutions.Meteo3b",
+                "search_term": "3BMeteo",
+                "stable": [
+                    "4.9.15"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "capcut": {
+                "package": "com.lemon.lvoverseas",
+                "search_term": "CapCut",
+                "stable": [
+                    "19.2.0"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "arm64-v8a": "19201600"
+                },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

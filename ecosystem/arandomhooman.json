@@ -1,0 +1,194 @@
+{
+    "arandomhooman": {
+        "apps": {
+            "adm": {
+                "package": "com.dv.adm",
+                "search_term": "Advanced Download Manager",
+                "stable": [
+                    "14.0.39"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "alpha-progression": {
+                "package": "com.alphaprogression.alphaprogression",
+                "search_term": "Alpha Progression",
+                "stable": [
+                    "7.1.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "bandlab": {
+                "package": "com.bandlab.bandlab",
+                "search_term": "BandLab",
+                "stable": [
+                    "11.25.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "battery-guru": {
+                "package": "com.paget96.batteryguru",
+                "search_term": "Battery Guru",
+                "stable": [
+                    "2.4.8.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "cronometer": {
+                "package": "com.cronometer.android.gold",
+                "search_term": "Cronometer",
+                "stable": [
+                    "4.56.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "directchat": {
+                "package": "net.uniquegem.directchat",
+                "search_term": "DirectChat",
+                "stable": [
+                    "1.9.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "finch": {
+                "package": "com.finch.finch",
+                "search_term": "Finch",
+                "stable": [
+                    "3.73.179"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "flightradar24": {
+                "package": "com.flightradar24free",
+                "search_term": "Flightradar24",
+                "stable": [
+                    "11.6.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "foldersync": {
+                "package": "dk.tacit.android.foldersync.lite",
+                "search_term": "FolderSync",
+                "stable": [
+                    "4.9.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "inshot": {
+                "package": "com.camerasideas.instashot",
+                "search_term": "InShot",
+                "stable": [
+                    "2.214.1539"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "liquid-gallery": {
+                "package": "com.soepic.photogallery.release",
+                "search_term": "Liquid Gallery",
+                "stable": [
+                    "2.1.11"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "poweramp": {
+                "package": "com.maxmpz.audioplayer",
+                "search_term": "Poweramp",
+                "stable": [
+                    "build-1025-uni"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "smart-audiobook": {
+                "package": "ak.alizandro.smartaudiobookplayer",
+                "search_term": "Smart AudioBook Player",
+                "stable": [
+                    "11.7.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "symfonium": {
+                "package": "app.symfonik.music.player",
+                "search_term": "Symfonium",
+                "stable": [
+                    "14.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "tumblr": {
+                "package": "com.tumblr",
+                "search_term": "Tumblr",
+                "stable": [
+                    "45.0.0.109"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "video-converter": {
+                "package": "app.remux.video.converter",
+                "search_term": "Video Converter",
+                "stable": [
+                    "3.2.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_arch": "arm64-v8a",
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "webtoon": {
+                "package": "com.naver.linewebtoon",
+                "search_term": "WEBTOON",
+                "stable": [
+                    "3.9.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

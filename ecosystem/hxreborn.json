@@ -1,0 +1,70 @@
+{
+    "hxreborn": {
+        "apps": {
+            "cx-file-explorer": {
+                "package": "com.cxinventor.file.explorer",
+                "search_term": "Cx File Explorer",
+                "stable": [
+                    "2.7.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "photo-editor-pro": {
+                "package": "photo.editor.photoeditor.photoeditorpro",
+                "search_term": "Photo Editor Pro",
+                "stable": [
+                    "1.791.265"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "projectivy-launcher": {
+                "package": "com.spocky.projengmenu",
+                "search_term": "Projectivy Launcher",
+                "stable": [],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "proton-mail": {
+                "package": "ch.protonmail.android",
+                "search_term": "Proton Mail",
+                "stable": [
+                    "7.10.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "readera": {
+                "package": "org.readera",
+                "search_term": "ReadEra",
+                "stable": [
+                    "26.05.20+2300"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "symfonium": {
+                "package": "app.symfonik.music.player",
+                "search_term": "Symfonium",
+                "stable": [
+                    "14.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

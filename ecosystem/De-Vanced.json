@@ -1,0 +1,33 @@
+{
+    "De-Vanced": {
+        "apps": {
+            "google-photos": {
+                "package": "com.google.android.apps.photos",
+                "search_term": "Google Photos",
+                "stable": [
+                    "7.91.0.973540846"
+                ],
+                "version_codes": {
+                    "arm64-v8a": "52331956",
+                    "armeabi-v7a": "52331956",
+                    "x86_64": "52331956"
+                },
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "strava": {
+                "package": "com.strava",
+                "search_term": "Strava",
+                "stable": [
+                    "477.14"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

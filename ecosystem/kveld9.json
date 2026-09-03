@@ -1,0 +1,49 @@
+{
+    "kveld9": {
+        "apps": {
+            "brave-browser": {
+                "package": "com.brave.browser",
+                "search_term": "Brave Browser",
+                "stable": [
+                    "1.94.119"
+                ],
+                "beta": [],
+                "strip": true,
+                "github_repo": "brave/brave-browser",
+                "github_asset": "Bravemonoarm64.apk",
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Locale PAK Slimmer": {
+                        "enabled": true,
+                        "options": {
+                            "locales": "en-US, id"
+                        }
+                    },
+                    "Native Bloat Slimmer": {
+                        "enabled": true
+                    }
+                }
+            },
+            "vivaldi-snapshot": {
+                "package": "com.vivaldi.browser.snapshot",
+                "search_term": "Vivaldi Browser Snapshot",
+                "stable": [
+                    "8.2.4145.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_arch": "arm64-v8a",
+                "direct_url": "https://downloads.vivaldi.com/snapshot/Vivaldi.[VERSI]_[ARCH].apk",
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Locale PAK Slimmer": {
+                        "enabled": true,
+                        "options": {
+                            "locales": "en, en-US, id"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

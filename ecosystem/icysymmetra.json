@@ -1,0 +1,17 @@
+{
+    "icysymmetra": {
+        "apps": {
+            "tiktok": {
+                "package": "com.zhiliaoapp.musically",
+                "search_term": "TikTok",
+                "stable": [
+                    "46.2.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}
