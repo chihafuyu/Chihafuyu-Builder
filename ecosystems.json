@@ -955,7 +955,7 @@
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
                 "stable": [
-                    "1.94.117"
+                    "1.94.119"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1091,10 +1091,10 @@
             },
             "newx-twitter": {
                 "package": "com.twitter.android",
-                "play_version_code": "312211005",
+                "play_version_code": "312220001",
                 "search_term": "X",
                 "stable": [
-                    "12.21.1-prod.05"
+                    "12.22.0-prod.01"
                 ],
                 "beta": [],
                 "strip": true,
