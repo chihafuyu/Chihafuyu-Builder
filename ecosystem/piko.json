@@ -1,0 +1,88 @@
+{
+    "piko": {
+        "apps": {
+            "instagram": {
+                "package": "com.instagram.android",
+                "search_term": "Instagram",
+                "stable": [
+                    "439.0.0.37.89"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "arm64-v8a": "384510827"
+                },
+                "strip": true,
+                "force_arch": "arm64-v8a",
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "newx-twitter": {
+                "package": "com.twitter.android",
+                "play_version_code": "312220001",
+                "search_term": "X",
+                "stable": [
+                    "12.22.0-prod.01"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "exclusive_patches": [
+                    "Change version code",
+                    "NewX: Browse tweet object",
+                    "NewX: Custom font",
+                    "NewX: Custom sharing domain",
+                    "NewX: Customize default media tab",
+                    "NewX: Customize default reply sorting",
+                    "NewX: Customize drawer items",
+                    "NewX: Customize inline actions",
+                    "NewX: Customize navigation bar items",
+                    "NewX: Disable automatic timeline refresh",
+                    "NewX: Disable video player scrolling",
+                    "NewX: Dynamic color",
+                    "NewX: Feature switch overrides",
+                    "NewX: Filter For You by topic",
+                    "NewX: Filter posts by keyword",
+                    "NewX: Force highest video/audio quality",
+                    "NewX: Hide AI-generated posts",
+                    "NewX: Hide Discover more",
+                    "NewX: Hide Spaces bar",
+                    "NewX: Hide compose button",
+                    "NewX: Hide new posts pill",
+                    "NewX: Hide premium upsell",
+                    "NewX: Hide who to follow",
+                    "NewX: Inline download button",
+                    "NewX: Open canonical URLs",
+                    "NewX: Remove ads",
+                    "NewX: Restore timeline position",
+                    "NewX: Share post as image",
+                    "NewX: Show sensitive media",
+                    "NewX: Unlock downloads"
+                ],
+                "options_override": {
+                    "Change version code": {
+                        "enabled": true,
+                        "options": {
+                            "versionCode": 2147483647
+                        }
+                    }
+                }
+            },
+            "x-twitter": {
+                "package": "com.twitter.android",
+                "play_version_code": "312191000",
+                "search_term": "X",
+                "stable": [
+                    "12.19.1-release.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Dynamic color": {
+                        "enabled": true
+                    }
+                }
+            }
+        }
+    }
+}

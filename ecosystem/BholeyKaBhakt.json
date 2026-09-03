@@ -1,0 +1,72 @@
+{
+    "BholeyKaBhakt": {
+        "apps": {
+            "backdrops": {
+                "package": "com.backdrops.wallpapers",
+                "search_term": "Backdrops",
+                "stable": [
+                    "6.1.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "proto": {
+                "package": "com.proto.circuitsimulator",
+                "search_term": "PROTO",
+                "stable": [
+                    "1.49.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "solid-explorer": {
+                "package": "pl.solidexplorer2",
+                "search_term": "Solid Explorer",
+                "stable": [
+                    "3.4.10"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "speedtest": {
+                "package": "org.zwanoo.android.speedtest",
+                "search_term": "Speedtest by Ookla",
+                "stable": [
+                    "7.0.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "stellarium": {
+                "package": "com.noctuasoftware.stellarium_free",
+                "search_term": "Stellarium",
+                "stable": [
+                    "1.16.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "vpnify": {
+                "package": "com.vpn.free.hotspot.secure.vpnify",
+                "search_term": "vpnify",
+                "stable": [
+                    "2.2.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

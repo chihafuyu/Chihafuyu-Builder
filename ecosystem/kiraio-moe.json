@@ -1,0 +1,168 @@
+{
+    "kiraio-moe": {
+        "apps": {
+            "atomic": {
+                "package": "com.jlindemann.science",
+                "search_term": "Atomic",
+                "stable": [
+                    "4.7.0m"
+                ],
+                "beta": [
+                    "5.0.1m"
+                ],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "boorusama": {
+                "package": "com.degenk.boorusama",
+                "search_term": "Boorusama",
+                "stable": [
+                    "4.5.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "epic": {
+                "package": "com.getepic.Epic",
+                "search_term": "Epic",
+                "stable": [
+                    "3.141.43"
+                ],
+                "beta": [
+                    "3.141.44"
+                ],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fakegps": {
+                "package": "com.hopefactory2021.fakegpslocation",
+                "search_term": "Fake GPS",
+                "stable": [
+                    "113.0"
+                ],
+                "beta": [
+                    "125.0"
+                ],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "hermit": {
+                "package": "com.chimbori.hermitcrab",
+                "search_term": "Hermit",
+                "stable": [
+                    "31.6.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "hidden-settings": {
+                "package": "com.ceyhan.sets",
+                "search_term": "Hidden Settings",
+                "stable": [
+                    "7.34"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "ilovepdf": {
+                "package": "com.ilovepdf.www",
+                "search_term": "iLovePDF",
+                "stable": [
+                    "4.0.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "key-mapper": {
+                "package": "io.github.sds100.keymapper",
+                "search_term": "Key Mapper",
+                "stable": [
+                    "4.2.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "keymate": {
+                "package": "net.nemostudio.keymate",
+                "search_term": "Keymate",
+                "stable": [
+                    "1.2.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "manga-plus": {
+                "package": "jp.co.shueisha.mangaplus",
+                "search_term": "MANGA Plus",
+                "stable": [
+                    "2.4.1"
+                ],
+                "beta": [
+                    "2.6.1"
+                ],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "nekopoi": {
+                "package": "com.kcstream.cing",
+                "search_term": "Nekopoi",
+                "stable": [
+                    "2.5.3-build01"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pixellab": {
+                "package": "com.imaginstudio.imagetools.pixellab",
+                "search_term": "PixelLab",
+                "stable": [
+                    "2.1.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pixiv": {
+                "package": "jp.pxv.android",
+                "search_term": "pixiv",
+                "stable": [
+                    "6.189.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "timestamp-camera": {
+                "package": "com.jeyluta.timestampcamerafree",
+                "search_term": "Timestamp Camera",
+                "stable": [
+                    "1.252"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

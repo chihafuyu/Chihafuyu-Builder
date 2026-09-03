@@ -1,0 +1,17 @@
+{
+    "PathxmOp": {
+        "apps": {
+            "chess": {
+                "package": "com.chess",
+                "search_term": "Chess",
+                "stable": [
+                    "4.10.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

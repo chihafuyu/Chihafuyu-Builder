@@ -1,0 +1,63 @@
+{
+    "morphe": {
+        "apps": {
+            "reddit": {
+                "package": "com.reddit.frontpage",
+                "search_term": "Reddit",
+                "stable": [
+                    "2026.14.0"
+                ],
+                "beta": [
+                    "2026.35.0"
+                ],
+                "strip": true,
+                "force_bundle": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Disable Play Store updates": {
+                        "enabled": true
+                    }
+                }
+            },
+            "youtube": {
+                "package": "com.google.android.youtube",
+                "search_term": "YouTube",
+                "stable": [
+                    "21.04.223"
+                ],
+                "beta": [
+                    "21.35.442"
+                ],
+                "version_codes": {
+                    "arm64-v8a": "1561295275",
+                    "armeabi-v7a": "1561295275",
+                    "x86_64": "1561295275"
+                },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Hide Shorts components": {
+                        "enabled": true,
+                        "options": {
+                            "hideShortsAppShortcut": true,
+                            "hideShortsWidget": true
+                        }
+                    }
+                }
+            },
+            "youtube-music": {
+                "package": "com.google.android.apps.youtube.music",
+                "search_term": "YouTube Music",
+                "stable": [
+                    "9.15.51"
+                ],
+                "beta": [
+                    "9.26.56"
+                ],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

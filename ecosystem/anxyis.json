@@ -1,0 +1,17 @@
+{
+    "anxyis": {
+        "apps": {
+            "alight-motion": {
+                "package": "com.alightcreative.motion",
+                "search_term": "Alight Motion",
+                "stable": [
+                    "5.0.273.1028425"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

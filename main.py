@@ -22,9 +22,13 @@ from core.utils import (
 )
 
 
-def load_config() -> Dict[str, Dict[str, Any]]:
-    """Loads the ecosystem configuration from the JSON file."""
-    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ecosystems.json")
+def load_config(ecosystem_name: str) -> Dict[str, Any]:
+    """Loads the ecosystem configuration from the specific JSON file."""
+    config_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "ecosystem",
+        f"{ecosystem_name}.json"
+    )
     if not os.path.isfile(config_path):
         sys.exit(f"[FATAL] '{config_path}' not found.")
     try:
@@ -33,11 +37,10 @@ def load_config() -> Dict[str, Dict[str, Any]]:
     except (OSError, json.JSONDecodeError) as err:
         sys.exit(f"[FATAL] Failed to load config: {err}")
     if not isinstance(data, dict):
-        sys.exit("[FATAL] ecosystems.json must contain a JSON object.")
-    return data
-
-
-ECOSYSTEMS: Dict[str, Dict[str, Any]] = load_config()
+        sys.exit(f"[FATAL] {ecosystem_name}.json must contain a JSON object.")
+    if ecosystem_name not in data:
+        sys.exit(f"[FATAL] Root key '{ecosystem_name}' missing in {config_path}.")
+    return data[ecosystem_name]
 
 
 def download_apk(ctx: Context, args: Any) -> Optional[str]:
@@ -48,7 +51,6 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
 
     os.makedirs(os.path.join(ctx.out_dir, ctx.pkg), exist_ok=True)
 
-    # 1. Try downloading from a specific source if prompted via a CLI argument
     req_source = args.download_source.lower()
     if req_source in AVAILABLE_SCRAPERS:
         scraper_instance = AVAILABLE_SCRAPERS[req_source]()
@@ -56,14 +58,12 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
         if path:
             return process_downloaded_file(path)
 
-    # 2. Sequential fallback if a specific source fails or use the "default"
     fallback_order = [
         "direct", "github", "huggingface", "google_play", "apkmirror",
         "apkpure", "apkcombo", "aptoide", "uptodown", "archive"
     ]
 
     for src_name in fallback_order:
-        # Skip this if the source was already tried in step 1
         if src_name in AVAILABLE_SCRAPERS and src_name != req_source:
             scraper_instance = AVAILABLE_SCRAPERS[src_name]()
             path = scraper_instance.scrape(ctx)
@@ -212,8 +212,7 @@ def process_single_app(
 
 def run_patcher(args: Any) -> None:
     """Main execution function to handle the patching loop."""
-    if args.ecosystem not in ECOSYSTEMS:
-        sys.exit(f"[FATAL] Ecosystem '{args.ecosystem}' not found in JSON.")
+    eco_config = load_config(args.ecosystem)
 
     workspace = f"./{_safe_filename(args.ecosystem)}"
     state = {
@@ -225,7 +224,7 @@ def run_patcher(args: Any) -> None:
     os.makedirs(state["out_dir"], exist_ok=True)
 
     print(f"=== INITIALIZING WORKSPACE: {args.ecosystem.upper()} ===")
-    eco_apps = ECOSYSTEMS[args.ecosystem].get("apps")
+    eco_apps = eco_config.get("apps")
     if not isinstance(eco_apps, dict):
         sys.exit(f"[FATAL] '{args.ecosystem}' has no valid 'apps' config.")
 

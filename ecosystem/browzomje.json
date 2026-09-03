@@ -1,0 +1,29 @@
+{
+    "browzomje": {
+        "apps": {
+            "easy-sudoku": {
+                "package": "easy.sudoku.puzzle.solver.free",
+                "search_term": "Easy Sudoku",
+                "stable": [
+                    "5.70.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pinterest": {
+                "package": "com.pinterest",
+                "search_term": "Pinterest",
+                "stable": [
+                    "14.34.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "uptodown_url": "https://pinterest.en.uptodown.com/android",
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

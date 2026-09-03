@@ -1,0 +1,191 @@
+{
+    "hoo-dles": {
+        "apps": {
+            "adguard": {
+                "package": "com.adguard.android",
+                "search_term": "AdGuard",
+                "stable": [
+                    "4.13.2"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "arm64-v8a": "42119001",
+                    "armeabi-v7a": "42119001",
+                    "x86_64": "42119001"
+                },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "bend": {
+                "package": "com.bowerydigital.bend",
+                "search_term": "Bend",
+                "stable": [
+                    "7.6.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_arch": "arm64-v8a",
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "bunpo": {
+                "package": "com.bunpoapp",
+                "search_term": "Bunpo",
+                "stable": [
+                    "3.21.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_arch": "arm64-v8a",
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "camscanner": {
+                "package": "com.intsig.camscanner",
+                "search_term": "CamScanner",
+                "stable": [
+                    "7.20.0.2606230000"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "duolingo": {
+                "package": "com.duolingo",
+                "search_term": "Duolingo",
+                "stable": [
+                    "6.92.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "ibispaint": {
+                "package": "jp.ne.ibis.ibispaintx.app",
+                "search_term": "ibis Paint X",
+                "stable": [
+                    "14.0.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_arch": "arm64-v8a",
+                "uptodown_url": "https://ibispaint-x.en.uptodown.com/android",
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "lightroom-mobile": {
+                "package": "com.adobe.lrmobile",
+                "search_term": "Lightroom",
+                "stable": [
+                    "11.5.01"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "mimo": {
+                "package": "com.getmimo",
+                "search_term": "Mimo",
+                "stable": [
+                    "9.11"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "niagara-launcher": {
+                "package": "bitpit.launcher",
+                "search_term": "Niagara Launcher",
+                "stable": [
+                    "1.16.24"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pydroid3": {
+                "package": "ru.iiec.pydroid3",
+                "search_term": "Pydroid 3",
+                "stable": [
+                    "8.3_arm64"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "sleep-as-android": {
+                "package": "com.urbandroid.sleep",
+                "search_term": "Sleep as Android",
+                "stable": [
+                    "20260526"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "smart-launcher": {
+                "package": "ginlemon.flowerfree",
+                "search_term": "Smart Launcher 6",
+                "stable": [
+                    "6.6 build 016"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "windy": {
+                "package": "com.windyty.android",
+                "search_term": "Windy.com",
+                "stable": [
+                    "51.0.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "wps": {
+                "package": "cn.wps.moffice_eng",
+                "search_term": "WPS Office",
+                "stable": [
+                    "18.24"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "xodo": {
+                "package": "com.xodo.pdf.reader",
+                "search_term": "Xodo",
+                "stable": [
+                    "10.15.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "xrecorder": {
+                "package": "videoeditor.videorecorder.screenrecorder",
+                "search_term": "XRecorder",
+                "stable": [
+                    "2.5.1.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

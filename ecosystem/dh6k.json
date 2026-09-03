@@ -1,0 +1,28 @@
+{
+    "dh6k": {
+        "apps": {
+            "quetta-browser": {
+                "package": "net.quetta.browser",
+                "search_term": "Quetta Browser",
+                "stable": [
+                    ""
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "quetta-browser-official": {
+                "package": "net.quetta.browser.official",
+                "search_term": "Quetta Browser",
+                "stable": [
+                    ""
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}
