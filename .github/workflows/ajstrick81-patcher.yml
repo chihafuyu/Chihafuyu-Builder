@@ -48,6 +48,11 @@ on:
         required: true
         type: boolean
         default: false
+      app_twitch:
+        description: 'Patch twitch'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -283,6 +288,7 @@ jobs:
           APP_VIX: ${{ inputs.app_vix }}
           APP_PLUTO_TV: ${{ inputs.app_pluto_tv }}
           APP_PARAMOUNT_PLUS: ${{ inputs.app_paramount_plus }}
+          APP_TWITCH: ${{ inputs.app_twitch }}
         run: |
           set -euo pipefail
 
@@ -296,6 +302,7 @@ jobs:
           if [[ "$APP_VIX" == "true" ]]; then APP_LIST="$APP_LIST,vix"; fi
           if [[ "$APP_PLUTO_TV" == "true" ]]; then APP_LIST="$APP_LIST,pluto-tv"; fi
           if [[ "$APP_PARAMOUNT_PLUS" == "true" ]]; then APP_LIST="$APP_LIST,paramount-plus"; fi
+          if [[ "$APP_TWITCH" == "true" ]]; then APP_LIST="$APP_LIST,twitch"; fi
 
           APP_LIST="${APP_LIST#,}"
 

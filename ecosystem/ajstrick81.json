@@ -4,9 +4,7 @@
             "disneyplus": {
                 "package": "com.disney.disneyplus",
                 "search_term": "Disney+",
-                "stable": [
-                    "26.12.1+rc1-2026.07.15"
-                ],
+                "stable": ["26.12.1+rc1-2026.07.15"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -22,10 +20,7 @@
             "hbo-max": {
                 "package": "com.wbd.hbomax",
                 "search_term": "HBO Max",
-                "stable": [
-                    "7.7.0.78",
-                    "7.5.0.73"
-                ],
+                "stable": ["7.9.0.61"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -34,9 +29,7 @@
             "netflix": {
                 "package": "com.netflix.ninja",
                 "search_term": "Netflix",
-                "stable": [
-                    "13.0.1 build 25028"
-                ],
+                "stable": ["13.0.1 build 25028"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -45,10 +38,7 @@
             "paramount-plus": {
                 "package": "com.cbs.ott",
                 "search_term": "Paramount+",
-                "stable": [
-                    "16.17.0",
-                    "16.8.0"
-                ],
+                "stable": ["16.17.0"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -57,9 +47,7 @@
             "peacock": {
                 "package": "com.peacocktv.peacockandroid",
                 "search_term": "Peacock",
-                "stable": [
-                    "7.6.100"
-                ],
+                "stable": ["7.6.100"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -79,9 +67,7 @@
             "prime-video": {
                 "package": "com.amazon.amazonvideo.livingroom",
                 "search_term": "Prime Video",
-                "stable": [
-                    "6.23.23+v15.5.0.70-armv7a"
-                ],
+                "stable": ["6.23.23+v15.5.0.70-armv7a"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -97,6 +83,22 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "twitch": {
+                "package": "tv.twitch.android.app",
+                "search_term": "Twitch",
+                "stable": ["13.0.0.2"],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "apkm_include": [
+                    "android tv"
+                ],
+                "apkm_exclude": [
+                    "phone",
+                    "tablet"
+                ]
             },
             "vix": {
                 "package": "com.univision.prendetv",
