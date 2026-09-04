@@ -22,13 +22,13 @@
                         "enabled": true
                     },
                     "Facebook 573 AI content diagnostics": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "Facebook 573 AI filter + recommendation diagnostics": {
                         "enabled": true
                     },
                     "Facebook 573 Feed recommendation diagnostics": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "Block Facebook automatic refresh (573)": {
                         "enabled": true
