@@ -15,10 +15,10 @@
                 "force_arch": "arm64-v8a",
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Block Facebook Story ads": {
+                    "Block Facebook Story ads (573)": {
                         "enabled": true
                     },
-                    "Hide Facebook AI content": {
+                    "Hide Facebook AI content (573)": {
                         "enabled": true
                     },
                     "Facebook 573 AI content diagnostics": {
@@ -30,7 +30,7 @@
                     "Facebook 573 Feed recommendation diagnostics": {
                         "enabled": true
                     },
-                    "Block Facebook automatic refresh": {
+                    "Block Facebook automatic refresh (573)": {
                         "enabled": true
                     }
                 }
