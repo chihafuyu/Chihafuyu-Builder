@@ -265,7 +265,7 @@ jobs:
           echo "SELECTED_APPS=$APP_LIST" >> "$GITHUB_ENV"
           echo "Ready to patch: $APP_LIST"
 
-      - name: Execute Chihafuyu Tool
+      - name: Execute Chihafuyu Builder
         env:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}

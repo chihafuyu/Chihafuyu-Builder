@@ -1,15 +1,10 @@
-name: 🦁 Kveld9 Ecosystem Patcher
+name: 🐸 SapitoSucio Ecosystem Patcher
 
 on:
   workflow_dispatch:
     inputs:
-      app_brave_browser:
-        description: 'Patch brave-browser'
-        required: true
-        type: boolean
-        default: true
-      app_vivaldi_snapshot:
-        description: 'Patch vivaldi-snapshot'
+      app_facebook:
+        description: 'Patch facebook'
         required: true
         type: boolean
         default: true
@@ -20,8 +15,6 @@ on:
         default: 'arm64-v8a'
         options:
           - arm64-v8a
-          - armeabi-v7a
-          - x86_64
       version_selection:
         description: 'App Version Selection'
         required: true
@@ -169,12 +162,12 @@ jobs:
           LATEST_JAR="${JARS[${#JARS[@]}-1]}"
           mv -- "$LATEST_JAR" morphe.jar
 
-          REPO_URL="kveld9/kveld-morphe-patches"
+          REPO_URL="SapitoSucio/FroggoMorphePatches"
           echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> "$GITHUB_ENV"
 
           if [[ "$PATCHES_TRACK" == "Custom Local" ]]; then
-            test -f "Custom-Patches/kveld9-custom.mpp"
-            cp -- "Custom-Patches/kveld9-custom.mpp" patches.mpp
+            test -f "Custom-Patches/SapitoSucio-custom.mpp"
+            cp -- "Custom-Patches/SapitoSucio-custom.mpp" patches.mpp
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
           elif [[ "$PATCHES_TRACK" == "Pre-release" ]]; then
             PATCH_TAG="$(gh api "repos/$REPO_URL/releases" --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
@@ -239,14 +232,12 @@ jobs:
       - name: Prepare App Selection
         id: prep_apps
         env:
-          APP_BRAVE_BROWSER: ${{ inputs.app_brave_browser }}
-          APP_VIVALDI_SNAPSHOT: ${{ inputs.app_vivaldi_snapshot }}
+          APP_FACEBOOK: ${{ inputs.app_facebook }}
         run: |
           set -euo pipefail
 
           APP_LIST=""
-          if [[ "$APP_BRAVE_BROWSER" == "true" ]]; then APP_LIST="$APP_LIST,brave-browser"; fi
-          if [[ "$APP_VIVALDI_SNAPSHOT" == "true" ]]; then APP_LIST="$APP_LIST,vivaldi-snapshot"; fi
+          if [[ "$APP_FACEBOOK" == "true" ]]; then APP_LIST="$APP_LIST,facebook"; fi
 
           APP_LIST="${APP_LIST#,}"
 
@@ -276,7 +267,7 @@ jobs:
           set -euo pipefail
 
           python -u main.py \
-            --ecosystem "kveld9" \
+            --ecosystem "SapitoSucio" \
             --apps "$SELECTED_APPS" \
             --arch "$ARCHITECTURE" \
             --version-selection "$VERSION_SELECTION" \
@@ -297,12 +288,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          test -s "./kveld9/changelog.md" || {
+          test -s "./SapitoSucio/changelog.md" || {
             echo "::error::Missing or empty changelog.md"
             exit 1
           }
 
-          compgen -G "./kveld9/Output/*.apk" > /dev/null || {
+          compgen -G "./SapitoSucio/Output/*.apk" > /dev/null || {
             echo "::error::No APK output was produced"
             exit 1
           }
@@ -315,10 +306,10 @@ jobs:
         if: inputs.upload_github_release
         uses: softprops/action-gh-release@v3.0.2
         with:
-          tag_name: kveld9-${{ env.DATE_TAG }}
-          name: Patched Apps - kveld9 (${{ env.DATE_TAG }})
-          body_path: ./kveld9/changelog.md
-          files: ./kveld9/Output/*.apk
+          tag_name: SapitoSucio-${{ env.DATE_TAG }}
+          name: Patched Apps - SapitoSucio (${{ env.DATE_TAG }})
+          body_path: ./SapitoSucio/changelog.md
+          files: ./SapitoSucio/Output/*.apk
           prerelease: ${{ env.IS_PRERELEASE == 'true' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -330,7 +321,7 @@ jobs:
           API_HASH: ${{ secrets.API_HASH }}
           SESSION_STRING: ${{ secrets.SESSION_STRING }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-          ECOSYSTEM: "kveld9"
+          ECOSYSTEM: "SapitoSucio"
         run: |
           set -euo pipefail
 
