@@ -28,7 +28,7 @@ Click the green **Use this template** button at the top of this repository to cr
 ### 2. Generate Your Custom Keystore
 To sign your patched APKs, you will need a cryptographic Keystore. We have included an interactive PowerShell script to make this painless:
 1. Open the repository folder on your Windows PC.
-2. Right-click on **`Generate_Keystore.ps1`** and select **Run with PowerShell**.
+2. Right-click on **`generate_keystore.ps1`** and select **Run with PowerShell**.
 3. Follow the interactive prompts to set your Alias, Password, and Distinguished Name (DNAME).
 4. The script will generate a 4096-bit, 100-year validity Keystore (`.keystore`) and automatically convert it into a Base64 text file (`custom_keystore_base64.txt`).
 
