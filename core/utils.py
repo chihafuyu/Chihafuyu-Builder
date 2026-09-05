@@ -83,9 +83,13 @@ def _check_hybrid_analysis(file_hash: str) -> bool:
     if not ha_key:
         return False
     url = "https://www.hybrid-analysis.com/api/v2/search/hash"
-    headers = {"api-key": ha_key, "User-Agent": "Chihafuyu-Builder"}
+    headers = {
+        "api-key": ha_key,
+        "User-Agent": "Chihafuyu-Builder",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
     try:
-        resp = requests.post(url, headers=headers, data={"hash": file_hash}, timeout=10)
+        resp = requests.post(url, headers=headers, data=f"hash={file_hash}", timeout=10)
         if resp.status_code == 200 and resp.json():
             threat_score = resp.json()[0].get("threat_score", 0)
             if threat_score > 50:
