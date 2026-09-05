@@ -5,7 +5,7 @@
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
                 "stable": [
-                    "1.94.119"
+                    "1.94.121"
                 ],
                 "beta": [],
                 "strip": true,
