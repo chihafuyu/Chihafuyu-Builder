@@ -64,8 +64,8 @@ def verify_file_hash_vt(file_path: str) -> None:
         file_hash = sha256_hash.hexdigest()
 
         vt_url = f"https://www.virustotal.com/api/v3/files/{file_hash}"
-        headers = {"x-api-key": os.environ.get("VT_API_KEY", "")}
-        if not headers["x-api-key"]:
+        headers = {"x-apikey": os.environ.get("VT_API_KEY", "")}
+        if not headers["x-apikey"]:
             print("[INFO] VT_API_KEY not configured, skipping hash verification.")
             return
 
