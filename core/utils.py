@@ -1,8 +1,9 @@
 """
 Core utility functions.
-Handles network streaming, file extraction, WAF detection, and option injections.
+Handles network streaming, file extraction, WAF detection, hash checking, and option injections.
 """
 
+import hashlib
 import json
 import os
 import shutil
@@ -53,6 +54,39 @@ def _is_waf_blocked(status_code: int, text: str) -> bool:
     return any(c in text.lower() for c in challenges)
 
 
+def verify_file_hash_vt(file_path: str) -> None:
+    """Computes SHA256 hash and checks against VirusTotal API gracefully."""
+    try:
+        sha256_hash = hashlib.sha256()
+        with open(file_path, "rb") as f_obj:
+            for byte_block in iter(lambda: f_obj.read(4194304), b""):
+                sha256_hash.update(byte_block)
+        file_hash = sha256_hash.hexdigest()
+
+        vt_url = f"https://www.virustotal.com/api/v3/files/{file_hash}"
+        headers = {"x-api-key": os.environ.get("VT_API_KEY", "")}
+        if not headers["x-api-key"]:
+            print("[INFO] VT_API_KEY not configured, skipping hash verification.")
+            return
+
+        response = requests.get(vt_url, headers=headers, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            stats = data.get("data", {}).get("attributes", {}).get("last_analysis_stats", {})
+            malicious = stats.get("malicious", 0)
+            suspicious = stats.get("suspicious", 0)
+            if malicious > 0 or suspicious > 0:
+                print(f"[WARN] VT flagged this file: Malicious={malicious}, Sus={suspicious}")
+            else:
+                print("[INFO] VirusTotal verification passed: File is clean.")
+        elif response.status_code == 404:
+            print("[INFO] File hash not found on VT database. Proceeding with graceful bypass.")
+        else:
+            print(f"[WARN] VirusTotal API returned status code {response.status_code}.")
+    except (requests.exceptions.RequestException, OSError, ValueError) as err:
+        print(f"[WARN] Hash verification skipped due to error: {err}")
+
+
 def download_file_stream(scraper: Any, url: str, out_path: str,
                          referer: str = "", check_dmca: bool = False) -> bool:
     """Downloads a file safely with streaming, size limits, and atomic replacement."""
@@ -86,6 +120,7 @@ def download_file_stream(scraper: Any, url: str, out_path: str,
                             raise ValueError("download exceeds limit")
                         apk_file.write(chunk)
                 os.replace(t_path, out_path)
+                verify_file_hash_vt(out_path)
             finally:
                 if os.path.exists(t_path):
                     os.remove(t_path)
