@@ -54,8 +54,76 @@ def _is_waf_blocked(status_code: int, text: str) -> bool:
     return any(c in text.lower() for c in challenges)
 
 
-def verify_file_hash_vt(file_path: str) -> None:
-    """Computes SHA256 hash and checks against VirusTotal API gracefully."""
+def _check_virustotal(file_hash: str) -> bool:
+    """Checks hash against VirusTotal. Returns True if successfully analyzed."""
+    vt_key = os.environ.get("VT_API_KEY", "")
+    if not vt_key:
+        return False
+    url = f"https://www.virustotal.com/api/v3/files/{file_hash}"
+    try:
+        resp = requests.get(url, headers={"x-apikey": vt_key}, timeout=10)
+        if resp.status_code == 200:
+            stats = resp.json().get("data", {}).get("attributes", {}).get("last_analysis_stats", {})
+            mal = stats.get("malicious", 0)
+            sus = stats.get("suspicious", 0)
+            if mal > 0 or sus > 0:
+                print(f"[WARN] VT Flagged: Malicious={mal}, Suspicious={sus}")
+            else:
+                print("[INFO] VirusTotal verification passed: File is clean.")
+            return True
+        print(f"[INFO] VT bypass (Code {resp.status_code}).")
+    except requests.exceptions.RequestException as err:
+        print(f"[WARN] VT request failed: {err}")
+    return False
+
+
+def _check_hybrid_analysis(file_hash: str) -> bool:
+    """Checks hash against Hybrid Analysis. Returns True if successfully analyzed."""
+    ha_key = os.environ.get("HA_API_KEY", "")
+    if not ha_key:
+        return False
+    url = "https://www.hybrid-analysis.com/api/v2/search/hash"
+    headers = {"api-key": ha_key, "User-Agent": "Chihafuyu-Builder"}
+    try:
+        resp = requests.post(url, headers=headers, data={"hash": file_hash}, timeout=10)
+        if resp.status_code == 200 and resp.json():
+            threat_score = resp.json()[0].get("threat_score", 0)
+            if threat_score > 50:
+                print(f"[WARN] HA Flagged: Threat Score {threat_score}/100")
+            else:
+                print(f"[INFO] HA verification passed (Score {threat_score}/100).")
+            return True
+        print(f"[INFO] HA bypass (Code {resp.status_code}).")
+    except requests.exceptions.RequestException as err:
+        print(f"[WARN] HA request failed: {err}")
+    return False
+
+
+def _check_metadefender(file_hash: str) -> bool:
+    """Checks hash against MetaDefender Cloud. Returns True if successfully analyzed."""
+    md_key = os.environ.get("MD_API_KEY", "")
+    if not md_key:
+        return False
+    url = f"https://api.metadefender.com/v4/hash/{file_hash}"
+    try:
+        resp = requests.get(url, headers={"apikey": md_key}, timeout=10)
+        if resp.status_code == 200:
+            data = resp.json()
+            scan_res = data.get("scan_results", {})
+            threats = scan_res.get("scan_all_result_i", 0)
+            if threats > 0:
+                print(f"[WARN] MetaDefender Flagged: {threats} threats found.")
+            else:
+                print("[INFO] MetaDefender verification passed: File is clean.")
+            return True
+        print(f"[INFO] MD bypass (Code {resp.status_code}).")
+    except requests.exceptions.RequestException as err:
+        print(f"[WARN] MD request failed: {err}")
+    return False
+
+
+def verify_file_hash(file_path: str) -> None:
+    """Computes SHA256 hash and cascades through VT, HA, and MD sequentially."""
     try:
         sha256_hash = hashlib.sha256()
         with open(file_path, "rb") as f_obj:
@@ -63,27 +131,15 @@ def verify_file_hash_vt(file_path: str) -> None:
                 sha256_hash.update(byte_block)
         file_hash = sha256_hash.hexdigest()
 
-        vt_url = f"https://www.virustotal.com/api/v3/files/{file_hash}"
-        headers = {"x-apikey": os.environ.get("VT_API_KEY", "")}
-        if not headers["x-apikey"]:
-            print("[INFO] VT_API_KEY not configured, skipping hash verification.")
+        if _check_virustotal(file_hash):
+            return
+        if _check_hybrid_analysis(file_hash):
+            return
+        if _check_metadefender(file_hash):
             return
 
-        response = requests.get(vt_url, headers=headers, timeout=10)
-        if response.status_code == 200:
-            data = response.json()
-            stats = data.get("data", {}).get("attributes", {}).get("last_analysis_stats", {})
-            malicious = stats.get("malicious", 0)
-            suspicious = stats.get("suspicious", 0)
-            if malicious > 0 or suspicious > 0:
-                print(f"[WARN] VT flagged this file: Malicious={malicious}, Sus={suspicious}")
-            else:
-                print("[INFO] VirusTotal verification passed: File is clean.")
-        elif response.status_code == 404:
-            print("[INFO] File hash not found on VT database. Proceeding with graceful bypass.")
-        else:
-            print(f"[WARN] VirusTotal API returned status code {response.status_code}.")
-    except (requests.exceptions.RequestException, OSError, ValueError) as err:
+        print("[INFO] All hash verifications bypassed or unconfigured.")
+    except (OSError, ValueError, IndexError) as err:
         print(f"[WARN] Hash verification skipped due to error: {err}")
 
 
@@ -120,7 +176,7 @@ def download_file_stream(scraper: Any, url: str, out_path: str,
                             raise ValueError("download exceeds limit")
                         apk_file.write(chunk)
                 os.replace(t_path, out_path)
-                verify_file_hash_vt(out_path)
+                verify_file_hash(out_path)
             finally:
                 if os.path.exists(t_path):
                     os.remove(t_path)

@@ -292,6 +292,8 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_SIGNER_NAME: ${{ secrets.KEYSTORE_SIGNER_NAME }}
           VT_API_KEY: ${{ secrets.VT_API_KEY }}
+          HA_API_KEY: ${{ secrets.HA_API_KEY }}
+          MD_API_KEY: ${{ secrets.MD_API_KEY }}
           SELECTED_APPS: ${{ env.SELECTED_APPS }}
           ARCHITECTURE: ${{ inputs.architecture }}
           VERSION_SELECTION: ${{ inputs.version_selection }}
