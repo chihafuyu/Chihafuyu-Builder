@@ -1,0 +1,28 @@
+{
+    "rabilrbl": {
+        "apps": {
+            "alarmy": {
+                "package": "droom.sleepIfUCan",
+                "search_term": "Alarmy",
+                "stable": [
+                    "26.32.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "options_override": {}
+            },
+            "blockerx": {
+                "package": "io.funswitch.blocker",
+                "search_term": "BlockerX",
+                "stable": [
+                    "5.0.81"
+                ],
+                "beta": [
+                    "5.0.87"
+                ],
+                "strip": true,
+                "options_override": {}
+            }
+        }
+    }
+}

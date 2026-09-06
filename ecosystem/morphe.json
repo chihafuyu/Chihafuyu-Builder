@@ -10,6 +10,11 @@
                 "beta": [
                     "2026.35.0"
                 ],
+				"version_codes": {
+                    "arm64-v8a": "2635090",
+                    "armeabi-v7a": "2635090",
+                    "x86_64": "2635090"
+                },
                 "strip": true,
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
