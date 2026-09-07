@@ -2,7 +2,7 @@ name: 🧹 Automated Release Janitor
 
 on:
   schedule:
-    - cron: '0 5,17 * * *'
+    - cron: '15 5,17 * * *'
   workflow_dispatch:
 
 jobs:
