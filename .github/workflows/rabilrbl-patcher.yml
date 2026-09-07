@@ -1,4 +1,4 @@
-name: ☁️ Fluffy Patches
+name: ☁️ Fluffy Ecosystem Patcher
 
 on:
   workflow_dispatch:
