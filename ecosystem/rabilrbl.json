@@ -9,6 +9,7 @@
                 ],
                 "beta": [],
                 "strip": true,
+                "archive_id": "ZeNiX",
                 "options_override": {}
             },
             "blockerx": {
@@ -21,6 +22,7 @@
                     "5.0.87"
                 ],
                 "strip": true,
+                "archive_id": "ZeNiX",
                 "options_override": {}
             }
         }
