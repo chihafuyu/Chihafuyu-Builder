@@ -47,7 +47,7 @@
             "peacock": {
                 "package": "com.peacocktv.peacockandroid",
                 "search_term": "Peacock",
-                "stable": ["7.6.100"],
+                "stable": ["7.8.100"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",

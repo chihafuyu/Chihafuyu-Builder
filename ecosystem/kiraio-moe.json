@@ -147,7 +147,9 @@
                 "stable": [
                     "6.189.0"
                 ],
-                "beta": [],
+                "beta": [
+				    "6.196.0"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
