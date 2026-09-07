@@ -1,4 +1,4 @@
-name: ☁️ Fluffy Patches (rabilrbl)
+name: ☁️ Fluffy Patches
 
 on:
   workflow_dispatch:
