@@ -63,7 +63,7 @@ def analyze_code(safe_diff: str, api_key: str) -> str:
         try:
             print(f"Analyzing code with Gemini (Attempt {attempt + 1}/{max_retries})...")
             response = client.models.generate_content(
-                model='gemini-3.6-flash',
+                model='gemini-3.8-flash',
                 contents=prompt
             )
             return response.text
