@@ -38,6 +38,7 @@
                     "NewX: Customize navigation bar items",
                     "NewX: Customize timeline tabs",
                     "NewX: Disable automatic timeline refresh",
+                    "NewX: Disable blur effects",
                     "NewX: Disable video player scrolling",
                     "NewX: Dynamic color",
                     "NewX: Feature switch overrides",
@@ -49,6 +50,7 @@
                     "NewX: Hide Spaces bar",
                     "NewX: Hide compose button",
                     "NewX: Hide new posts pill",
+                    "NewX: Hide post reply bar",
                     "NewX: Hide posts by verified account type",
                     "NewX: Hide premium upsell",
                     "NewX: Hide timeline tabs bar",
@@ -60,6 +62,7 @@
                     "NewX: Restore timeline position",
                     "NewX: Server error logging",
                     "NewX: Share post as image",
+                    "NewX: Show poll results",
                     "NewX: Show sensitive media",
                     "NewX: Unlock color customization",
                     "NewX: Unlock downloads"
