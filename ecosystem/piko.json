@@ -26,55 +26,7 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "exclusive_patches": [
-                    "Change version code",
-                    "NewX: Browse tweet object",
-                    "NewX: Custom font",
-                    "NewX: Custom sharing domain",
-                    "NewX: Customize default media tab",
-                    "NewX: Customize default reply sorting",
-                    "NewX: Customize drawer items",
-                    "NewX: Customize inline actions",
-                    "NewX: Customize navigation bar items",
-                    "NewX: Customize timeline tabs",
-                    "NewX: Disable automatic timeline refresh",
-                    "NewX: Disable blur effects",
-                    "NewX: Disable video player scrolling",
-                    "NewX: Dynamic color",
-                    "NewX: Feature switch overrides",
-                    "NewX: Filter For You by topic",
-                    "NewX: Filter posts by keyword",
-                    "NewX: Force highest video/audio quality",
-                    "NewX: Hide AI-generated posts",
-                    "NewX: Hide Discover more",
-                    "NewX: Hide Spaces bar",
-                    "NewX: Hide compose button",
-                    "NewX: Hide new posts pill",
-                    "NewX: Hide post reply bar",
-                    "NewX: Hide posts by verified account type",
-                    "NewX: Hide premium upsell",
-                    "NewX: Hide timeline tabs bar",
-                    "NewX: Hide who to follow",
-                    "NewX: Inline download button",
-                    "NewX: Open canonical URLs",
-                    "NewX: Remove ads",
-                    "NewX: Restore Twitter branding",
-                    "NewX: Restore timeline position",
-                    "NewX: Server error logging",
-                    "NewX: Share post as image",
-                    "NewX: Show poll results",
-                    "NewX: Show sensitive media",
-                    "NewX: Unlock color customization",
-                    "NewX: Unlock downloads"
-                ],
-                "options_override": {
-                    "Change version code": {
-                        "enabled": true,
-                        "options": {
-                            "versionCode": 2147483647
-                        }
-                    }
-                }
+                "options_override": {}
             },
             "x-twitter": {
                 "package": "com.twitter.android",
