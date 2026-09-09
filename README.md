@@ -67,7 +67,7 @@ This project uses methods and tools from the following developers:
 - [**Morphe**](https://github.com/MorpheApp) - Patching CLI and base ecosystem. Licensed under GPLv3.
 - [**crimera**](https://github.com/crimera) - `APKMirror` bypass technique (Header Spoofing & Referer Injection). Licensed under GPLv3.
 - [**j-hc**](https://github.com/j-hc) - `Uptodown` and `Archive` downloader logic. Licensed under GPLv3.
-- [**rushiranpise**](https://github.com/rushiranpise) - Advanced WAF/Captcha detection and Bing Fallback logic from `helper-for-morphe`. Licensed under GPLv3.
+- [**rushiranpise**](https://github.com/rushiranpise) - Advanced WAF/Turnstile detection, Bing Fallback, and scraping logic (`APKMirror` regex & `Uptodown` validation) from `helper-for-morphe`. Licensed under GPLv3.
 - [**apkeep**](https://github.com/EFForg/apkeep) - `APKPure` fallback download mechanism. Licensed under MIT.
 - [**NagramX**](https://github.com/risin42/NagramX) - Original inspiration and base logic for automating `Telegram` uploads via GitHub Actions. Licensed under GPLv3.
 - [**Morphe Community Patches**](https://morphe-patches.software/) - Community patches, featuring a bunch of apps. Copyright Morphe (copyrighted and not licensed under open source terms).
