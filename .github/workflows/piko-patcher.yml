@@ -68,8 +68,17 @@ on:
         options:
           - Stable
           - Pre-release
-      patches_track:
-        description: 'Ecosystem Patches Track'
+      reguler_patches_track:
+        description: 'Reguler Patches Track (Twitter/IG)'
+        required: true
+        type: choice
+        default: 'Stable'
+        options:
+          - Stable
+          - Pre-release
+          - Custom Local
+      newx_patches_track:
+        description: 'NewX Patches Track'
         required: true
         type: choice
         default: 'Stable'
@@ -106,11 +115,11 @@ jobs:
           fi
 
           if [[ -n "$PIKO_APPS" ]]; then
-            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"Reguler\", \"repo\": \"crimera/piko\", \"apps\": \"$PIKO_APPS\"},"
+            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"Reguler\", \"repo\": \"crimera/piko\", \"apps\": \"$PIKO_APPS\", \"track\": \"${{ inputs.reguler_patches_track }}\"},"
           fi
 
           if [[ "${{ inputs.app_newx_twitter }}" == "true" ]]; then
-            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"NewX\", \"repo\": \"crimera/piko-newx\", \"apps\": \"newx-twitter\"},"
+            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"NewX\", \"repo\": \"crimera/piko-newx\", \"apps\": \"newx-twitter\", \"track\": \"${{ inputs.newx_patches_track }}\"},"
           fi
 
           MATRIX_JSON="${MATRIX_JSON%,}]"
@@ -183,7 +192,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           CLI_TRACK: ${{ inputs.cli_track }}
-          PATCHES_TRACK: ${{ inputs.patches_track }}
+          PATCHES_TRACK: ${{ matrix.track }}
           REPO_URL: ${{ matrix.repo }}
         run: |
           set -euo pipefail
@@ -267,7 +276,7 @@ jobs:
 
       - name: Evaluate Pre-release Flag
         run: |
-          if [[ "${{ inputs.cli_track }}" == "Pre-release" || "${{ inputs.patches_track }}" == "Pre-release" || "${{ inputs.patches_track }}" == "Custom Local" || "${{ inputs.version_selection }}" == "Beta" ]]; then
+          if [[ "${{ inputs.cli_track }}" == "Pre-release" || "${{ matrix.track }}" == "Pre-release" || "${{ matrix.track }}" == "Custom Local" || "${{ inputs.version_selection }}" == "Beta" ]]; then
             echo "IS_PRERELEASE=true" >> "$GITHUB_ENV"
           else
             echo "IS_PRERELEASE=false" >> "$GITHUB_ENV"
