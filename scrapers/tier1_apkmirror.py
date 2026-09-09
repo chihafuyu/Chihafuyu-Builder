@@ -11,8 +11,8 @@ from core.utils import _is_waf_blocked, download_file_stream
 from .base import BaseScraper
 
 EDITION_SLUG_REGEX = re.compile(
-    r"(amazon|fire-tablet|fire-tv|androidtv|wear|go-edition|"
-    r"lite|beta|alpha|enterprise|kids|headunit|auto)",
+    r"\b(amazon|fire-tablet|fire-tv|androidtv|wear|go-edition|"
+    r"lite|beta|alpha|enterprise|kids|headunit|auto)\b",
     re.IGNORECASE
 )
 
@@ -30,7 +30,7 @@ class ApkmirrorScraper(BaseScraper):
         query = quote_plus(
             f"{ctx.app_data.get('search_term', ctx.pkg)} {base_ver}"
         )
-        url = f"https://www.apkmirror.com/?post_type=app_release&searchtype=app&s={query}"
+        url = f"https://www.apkmirror.com/?post_type=app_release&s={query}"
 
         ctx.limiter.wait()
         resp = ctx.scraper.get(url, timeout=60)
