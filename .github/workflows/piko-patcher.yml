@@ -214,7 +214,10 @@ jobs:
             exit 1
           fi
           LATEST_JAR="${JARS[${#JARS[@]}-1]}"
-          mv -- "$LATEST_JAR" morphe.jar
+          
+          if [[ "$LATEST_JAR" != "./morphe.jar" && "$LATEST_JAR" != "morphe.jar" ]]; then
+            mv -- "$LATEST_JAR" morphe.jar
+          fi
 
           echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> "$GITHUB_ENV"
 
@@ -241,7 +244,11 @@ jobs:
               exit 1
             fi
             LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
-            mv -- "$LATEST_MPP" patches.mpp
+            
+            if [[ "$LATEST_MPP" != "./patches.mpp" && "$LATEST_MPP" != "patches.mpp" ]]; then
+              mv -- "$LATEST_MPP" patches.mpp
+            fi
+            
             echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
           else
             PATCH_TAG="$(gh api "repos/$REPO_URL/releases/latest" | jq -r '.tag_name // empty')"
@@ -256,7 +263,11 @@ jobs:
               exit 1
             fi
             LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
-            mv -- "$LATEST_MPP" patches.mpp
+            
+            if [[ "$LATEST_MPP" != "./patches.mpp" && "$LATEST_MPP" != "patches.mpp" ]]; then
+              mv -- "$LATEST_MPP" patches.mpp
+            fi
+            
             echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
           fi
 
