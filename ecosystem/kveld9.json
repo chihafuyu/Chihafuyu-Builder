@@ -21,6 +21,15 @@
                     },
                     "Native Bloat Slimmer": {
                         "enabled": true
+                    },
+                    "DPI Resource Slimmer": {
+                        "enabled": true,
+                        "options": {
+                            "dpis": "xxhdpi"
+                        }
+                    },
+                    "PNG Asset Optimizer": {
+                        "enabled": true
                     }
                 }
             },
@@ -41,6 +50,21 @@
                         "options": {
                             "locales": "en, en-US, id"
                         }
+                    },
+                    "DPI Resource Slimmer": {
+                        "enabled": true,
+                        "options": {
+                            "dpis": "xxhdpi"
+                        }
+                    },
+                    "PNG Asset Optimizer": {
+                        "enabled": true
+                    },
+                    "Block Vivaldi Sync": {
+                        "enabled": true
+                    },
+                    "Close Tabs on Exit": {
+                        "enabled": true
                     }
                 }
             }
