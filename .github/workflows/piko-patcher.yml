@@ -89,8 +89,47 @@ on:
         default: true
 
 jobs:
-  execute-patching:
+  prepare-matrix:
     runs-on: ubuntu-latest
+    outputs:
+      build_matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Generate Dynamic Matrix
+        id: set-matrix
+        run: |
+          MATRIX_JSON="["
+          PIKO_APPS=""
+          
+          if [[ "${{ inputs.app_x_twitter }}" == "true" ]]; then PIKO_APPS="x-twitter"; fi
+          if [[ "${{ inputs.app_instagram }}" == "true" ]]; then
+            if [[ -n "$PIKO_APPS" ]]; then PIKO_APPS="$PIKO_APPS,instagram"; else PIKO_APPS="instagram"; fi
+          fi
+
+          if [[ -n "$PIKO_APPS" ]]; then
+            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"Reguler\", \"repo\": \"crimera/piko\", \"apps\": \"$PIKO_APPS\"},"
+          fi
+
+          if [[ "${{ inputs.app_newx_twitter }}" == "true" ]]; then
+            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"NewX\", \"repo\": \"crimera/piko-newx\", \"apps\": \"newx-twitter\"},"
+          fi
+
+          MATRIX_JSON="${MATRIX_JSON%,}]"
+
+          if [[ "$MATRIX_JSON" == "[]" ]]; then
+            echo "::error::No applications selected for patching!"
+            exit 1
+          fi
+
+          echo "Generated Matrix: $MATRIX_JSON"
+          echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
+
+  execute-patching:
+    needs: prepare-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.prepare-matrix.outputs.build_matrix) }}
     permissions:
       contents: write
 
@@ -145,24 +184,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           CLI_TRACK: ${{ inputs.cli_track }}
           PATCHES_TRACK: ${{ inputs.patches_track }}
+          REPO_URL: ${{ matrix.repo }}
         run: |
           set -euo pipefail
 
           if [[ "$CLI_TRACK" == "Pre-release" ]]; then
             CLI_TAG="$(gh api repos/MorpheApp/morphe-desktop/releases --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
-
             if [[ -z "$CLI_TAG" ]]; then
               echo "::error::No Morphe CLI pre-release was found"
               exit 1
             fi
-
-            gh release download "$CLI_TAG" \
-              -R MorpheApp/morphe-desktop \
-              --pattern "morphe-desktop-*-all.jar"
+            gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
           else
-            gh release download \
-              -R MorpheApp/morphe-desktop \
-              --pattern "morphe-desktop-*-all.jar"
+            gh release download -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
           fi
 
           mapfile -t JARS < <(find . -maxdepth 1 -type f -name 'morphe-desktop-*-all.jar' -print | sort -V)
@@ -170,62 +204,48 @@ jobs:
             echo "::error::Morphe CLI JAR was not downloaded"
             exit 1
           fi
-
           LATEST_JAR="${JARS[${#JARS[@]}-1]}"
           mv -- "$LATEST_JAR" morphe.jar
 
-          REPO_URL="crimera/piko"
           echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> "$GITHUB_ENV"
 
           if [[ "$PATCHES_TRACK" == "Custom Local" ]]; then
-            if [[ "${{ inputs.app_newx_twitter }}" == "true" ]]; then
-              # Safeguard: Prevent merging newx build with other apps on Custom Local
-              if [[ "${{ inputs.app_x_twitter }}" == "true" || "${{ inputs.app_instagram }}" == "true" ]]; then
-                echo "::error::Cannot combine NewX build with other apps when using Custom Local track. Please run them separately."
-                exit 1
-              fi
+            if [[ "$REPO_URL" == "crimera/piko-newx" ]]; then
               test -f "Custom-Patches/piko-newx.mpp"
               cp -- "Custom-Patches/piko-newx.mpp" patches.mpp
               echo "PATCHES_VERSION=custom-local-newx" >> "$GITHUB_ENV"
             else
-              # Default fallback for regular Twitter and Instagram
               test -f "Custom-Patches/piko-custom.mpp"
               cp -- "Custom-Patches/piko-custom.mpp" patches.mpp
               echo "PATCHES_VERSION=custom-local-regular" >> "$GITHUB_ENV"
             fi
           elif [[ "$PATCHES_TRACK" == "Pre-release" ]]; then
             PATCH_TAG="$(gh api "repos/$REPO_URL/releases" --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
-
             if [[ -z "$PATCH_TAG" ]]; then
-              echo "::error::No patches pre-release was found"
+              echo "::error::No patches pre-release was found in $REPO_URL"
               exit 1
             fi
-
             gh release download "$PATCH_TAG" -R "$REPO_URL" --pattern "*.mpp"
             mapfile -t MPPS < <(find . -maxdepth 1 -type f -name '*.mpp' -print | sort -V)
             if (( ${#MPPS[@]} == 0 )); then
               echo "::error::No .mpp patch bundle was downloaded"
               exit 1
             fi
-
             LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
             mv -- "$LATEST_MPP" patches.mpp
             echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
           else
             PATCH_TAG="$(gh api "repos/$REPO_URL/releases/latest" | jq -r '.tag_name // empty')"
-
             if [[ -z "$PATCH_TAG" ]]; then
-              echo "::error::No stable patches release was found"
+              echo "::error::No stable patches release was found in $REPO_URL"
               exit 1
             fi
-
             gh release download "$PATCH_TAG" -R "$REPO_URL" --pattern "*.mpp"
             mapfile -t MPPS < <(find . -maxdepth 1 -type f -name '*.mpp' -print | sort -V)
             if (( ${#MPPS[@]} == 0 )); then
               echo "::error::No .mpp patch bundle was downloaded"
               exit 1
             fi
-
             LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
             mv -- "$LATEST_MPP" patches.mpp
             echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
@@ -253,30 +273,6 @@ jobs:
             echo "IS_PRERELEASE=false" >> "$GITHUB_ENV"
           fi
 
-      - name: Prepare App Selection
-        id: prep_apps
-        env:
-          APP_X_TWITTER: ${{ inputs.app_x_twitter }}
-          APP_NEWX_TWITTER: ${{ inputs.app_newx_twitter }}
-          APP_INSTAGRAM: ${{ inputs.app_instagram }}
-        run: |
-          set -euo pipefail
-
-          APP_LIST=""
-          if [[ "$APP_X_TWITTER" == "true" ]]; then APP_LIST="$APP_LIST,x-twitter"; fi
-          if [[ "$APP_NEWX_TWITTER" == "true" ]]; then APP_LIST="$APP_LIST,newx-twitter"; fi
-          if [[ "$APP_INSTAGRAM" == "true" ]]; then APP_LIST="$APP_LIST,instagram"; fi
-
-          APP_LIST="${APP_LIST#,}"
-
-          if [[ -z "$APP_LIST" ]]; then
-            echo "::error::No applications selected for patching!"
-            exit 1
-          fi
-
-          echo "SELECTED_APPS=$APP_LIST" >> "$GITHUB_ENV"
-          echo "Ready to patch: $APP_LIST"
-
       - name: Execute Chihafuyu Builder
         env:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
@@ -285,7 +281,7 @@ jobs:
           VT_API_KEY: ${{ secrets.VT_API_KEY }}
           HA_API_KEY: ${{ secrets.HA_API_KEY }}
           MD_API_KEY: ${{ secrets.MD_API_KEY }}
-          SELECTED_APPS: ${{ env.SELECTED_APPS }}
+          SELECTED_APPS: ${{ matrix.apps }}
           ARCHITECTURE: ${{ inputs.architecture }}
           VERSION_SELECTION: ${{ inputs.version_selection }}
           CUSTOM_VERSION: ${{ inputs.custom_version }}
@@ -331,14 +327,14 @@ jobs:
 
       - name: Set Release Tag
         if: inputs.upload_github_release
-        run: echo "DATE_TAG=$(date -u +'%Y.%m.%d-%H%M%S')-${GITHUB_RUN_ID}" >> "$GITHUB_ENV"
+        run: echo "DATE_TAG=$(date -u +'%Y.%m.%d-%H%M%S')-${{ matrix.target_name }}-${GITHUB_RUN_ID}" >> "$GITHUB_ENV"
 
       - name: Publish to GitHub Releases
         if: inputs.upload_github_release
         uses: softprops/action-gh-release@v3.0.3
         with:
           tag_name: piko-${{ env.DATE_TAG }}
-          name: Patched Apps - Piko (${{ env.DATE_TAG }})
+          name: Patched Apps - Piko ${{ matrix.target_name }} (${{ env.DATE_TAG }})
           body_path: ./piko/changelog.md
           files: ./piko/Output/*.apk
           prerelease: ${{ env.IS_PRERELEASE == 'true' }}
