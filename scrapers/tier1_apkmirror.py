@@ -1,5 +1,6 @@
 """Tier 1 Scraper: APKMirror."""
 
+import re
 from typing import Any, Optional
 from urllib.parse import quote_plus, urljoin
 from bs4 import BeautifulSoup
@@ -9,6 +10,11 @@ from core.context import Context
 from core.utils import _is_waf_blocked, download_file_stream
 from .base import BaseScraper
 
+EDITION_SLUG_REGEX = re.compile(
+    r"(amazon|fire-tablet|fire-tv|androidtv|wear|go-edition|"
+    r"lite|beta|alpha|enterprise|kids|headunit|auto)",
+    re.IGNORECASE
+)
 
 class ApkmirrorScraper(BaseScraper):
     """Scrapes APKs from APKMirror handling WAF and variants."""
@@ -24,7 +30,7 @@ class ApkmirrorScraper(BaseScraper):
         query = quote_plus(
             f"{ctx.app_data.get('search_term', ctx.pkg)} {base_ver}"
         )
-        url = f"https://www.apkmirror.com/?post_type=app_release&s={query}"
+        url = f"https://www.apkmirror.com/?post_type=app_release&searchtype=app&s={query}"
 
         ctx.limiter.wait()
         resp = ctx.scraper.get(url, timeout=60)
@@ -38,15 +44,30 @@ class ApkmirrorScraper(BaseScraper):
         inc_kws = [k.lower() for k in ctx.app_data.get("apkm_include", [])]
 
         for link in soup.find_all("a", class_="fontBlack"):
+            href = link.get("href", "")
+
+            if EDITION_SLUG_REGEX.search(href):
+                continue
+
             text = link.text.lower()
-            if base_ver.lower() not in text or any(
-                kw in text for kw in exc_kws
-            ):
+            if base_ver.lower() not in text or any(kw in text for kw in exc_kws):
                 continue
             if inc_kws and not all(kw in text for kw in inc_kws):
                 continue
-            return urljoin("https://www.apkmirror.com", link["href"])
+            return urljoin("https://www.apkmirror.com", href)
         return None
+
+    def _log_expected_sha256(self, soup: BeautifulSoup) -> None:
+        modal = soup.select_one("#safeDownload .modal-body, .safeDownload .modal-body")
+        if not modal:
+            return
+        block_text = modal.text
+        if "APK file hashes" in block_text and "APK certificate fingerprints" in block_text:
+            file_section = block_text.split("APK file hashes")[1]
+            file_section = file_section.split("APK certificate fingerprints")[0]
+            hash_match = re.search(r"[0-9a-fA-F]{64}", file_section)
+            if hash_match:
+                print(f"[INFO] Expected SHA-256 extracted: {hash_match.group(0)}")
 
     def _process_variant_page(
         self, ctx: Context, var_url: str, is_bundle: bool
@@ -59,9 +80,12 @@ class ApkmirrorScraper(BaseScraper):
         ):
             return None
 
-        btn = BeautifulSoup(v_resp.text, "html.parser").find(
-            "a", class_="downloadButton"
-        )
+        v_soup = BeautifulSoup(v_resp.text, "html.parser")
+
+        if not is_bundle:
+            self._log_expected_sha256(v_soup)
+
+        btn = v_soup.find("a", class_="downloadButton")
         if not btn:
             return None
 
@@ -74,9 +98,7 @@ class ApkmirrorScraper(BaseScraper):
         ):
             return None
 
-        dl_btn = BeautifulSoup(d_resp.text, "html.parser").find(
-            "a", {"rel": "nofollow"}
-        )
+        dl_btn = BeautifulSoup(d_resp.text, "html.parser").find("a", {"rel": "nofollow"})
         if dl_btn and "href" in dl_btn.attrs:
             out_path = ctx.get_out_path(".apkm" if is_bundle else ".apk")
             dl_url = urljoin("https://www.apkmirror.com", dl_btn["href"])
@@ -90,7 +112,7 @@ class ApkmirrorScraper(BaseScraper):
     ) -> Optional[str]:
         text = row.text.lower()
         has_valid = any(
-            a in text for a in (ctx.arch.lower(), "universal", "noarch")
+            a in text for a in (ctx.arch.lower(), "universal", "noarch", "nodpi", "anydpi")
         )
         has_any = any(
             a in text

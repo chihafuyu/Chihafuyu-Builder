@@ -2,14 +2,13 @@
 
 import re
 from typing import Any, Optional, Tuple
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlparse, parse_qs
 from bs4 import BeautifulSoup
 import requests
 
 from core.context import Context
 from core.utils import _is_waf_blocked, download_file_stream
 from .base import BaseScraper
-
 
 class UptodownScraper(BaseScraper):
     """Scrapes APKs from Uptodown, handling Bing fallback for DMCA/WAF pages."""
@@ -58,12 +57,25 @@ class UptodownScraper(BaseScraper):
             return f_resp.text, fallback_url
         return resp.text, base_url
 
+    def _validate_package(self, html_text: str, expected_pkg: str) -> bool:
+        soup = BeautifulSoup(html_text, "html.parser")
+        play_url_elem = soup.select_one("#gplay-url[data-url]")
+        if play_url_elem:
+            parsed = urlparse(play_url_elem.get("data-url", ""))
+            extracted = parse_qs(parsed.query).get("id", [None])[0]
+            if extracted and extracted != expected_pkg:
+                print(f"[WARN] Package mismatch. Expected {expected_pkg}, found {extracted}")
+                return False
+        return True
+
     def _find_version(
         self, ctx: Context, base_url: str, html_text: str
     ) -> Tuple[Optional[str], Optional[str], bool]:
-        app_elem = BeautifulSoup(html_text, "html.parser").find(
-            id="detail-app-name"
-        )
+        if not self._validate_package(html_text, ctx.pkg):
+            return None, None, False
+
+        soup = BeautifulSoup(html_text, "html.parser")
+        app_elem = soup.find(id="detail-app-name")
         if not app_elem or not app_elem.has_attr("data-code"):
             return None, None, False
 
@@ -137,6 +149,22 @@ class UptodownScraper(BaseScraper):
                     return d_soup.find(id="detail-download-button")
         return None
 
+    def _execute_download(
+        self, ctx: Context, dl_btn: Any, is_bundle: bool, v_url: str
+    ) -> Optional[str]:
+        ext_url = dl_btn.get("data-url-ext", "")
+        if "play.google.com" in ext_url or "market://" in ext_url:
+            print("[WARN] Fake download button detected (redirects to Play Store).")
+            return None
+
+        if dl_btn.has_attr("data-url"):
+            out_path = ctx.get_out_path(".xapk" if is_bundle else ".apk")
+            print("[INFO] Downloading from Uptodown...")
+            url2 = f"https://dw.uptodown.com/dwn/{dl_btn['data-url']}"
+            if download_file_stream(ctx.scraper, url2, out_path, v_url, True):
+                return out_path
+        return None
+
     def scrape(self, ctx: Context) -> Optional[str]:
         """Executes the scraping process from Uptodown."""
         print(f"[TIER 5] Uptodown API: v{ctx.target_ver}")
@@ -163,16 +191,18 @@ class UptodownScraper(BaseScraper):
             soup = BeautifulSoup(
                 ctx.scraper.get(v_url, timeout=60).text, "html.parser"
             )
+
+            if soup.select_one("#download-turnstile-widget[data-sitekey]"):
+                print("[WARN] Cloudflare Turnstile detected. Aborting Uptodown scrape.")
+                return None
+
             dl_btn = soup.find(id="detail-download-button")
             if not dl_btn:
                 dl_btn = self._resolve_variants(ctx, soup, d_code, valid_url)
 
-            if dl_btn and dl_btn.has_attr("data-url"):
-                out_path = ctx.get_out_path(".xapk" if is_bundle else ".apk")
-                print("[INFO] Downloading from Uptodown...")
-                url2 = f"https://dw.uptodown.com/dwn/{dl_btn['data-url']}"
-                if download_file_stream(ctx.scraper, url2, out_path, v_url, True):
-                    return out_path
+            if dl_btn:
+                return self._execute_download(ctx, dl_btn, is_bundle, v_url)
+
         except (requests.exceptions.RequestException, OSError) as err:
             print(f"[ERROR] Tier 5 failed: {err}")
         return None

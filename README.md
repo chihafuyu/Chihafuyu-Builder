@@ -12,7 +12,7 @@
 ## ✨ Features
 - 🤖 **Automated Workflow:** Trigger the patching process directly from GitHub Actions without requiring local setup.
 - 🎛️ **Granular Dispatch Controls:** Choose to patch specific apps, run the entire ecosystem, and optionally dispatch the output to GitHub Releases or a Telegram Channel.
-- 📥 **7-Tier Smart Downloader:** Retrieves APKs using an aggressive fallback mechanism (`Archive.org`, `APKMirror`, `APKPure`, `APKCombo`, `Aptoide`, `Uptodown`, and direct `GitHub Releases`). Includes dynamic WAF/Captcha detection and search engine fallback routing.
+- 📥 **9-Tier Smart Downloader:** Retrieves APKs using an aggressive fallback mechanism (`Google Play Store`, `HuggingFace`, `Archive.org`, `APKMirror`, `APKPure`, `APKCombo`, `Aptoide`, `Uptodown`, and direct `GitHub Releases`). Includes dynamic WAF/Captcha detection and search engine fallback routing.
 - 📦 **Split/Bundle Support:** Natively bypasses base-APK limitations to pull specific XAPK/APKM bundles when required by the patches (e.g., Google Apps).
 - ⚙️ **Dynamic Options Injection:** Automatically generates and modifies the `options.json` file on-the-fly to apply custom patch preferences and locale stripping.
 - 📁 **Local Patch Support:** Allows the use of custom patch bundles directly from your repository.
@@ -49,21 +49,27 @@ For the automated workflows to function, you MUST configure the following secret
 *   **`KEYSTORE_ALIAS`**: The alias you chose during Keystore generation.
 *   **`KEYSTORE_PASSWORD`**: The password you set during Keystore generation.
 *   **`KEYSTORE_SIGNER_NAME`**: The specific signer name for the CLI.
+*   **`PLAY_EMAIL`**: Your Google Play account email for secure APK fetching.
+*   **`PLAY_AAS_TOKEN`**: Your Google Play AAS token for authentication.
+*   **`DEVICE_PROPERTIES_B64`**: Base64 encoded device properties file for Play Store emulation.
+*   **`VT_API_KEY`**: VirusTotal API key for security scanning bypass/verification.
+*   **`HA_API_KEY`**: HybridAnalysis API key for advanced security checks.
+*   **`MD_API_KEY`**: MetaDefender API key for comprehensive malware scanning.
 *   **`API_ID`** & **`API_HASH`**: Your Telegram API credentials (obtainable from my.telegram.org).
 *   **`SESSION_STRING`**: The string generated in Step 3.
 *   **`CHAT_ID`**: The Target Telegram channel or group ID (or private invite link).
 
 ### 5. Customize Ecosystems
-Edit the `ecosystems.json` file to add, remove, or modify the applications you want to track. You can define target architectures, specific search terms, and inject custom patch options effortlessly.
+Edit the ecosystem-specific JSON configuration files (e.g., `piko.json`, `rabilrbl.json`) to add, remove, or modify the applications you want to track. You can define target architectures, specific search terms, and inject custom patch options effortlessly.
 
 ## 🙏 Credits & Acknowledgements
 This project uses methods and tools from the following developers:
 - [**Morphe**](https://github.com/MorpheApp) - Patching CLI and base ecosystem. Licensed under GPLv3.
 - [**crimera**](https://github.com/crimera) - `APKMirror` bypass technique (Header Spoofing & Referer Injection). Licensed under GPLv3.
 - [**j-hc**](https://github.com/j-hc) - `Uptodown` and `Archive` downloader logic. Licensed under GPLv3.
-- [**rushiranpise**](https://github.com/rushiranpise) - Advanced WAF/Captcha detection and Bing Fallback logic from `apk-download-helper`. Licensed under GPLv3.
+- [**rushiranpise**](https://github.com/rushiranpise) - Advanced WAF/Captcha detection and Bing Fallback logic from `helper-for-morphe`. Licensed under GPLv3.
 - [**apkeep**](https://github.com/EFForg/apkeep) - `APKPure` fallback download mechanism. Licensed under MIT.
-- [**NagramX**](https://github.com/risin42/NagramX) - Original inspiration and base logic for `automating Telegram uploads` via GitHub Actions. Licensed under GPLv3.
+- [**NagramX**](https://github.com/risin42/NagramX) - Original inspiration and base logic for automating `Telegram` uploads via GitHub Actions. Licensed under GPLv3.
 - [**Morphe Community Patches**](https://morphe-patches.software/) - Community patches, featuring a bunch of apps. Copyright Morphe (copyrighted and not licensed under open source terms).
 
 ## 📚 Frequently Asked Questions (FAQ)
