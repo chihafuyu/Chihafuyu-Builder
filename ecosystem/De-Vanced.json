@@ -5,12 +5,12 @@
                 "package": "com.google.android.apps.photos",
                 "search_term": "Google Photos",
                 "stable": [
-                    "7.91.0.973540846"
+                    "7.91.0.978065458"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "52331991",
-                    "armeabi-v7a": "52331991",
-                    "x86_64": "52331991"
+                    "arm64-v8a": "52334314",
+                    "armeabi-v7a": "52334314",
+                    "x86_64": "52334314"
                 },
                 "beta": [],
                 "strip": true,
