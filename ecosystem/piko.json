@@ -18,10 +18,10 @@
             },
             "newx-twitter": {
                 "package": "com.twitter.android",
-                "play_version_code": "312240002",
+                "play_version_code": "312250001",
                 "search_term": "X",
                 "stable": [
-                    "12.24.0-prod.02"
+                    "12.25.0-prod.01"
                 ],
                 "beta": [],
                 "strip": true,
