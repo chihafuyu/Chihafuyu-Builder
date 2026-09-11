@@ -28,9 +28,17 @@ class ApkmirrorScraper(BaseScraper):
         t_ver = ctx.target_ver
         base_ver = t_ver.split("-")[0] if "-" in t_ver and t_ver[:1].isdigit() else t_ver
         search_term = ctx.app_data.get('search_term', ctx.pkg)
+        short_term = search_term.replace(" Browser", "").replace(" App", "").split("-")[0].strip()
 
-        # Dual-layer search: fallback to general term if exact version query yields nothing
-        queries = [f"{search_term} {base_ver}", search_term]
+        queries = [
+            f"{search_term} {base_ver}",
+            f"{short_term} {base_ver}",
+            search_term,
+            short_term
+        ]
+        queries = list(dict.fromkeys(queries))
+
+        href_ver = base_ver.replace(".", "-")
 
         exc_kws = ["secondary"] + [
             k.lower() for k in ctx.app_data.get("apkm_exclude", [])
@@ -44,7 +52,6 @@ class ApkmirrorScraper(BaseScraper):
             if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
                 continue
 
-            # Auto-redirect detection sensor for APKMirror
             if "?post_type=app_release&s=" not in resp.url:
                 print("[INFO] Auto-redirected to release page.")
                 return resp.url
@@ -57,7 +64,9 @@ class ApkmirrorScraper(BaseScraper):
                     continue
 
                 text = link.text.lower()
-                if base_ver.lower() not in text or any(k in text for k in exc_kws):
+                if base_ver.lower() not in text and href_ver not in href.lower():
+                    continue
+                if any(k in text for k in exc_kws):
                     continue
                 if inc_kws and not all(k in text for k in inc_kws):
                     continue
@@ -109,7 +118,6 @@ class ApkmirrorScraper(BaseScraper):
         if not btn:
             return None
 
-        # Dynamically determine the true nature of the file being downloaded
         is_actual_bundle = "bundle" in btn.text.lower()
         if not is_actual_bundle:
             self._log_expected_sha256(v_soup)
