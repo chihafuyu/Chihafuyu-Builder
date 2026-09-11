@@ -12,7 +12,7 @@ from .base import BaseScraper
 
 EDITION_SLUG_REGEX = re.compile(
     r"\b(amazon|fire-tablet|fire-tv|androidtv|wear|go-edition|"
-    r"lite|beta|alpha|enterprise|kids|headunit|auto)\b",
+    r"lite|enterprise|kids|headunit|auto)\b",
     re.IGNORECASE
 )
 
