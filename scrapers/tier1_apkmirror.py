@@ -12,7 +12,7 @@ from .base import BaseScraper
 
 EDITION_SLUG_REGEX = re.compile(
     r"\b(amazon|fire-tablet|fire-tv|androidtv|wear|go-edition|"
-    r"lite|beta|alpha|enterprise|kids|headunit|auto)\b",
+    r"lite|enterprise|kids|headunit|auto)\b",
     re.IGNORECASE
 )
 
@@ -24,44 +24,87 @@ class ApkmirrorScraper(BaseScraper):
         """Returns the tier identifier."""
         return "apkmirror"
 
+    def _is_valid_release_link(
+        self, link: Any, base_ver: str, exc_kws: list, inc_kws: list
+    ) -> Optional[str]:
+        """Validates if a release link matches the required criteria strictly."""
+        href = link.get("href", "")
+        if not href or EDITION_SLUG_REGEX.search(href):
+            return None
+
+        text = link.text.lower()
+        href_ver = base_ver.replace(".", "-")
+
+        # Boundary checks to prevent version collisions (e.g., matching 1.0 against 11.0)
+        ver_pattern = re.compile(rf"\b{re.escape(base_ver.lower())}\b")
+        href_ver_pattern = re.compile(rf"\b{re.escape(href_ver.lower())}\b")
+
+        if not ver_pattern.search(text) and not href_ver_pattern.search(href.lower()):
+            return None
+
+        if any(k in text for k in exc_kws):
+            return None
+
+        if inc_kws and not all(k in text for k in inc_kws):
+            return None
+
+        return urljoin("https://www.apkmirror.com", href)
+
     def _find_release(self, ctx: Context) -> Optional[str]:
-        t_ver = ctx.target_ver
-        base_ver = t_ver.split("-")[0] if "-" in t_ver and t_ver[:1].isdigit() else t_ver
+        # Inlined t_ver to reduce local variable count
+        base_ver = (
+            ctx.target_ver.split("-")[0]
+            if "-" in ctx.target_ver and ctx.target_ver[:1].isdigit()
+            else ctx.target_ver
+        )
         search_term = ctx.app_data.get('search_term', ctx.pkg)
 
-        # Dual-layer search: fallback to general term if exact version query yields nothing
-        queries = [f"{search_term} {base_ver}", search_term]
+        # Prevent aggressive trimming if the search term is likely a package name
+        if "." in search_term and " " not in search_term:
+            short_term = search_term
+        else:
+            # Wrapped in parentheses to allow multi-line method chaining, eliminating clean_term
+            short_term = (
+                search_term.replace(" Browser", "")
+                .replace(" App", "")
+                .split("-")[0]
+                .strip()
+            )
 
+        # Pre-compute inclusion and exclusion lists to avoid repetitive allocation
+        # Also filter out empty strings to prevent accidental strict blocking
         exc_kws = ["secondary"] + [
-            k.lower() for k in ctx.app_data.get("apkm_exclude", [])
+            k.lower() for k in ctx.app_data.get("apkm_exclude", []) if k.strip()
         ]
-        inc_kws = [k.lower() for k in ctx.app_data.get("apkm_include", [])]
+        inc_kws = [k.lower() for k in ctx.app_data.get("apkm_include", []) if k.strip()]
+
+        # Inlined queries allocation
+        queries = list(dict.fromkeys([
+            f"{search_term} {base_ver}",
+            f"{short_term} {base_ver}",
+            search_term,
+            short_term
+        ]))
 
         for q in queries:
-            url = f"https://www.apkmirror.com/?post_type=app_release&s={quote_plus(q)}"
             ctx.limiter.wait()
-            resp = ctx.scraper.get(url, timeout=60)
+            # Inlined URL construction directly into the request
+            resp = ctx.scraper.get(
+                f"https://www.apkmirror.com/?post_type=app_release&s={quote_plus(q)}",
+                timeout=60
+            )
             if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
                 continue
 
-            # Auto-redirect detection sensor for APKMirror
             if "?post_type=app_release&s=" not in resp.url:
                 print("[INFO] Auto-redirected to release page.")
                 return resp.url
 
             soup = BeautifulSoup(resp.text, "html.parser")
             for link in soup.find_all("a", class_="fontBlack"):
-                href = link.get("href", "")
-
-                if EDITION_SLUG_REGEX.search(href):
-                    continue
-
-                text = link.text.lower()
-                if base_ver.lower() not in text or any(k in text for k in exc_kws):
-                    continue
-                if inc_kws and not all(k in text for k in inc_kws):
-                    continue
-                return urljoin("https://www.apkmirror.com", href)
+                valid_url = self._is_valid_release_link(link, base_ver, exc_kws, inc_kws)
+                if valid_url:
+                    return valid_url
 
         return None
 
@@ -78,19 +121,35 @@ class ApkmirrorScraper(BaseScraper):
                 print(f"[INFO] Expected SHA-256 extracted: {hash_match.group(0)}")
 
     def _select_download_button(self, soup: BeautifulSoup, force_b: bool) -> Optional[Any]:
-        btns = soup.find_all("a", class_="downloadButton")
+        btns = [
+            btn for btn in soup.find_all("a", class_="downloadButton")
+            if "variantsButton" not in btn.get("class", []) and btn.has_attr("href")
+            and not btn["href"].startswith("#")
+        ]
         if not btns:
             return None
 
-        if force_b:
-            for btn in btns:
-                if "bundle" in btn.text.lower():
-                    return btn
-        else:
-            for btn in btns:
-                if "bundle" not in btn.text.lower():
-                    return btn
-        return btns[0]
+        best_btn = None
+        best_score = -1
+
+        for btn in btns:
+            text = btn.text.lower()
+            score = 0
+            is_bundle_btn = "bundle" in text
+
+            if force_b and is_bundle_btn:
+                score += 10
+            elif not force_b and not is_bundle_btn:
+                score += 10
+
+            if "download" in text:
+                score += 5
+
+            if score > best_score:
+                best_score = score
+                best_btn = btn
+
+        return best_btn
 
     def _process_variant_page(
         self, ctx: Context, var_url: str, force_b: bool
@@ -109,10 +168,12 @@ class ApkmirrorScraper(BaseScraper):
         if not btn:
             return None
 
-        # Dynamically determine the true nature of the file being downloaded
         is_actual_bundle = "bundle" in btn.text.lower()
         if not is_actual_bundle:
             self._log_expected_sha256(v_soup)
+
+        file_type_log = "APKM Bundle" if is_actual_bundle else "Raw APK"
+        print(f"[INFO] Preparing to extract: {file_type_log}")
 
         dl_page = urljoin("https://www.apkmirror.com", btn["href"])
         ctx.limiter.wait()
@@ -127,7 +188,7 @@ class ApkmirrorScraper(BaseScraper):
         if dl_btn and "href" in dl_btn.attrs:
             out_path = ctx.get_out_path(".apkm" if is_actual_bundle else ".apk")
             dl_url = urljoin("https://www.apkmirror.com", dl_btn["href"])
-            print("[INFO] Downloading from APKMirror...")
+            print(f"[INFO] Downloading {file_type_log} from APKMirror...")
             if download_file_stream(ctx.scraper, dl_url, out_path, dl_page):
                 return out_path
         return None
