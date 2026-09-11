@@ -28,7 +28,7 @@ class ApkmirrorScraper(BaseScraper):
         t_ver = ctx.target_ver
         base_ver = t_ver.split("-")[0] if "-" in t_ver and t_ver[:1].isdigit() else t_ver
         search_term = ctx.app_data.get('search_term', ctx.pkg)
-        
+
         # Dual-layer search: fallback to general term if exact version query yields nothing
         queries = [f"{search_term} {base_ver}", search_term]
 
@@ -62,7 +62,7 @@ class ApkmirrorScraper(BaseScraper):
                 if inc_kws and not all(k in text for k in inc_kws):
                     continue
                 return urljoin("https://www.apkmirror.com", href)
-                
+
         return None
 
     def _log_expected_sha256(self, soup: BeautifulSoup) -> None:
@@ -81,7 +81,7 @@ class ApkmirrorScraper(BaseScraper):
         btns = soup.find_all("a", class_="downloadButton")
         if not btns:
             return None
-            
+
         if force_b:
             for btn in btns:
                 if "bundle" in btn.text.lower():
