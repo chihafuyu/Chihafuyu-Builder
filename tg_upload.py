@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 from pyrogram import Client
-from pyrogram.errors import RPCError
+from pyrogram.errors import FloodWait, RPCError
 from pyrogram.types import InputMediaDocument
 
 
@@ -34,21 +34,6 @@ def get_documents() -> list:
     return documents
 
 
-def retry(func):
-    """Retry decorator for async functions."""
-    async def wrapper(*args, **kwargs):
-        for attempt in range(3):
-            try:
-                return await func(*args, **kwargs)
-            except (RPCError, ConnectionError, TimeoutError, ValueError, KeyError) as exc:
-                print(f"Upload failed: {exc}", flush=True)
-                if attempt == 2:
-                    raise
-        return None
-    return wrapper
-
-
-@retry
 async def upload_files() -> None:
     """Upload documents to Telegram channel."""
     api_id = os.environ.get("API_ID")
@@ -69,6 +54,7 @@ async def upload_files() -> None:
         "name": "bot" if bot_token else "userbot",
         "api_id": api_id,
         "api_hash": api_hash,
+        "max_concurrent_transmissions": 1,
     }
 
     if bot_token:
@@ -88,8 +74,21 @@ async def upload_files() -> None:
                 print(f"Failed to resolve invite link: {err}", flush=True)
 
         print(f"Sending media to: {target_chat}", flush=True)
-        await app.send_media_group(chat_id=target_chat, media=documents)
-        print("Upload complete!", flush=True)
+
+        max_retries = 5
+        for attempt in range(max_retries):
+            try:
+                await app.send_media_group(chat_id=target_chat, media=documents)
+                print("Upload complete!", flush=True)
+                return
+            except FloodWait as exc:
+                print(f"[{attempt + 1}] Flood wait for {exc.value} seconds.", flush=True)
+                await asyncio.sleep(exc.value + 2)
+            except (OSError, TimeoutError, RPCError) as exc:
+                print(f"[{attempt + 1}] Net/API error: {exc}. Retrying in 10s...", flush=True)
+                await asyncio.sleep(10)
+
+        print(f"[FATAL] Failed to upload after {max_retries} attempts.", flush=True)
 
 
 if __name__ == "__main__":
