@@ -7,7 +7,7 @@ on:
         description: 'Patch pinterest'
         required: true
         type: boolean
-        default: false
+        default: true
       app_easy_sudoku:
         description: 'Patch easy-sudoku'
         required: true

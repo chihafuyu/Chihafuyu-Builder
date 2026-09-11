@@ -8,8 +8,13 @@ on:
         required: true
         type: boolean
         default: true
-      app_vivaldi_snapshot:
-        description: 'Patch vivaldi-snapshot'
+      app_vivaldi_browser:
+        description: 'Patch vivaldi-browser'
+        required: true
+        type: boolean
+        default: true
+      app_hevy:
+        description: 'Patch hevy'
         required: true
         type: boolean
         default: true
@@ -240,13 +245,15 @@ jobs:
         id: prep_apps
         env:
           APP_BRAVE_BROWSER: ${{ inputs.app_brave_browser }}
-          APP_VIVALDI_SNAPSHOT: ${{ inputs.app_vivaldi_snapshot }}
+          APP_VIVALDI_BROWSER: ${{ inputs.app_vivaldi_browser }}
+          APP_HEVY: ${{ inputs.app_hevy }}
         run: |
           set -euo pipefail
 
           APP_LIST=""
           if [[ "$APP_BRAVE_BROWSER" == "true" ]]; then APP_LIST="$APP_LIST,brave-browser"; fi
-          if [[ "$APP_VIVALDI_SNAPSHOT" == "true" ]]; then APP_LIST="$APP_LIST,vivaldi-snapshot"; fi
+          if [[ "$APP_VIVALDI_BROWSER" == "true" ]]; then APP_LIST="$APP_LIST,vivaldi-browser"; fi
+          if [[ "$APP_HEVY" == "true" ]]; then APP_LIST="$APP_LIST,hevy"; fi
 
           APP_LIST="${APP_LIST#,}"
 

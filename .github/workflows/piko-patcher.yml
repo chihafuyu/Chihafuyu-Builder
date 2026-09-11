@@ -12,7 +12,7 @@ on:
         description: 'Patch newx-twitter'
         required: true
         type: boolean
-        default: false
+        default: true
       app_instagram:
         description: 'Patch instagram'
         required: true
