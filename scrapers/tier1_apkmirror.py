@@ -87,23 +87,35 @@ class ApkmirrorScraper(BaseScraper):
                 print(f"[INFO] Expected SHA-256 extracted: {hash_match.group(0)}")
 
     def _select_download_button(self, soup: BeautifulSoup, force_b: bool) -> Optional[Any]:
-        # Filter out the fake "Scroll to available downloads" button
         btns = [
             btn for btn in soup.find_all("a", class_="downloadButton")
-            if "variantsButton" not in btn.get("class", [])
+            if "variantsButton" not in btn.get("class", []) and btn.has_attr("href")
+            and not btn["href"].startswith("#")
         ]
         if not btns:
             return None
 
-        if force_b:
-            for btn in btns:
-                if "bundle" in btn.text.lower():
-                    return btn
-        else:
-            for btn in btns:
-                if "bundle" not in btn.text.lower():
-                    return btn
-        return btns[0]
+        best_btn = None
+        best_score = -1
+
+        for btn in btns:
+            text = btn.text.lower()
+            score = 0
+            is_bundle_btn = "bundle" in text
+
+            if force_b and is_bundle_btn:
+                score += 10
+            elif not force_b and not is_bundle_btn:
+                score += 10
+                
+            if "download" in text:
+                score += 5
+
+            if score > best_score:
+                best_score = score
+                best_btn = btn
+
+        return best_btn
 
     def _process_variant_page(
         self, ctx: Context, var_url: str, force_b: bool
@@ -126,6 +138,9 @@ class ApkmirrorScraper(BaseScraper):
         if not is_actual_bundle:
             self._log_expected_sha256(v_soup)
 
+        file_type_log = "APKM Bundle" if is_actual_bundle else "Raw APK"
+        print(f"[INFO] Preparing to extract: {file_type_log}")
+
         dl_page = urljoin("https://www.apkmirror.com", btn["href"])
         ctx.limiter.wait()
         d_resp = ctx.scraper.get(dl_page, timeout=60)
@@ -139,7 +154,7 @@ class ApkmirrorScraper(BaseScraper):
         if dl_btn and "href" in dl_btn.attrs:
             out_path = ctx.get_out_path(".apkm" if is_actual_bundle else ".apk")
             dl_url = urljoin("https://www.apkmirror.com", dl_btn["href"])
-            print("[INFO] Downloading from APKMirror...")
+            print(f"[INFO] Downloading {file_type_log} from APKMirror...")
             if download_file_stream(ctx.scraper, dl_url, out_path, dl_page):
                 return out_path
         return None
