@@ -37,6 +37,11 @@ class ApkmirrorScraper(BaseScraper):
         if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
             return None
 
+        # Auto-redirect detection sensor for APKMirror
+        if "?post_type=app_release&s=" not in resp.url:
+            print("[INFO] Auto-redirected to release page.")
+            return resp.url
+
         soup = BeautifulSoup(resp.text, "html.parser")
         exc_kws = ["secondary"] + [
             k.lower() for k in ctx.app_data.get("apkm_exclude", [])
@@ -69,6 +74,13 @@ class ApkmirrorScraper(BaseScraper):
             if hash_match:
                 print(f"[INFO] Expected SHA-256 extracted: {hash_match.group(0)}")
 
+    def _select_download_button(self, soup: BeautifulSoup, is_bundle: bool) -> Optional[Any]:
+        btns = soup.find_all("a", class_="downloadButton")
+        for btn in btns:
+            if is_bundle == ("bundle" in btn.text.lower()):
+                return btn
+        return btns[0] if btns else None
+
     def _process_variant_page(
         self, ctx: Context, var_url: str, is_bundle: bool
     ) -> Optional[str]:
@@ -85,7 +97,7 @@ class ApkmirrorScraper(BaseScraper):
         if not is_bundle:
             self._log_expected_sha256(v_soup)
 
-        btn = v_soup.find("a", class_="downloadButton")
+        btn = self._select_download_button(v_soup, is_bundle)
         if not btn:
             return None
 
@@ -147,14 +159,10 @@ class ApkmirrorScraper(BaseScraper):
                         ctx, row, is_bndl, ver_code
                     ):
                         return out
-        elif btn := soup.find("a", class_="downloadButton"):
-            is_bndl = "bundle" in btn.text.lower()
-            if not force_b or is_bndl:
-                return self._process_variant_page(
-                    ctx,
-                    urljoin("https://www.apkmirror.com", btn["href"]),
-                    is_bndl,
-                )
+        elif soup.find("a", class_="downloadButton"):
+            for is_bndl in (False, True) if not force_b else (True,):
+                if out := self._process_variant_page(ctx, rel_url, is_bndl):
+                    return out
         return None
 
     def scrape(self, ctx: Context) -> Optional[str]:

@@ -58,7 +58,6 @@
                 "beta": [],
                 "strip": true,
                 "force_arch": "arm64-v8a",
-                "force_bundle": true,
                 "version_codes": {
                     "arm64-v8a": "12l+"
                 },
