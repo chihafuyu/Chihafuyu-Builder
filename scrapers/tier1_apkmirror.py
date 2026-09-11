@@ -87,7 +87,11 @@ class ApkmirrorScraper(BaseScraper):
                 print(f"[INFO] Expected SHA-256 extracted: {hash_match.group(0)}")
 
     def _select_download_button(self, soup: BeautifulSoup, force_b: bool) -> Optional[Any]:
-        btns = soup.find_all("a", class_="downloadButton")
+        # Filter out the fake "Scroll to available downloads" button
+        btns = [
+            btn for btn in soup.find_all("a", class_="downloadButton")
+            if "variantsButton" not in btn.get("class", [])
+        ]
         if not btns:
             return None
 
