@@ -24,6 +24,28 @@ class ApkmirrorScraper(BaseScraper):
         """Returns the tier identifier."""
         return "apkmirror"
 
+    def _is_valid_release_link(self, link: Any, base_ver: str, ctx: Context) -> Optional[str]:
+        """Validates if a release link matches the required criteria."""
+        href = link.get("href", "")
+        if not href or EDITION_SLUG_REGEX.search(href):
+            return None
+
+        text = link.text.lower()
+        href_ver = base_ver.replace(".", "-")
+        exc_kws = ["secondary"] + [
+            k.lower() for k in ctx.app_data.get("apkm_exclude", [])
+        ]
+        inc_kws = [k.lower() for k in ctx.app_data.get("apkm_include", [])]
+
+        if base_ver.lower() not in text and href_ver not in href.lower():
+            return None
+        if any(k in text for k in exc_kws):
+            return None
+        if inc_kws and not all(k in text for k in inc_kws):
+            return None
+
+        return urljoin("https://www.apkmirror.com", href)
+
     def _find_release(self, ctx: Context) -> Optional[str]:
         t_ver = ctx.target_ver
         base_ver = t_ver.split("-")[0] if "-" in t_ver and t_ver[:1].isdigit() else t_ver
@@ -38,13 +60,6 @@ class ApkmirrorScraper(BaseScraper):
         ]
         queries = list(dict.fromkeys(queries))
 
-        href_ver = base_ver.replace(".", "-")
-
-        exc_kws = ["secondary"] + [
-            k.lower() for k in ctx.app_data.get("apkm_exclude", [])
-        ]
-        inc_kws = [k.lower() for k in ctx.app_data.get("apkm_include", [])]
-
         for q in queries:
             url = f"https://www.apkmirror.com/?post_type=app_release&s={quote_plus(q)}"
             ctx.limiter.wait()
@@ -58,19 +73,9 @@ class ApkmirrorScraper(BaseScraper):
 
             soup = BeautifulSoup(resp.text, "html.parser")
             for link in soup.find_all("a", class_="fontBlack"):
-                href = link.get("href", "")
-
-                if EDITION_SLUG_REGEX.search(href):
-                    continue
-
-                text = link.text.lower()
-                if base_ver.lower() not in text and href_ver not in href.lower():
-                    continue
-                if any(k in text for k in exc_kws):
-                    continue
-                if inc_kws and not all(k in text for k in inc_kws):
-                    continue
-                return urljoin("https://www.apkmirror.com", href)
+                valid_url = self._is_valid_release_link(link, base_ver, ctx)
+                if valid_url:
+                    return valid_url
 
         return None
 
@@ -107,7 +112,7 @@ class ApkmirrorScraper(BaseScraper):
                 score += 10
             elif not force_b and not is_bundle_btn:
                 score += 10
-                
+
             if "download" in text:
                 score += 5
 
