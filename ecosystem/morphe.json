@@ -10,7 +10,7 @@
                 "beta": [
                     "2026.35.0"
                 ],
-				"version_codes": {
+                "version_codes": {
                     "arm64-v8a": "2635090",
                     "armeabi-v7a": "2635090",
                     "x86_64": "2635090"
@@ -39,6 +39,7 @@
                     "x86_64": "1561295689"
                 },
                 "strip": true,
+                "force_bundle": false,
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Hide Shorts components": {
@@ -63,6 +64,7 @@
                     "arm64-v8a": "92656240"
                 },
                 "strip": true,
+                "force_bundle": false,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             }
