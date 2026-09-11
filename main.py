@@ -59,8 +59,9 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
             return process_downloaded_file(path)
 
     fallback_order = [
-        "direct", "github", "huggingface", "google_play", "apkmirror",
-        "apkpure", "apkcombo", "aptoide", "uptodown", "archive"
+        "direct", "github", "huggingface", "apkmirror",
+        "archive", "uptodown", "apkcombo", "apkpure",
+        "aptoide", "google_play"
     ]
 
     for src_name in fallback_order:
