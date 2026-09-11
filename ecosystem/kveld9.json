@@ -63,6 +63,15 @@
                 },
                 "archive_id": "ZeNiX",
                 "options_override": {
+                    "APK Junk Cleaner": {
+                        "enabled": true
+                    },
+                    "Locale Resource Slimmer": {
+                        "enabled": true,
+                        "options": {
+                            "locales": "en, id"
+                        }
+                    },
                     "Locale PAK Slimmer": {
                         "enabled": true,
                         "options": {
@@ -86,6 +95,7 @@
                     }
                 }
             }
-        }
-    }
+		}
+	}
 }
+
