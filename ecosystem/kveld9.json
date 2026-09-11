@@ -59,7 +59,7 @@
                 "strip": true,
                 "force_arch": "arm64-v8a",
                 "version_codes": {
-                    "arm64-v8a": "12l+"
+                    "arm64-v8a": "10+"
                 },
                 "archive_id": "ZeNiX",
                 "options_override": {
