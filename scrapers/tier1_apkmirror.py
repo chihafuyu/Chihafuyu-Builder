@@ -35,7 +35,6 @@ class ApkmirrorScraper(BaseScraper):
         text = link.text.lower()
         href_ver = base_ver.replace(".", "-")
 
-        # Boundary checks to prevent version collisions (e.g., matching 1.0 against 11.0)
         ver_pattern = re.compile(rf"\b{re.escape(base_ver.lower())}\b")
         href_ver_pattern = re.compile(rf"\b{re.escape(href_ver.lower())}\b")
 
@@ -51,7 +50,6 @@ class ApkmirrorScraper(BaseScraper):
         return urljoin("https://www.apkmirror.com", href)
 
     def _find_release(self, ctx: Context) -> Optional[str]:
-        # Inlined t_ver to reduce local variable count
         base_ver = (
             ctx.target_ver.split("-")[0]
             if "-" in ctx.target_ver and ctx.target_ver[:1].isdigit()
@@ -59,11 +57,9 @@ class ApkmirrorScraper(BaseScraper):
         )
         search_term = ctx.app_data.get('search_term', ctx.pkg)
 
-        # Prevent aggressive trimming if the search term is likely a package name
         if "." in search_term and " " not in search_term:
             short_term = search_term
         else:
-            # Wrapped in parentheses to allow multi-line method chaining, eliminating clean_term
             short_term = (
                 search_term.replace(" Browser", "")
                 .replace(" App", "")
@@ -71,14 +67,11 @@ class ApkmirrorScraper(BaseScraper):
                 .strip()
             )
 
-        # Pre-compute inclusion and exclusion lists to avoid repetitive allocation
-        # Also filter out empty strings to prevent accidental strict blocking
         exc_kws = ["secondary"] + [
             k.lower() for k in ctx.app_data.get("apkm_exclude", []) if k.strip()
         ]
         inc_kws = [k.lower() for k in ctx.app_data.get("apkm_include", []) if k.strip()]
 
-        # Inlined queries allocation
         queries = list(dict.fromkeys([
             f"{search_term} {base_ver}",
             f"{short_term} {base_ver}",
@@ -88,7 +81,6 @@ class ApkmirrorScraper(BaseScraper):
 
         for q in queries:
             ctx.limiter.wait()
-            # Inlined URL construction directly into the request
             resp = ctx.scraper.get(
                 f"https://www.apkmirror.com/?post_type=app_release&s={quote_plus(q)}",
                 timeout=60
@@ -130,16 +122,19 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         best_btn = None
-        best_score = -1
+        best_score = -100
 
         for btn in btns:
             text = btn.text.lower()
             score = 0
             is_bundle_btn = "bundle" in text
 
-            if force_b and is_bundle_btn:
-                score += 10
-            elif not force_b and not is_bundle_btn:
+            # Strict penalty for mismatch
+            if force_b and not is_bundle_btn:
+                score -= 50
+            elif not force_b and is_bundle_btn:
+                score -= 50
+            else:
                 score += 10
 
             if "download" in text:
@@ -148,6 +143,13 @@ class ApkmirrorScraper(BaseScraper):
             if score > best_score:
                 best_score = score
                 best_btn = btn
+
+        if best_btn:
+            is_bundle_btn = "bundle" in best_btn.text.lower()
+            if force_b and not is_bundle_btn:
+                return None
+            if not force_b and is_bundle_btn:
+                return None
 
         return best_btn
 
@@ -197,6 +199,12 @@ class ApkmirrorScraper(BaseScraper):
         self, ctx: Context, row: Any, force_b: bool, ver_code: str
     ) -> Optional[str]:
         text = row.text.lower()
+        is_bundle = "bundle" in text
+        if force_b and not is_bundle:
+            return None
+        if not force_b and is_bundle:
+            return None
+
         has_valid = any(
             a in text for a in (ctx.arch.lower(), "universal", "noarch", "nodpi", "anydpi")
         )
@@ -204,9 +212,6 @@ class ApkmirrorScraper(BaseScraper):
             a in text
             for a in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi")
         )
-
-        if force_b and "bundle" not in text:
-            return None
 
         if has_valid or not has_any:
             if not ver_code or str(ver_code) in text:
