@@ -214,7 +214,8 @@ class ApkmirrorScraper(BaseScraper):
         )
 
         if has_valid or not has_any:
-            if not ver_code or str(ver_code) in text:
+            # Force case-insensitive matching for version_codes like "12L+"
+            if not ver_code or str(ver_code).lower() in text:
                 if link := row.find("a", class_="accent_color"):
                     rel_url = urljoin(
                         "https://www.apkmirror.com", link["href"]
