@@ -33,6 +33,46 @@ on:
         required: true
         type: boolean
         default: false
+      app_1weather:
+        description: 'Patch 1weather'
+        required: true
+        type: boolean
+        default: false
+      app_all_in_one_calculator:
+        description: 'Patch all-in-one-calculator'
+        required: true
+        type: boolean
+        default: false
+      app_alpinequest:
+        description: 'Patch alpinequest'
+        required: true
+        type: boolean
+        default: false
+      app_bettersleep:
+        description: 'Patch bettersleep'
+        required: true
+        type: boolean
+        default: false
+      app_dwg_fastview:
+        description: 'Patch dwg-fastview'
+        required: true
+        type: boolean
+        default: false
+      app_moviebox:
+        description: 'Patch moviebox'
+        required: true
+        type: boolean
+        default: false
+      app_quranify:
+        description: 'Patch quranify'
+        required: true
+        type: boolean
+        default: false
+      app_rise_sleep_tracker:
+        description: 'Patch rise-sleep-tracker'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -265,6 +305,14 @@ jobs:
           APP_PROTON_MAIL: ${{ inputs.app_proton_mail }}
           APP_READERA: ${{ inputs.app_readera }}
           APP_SYMFONIUM: ${{ inputs.app_symfonium }}
+          APP_1WEATHER: ${{ inputs.app_1weather }}
+          APP_ALL_IN_ONE_CALCULATOR: ${{ inputs.app_all_in_one_calculator }}
+          APP_ALPINEQUEST: ${{ inputs.app_alpinequest }}
+          APP_BETTERSLEEP: ${{ inputs.app_bettersleep }}
+          APP_DWG_FASTVIEW: ${{ inputs.app_dwg_fastview }}
+          APP_MOVIEBOX: ${{ inputs.app_moviebox }}
+          APP_QURANIFY: ${{ inputs.app_quranify }}
+          APP_RISE_SLEEP_TRACKER: ${{ inputs.app_rise_sleep_tracker }}
         run: |
           set -euo pipefail
 
@@ -275,6 +323,14 @@ jobs:
           if [[ "$APP_PROTON_MAIL" == "true" ]]; then APP_LIST="$APP_LIST,proton-mail"; fi
           if [[ "$APP_READERA" == "true" ]]; then APP_LIST="$APP_LIST,readera"; fi
           if [[ "$APP_SYMFONIUM" == "true" ]]; then APP_LIST="$APP_LIST,symfonium"; fi
+          if [[ "$APP_1WEATHER" == "true" ]]; then APP_LIST="$APP_LIST,1weather"; fi
+          if [[ "$APP_ALL_IN_ONE_CALCULATOR" == "true" ]]; then APP_LIST="$APP_LIST,all-in-one-calculator"; fi
+          if [[ "$APP_ALPINEQUEST" == "true" ]]; then APP_LIST="$APP_LIST,alpinequest"; fi
+          if [[ "$APP_BETTERSLEEP" == "true" ]]; then APP_LIST="$APP_LIST,bettersleep"; fi
+          if [[ "$APP_DWG_FASTVIEW" == "true" ]]; then APP_LIST="$APP_LIST,dwg-fastview"; fi
+          if [[ "$APP_MOVIEBOX" == "true" ]]; then APP_LIST="$APP_LIST,moviebox"; fi
+          if [[ "$APP_QURANIFY" == "true" ]]; then APP_LIST="$APP_LIST,quranify"; fi
+          if [[ "$APP_RISE_SLEEP_TRACKER" == "true" ]]; then APP_LIST="$APP_LIST,rise-sleep-tracker"; fi
 
           APP_LIST="${APP_LIST#,}"
 

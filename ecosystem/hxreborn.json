@@ -26,7 +26,9 @@
             "projectivy-launcher": {
                 "package": "com.spocky.projengmenu",
                 "search_term": "Projectivy Launcher",
-                "stable": [],
+                "stable": [
+                    "4.70"
+                ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -58,7 +60,95 @@
                 "package": "app.symfonik.music.player",
                 "search_term": "Symfonium",
                 "stable": [
-                    "14.1.0"
+                    "15.0.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "1weather": {
+                "package": "com.handmark.expressweather",
+                "search_term": "1Weather",
+                "stable": [
+                    "13.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "all-in-one-calculator": {
+                "package": "all.in.one.calculator",
+                "search_term": "All-In-One Calculator",
+                "stable": [
+                    "3.4.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "alpinequest": {
+                "package": "psyberia.alpinequest.free",
+                "search_term": "AlpineQuest",
+                "stable": [
+                    "2.4.0e"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "bettersleep": {
+                "package": "ipnossoft.rma.free",
+                "search_term": "BetterSleep",
+                "stable": [
+                    "26.15"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "dwg-fastview": {
+                "package": "com.gstarmc.android",
+                "search_term": "DWG FastView",
+                "stable": [
+                    "5.21.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "moviebox": {
+                "package": "com.community.oneroom",
+                "search_term": "MovieBox",
+                "stable": [
+                    "4.0.02.0903.02"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "quranify": {
+                "package": "com.mchutov.Quranify",
+                "search_term": "Quranify",
+                "stable": [
+                    "2.2.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "rise-sleep-tracker": {
+                "package": "com.risesci.nyx",
+                "search_term": "RISE Sleep Tracker",
+                "stable": [
+                    "Android V1.78.47"
                 ],
                 "beta": [],
                 "strip": true,
