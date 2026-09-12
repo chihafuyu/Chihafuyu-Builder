@@ -5,13 +5,13 @@
                 "package": "com.adguard.android",
                 "search_term": "AdGuard",
                 "stable": [
-                    "4.13.2"
+                    "4.14.0"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "42119001",
-                    "armeabi-v7a": "42119001",
-                    "x86_64": "42119001"
+                    "arm64-v8a": "42218017",
+                    "armeabi-v7a": "42218017",
+                    "x86_64": "42218017"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -67,9 +67,9 @@
                 "package": "jp.ne.ibis.ibispaintx.app",
                 "search_term": "ibis Paint X",
                 "stable": [
-                    "14.0.6"
+                    "14.1.0"
                 ],
-                "beta": [],
+                "beta": ["14.1.1"],
                 "strip": true,
                 "force_arch": "arm64-v8a",
                 "uptodown_url": "https://ibispaint-x.en.uptodown.com/android",
