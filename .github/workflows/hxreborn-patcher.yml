@@ -3,36 +3,6 @@ name: 🔥 Hxreborn Ecosystem Patcher
 on:
   workflow_dispatch:
     inputs:
-      app_cx_file_explorer:
-        description: 'Patch cx-file-explorer'
-        required: true
-        type: boolean
-        default: false
-      app_photo_editor_pro:
-        description: 'Patch photo-editor-pro'
-        required: true
-        type: boolean
-        default: false
-      app_projectivy_launcher:
-        description: 'Patch projectivy-launcher'
-        required: true
-        type: boolean
-        default: false
-      app_proton_mail:
-        description: 'Patch proton-mail'
-        required: true
-        type: boolean
-        default: false
-      app_readera:
-        description: 'Patch readera'
-        required: true
-        type: boolean
-        default: false
-      app_symfonium:
-        description: 'Patch symfonium'
-        required: true
-        type: boolean
-        default: false
       app_1weather:
         description: 'Patch 1weather'
         required: true
@@ -53,6 +23,11 @@ on:
         required: true
         type: boolean
         default: false
+      app_cx_file_explorer:
+        description: 'Patch cx-file-explorer'
+        required: true
+        type: boolean
+        default: false
       app_dwg_fastview:
         description: 'Patch dwg-fastview'
         required: true
@@ -63,13 +38,38 @@ on:
         required: true
         type: boolean
         default: false
+      app_photo_editor_pro:
+        description: 'Patch photo-editor-pro'
+        required: true
+        type: boolean
+        default: false
+      app_projectivy_launcher:
+        description: 'Patch projectivy-launcher'
+        required: true
+        type: boolean
+        default: false
+      app_proton_mail:
+        description: 'Patch proton-mail'
+        required: true
+        type: boolean
+        default: false
       app_quranify:
         description: 'Patch quranify'
         required: true
         type: boolean
         default: false
+      app_readera:
+        description: 'Patch readera'
+        required: true
+        type: boolean
+        default: false
       app_rise_sleep_tracker:
         description: 'Patch rise-sleep-tracker'
+        required: true
+        type: boolean
+        default: false
+      app_symfonium:
+        description: 'Patch symfonium'
         required: true
         type: boolean
         default: false
@@ -299,38 +299,38 @@ jobs:
       - name: Prepare App Selection
         id: prep_apps
         env:
-          APP_CX_FILE_EXPLORER: ${{ inputs.app_cx_file_explorer }}
-          APP_PHOTO_EDITOR_PRO: ${{ inputs.app_photo_editor_pro }}
-          APP_PROJECTIVY_LAUNCHER: ${{ inputs.app_projectivy_launcher }}
-          APP_PROTON_MAIL: ${{ inputs.app_proton_mail }}
-          APP_READERA: ${{ inputs.app_readera }}
-          APP_SYMFONIUM: ${{ inputs.app_symfonium }}
           APP_1WEATHER: ${{ inputs.app_1weather }}
           APP_ALL_IN_ONE_CALCULATOR: ${{ inputs.app_all_in_one_calculator }}
           APP_ALPINEQUEST: ${{ inputs.app_alpinequest }}
           APP_BETTERSLEEP: ${{ inputs.app_bettersleep }}
+          APP_CX_FILE_EXPLORER: ${{ inputs.app_cx_file_explorer }}
           APP_DWG_FASTVIEW: ${{ inputs.app_dwg_fastview }}
           APP_MOVIEBOX: ${{ inputs.app_moviebox }}
+          APP_PHOTO_EDITOR_PRO: ${{ inputs.app_photo_editor_pro }}
+          APP_PROJECTIVY_LAUNCHER: ${{ inputs.app_projectivy_launcher }}
+          APP_PROTON_MAIL: ${{ inputs.app_proton_mail }}
           APP_QURANIFY: ${{ inputs.app_quranify }}
+          APP_READERA: ${{ inputs.app_readera }}
           APP_RISE_SLEEP_TRACKER: ${{ inputs.app_rise_sleep_tracker }}
+          APP_SYMFONIUM: ${{ inputs.app_symfonium }}
         run: |
           set -euo pipefail
 
           APP_LIST=""
-          if [[ "$APP_CX_FILE_EXPLORER" == "true" ]]; then APP_LIST="$APP_LIST,cx-file-explorer"; fi
-          if [[ "$APP_PHOTO_EDITOR_PRO" == "true" ]]; then APP_LIST="$APP_LIST,photo-editor-pro"; fi
-          if [[ "$APP_PROJECTIVY_LAUNCHER" == "true" ]]; then APP_LIST="$APP_LIST,projectivy-launcher"; fi
-          if [[ "$APP_PROTON_MAIL" == "true" ]]; then APP_LIST="$APP_LIST,proton-mail"; fi
-          if [[ "$APP_READERA" == "true" ]]; then APP_LIST="$APP_LIST,readera"; fi
-          if [[ "$APP_SYMFONIUM" == "true" ]]; then APP_LIST="$APP_LIST,symfonium"; fi
           if [[ "$APP_1WEATHER" == "true" ]]; then APP_LIST="$APP_LIST,1weather"; fi
           if [[ "$APP_ALL_IN_ONE_CALCULATOR" == "true" ]]; then APP_LIST="$APP_LIST,all-in-one-calculator"; fi
           if [[ "$APP_ALPINEQUEST" == "true" ]]; then APP_LIST="$APP_LIST,alpinequest"; fi
           if [[ "$APP_BETTERSLEEP" == "true" ]]; then APP_LIST="$APP_LIST,bettersleep"; fi
+          if [[ "$APP_CX_FILE_EXPLORER" == "true" ]]; then APP_LIST="$APP_LIST,cx-file-explorer"; fi
           if [[ "$APP_DWG_FASTVIEW" == "true" ]]; then APP_LIST="$APP_LIST,dwg-fastview"; fi
           if [[ "$APP_MOVIEBOX" == "true" ]]; then APP_LIST="$APP_LIST,moviebox"; fi
+          if [[ "$APP_PHOTO_EDITOR_PRO" == "true" ]]; then APP_LIST="$APP_LIST,photo-editor-pro"; fi
+          if [[ "$APP_PROJECTIVY_LAUNCHER" == "true" ]]; then APP_LIST="$APP_LIST,projectivy-launcher"; fi
+          if [[ "$APP_PROTON_MAIL" == "true" ]]; then APP_LIST="$APP_LIST,proton-mail"; fi
           if [[ "$APP_QURANIFY" == "true" ]]; then APP_LIST="$APP_LIST,quranify"; fi
+          if [[ "$APP_READERA" == "true" ]]; then APP_LIST="$APP_LIST,readera"; fi
           if [[ "$APP_RISE_SLEEP_TRACKER" == "true" ]]; then APP_LIST="$APP_LIST,rise-sleep-tracker"; fi
+          if [[ "$APP_SYMFONIUM" == "true" ]]; then APP_LIST="$APP_LIST,symfonium"; fi
 
           APP_LIST="${APP_LIST#,}"
 
