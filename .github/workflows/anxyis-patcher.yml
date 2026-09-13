@@ -71,10 +71,13 @@ jobs:
           set -euo pipefail
           LIST=""
           if [[ "$APP_ALIGHT_MOTION" == "true" ]]; then LIST="$LIST,alight-motion"; fi
-          
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
-          echo "apps=$LIST" >> "$GITHUB_OUTPUT"
+          {
+            echo "apps<<EOF"
+            echo "$LIST"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps

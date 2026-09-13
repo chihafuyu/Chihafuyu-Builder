@@ -113,7 +113,11 @@ jobs:
             exit 1
           fi
 
-          echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
+          {
+            echo "matrix<<EOF"
+            echo "$MATRIX_JSON"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-matrix

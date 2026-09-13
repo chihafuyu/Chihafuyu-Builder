@@ -78,10 +78,13 @@ jobs:
           LIST=""
           if [[ "$APP_PINTEREST" == "true" ]]; then LIST="$LIST,pinterest"; fi
           if [[ "$APP_EASY_SUDOKU" == "true" ]]; then LIST="$LIST,easy-sudoku"; fi
-          
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
-          echo "apps=$LIST" >> "$GITHUB_OUTPUT"
+          {
+            echo "apps<<EOF"
+            echo "$LIST"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps

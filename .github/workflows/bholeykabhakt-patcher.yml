@@ -106,10 +106,13 @@ jobs:
           if [[ "$APP_VPNIFY" == "true" ]]; then LIST="$LIST,vpnify"; fi
           if [[ "$APP_BACKDROPS" == "true" ]]; then LIST="$LIST,backdrops"; fi
           if [[ "$APP_SOLID_EXPLORER" == "true" ]]; then LIST="$LIST,solid-explorer"; fi
-          
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
-          echo "apps=$LIST" >> "$GITHUB_OUTPUT"
+          {
+            echo "apps<<EOF"
+            echo "$LIST"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps

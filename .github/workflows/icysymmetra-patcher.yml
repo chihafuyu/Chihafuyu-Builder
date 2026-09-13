@@ -73,7 +73,11 @@ jobs:
           if [[ "$APP_TIKTOK" == "true" ]]; then LIST="$LIST,tiktok"; fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
-          echo "apps=$LIST" >> "$GITHUB_OUTPUT"
+          {
+            echo "apps<<EOF"
+            echo "$LIST"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps

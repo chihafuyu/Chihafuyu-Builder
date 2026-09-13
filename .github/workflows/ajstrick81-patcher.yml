@@ -134,10 +134,13 @@ jobs:
           if [[ "$APP_PLUTO_TV" == "true" ]]; then LIST="$LIST,pluto-tv"; fi
           if [[ "$APP_PARAMOUNT_PLUS" == "true" ]]; then LIST="$LIST,paramount-plus"; fi
           if [[ "$APP_TWITCH" == "true" ]]; then LIST="$LIST,twitch"; fi
-          
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
-          echo "apps=$LIST" >> "$GITHUB_OUTPUT"
+          {
+            echo "apps<<EOF"
+            echo "$LIST"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps

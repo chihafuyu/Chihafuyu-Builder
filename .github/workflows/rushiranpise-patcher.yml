@@ -73,7 +73,11 @@ jobs:
             echo "::error::No applications specified!"
             exit 1
           fi
-          echo "apps=$APPS_TO_PATCH" >> "$GITHUB_OUTPUT"
+          {
+            echo "apps<<EOF"
+            echo "$APPS_TO_PATCH"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
