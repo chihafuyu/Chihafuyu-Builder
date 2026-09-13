@@ -12,12 +12,12 @@ on:
         description: 'Patch hevy'
         required: true
         type: boolean
-        default: true
+        default: false
       app_tiktok_asia:
         description: 'Patch tiktok-asia'
         required: true
         type: boolean
-        default: false
+        default: true
       app_tiktok_global:
         description: 'Patch tiktok-global'
         required: true

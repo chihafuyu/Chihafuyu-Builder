@@ -12,7 +12,7 @@
                     "armeabi-v7a": "51832844",
                     "x86_64": "51832844"
                 },
-                "beta": [],
+                "beta": ["7.91.0.978065458"],
                 "strip": true,
                 "force_bundle": false,
                 "archive_id": "ZeNiX",
