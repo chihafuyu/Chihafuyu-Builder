@@ -8,13 +8,23 @@ on:
         required: true
         type: boolean
         default: true
-      app_vivaldi_browser:
-        description: 'Patch vivaldi-browser'
+      app_hevy:
+        description: 'Patch hevy'
         required: true
         type: boolean
         default: true
-      app_hevy:
-        description: 'Patch hevy'
+      app_tiktok_asia:
+        description: 'Patch tiktok-asia'
+        required: true
+        type: boolean
+        default: false
+      app_tiktok_global:
+        description: 'Patch tiktok-global'
+        required: true
+        type: boolean
+        default: false
+      app_vivaldi_browser:
+        description: 'Patch vivaldi-browser'
         required: true
         type: boolean
         default: true
@@ -75,16 +85,20 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_BRAVE_BROWSER: ${{ inputs.app_brave_browser }}
-      APP_VIVALDI_BROWSER: ${{ inputs.app_vivaldi_browser }}
       APP_HEVY: ${{ inputs.app_hevy }}
+      APP_TIKTOK_ASIA: ${{ inputs.app_tiktok_asia }}
+      APP_TIKTOK_GLOBAL: ${{ inputs.app_tiktok_global }}
+      APP_VIVALDI_BROWSER: ${{ inputs.app_vivaldi_browser }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
           if [[ "$APP_BRAVE_BROWSER" == "true" ]]; then LIST="$LIST,brave-browser"; fi
-          if [[ "$APP_VIVALDI_BROWSER" == "true" ]]; then LIST="$LIST,vivaldi-browser"; fi
           if [[ "$APP_HEVY" == "true" ]]; then LIST="$LIST,hevy"; fi
+          if [[ "$APP_TIKTOK_ASIA" == "true" ]]; then LIST="$LIST,tiktok-asia"; fi
+          if [[ "$APP_TIKTOK_GLOBAL" == "true" ]]; then LIST="$LIST,tiktok-global"; fi
+          if [[ "$APP_VIVALDI_BROWSER" == "true" ]]; then LIST="$LIST,vivaldi-browser"; fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           {

@@ -49,6 +49,26 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "tiktok-asia": {
+                "package": "com.ss.android.ugc.trill",
+                "search_term": "TikTok Asia",
+                "description": "Any TikTok version (Asia nodpi APK)",
+                "stable": [],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "tiktok-global": {
+                "package": "com.zhiliaoapp.musically",
+                "search_term": "TikTok Global",
+                "description": "Any TikTok version (Global nodpi APK)",
+                "stable": [],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "vivaldi-browser": {
                 "package": "com.vivaldi.browser",
                 "search_term": "Vivaldi Browser",
