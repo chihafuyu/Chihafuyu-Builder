@@ -67,11 +67,11 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "moviebox": {
-                "package": "com.community.oneroom",
-                "search_term": "MovieBox",
+            "notesnook": {
+                "package": "com.streetwriters.notesnook",
+                "search_term": "Notesnook",
                 "stable": [
-                    "4.0.02.0903.02"
+                    "3.4.12"
                 ],
                 "beta": [],
                 "strip": true,

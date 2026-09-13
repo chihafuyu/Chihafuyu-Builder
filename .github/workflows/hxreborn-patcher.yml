@@ -33,8 +33,8 @@ on:
         required: true
         type: boolean
         default: false
-      app_moviebox:
-        description: 'Patch moviebox'
+      app_notesnook:
+        description: 'Patch notesnook'
         required: true
         type: boolean
         default: false
@@ -135,7 +135,7 @@ jobs:
       APP_BETTERSLEEP: ${{ inputs.app_bettersleep }}
       APP_CX_FILE_EXPLORER: ${{ inputs.app_cx_file_explorer }}
       APP_DWG_FASTVIEW: ${{ inputs.app_dwg_fastview }}
-      APP_MOVIEBOX: ${{ inputs.app_moviebox }}
+      APP_NOTESNOOK: ${{ inputs.app_notesnook }}
       APP_PHOTO_EDITOR_PRO: ${{ inputs.app_photo_editor_pro }}
       APP_PROJECTIVY_LAUNCHER: ${{ inputs.app_projectivy_launcher }}
       APP_PROTON_MAIL: ${{ inputs.app_proton_mail }}
@@ -154,7 +154,7 @@ jobs:
           if [[ "$APP_BETTERSLEEP" == "true" ]]; then LIST="$LIST,bettersleep"; fi
           if [[ "$APP_CX_FILE_EXPLORER" == "true" ]]; then LIST="$LIST,cx-file-explorer"; fi
           if [[ "$APP_DWG_FASTVIEW" == "true" ]]; then LIST="$LIST,dwg-fastview"; fi
-          if [[ "$APP_MOVIEBOX" == "true" ]]; then LIST="$LIST,moviebox"; fi
+          if [[ "$APP_NOTESNOOK" == "true" ]]; then LIST="$LIST,notesnook"; fi
           if [[ "$APP_PHOTO_EDITOR_PRO" == "true" ]]; then LIST="$LIST,photo-editor-pro"; fi
           if [[ "$APP_PROJECTIVY_LAUNCHER" == "true" ]]; then LIST="$LIST,projectivy-launcher"; fi
           if [[ "$APP_PROTON_MAIL" == "true" ]]; then LIST="$LIST,proton-mail"; fi
