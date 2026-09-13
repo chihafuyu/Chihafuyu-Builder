@@ -13,8 +13,7 @@ on:
         required: true
         type: choice
         default: 'arm64-v8a'
-        options:
-          - arm64-v8a
+        options: [arm64-v8a]
       version_selection:
         description: 'App Version Selection'
         required: true
@@ -64,17 +63,22 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_GBOARD: ${{ inputs.app_gboard }}
     steps:
       - id: build-list
         run: |
+          set -euo pipefail
           LIST=""
-          if [[ "${{ inputs.app_gboard }}" == "true" ]]; then LIST="$LIST,gboard"; fi
+          if [[ "$APP_GBOARD" == "true" ]]; then LIST="$LIST,gboard"; fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           echo "apps=$LIST" >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:

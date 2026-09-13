@@ -68,18 +68,24 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_ALARMY: ${{ inputs.app_alarmy }}
+      APP_BLOCKERX: ${{ inputs.app_blockerx }}
     steps:
       - id: build-list
         run: |
+          set -euo pipefail
           LIST=""
-          if [[ "${{ inputs.app_alarmy }}" == "true" ]]; then LIST="$LIST,alarmy"; fi
-          if [[ "${{ inputs.app_blockerx }}" == "true" ]]; then LIST="$LIST,blockerx"; fi
+          if [[ "$APP_ALARMY" == "true" ]]; then LIST="$LIST,alarmy"; fi
+          if [[ "$APP_BLOCKERX" == "true" ]]; then LIST="$LIST,blockerx"; fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           echo "apps=$LIST" >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:

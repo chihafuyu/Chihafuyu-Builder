@@ -68,18 +68,24 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_3BMETEO: ${{ inputs.app_3bmeteo }}
+      APP_CAPCUT: ${{ inputs.app_capcut }}
     steps:
       - id: build-list
         run: |
+          set -euo pipefail
           LIST=""
-          if [[ "${{ inputs.app_3bmeteo }}" == "true" ]]; then LIST="$LIST,3bmeteo"; fi
-          if [[ "${{ inputs.app_capcut }}" == "true" ]]; then LIST="$LIST,capcut"; fi
+          if [[ "$APP_3BMETEO" == "true" ]]; then LIST="$LIST,3bmeteo"; fi
+          if [[ "$APP_CAPCUT" == "true" ]]; then LIST="$LIST,capcut"; fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           echo "apps=$LIST" >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:

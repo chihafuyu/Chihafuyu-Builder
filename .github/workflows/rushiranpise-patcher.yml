@@ -63,17 +63,22 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APPS_TO_PATCH: ${{ inputs.apps_to_patch }}
     steps:
       - id: build-list
         run: |
-          if [[ -z "${{ inputs.apps_to_patch }}" ]]; then
+          set -euo pipefail
+          if [[ -z "$APPS_TO_PATCH" ]]; then
             echo "::error::No applications specified!"
             exit 1
           fi
-          echo "apps=${{ inputs.apps_to_patch }}" >> "$GITHUB_OUTPUT"
+          echo "apps=$APPS_TO_PATCH" >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:

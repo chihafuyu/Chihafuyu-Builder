@@ -88,26 +88,33 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_SPEEDTEST: ${{ inputs.app_speedtest }}
+      APP_STELLARIUM: ${{ inputs.app_stellarium }}
+      APP_PROTO: ${{ inputs.app_proto }}
+      APP_VPNIFY: ${{ inputs.app_vpnify }}
+      APP_BACKDROPS: ${{ inputs.app_backdrops }}
+      APP_SOLID_EXPLORER: ${{ inputs.app_solid_explorer }}
     steps:
       - id: build-list
         run: |
+          set -euo pipefail
           LIST=""
-          if [[ "${{ inputs.app_speedtest }}" == "true" ]]; then LIST="$LIST,speedtest"; fi
-          if [[ "${{ inputs.app_stellarium }}" == "true" ]]; then LIST="$LIST,stellarium"; fi
-          if [[ "${{ inputs.app_proto }}" == "true" ]]; then LIST="$LIST,proto"; fi
-          if [[ "${{ inputs.app_vpnify }}" == "true" ]]; then LIST="$LIST,vpnify"; fi
-          if [[ "${{ inputs.app_backdrops }}" == "true" ]]; then LIST="$LIST,backdrops"; fi
-          if [[ "${{ inputs.app_solid_explorer }}" == "true" ]]; then LIST="$LIST,solid-explorer"; fi
+          if [[ "$APP_SPEEDTEST" == "true" ]]; then LIST="$LIST,speedtest"; fi
+          if [[ "$APP_STELLARIUM" == "true" ]]; then LIST="$LIST,stellarium"; fi
+          if [[ "$APP_PROTO" == "true" ]]; then LIST="$LIST,proto"; fi
+          if [[ "$APP_VPNIFY" == "true" ]]; then LIST="$LIST,vpnify"; fi
+          if [[ "$APP_BACKDROPS" == "true" ]]; then LIST="$LIST,backdrops"; fi
+          if [[ "$APP_SOLID_EXPLORER" == "true" ]]; then LIST="$LIST,solid-explorer"; fi
           
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then
-            echo "::error::No applications selected!"
-            exit 1
-          fi
+          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           echo "apps=$LIST" >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:

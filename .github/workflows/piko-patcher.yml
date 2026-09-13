@@ -79,24 +79,31 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       build_matrix: ${{ steps.set-matrix.outputs.matrix }}
+    env:
+      APP_X_TWITTER: ${{ inputs.app_x_twitter }}
+      APP_NEWX_TWITTER: ${{ inputs.app_newx_twitter }}
+      APP_INSTAGRAM: ${{ inputs.app_instagram }}
+      REGULER_TRACK: ${{ inputs.reguler_patches_track }}
+      NEWX_TRACK: ${{ inputs.newx_patches_track }}
     steps:
       - name: Generate Dynamic Matrix
         id: set-matrix
         run: |
+          set -euo pipefail
           MATRIX_JSON="["
           PIKO_APPS=""
           
-          if [[ "${{ inputs.app_x_twitter }}" == "true" ]]; then PIKO_APPS="x-twitter"; fi
-          if [[ "${{ inputs.app_instagram }}" == "true" ]]; then
+          if [[ "$APP_X_TWITTER" == "true" ]]; then PIKO_APPS="x-twitter"; fi
+          if [[ "$APP_INSTAGRAM" == "true" ]]; then
             if [[ -n "$PIKO_APPS" ]]; then PIKO_APPS="$PIKO_APPS,instagram"; else PIKO_APPS="instagram"; fi
           fi
 
           if [[ -n "$PIKO_APPS" ]]; then
-            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"Reguler\", \"repo\": \"crimera/piko\", \"apps\": \"$PIKO_APPS\", \"track\": \"${{ inputs.reguler_patches_track }}\", \"mpp_name\": \"piko-custom.mpp\"},"
+            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"Reguler\", \"repo\": \"crimera/piko\", \"apps\": \"$PIKO_APPS\", \"track\": \"$REGULER_TRACK\", \"mpp_name\": \"piko-custom.mpp\"},"
           fi
 
-          if [[ "${{ inputs.app_newx_twitter }}" == "true" ]]; then
-            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"NewX\", \"repo\": \"crimera/piko-newx\", \"apps\": \"newx-twitter\", \"track\": \"${{ inputs.newx_patches_track }}\", \"mpp_name\": \"piko-newx.mpp\"},"
+          if [[ "$APP_NEWX_TWITTER" == "true" ]]; then
+            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"NewX\", \"repo\": \"crimera/piko-newx\", \"apps\": \"newx-twitter\", \"track\": \"$NEWX_TRACK\", \"mpp_name\": \"piko-newx.mpp\"},"
           fi
 
           MATRIX_JSON="${MATRIX_JSON%,}]"
@@ -110,6 +117,8 @@ jobs:
 
   call-patcher:
     needs: prepare-matrix
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:

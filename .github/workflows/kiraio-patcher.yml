@@ -128,30 +128,48 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_ATOMIC: ${{ inputs.app_atomic }}
+      APP_PIXIV: ${{ inputs.app_pixiv }}
+      APP_BOORUSAMA: ${{ inputs.app_boorusama }}
+      APP_EPIC: ${{ inputs.app_epic }}
+      APP_FAKEGPS: ${{ inputs.app_fakegps }}
+      APP_HERMIT: ${{ inputs.app_hermit }}
+      APP_HIDDEN_SETTINGS: ${{ inputs.app_hidden_settings }}
+      APP_ILOVEPDF: ${{ inputs.app_ilovepdf }}
+      APP_KEY_MAPPER: ${{ inputs.app_key_mapper }}
+      APP_KEYMATE: ${{ inputs.app_keymate }}
+      APP_MANGA_PLUS: ${{ inputs.app_manga_plus }}
+      APP_PIXELLAB: ${{ inputs.app_pixellab }}
+      APP_TIMESTAMP_CAMERA: ${{ inputs.app_timestamp_camera }}
+      APP_NEKOPOI: ${{ inputs.app_nekopoi }}
     steps:
       - id: build-list
         run: |
+          set -euo pipefail
           LIST=""
-          if [[ "${{ inputs.app_atomic }}" == "true" ]]; then LIST="$LIST,atomic"; fi
-          if [[ "${{ inputs.app_pixiv }}" == "true" ]]; then LIST="$LIST,pixiv"; fi
-          if [[ "${{ inputs.app_boorusama }}" == "true" ]]; then LIST="$LIST,boorusama"; fi
-          if [[ "${{ inputs.app_epic }}" == "true" ]]; then LIST="$LIST,epic"; fi
-          if [[ "${{ inputs.app_fakegps }}" == "true" ]]; then LIST="$LIST,fakegps"; fi
-          if [[ "${{ inputs.app_hermit }}" == "true" ]]; then LIST="$LIST,hermit"; fi
-          if [[ "${{ inputs.app_hidden_settings }}" == "true" ]]; then LIST="$LIST,hidden-settings"; fi
-          if [[ "${{ inputs.app_ilovepdf }}" == "true" ]]; then LIST="$LIST,ilovepdf"; fi
-          if [[ "${{ inputs.app_key_mapper }}" == "true" ]]; then LIST="$LIST,key-mapper"; fi
-          if [[ "${{ inputs.app_keymate }}" == "true" ]]; then LIST="$LIST,keymate"; fi
-          if [[ "${{ inputs.app_manga_plus }}" == "true" ]]; then LIST="$LIST,manga-plus"; fi
-          if [[ "${{ inputs.app_pixellab }}" == "true" ]]; then LIST="$LIST,pixellab"; fi
-          if [[ "${{ inputs.app_timestamp_camera }}" == "true" ]]; then LIST="$LIST,timestamp-camera"; fi
-          if [[ "${{ inputs.app_nekopoi }}" == "true" ]]; then LIST="$LIST,nekopoi"; fi
+          if [[ "$APP_ATOMIC" == "true" ]]; then LIST="$LIST,atomic"; fi
+          if [[ "$APP_PIXIV" == "true" ]]; then LIST="$LIST,pixiv"; fi
+          if [[ "$APP_BOORUSAMA" == "true" ]]; then LIST="$LIST,boorusama"; fi
+          if [[ "$APP_EPIC" == "true" ]]; then LIST="$LIST,epic"; fi
+          if [[ "$APP_FAKEGPS" == "true" ]]; then LIST="$LIST,fakegps"; fi
+          if [[ "$APP_HERMIT" == "true" ]]; then LIST="$LIST,hermit"; fi
+          if [[ "$APP_HIDDEN_SETTINGS" == "true" ]]; then LIST="$LIST,hidden-settings"; fi
+          if [[ "$APP_ILOVEPDF" == "true" ]]; then LIST="$LIST,ilovepdf"; fi
+          if [[ "$APP_KEY_MAPPER" == "true" ]]; then LIST="$LIST,key-mapper"; fi
+          if [[ "$APP_KEYMATE" == "true" ]]; then LIST="$LIST,keymate"; fi
+          if [[ "$APP_MANGA_PLUS" == "true" ]]; then LIST="$LIST,manga-plus"; fi
+          if [[ "$APP_PIXELLAB" == "true" ]]; then LIST="$LIST,pixellab"; fi
+          if [[ "$APP_TIMESTAMP_CAMERA" == "true" ]]; then LIST="$LIST,timestamp-camera"; fi
+          if [[ "$APP_NEKOPOI" == "true" ]]; then LIST="$LIST,nekopoi"; fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           echo "apps=$LIST" >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:

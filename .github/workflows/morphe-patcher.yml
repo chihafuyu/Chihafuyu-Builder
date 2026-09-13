@@ -73,13 +73,18 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_YOUTUBE: ${{ inputs.app_youtube }}
+      APP_YOUTUBE_MUSIC: ${{ inputs.app_youtube_music }}
+      APP_REDDIT: ${{ inputs.app_reddit }}
     steps:
       - id: build-list
         run: |
+          set -euo pipefail
           LIST=""
-          if [[ "${{ inputs.app_youtube }}" == "true" ]]; then LIST="$LIST,youtube"; fi
-          if [[ "${{ inputs.app_youtube_music }}" == "true" ]]; then LIST="$LIST,youtube-music"; fi
-          if [[ "${{ inputs.app_reddit }}" == "true" ]]; then LIST="$LIST,reddit"; fi
+          if [[ "$APP_YOUTUBE" == "true" ]]; then LIST="$LIST,youtube"; fi
+          if [[ "$APP_YOUTUBE_MUSIC" == "true" ]]; then LIST="$LIST,youtube-music"; fi
+          if [[ "$APP_REDDIT" == "true" ]]; then LIST="$LIST,reddit"; fi
           
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
@@ -90,6 +95,8 @@ jobs:
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:

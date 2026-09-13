@@ -108,30 +108,41 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_DISNEYPLUS: ${{ inputs.app_disneyplus }}
+      APP_PRIME_VIDEO: ${{ inputs.app_prime_video }}
+      APP_NETFLIX: ${{ inputs.app_netflix }}
+      APP_HBO_MAX: ${{ inputs.app_hbo_max }}
+      APP_PEACOCK: ${{ inputs.app_peacock }}
+      APP_TUBI: ${{ inputs.app_tubi }}
+      APP_VIX: ${{ inputs.app_vix }}
+      APP_PLUTO_TV: ${{ inputs.app_pluto_tv }}
+      APP_PARAMOUNT_PLUS: ${{ inputs.app_paramount_plus }}
+      APP_TWITCH: ${{ inputs.app_twitch }}
     steps:
       - id: build-list
         run: |
+          set -euo pipefail
           LIST=""
-          if [[ "${{ inputs.app_disneyplus }}" == "true" ]]; then LIST="$LIST,disneyplus"; fi
-          if [[ "${{ inputs.app_prime_video }}" == "true" ]]; then LIST="$LIST,prime-video"; fi
-          if [[ "${{ inputs.app_netflix }}" == "true" ]]; then LIST="$LIST,netflix"; fi
-          if [[ "${{ inputs.app_hbo_max }}" == "true" ]]; then LIST="$LIST,hbo-max"; fi
-          if [[ "${{ inputs.app_peacock }}" == "true" ]]; then LIST="$LIST,peacock"; fi
-          if [[ "${{ inputs.app_tubi }}" == "true" ]]; then LIST="$LIST,tubi"; fi
-          if [[ "${{ inputs.app_vix }}" == "true" ]]; then LIST="$LIST,vix"; fi
-          if [[ "${{ inputs.app_pluto_tv }}" == "true" ]]; then LIST="$LIST,pluto-tv"; fi
-          if [[ "${{ inputs.app_paramount_plus }}" == "true" ]]; then LIST="$LIST,paramount-plus"; fi
-          if [[ "${{ inputs.app_twitch }}" == "true" ]]; then LIST="$LIST,twitch"; fi
+          if [[ "$APP_DISNEYPLUS" == "true" ]]; then LIST="$LIST,disneyplus"; fi
+          if [[ "$APP_PRIME_VIDEO" == "true" ]]; then LIST="$LIST,prime-video"; fi
+          if [[ "$APP_NETFLIX" == "true" ]]; then LIST="$LIST,netflix"; fi
+          if [[ "$APP_HBO_MAX" == "true" ]]; then LIST="$LIST,hbo-max"; fi
+          if [[ "$APP_PEACOCK" == "true" ]]; then LIST="$LIST,peacock"; fi
+          if [[ "$APP_TUBI" == "true" ]]; then LIST="$LIST,tubi"; fi
+          if [[ "$APP_VIX" == "true" ]]; then LIST="$LIST,vix"; fi
+          if [[ "$APP_PLUTO_TV" == "true" ]]; then LIST="$LIST,pluto-tv"; fi
+          if [[ "$APP_PARAMOUNT_PLUS" == "true" ]]; then LIST="$LIST,paramount-plus"; fi
+          if [[ "$APP_TWITCH" == "true" ]]; then LIST="$LIST,twitch"; fi
           
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then
-            echo "::error::No applications selected!"
-            exit 1
-          fi
+          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           echo "apps=$LIST" >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:

@@ -128,30 +128,48 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_1WEATHER: ${{ inputs.app_1weather }}
+      APP_ALL_IN_ONE_CALCULATOR: ${{ inputs.app_all_in_one_calculator }}
+      APP_ALPINEQUEST: ${{ inputs.app_alpinequest }}
+      APP_BETTERSLEEP: ${{ inputs.app_bettersleep }}
+      APP_CX_FILE_EXPLORER: ${{ inputs.app_cx_file_explorer }}
+      APP_DWG_FASTVIEW: ${{ inputs.app_dwg_fastview }}
+      APP_MOVIEBOX: ${{ inputs.app_moviebox }}
+      APP_PHOTO_EDITOR_PRO: ${{ inputs.app_photo_editor_pro }}
+      APP_PROJECTIVY_LAUNCHER: ${{ inputs.app_projectivy_launcher }}
+      APP_PROTON_MAIL: ${{ inputs.app_proton_mail }}
+      APP_QURANIFY: ${{ inputs.app_quranify }}
+      APP_READERA: ${{ inputs.app_readera }}
+      APP_RISE_SLEEP_TRACKER: ${{ inputs.app_rise_sleep_tracker }}
+      APP_SYMFONIUM: ${{ inputs.app_symfonium }}
     steps:
       - id: build-list
         run: |
+          set -euo pipefail
           LIST=""
-          if [[ "${{ inputs.app_1weather }}" == "true" ]]; then LIST="$LIST,1weather"; fi
-          if [[ "${{ inputs.app_all_in_one_calculator }}" == "true" ]]; then LIST="$LIST,all-in-one-calculator"; fi
-          if [[ "${{ inputs.app_alpinequest }}" == "true" ]]; then LIST="$LIST,alpinequest"; fi
-          if [[ "${{ inputs.app_bettersleep }}" == "true" ]]; then LIST="$LIST,bettersleep"; fi
-          if [[ "${{ inputs.app_cx_file_explorer }}" == "true" ]]; then LIST="$LIST,cx-file-explorer"; fi
-          if [[ "${{ inputs.app_dwg_fastview }}" == "true" ]]; then LIST="$LIST,dwg-fastview"; fi
-          if [[ "${{ inputs.app_moviebox }}" == "true" ]]; then LIST="$LIST,moviebox"; fi
-          if [[ "${{ inputs.app_photo_editor_pro }}" == "true" ]]; then LIST="$LIST,photo-editor-pro"; fi
-          if [[ "${{ inputs.app_projectivy_launcher }}" == "true" ]]; then LIST="$LIST,projectivy-launcher"; fi
-          if [[ "${{ inputs.app_proton_mail }}" == "true" ]]; then LIST="$LIST,proton-mail"; fi
-          if [[ "${{ inputs.app_quranify }}" == "true" ]]; then LIST="$LIST,quranify"; fi
-          if [[ "${{ inputs.app_readera }}" == "true" ]]; then LIST="$LIST,readera"; fi
-          if [[ "${{ inputs.app_rise_sleep_tracker }}" == "true" ]]; then LIST="$LIST,rise-sleep-tracker"; fi
-          if [[ "${{ inputs.app_symfonium }}" == "true" ]]; then LIST="$LIST,symfonium"; fi
+          if [[ "$APP_1WEATHER" == "true" ]]; then LIST="$LIST,1weather"; fi
+          if [[ "$APP_ALL_IN_ONE_CALCULATOR" == "true" ]]; then LIST="$LIST,all-in-one-calculator"; fi
+          if [[ "$APP_ALPINEQUEST" == "true" ]]; then LIST="$LIST,alpinequest"; fi
+          if [[ "$APP_BETTERSLEEP" == "true" ]]; then LIST="$LIST,bettersleep"; fi
+          if [[ "$APP_CX_FILE_EXPLORER" == "true" ]]; then LIST="$LIST,cx-file-explorer"; fi
+          if [[ "$APP_DWG_FASTVIEW" == "true" ]]; then LIST="$LIST,dwg-fastview"; fi
+          if [[ "$APP_MOVIEBOX" == "true" ]]; then LIST="$LIST,moviebox"; fi
+          if [[ "$APP_PHOTO_EDITOR_PRO" == "true" ]]; then LIST="$LIST,photo-editor-pro"; fi
+          if [[ "$APP_PROJECTIVY_LAUNCHER" == "true" ]]; then LIST="$LIST,projectivy-launcher"; fi
+          if [[ "$APP_PROTON_MAIL" == "true" ]]; then LIST="$LIST,proton-mail"; fi
+          if [[ "$APP_QURANIFY" == "true" ]]; then LIST="$LIST,quranify"; fi
+          if [[ "$APP_READERA" == "true" ]]; then LIST="$LIST,readera"; fi
+          if [[ "$APP_RISE_SLEEP_TRACKER" == "true" ]]; then LIST="$LIST,rise-sleep-tracker"; fi
+          if [[ "$APP_SYMFONIUM" == "true" ]]; then LIST="$LIST,symfonium"; fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           echo "apps=$LIST" >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:

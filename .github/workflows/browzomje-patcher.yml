@@ -68,22 +68,25 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_PINTEREST: ${{ inputs.app_pinterest }}
+      APP_EASY_SUDOKU: ${{ inputs.app_easy_sudoku }}
     steps:
       - id: build-list
         run: |
+          set -euo pipefail
           LIST=""
-          if [[ "${{ inputs.app_pinterest }}" == "true" ]]; then LIST="$LIST,pinterest"; fi
-          if [[ "${{ inputs.app_easy_sudoku }}" == "true" ]]; then LIST="$LIST,easy-sudoku"; fi
+          if [[ "$APP_PINTEREST" == "true" ]]; then LIST="$LIST,pinterest"; fi
+          if [[ "$APP_EASY_SUDOKU" == "true" ]]; then LIST="$LIST,easy-sudoku"; fi
           
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then
-            echo "::error::No applications selected!"
-            exit 1
-          fi
+          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           echo "apps=$LIST" >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:

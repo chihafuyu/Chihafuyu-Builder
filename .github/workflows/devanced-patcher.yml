@@ -68,18 +68,24 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_GOOGLE_PHOTOS: ${{ inputs.app_google_photos }}
+      APP_STRAVA: ${{ inputs.app_strava }}
     steps:
       - id: build-list
         run: |
+          set -euo pipefail
           LIST=""
-          if [[ "${{ inputs.app_google_photos }}" == "true" ]]; then LIST="$LIST,google-photos"; fi
-          if [[ "${{ inputs.app_strava }}" == "true" ]]; then LIST="$LIST,strava"; fi
+          if [[ "$APP_GOOGLE_PHOTOS" == "true" ]]; then LIST="$LIST,google-photos"; fi
+          if [[ "$APP_STRAVA" == "true" ]]; then LIST="$LIST,strava"; fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           echo "apps=$LIST" >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:

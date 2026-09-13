@@ -73,19 +73,26 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_BRAVE_BROWSER: ${{ inputs.app_brave_browser }}
+      APP_VIVALDI_BROWSER: ${{ inputs.app_vivaldi_browser }}
+      APP_HEVY: ${{ inputs.app_hevy }}
     steps:
       - id: build-list
         run: |
+          set -euo pipefail
           LIST=""
-          if [[ "${{ inputs.app_brave_browser }}" == "true" ]]; then LIST="$LIST,brave-browser"; fi
-          if [[ "${{ inputs.app_vivaldi_browser }}" == "true" ]]; then LIST="$LIST,vivaldi-browser"; fi
-          if [[ "${{ inputs.app_hevy }}" == "true" ]]; then LIST="$LIST,hevy"; fi
+          if [[ "$APP_BRAVE_BROWSER" == "true" ]]; then LIST="$LIST,brave-browser"; fi
+          if [[ "$APP_VIVALDI_BROWSER" == "true" ]]; then LIST="$LIST,vivaldi-browser"; fi
+          if [[ "$APP_HEVY" == "true" ]]; then LIST="$LIST,hevy"; fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           echo "apps=$LIST" >> "$GITHUB_OUTPUT"
 
   call-patcher:
     needs: prepare-apps
+    permissions:
+      contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
