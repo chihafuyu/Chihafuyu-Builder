@@ -16,8 +16,8 @@ Patched `Google` apps require a framework to spoof `Google Play Services`. Witho
 **Solution:** You must install [microG-RE](https://github.com/MorpheApp/MicroG-RE/releases/latest) on your device and log in with your `Google account` before opening the patched `Google` apps.
 
 ### 4. How can I enable specific patch options (like "Dynamic color")?
-We use an `options_override` parameter in the `ecosystems.json` file to force specific patches to be enabled or disabled.
-If you are a maintainer or have cloned this repository, you can edit the JSON file and add the exact patch name under the app's configuration:
+We use an `options_override` parameter in the ecosystem-specific JSON configuration files (e.g., `piko.json`, `kveld9.json`) to force specific patches to be enabled or disabled.
+If you are a maintainer or have cloned this repository, you can edit the respective JSON file and add the exact patch name under the app's configuration:
 ```json
 "options_override": {
     "Dynamic color": {
@@ -27,7 +27,7 @@ If you are a maintainer or have cloned this repository, you can edit the JSON fi
 ```
 
 ### 5. Can I add my own apps to the patcher?
-Yes! The patcher is modular. You can add new apps by editing the `ecosystems.json` file. You need to provide the app's package name, a `search_term`, and at least one `stable` fallback version. The scraper will automatically attempt to fetch the APK from multiple tiers (`Archive.org`, `APKMirror`, `APKCombo`, `Aptoide` and `Uptodown`).
+Yes! The patcher is modular. You can add new apps by editing the specific ecosystem's JSON file. You need to provide the app's package name, a `search_term`, and at least one `stable` fallback version. The 9-tier smart downloader will automatically attempt to fetch the APK from multiple sources (`Google Play Store`, `HuggingFace`, `Archive.org`, `APKMirror`, `APKPure`, `APKCombo`, `Aptoide`, `Uptodown`, and `GitHub Releases`).
 
 ### 6. Why did the workflow fail with `Version defined as 'Any'. Skipping.`?
 Some apps (like certain system apps or highly fragmented bundles) are marked with version `"Any"` in our JSON configuration because their versions are too varied to hardcode. Our automated scraper skips these by default to prevent downloading the wrong architecture. You must provide a specific version number using the Custom option to patch them.
