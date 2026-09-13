@@ -63,6 +63,17 @@ For the automated workflows to function, you MUST configure the following secret
 ### 5. Customize Ecosystems
 Edit the ecosystem-specific JSON configuration files (e.g., `piko.json`, `rabilrbl.json`) to add, remove, or modify the applications you want to track. You can define target architectures, specific search terms, and inject custom patch options effortlessly.
 
+### 6. Local Build (Termux / Android)
+
+If you prefer to patch locally directly on your Android device without relying on GitHub Actions limits, use this Termux method.
+
+Open the **Termux** app, install the required dependencies, and run the automated script below:
+
+```text
+pkg update && pkg install curl jq openjdk-21 -y
+bash <(curl -sL https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main/termux-patch.sh
+```
+
 ## 🙏 Credits & Acknowledgements
 This project uses methods and tools from the following developers:
 - [**Morphe**](https://github.com/MorpheApp) - Patching CLI and base ecosystem. Licensed under GPLv3.
