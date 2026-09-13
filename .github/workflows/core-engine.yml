@@ -1,0 +1,261 @@
+name: ⚙️ Core Patcher Engine
+
+on:
+  workflow_call:
+    inputs:
+      ecosystem:
+        required: true
+        type: string
+      apps:
+        required: true
+        type: string
+      architecture:
+        required: true
+        type: string
+      version_selection:
+        required: true
+        type: string
+      custom_version:
+        required: false
+        type: string
+        default: ''
+      download_source:
+        required: true
+        type: string
+      continue_on_error:
+        required: true
+        type: boolean
+      cli_track:
+        required: true
+        type: string
+      patches_track:
+        required: true
+        type: string
+      repo_url:
+        required: true
+        type: string
+      custom_patch_filename:
+        required: true
+        type: string
+      upload_github_release:
+        required: true
+        type: boolean
+      send_to_telegram:
+        required: true
+        type: boolean
+      release_tag_prefix:
+        required: true
+        type: string
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Initialize Java JDK
+        uses: actions/setup-java@v6.0.1
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Initialize Python Environment
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Install Dependencies & apkeep
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+          APKEEP_VERSION='1.0.0'
+          APKEEP_ASSET='apkeep-x86_64-unknown-linux-gnu'
+          APKEEP_URL="https://github.com/EFForg/apkeep/releases/download/${APKEEP_VERSION}/${APKEEP_ASSET}"
+
+          wget -q --show-progress --https-only "$APKEEP_URL" -O apkeep
+
+          EXPECTED_SHA256="$(
+            gh api "repos/EFForg/apkeep/releases/tags/${APKEEP_VERSION}" \
+              --jq '.assets[] | select(.name == "'"$APKEEP_ASSET"'") | .digest' \
+              | sed 's/^sha256://'
+          )"
+
+          if [ -z "$EXPECTED_SHA256" ] || ! printf '%s  %s\n' "$EXPECTED_SHA256" apkeep | sha256sum --check --status; then
+            echo "::error::apkeep SHA-256 verification failed"
+            rm -f apkeep
+            exit 1
+          fi
+
+          chmod 0755 apkeep
+          sudo install -m 0755 apkeep /usr/local/bin/apkeep
+          rm -f apkeep
+
+      - name: Fetch Environment Artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Fetch CLI
+          if [[ "${{ inputs.cli_track }}" == "Pre-release" ]]; then
+            CLI_TAG="$(gh api repos/MorpheApp/morphe-desktop/releases --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
+            if [[ -z "$CLI_TAG" ]]; then
+              echo "::error::No Morphe CLI pre-release was found"
+              exit 1
+            fi
+            gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
+          else
+            gh release download -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
+          fi
+
+          mapfile -t JARS < <(find . -maxdepth 1 -type f -name 'morphe-desktop-*-all.jar' -print | sort -V)
+          if (( ${#JARS[@]} == 0 )); then
+            echo "::error::Morphe CLI JAR was not downloaded"
+            exit 1
+          fi
+          
+          LATEST_JAR="${JARS[${#JARS[@]}-1]}"
+          if [[ "$LATEST_JAR" != "./morphe.jar" && "$LATEST_JAR" != "morphe.jar" ]]; then
+            mv -- "$LATEST_JAR" morphe.jar
+          fi
+
+          # Fetch Patches
+          REPO_URL="${{ inputs.repo_url }}"
+          echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> "$GITHUB_ENV"
+
+          if [[ "${{ inputs.patches_track }}" == "Custom Local" ]]; then
+            test -f "Custom-Patches/${{ inputs.custom_patch_filename }}"
+            cp -- "Custom-Patches/${{ inputs.custom_patch_filename }}" patches.mpp
+            echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
+            
+          elif [[ "${{ inputs.patches_track }}" == "Pre-release" ]]; then
+            PATCH_TAG="$(gh api "repos/$REPO_URL/releases" --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
+            if [[ -z "$PATCH_TAG" ]]; then
+              echo "::error::No patches pre-release found in $REPO_URL"
+              exit 1
+            fi
+            gh release download "$PATCH_TAG" -R "$REPO_URL" --pattern "*.mpp"
+            mapfile -t MPPS < <(find . -maxdepth 1 -type f -name '*.mpp' -print | sort -V)
+            if (( ${#MPPS[@]} == 0 )); then
+              echo "::error::No .mpp patch bundle downloaded"
+              exit 1
+            fi
+            LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
+            if [[ "$LATEST_MPP" != "./patches.mpp" && "$LATEST_MPP" != "patches.mpp" ]]; then
+              mv -- "$LATEST_MPP" patches.mpp
+            fi
+            echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
+            
+          else
+            PATCH_TAG="$(gh api "repos/$REPO_URL/releases/latest" | jq -r '.tag_name // empty')"
+            if [[ -z "$PATCH_TAG" ]]; then
+              echo "::error::No stable patches release found in $REPO_URL"
+              exit 1
+            fi
+            gh release download "$PATCH_TAG" -R "$REPO_URL" --pattern "*.mpp"
+            mapfile -t MPPS < <(find . -maxdepth 1 -type f -name '*.mpp' -print | sort -V)
+            if (( ${#MPPS[@]} == 0 )); then
+              echo "::error::No .mpp patch bundle downloaded"
+              exit 1
+            fi
+            LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
+            if [[ "$LATEST_MPP" != "./patches.mpp" && "$LATEST_MPP" != "patches.mpp" ]]; then
+              mv -- "$LATEST_MPP" patches.mpp
+            fi
+            echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
+          fi
+
+      - name: Decode Custom Keystore
+        run: |
+          set -euo pipefail
+          if [[ -z "${{ secrets.KEYSTORE_BASE64 }}" ]]; then
+            echo "::error::KEYSTORE_BASE64 secret is missing"
+            exit 1
+          fi
+          printf '%s' "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > custom.keystore
+          chmod 0600 custom.keystore
+
+      - name: Evaluate Pre-release Flag
+        run: |
+          if [[ "${{ inputs.cli_track }}" == "Pre-release" || "${{ inputs.patches_track }}" == "Pre-release" || "${{ inputs.patches_track }}" == "Custom Local" || "${{ inputs.version_selection }}" == "Beta" ]]; then
+            echo "IS_PRERELEASE=true" >> "$GITHUB_ENV"
+          else
+            echo "IS_PRERELEASE=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Execute Chihafuyu Builder
+        env:
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_SIGNER_NAME: ${{ secrets.KEYSTORE_SIGNER_NAME }}
+          VT_API_KEY: ${{ secrets.VT_API_KEY }}
+          HA_API_KEY: ${{ secrets.HA_API_KEY }}
+          MD_API_KEY: ${{ secrets.MD_API_KEY }}
+          PLAY_EMAIL: ${{ secrets.PLAY_EMAIL }}
+          PLAY_AAS_TOKEN: ${{ secrets.PLAY_AAS_TOKEN }}
+          DEVICE_PROPERTIES_B64: ${{ secrets.DEVICE_PROPERTIES_B64 }}
+        run: |
+          set -euo pipefail
+          python -u main.py \
+            --ecosystem "${{ inputs.ecosystem }}" \
+            --apps "${{ inputs.apps }}" \
+            --arch "${{ inputs.architecture }}" \
+            --version-selection "${{ inputs.version_selection }}" \
+            --custom-version "${{ inputs.custom_version }}" \
+            --download-source "${{ inputs.download_source }}" \
+            --continue-on-error "${{ inputs.continue_on_error }}" \
+            --cli "morphe.jar" \
+            --patches "patches.mpp" \
+            --patches-version "$PATCHES_VERSION" \
+            --repo-url "$TARGET_REPO_URL" \
+            --keystore "custom.keystore" \
+            --ks-alias "$KEYSTORE_ALIAS" \
+            --ks-pass "$KEYSTORE_PASSWORD" \
+            --signer "$KEYSTORE_SIGNER_NAME" \
+            --is-prerelease "${{ env.IS_PRERELEASE }}"
+
+      - name: Validate Release Outputs
+        run: |
+          set -euo pipefail
+          test -s "./${{ inputs.ecosystem }}/changelog.md" || {
+            echo "::error::Missing or empty changelog.md"
+            exit 1
+          }
+          compgen -G "./${{ inputs.ecosystem }}/Output/*.apk" > /dev/null || {
+            echo "::error::No APK output was produced"
+            exit 1
+          }
+
+      - name: Publish to GitHub Releases
+        if: inputs.upload_github_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag_prefix }}-${{ github.run_id }}
+          name: Patched Apps - ${{ inputs.release_tag_prefix }} (${{ github.run_id }})
+          body_path: ./${{ inputs.ecosystem }}/changelog.md
+          files: ./${{ inputs.ecosystem }}/Output/*.apk
+          prerelease: ${{ env.IS_PRERELEASE == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send to Telegram Channel
+        if: inputs.send_to_telegram
+        env:
+          API_ID: ${{ secrets.API_ID }}
+          API_HASH: ${{ secrets.API_HASH }}
+          SESSION_STRING: ${{ secrets.SESSION_STRING }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          ECOSYSTEM: ${{ inputs.ecosystem }}
+        run: |
+          set -euo pipefail
+          python -m pip install kurigram tgcrypto
+          python tg_upload.py
