@@ -4,7 +4,7 @@
             "disneyplus": {
                 "package": "com.disney.disneyplus",
                 "search_term": "Disney+",
-                "stable": ["26.12.1+rc1-2026.07.15"],
+                "stable": ["26.16.0+rc2-2026.09.08"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
