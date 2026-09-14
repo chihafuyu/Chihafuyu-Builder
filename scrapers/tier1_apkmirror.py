@@ -3,18 +3,21 @@
 import re
 from typing import Any, Optional
 from urllib.parse import quote_plus, urljoin
-from bs4 import BeautifulSoup
+
 import requests
+from bs4 import BeautifulSoup
 
 from core.context import Context
 from core.utils import _is_waf_blocked, download_file_stream
 from .base import BaseScraper
+
 
 EDITION_SLUG_REGEX = re.compile(
     r"\b(amazon|fire-tablet|fire-tv|androidtv|wear|go-edition|"
     r"lite|enterprise|kids|headunit|auto)\b",
     re.IGNORECASE
 )
+
 
 class ApkmirrorScraper(BaseScraper):
     """Scrapes APKs from APKMirror handling WAF and variants."""
@@ -35,10 +38,10 @@ class ApkmirrorScraper(BaseScraper):
         text = link.text.lower()
         href_ver = base_ver.replace(".", "-")
 
-        has_ver_in_text = base_ver.lower() in text
-        has_ver_in_href = href_ver.lower() in href.lower()
+        has_ver_text = base_ver.lower() in text
+        has_ver_href = href_ver.lower() in href.lower()
 
-        if not has_ver_in_text and not has_ver_in_href:
+        if not has_ver_text and not has_ver_href:
             return None
 
         if any(k in text for k in exc_kws):
@@ -56,7 +59,7 @@ class ApkmirrorScraper(BaseScraper):
             if "-" in ctx.target_ver and ctx.target_ver[:1].isdigit()
             else ctx.target_ver
         )
-        search_term = ctx.app_data.get('search_term', ctx.pkg)
+        search_term = ctx.app_data.get("search_term", ctx.pkg)
 
         if "." in search_term and " " not in search_term:
             short_term = search_term
@@ -82,15 +85,14 @@ class ApkmirrorScraper(BaseScraper):
 
         for query in queries:
             ctx.limiter.wait()
-            url = (
-                f"https://www.apkmirror.com/?post_type=app_release"
-                f"&searchtype=app&s={quote_plus(query)}"
-            )
+            url = f"https://www.apkmirror.com/?post_type=app_release&s={quote_plus(query)}"
             resp = ctx.scraper.get(url, timeout=60)
+
             if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
                 continue
 
-            if "?post_type=app_release" not in resp.url and "searchtype=app" not in resp.url:
+            # Handle automatic redirection directly to a release page
+            if "?post_type=app_release" not in resp.url and "-release/" in resp.url:
                 print("[INFO] Auto-redirected to release page.")
                 return resp.url
 
@@ -174,8 +176,8 @@ class ApkmirrorScraper(BaseScraper):
         if not is_actual_bundle:
             self._log_expected_sha256(v_soup)
 
-        file_type_log = "APKM Bundle" if is_actual_bundle else "Raw APK"
-        print(f"[INFO] Preparing to extract: {file_type_log}")
+        file_type = "APKM Bundle" if is_actual_bundle else "Raw APK"
+        print(f"[INFO] Preparing to extract: {file_type}")
 
         dl_page = urljoin("https://www.apkmirror.com", btn["href"])
         ctx.limiter.wait()
@@ -187,7 +189,7 @@ class ApkmirrorScraper(BaseScraper):
         if dl_btn and "href" in dl_btn.attrs:
             out_path = ctx.get_out_path(".apkm" if is_actual_bundle else ".apk")
             dl_url = urljoin("https://www.apkmirror.com", dl_btn["href"])
-            print(f"[INFO] Downloading {file_type_log} from APKMirror...")
+            print(f"[INFO] Downloading {file_type} from APKMirror...")
             if download_file_stream(ctx.scraper, dl_url, out_path, dl_page):
                 return out_path
         return None
@@ -206,6 +208,7 @@ class ApkmirrorScraper(BaseScraper):
         target_arch = ctx.arch.lower()
         has_target_arch = target_arch in text
         has_universal = "universal" in text or "noarch" in text
+
         has_any_arch = any(
             a in text
             for a in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi")
@@ -213,13 +216,10 @@ class ApkmirrorScraper(BaseScraper):
 
         if has_target_arch or has_universal or not has_any_arch:
             if not ver_code or str(ver_code).lower() in text:
-                if link := row.find("a", class_="accent_color"):
-                    rel_url = urljoin(
-                        "https://www.apkmirror.com", link["href"]
-                    )
-                    return self._process_variant_page(
-                        ctx, rel_url, force_b
-                    )
+                link = row.find("a", class_="accent_color")
+                if link:
+                    rel_url = urljoin("https://www.apkmirror.com", link["href"])
+                    return self._process_variant_page(ctx, rel_url, force_b)
         return None
 
     def _download_variant(
@@ -232,12 +232,15 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         soup = BeautifulSoup(resp.text, "html.parser")
-        if rows := soup.find_all("div", class_="table-row"):
+        rows = soup.find_all("div", class_="table-row")
+        if rows:
             for row in rows:
-                if out := self._extract_row(ctx, row, force_b, ver_code):
+                out = self._extract_row(ctx, row, force_b, ver_code)
+                if out:
                     return out
         elif soup.find("a", class_="downloadButton"):
-            if out := self._process_variant_page(ctx, rel_url, force_b):
+            out = self._process_variant_page(ctx, rel_url, force_b)
+            if out:
                 return out
         return None
 
