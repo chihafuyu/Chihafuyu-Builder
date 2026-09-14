@@ -9,7 +9,7 @@ on:
         type: boolean
         default: true
       architecture:
-        description: 'Target Architecture (Hanya mendukung arm64-v8a)'
+        description: 'Target Architecture (Only supports arm64-v8a)'
         required: true
         type: choice
         default: 'arm64-v8a'

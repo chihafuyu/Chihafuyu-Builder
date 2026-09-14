@@ -85,10 +85,10 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "APK Junk Cleaner": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "Locale Resource Slimmer": {
-                        "enabled": true,
+                        "enabled": false,
                         "options": {
                             "locales": "en, id"
                         }
@@ -100,13 +100,13 @@
                         }
                     },
                     "DPI Resource Slimmer": {
-                        "enabled": true,
+                        "enabled": false,
                         "options": {
                             "dpis": "xxhdpi"
                         }
                     },
                     "PNG Asset Optimizer": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "Block Vivaldi Sync": {
                         "enabled": true

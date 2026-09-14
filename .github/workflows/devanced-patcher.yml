@@ -18,7 +18,7 @@ on:
         required: true
         type: choice
         default: 'arm64-v8a'
-        options: [arm64-v8a, armeabi-v7a, x86_64]
+        options: [arm64-v8a, armeabi-v7a, x86_64, x86, universal]
       version_selection:
         description: 'App Version Selection'
         required: true

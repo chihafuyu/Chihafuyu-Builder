@@ -94,6 +94,7 @@ def write_changelog(args: Any, apps_patched: list, workspace: str, clean_ver: st
 
 
 def _parse_custom_versions(ver_str: str) -> dict:
+    """Parses custom version arguments into a dictionary."""
     if not ver_str:
         return {}
     if '=' in ver_str:
@@ -102,6 +103,7 @@ def _parse_custom_versions(ver_str: str) -> dict:
 
 
 def _get_patched_apk_path(app: str, ver: str, arch: str, args: Any, state: dict) -> str:
+    """Constructs the output path for the patched APK."""
     s_app = _safe_filename(app)
     s_eco = _safe_filename(args.ecosystem)
     s_ver = _safe_filename(ver)
@@ -120,21 +122,28 @@ def build_patch_command(args: Any, app_data: dict, paths: tuple, target_arch: st
     if args.is_prerelease.lower() == "true" or args.version_selection.lower() in (
             "beta", "pre-release", "latest", "experimental", "custom"):
         cmd.append("--force")
-    if app_data.get("strip"):
+
+    strip_flag = app_data.get("strip")
+    if strip_flag and target_arch.lower() not in ["universal", "noarch"]:
         cmd.extend(["--striplibs", target_arch])
+
     if args.continue_on_error.lower() == "true":
         cmd.append("--continue-on-error")
+
     if args.keystore and args.ks_alias and args.ks_pass:
         cmd.extend(["--keystore", args.keystore, "--keystore-entry-alias", args.ks_alias,
                     "--keystore-password", args.ks_pass, "--keystore-entry-password",
                     args.ks_pass])
         if args.signer:
             cmd.extend(["--signer", args.signer])
-    if exc_list := app_data.get("exclusive_patches", []):
+
+    exc_list = app_data.get("exclusive_patches", [])
+    if exc_list:
         print("[INFO] Exclusive mode detected. Generating targeted patch command...")
         cmd.append("--exclusive")
         for patch_name in exc_list:
             cmd.extend(["-e", patch_name])
+
     cmd.append(paths[0])
     return cmd
 
@@ -158,6 +167,7 @@ def execute_patch_cli(patch_cmd: list) -> tuple:
 
 
 def _generate_options_json(app_name: str, args: Any, app_data: dict, workspace: str) -> str:
+    """Generates the options.json file required for patching."""
     json_file = os.path.join(workspace, f"{_safe_filename(app_name)}-options.json")
     cmd = ["java", "-jar", args.cli, "options-create", "--patches", args.patches,
            "--out", json_file, "--filter-package-name", app_data["package"]]
@@ -187,7 +197,8 @@ def process_single_app(
     print(f"\n--- {app_name} ({app_data['package']}) ---")
 
     ctx = Context(get_scraper(), app_data, t_ver, arch, state["in_dir"], RateLimiter(delay=3.0))
-    if not (apk_path := download_apk(ctx, args)):
+    apk_path = download_apk(ctx, args)
+    if not apk_path:
         return
 
     json_file = _generate_options_json(app_name, args, app_data, state["workspace"])
