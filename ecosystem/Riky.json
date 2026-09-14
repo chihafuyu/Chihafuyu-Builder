@@ -5,7 +5,7 @@
                 "package": "com.Meteosolutions.Meteo3b",
                 "search_term": "3BMeteo",
                 "stable": [
-                    "4.9.15"
+                    "4.9.16"
                 ],
                 "beta": [],
                 "strip": true,
@@ -22,6 +22,17 @@
                 "version_codes": {
                     "arm64-v8a": "19201600"
                 },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "electron": {
+                "package": "com.mahersafadi.electron",
+                "search_term": "Electron",
+                "stable": [
+                    "3.0.3"
+                ],
+                "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}

@@ -1,23 +1,13 @@
-name: 🧩 Riky Ecosystem Patcher
+name: 🎮 Byehi98 Ecosystem Patcher
 
 on:
   workflow_dispatch:
     inputs:
-      app_3bmeteo:
-        description: 'Patch 3Bmeteo'
+      apps_to_patch:
+        description: 'Apps to patch (comma-separated, or type "all" for everything)'
         required: true
-        type: boolean
-        default: false
-      app_capcut:
-        description: 'Patch capcut'
-        required: true
-        type: boolean
-        default: false
-      app_electron:
-        description: 'Patch electron'
-        required: true
-        type: boolean
-        default: false
+        type: string
+        default: 'all'
       architecture:
         description: 'Target Architecture'
         required: true
@@ -74,22 +64,18 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APP_3BMETEO: ${{ inputs.app_3bmeteo }}
-      APP_CAPCUT: ${{ inputs.app_capcut }}
-      APP_ELECTRON: ${{ inputs.app_electron }}
+      APPS_TO_PATCH: ${{ inputs.apps_to_patch }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
-          LIST=""
-          if [[ "$APP_3BMETEO" == "true" ]]; then LIST="$LIST,3bmeteo"; fi
-          if [[ "$APP_CAPCUT" == "true" ]]; then LIST="$LIST,capcut"; fi
-          if [[ "$APP_ELECTRON" == "true" ]]; then LIST="$LIST,electron"; fi
-          LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$APPS_TO_PATCH" ]]; then
+            echo "::error::No applications specified!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
-            echo "$LIST"
+            echo "$APPS_TO_PATCH"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -100,7 +86,7 @@ jobs:
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "Riky"
+      ecosystem: "byehi98"
       apps: ${{ needs.prepare-apps.outputs.selected }}
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
@@ -109,8 +95,8 @@ jobs:
       continue_on_error: ${{ inputs.continue_on_error }}
       cli_track: ${{ inputs.cli_track }}
       patches_track: ${{ inputs.patches_track }}
-      repo_url: "riky-dev/morphe-patches"
-      custom_patch_filename: "Riky-custom.mpp"
+      repo_url: "byehi98/okish-morphe-patches"
+      custom_patch_filename: "byehi98-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "Riky"
+      release_tag_prefix: "byehi98"

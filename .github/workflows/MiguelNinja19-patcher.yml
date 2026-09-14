@@ -1,20 +1,40 @@
-name: 🧩 Riky Ecosystem Patcher
+name: 🥷 MiguelNinja19 Ecosystem Patcher
 
 on:
   workflow_dispatch:
     inputs:
-      app_3bmeteo:
-        description: 'Patch 3Bmeteo'
+      app_anger_of_stick_5:
+        description: 'Patch anger-of-stick-5'
         required: true
         type: boolean
         default: false
-      app_capcut:
-        description: 'Patch capcut'
+      app_duck_life_6_space:
+        description: 'Patch duck-life-6-space'
         required: true
         type: boolean
         default: false
-      app_electron:
-        description: 'Patch electron'
+      app_hunter_assassin:
+        description: 'Patch hunter-assassin'
+        required: true
+        type: boolean
+        default: false
+      app_lara_croft_guardian_of_light:
+        description: 'Patch lara-croft-guardian-of-light'
+        required: true
+        type: boolean
+        default: false
+      app_plants_vs_zombies_free:
+        description: 'Patch plants-vs-zombies-free'
+        required: true
+        type: boolean
+        default: false
+      app_supreme_duelist_stickman:
+        description: 'Patch supreme-duelist-stickman'
+        required: true
+        type: boolean
+        default: false
+      app_the_battle_of_polytopia:
+        description: 'Patch the-battle-of-polytopia'
         required: true
         type: boolean
         default: false
@@ -74,17 +94,25 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APP_3BMETEO: ${{ inputs.app_3bmeteo }}
-      APP_CAPCUT: ${{ inputs.app_capcut }}
-      APP_ELECTRON: ${{ inputs.app_electron }}
+      APP_ANGER_OF_STICK_5: ${{ inputs.app_anger_of_stick_5 }}
+      APP_DUCK_LIFE_6_SPACE: ${{ inputs.app_duck_life_6_space }}
+      APP_HUNTER_ASSASSIN: ${{ inputs.app_hunter_assassin }}
+      APP_LARA_CROFT_GUARDIAN_OF_LIGHT: ${{ inputs.app_lara_croft_guardian_of_light }}
+      APP_PLANTS_VS_ZOMBIES_FREE: ${{ inputs.app_plants_vs_zombies_free }}
+      APP_SUPREME_DUELIST_STICKMAN: ${{ inputs.app_supreme_duelist_stickman }}
+      APP_THE_BATTLE_OF_POLYTOPIA: ${{ inputs.app_the_battle_of_polytopia }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_3BMETEO" == "true" ]]; then LIST="$LIST,3bmeteo"; fi
-          if [[ "$APP_CAPCUT" == "true" ]]; then LIST="$LIST,capcut"; fi
-          if [[ "$APP_ELECTRON" == "true" ]]; then LIST="$LIST,electron"; fi
+          if [[ "$APP_ANGER_OF_STICK_5" == "true" ]]; then LIST="$LIST,anger-of-stick-5"; fi
+          if [[ "$APP_DUCK_LIFE_6_SPACE" == "true" ]]; then LIST="$LIST,duck-life-6-space"; fi
+          if [[ "$APP_HUNTER_ASSASSIN" == "true" ]]; then LIST="$LIST,hunter-assassin"; fi
+          if [[ "$APP_LARA_CROFT_GUARDIAN_OF_LIGHT" == "true" ]]; then LIST="$LIST,lara-croft-guardian-of-light"; fi
+          if [[ "$APP_PLANTS_VS_ZOMBIES_FREE" == "true" ]]; then LIST="$LIST,plants-vs-zombies-free"; fi
+          if [[ "$APP_SUPREME_DUELIST_STICKMAN" == "true" ]]; then LIST="$LIST,supreme-duelist-stickman"; fi
+          if [[ "$APP_THE_BATTLE_OF_POLYTOPIA" == "true" ]]; then LIST="$LIST,the-battle-of-polytopia"; fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           {
@@ -100,7 +128,7 @@ jobs:
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "Riky"
+      ecosystem: "MiguelNinja19"
       apps: ${{ needs.prepare-apps.outputs.selected }}
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
@@ -109,8 +137,8 @@ jobs:
       continue_on_error: ${{ inputs.continue_on_error }}
       cli_track: ${{ inputs.cli_track }}
       patches_track: ${{ inputs.patches_track }}
-      repo_url: "riky-dev/morphe-patches"
-      custom_patch_filename: "Riky-custom.mpp"
+      repo_url: "MiguelNinja19/miguel-morphe-patches"
+      custom_patch_filename: "MiguelNinja19-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "Riky"
+      release_tag_prefix: "MiguelNinja19"

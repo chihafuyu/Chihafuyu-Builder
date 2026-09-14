@@ -32,7 +32,7 @@ Yes! The patcher is modular. You can add new apps by editing the specific ecosys
 ### 6. Why did the workflow fail with `Version defined as 'Any'. Skipping.`?
 Some apps (like certain system apps or highly fragmented bundles) are marked with version `"Any"` in our JSON configuration because their versions are too varied to hardcode. Our automated scraper skips these by default to prevent downloading the wrong architecture. You must provide a specific version number using the Custom option to patch them.
 
-### 7. What apps are supported in large ecosystems like `rushiranpise` and `arandomhooman`, and how do I select them?
+### 7. What apps are supported in large ecosystems like `arandomhooman`, `byehi98`, and `rushiranpise`, and how do I select them?
 
 Because ecosystems like `rushiranpise` and `arandomhooman` support a massive list of apps, we use a text input box instead of individual checkboxes to bypass GitHub Action limits. To patch them, you can simply type `all` in the `Apps to patch` box to process everything. Alternatively, you can copy specific app names from the list below. (_If you select multiple apps, make sure to separate them with a comma_):
 
@@ -52,11 +52,29 @@ Because ecosystems like `rushiranpise` and `arandomhooman` support a massive lis
 - `smart-audiobook`
 - `symfonium`
 - `tumblr`
+- `twitch`
 - `video-converter`
 - `webtoon`
 
+`byehi98` Apps:
+- `aliens-drive-me-crazy`
+- `altos-adventure`
+- `altos-odyssey`
+- `doodle-jump`
+- `earn-to-die-2`
+- `fancy-pants-adventures`
+- `hill-climb-racing`
+- `injustice-gods-among-us`
+- `into-the-dead`
+- `jetpack-joyride`
+- `missiles`
+- `only-one`
+- `plague-inc`
+- `prince-of-persia-the-lost-crown`
+- `traffic-rider`
+
 `rushiranpise` Apps:
-- 1-1-1-1
+- `1-1-1-1`
 - `accubattery`
 - `accuweather`
 - `adobe-scan`
@@ -69,6 +87,7 @@ Because ecosystems like `rushiranpise` and `arandomhooman` support a massive lis
 - `canva`
 - `colornote`
 - `cpu-z`
+- `drama-box` # download apk from `Uptodown`
 - `electron`
 - `hola-vpn`
 - `http-sniffer`
@@ -89,10 +108,8 @@ Because ecosystems like `rushiranpise` and `arandomhooman` support a massive lis
 - `sd-maid-se`
 - `stargazing-hub`
 - `stickerly`
-- `terabox`
 - `turboscan`
 - `uptodown-store`
 - `wallverse`
-- `waze`
 - `windscribe-vpn`
 - `wolfram-alpha`

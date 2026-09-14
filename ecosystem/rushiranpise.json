@@ -5,7 +5,7 @@
                 "package": "com.cloudflare.onedotonedotonedotone",
                 "search_term": "1.1.1.1",
                 "stable": [
-                    "6.38.8"
+                    "6.38.9"
                 ],
                 "beta": [],
                 "strip": true,
@@ -27,7 +27,7 @@
                 "package": "com.accuweather.android",
                 "search_term": "AccuWeather",
                 "stable": [
-                    "21.1.14-5-rc"
+                    "21.1.15-3-rc"
                 ],
                 "beta": [],
                 "strip": true,
@@ -49,7 +49,7 @@
                 "package": "com.finalwire.aida64",
                 "search_term": "AIDA64",
                 "stable": [
-                    "2.21"
+                    "2.22"
                 ],
                 "beta": [],
                 "strip": true,
@@ -85,7 +85,7 @@
                 "package": "com.jndapp.anime.depth.live.wallpaper",
                 "search_term": "Anime Depth Wallpapers",
                 "stable": [
-                    "1.0.4"
+                    "1.1.2"
                 ],
                 "beta": [],
                 "strip": true,
@@ -107,7 +107,7 @@
                 "package": "com.calm.android",
                 "search_term": "Calm",
                 "stable": [
-                    "6.101.1"
+                    "6.102"
                 ],
                 "beta": [],
                 "strip": true,
@@ -118,7 +118,7 @@
                 "package": "com.canva.editor",
                 "search_term": "Canva",
                 "stable": [
-                    "2.372.0"
+                    "2.375.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -142,6 +142,17 @@
                 "search_term": "CPU-Z",
                 "stable": [
                     "1.60"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "dramabox": {
+                "package": "com.storymatrix.drama",
+                "search_term": "DramaBox",
+                "stable": [
+                    "5.8.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -174,7 +185,7 @@
                 "package": "com.anetcapture.mock",
                 "search_term": "HTTP Sniffer",
                 "stable": [
-                    "2.11.7-ad_mob"
+                    "2.3.8-ad_mob"
                 ],
                 "beta": [],
                 "strip": true,
@@ -185,7 +196,7 @@
                 "package": "app.simple.inure.play",
                 "search_term": "Inure App Manager",
                 "stable": [
-                    "build107.2.0"
+                    "build107.2.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -229,7 +240,7 @@
                 "package": "com.life360.android.safetymapd",
                 "search_term": "Life360",
                 "stable": [
-                    "26.29.0"
+                    "26.31.6"
                 ],
                 "beta": [],
                 "strip": true,
@@ -323,7 +334,7 @@
                 "package": "com.psiphon3.subscription",
                 "search_term": "Psiphon Pro",
                 "stable": [
-                    "479"
+                    "486"
                 ],
                 "beta": [],
                 "strip": true,
@@ -345,7 +356,7 @@
                 "package": "eu.darken.sdmse",
                 "search_term": "SD Maid SE",
                 "stable": [
-                    "1.7.5-rc0"
+                    "2.0.3-rc0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -356,7 +367,7 @@
                 "package": "com.twtapp",
                 "search_term": "Stargazing Hub",
                 "stable": [
-                    "3.3.3"
+                    "3.4.4"
                 ],
                 "beta": [],
                 "strip": true,
@@ -367,18 +378,7 @@
                 "package": "com.snowcorp.stickerly.android",
                 "search_term": "Sticker.ly",
                 "stable": [
-                    "3.36.1"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "terabox": {
-                "package": "com.dubox.drive",
-                "search_term": "TeraBox",
-                "stable": [
-                    "4.22.6"
+                    "3.37.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -412,17 +412,6 @@
                 "search_term": "Wallverse",
                 "stable": [
                     "4.2"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "waze": {
-                "package": "com.waze",
-                "search_term": "Waze",
-                "stable": [
-                    "5.22.0.3"
                 ],
                 "beta": [],
                 "strip": true,

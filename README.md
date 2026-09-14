@@ -61,7 +61,7 @@ For the automated workflows to function, you MUST configure the following secret
 *   **`CHAT_ID`**: The Target Telegram channel or group ID (or private invite link).
 
 ### 5. Customize Ecosystems
-Edit the ecosystem-specific JSON configuration files (e.g., `piko.json`, `rabilrbl.json`) to add, remove, or modify the applications you want to track. You can define target architectures, specific search terms, and inject custom patch options effortlessly.
+Edit the ecosystem-specific JSON configuration files (e.g., `arandomhooman.json`, `byehi98.json`) to add, remove, or modify the applications you want to track. You can define target architectures, specific search terms, and inject custom patch options effortlessly.
 
 ### 6. Local Build (Termux / Android)
 
@@ -69,9 +69,8 @@ If you prefer to patch locally directly on your Android device without relying o
 
 Open the **Termux** app, install the required dependencies, and run the automated script below:
 
-```text
-pkg update && pkg install curl jq openjdk-21 -y
-bash <(curl -sL https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main/termux-patch.sh
+```bash
+pkg install curl -y && bash <(curl -sL https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main/termux-patch.sh)
 ```
 
 ## 🙏 Credits & Acknowledgements

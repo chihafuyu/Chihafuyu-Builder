@@ -26,20 +26,20 @@ cleanup() {
 
 trap cleanup EXIT INT TERM ERR
 
-# Check system dependencies
+# Check and install system dependencies automatically
 check_dependencies() {
-    local deps=("curl" "jq")
-    for pkg in "${deps[@]}"; do
-        if ! command -v "$pkg" &> /dev/null; then
-            echo -e "${RED}[ERROR] Missing dependency: $pkg. Run: pkg install $pkg${NC}"
-            exit 1
-        fi
-    done
+    local missing_pkgs=()
 
-    if ! command -v java &> /dev/null; then
-        echo -e "${RED}[ERROR] Java is not installed.${NC}"
-        echo -e "${WHITE}For Termux, run: pkg install openjdk-17${NC}"
-        exit 1
+    if ! command -v curl &> /dev/null; then missing_pkgs+=("curl"); fi
+    if ! command -v jq &> /dev/null; then missing_pkgs+=("jq"); fi
+    if ! command -v java &> /dev/null; then missing_pkgs+=("openjdk-21"); fi
+
+    if [[ ${#missing_pkgs[@]} -gt 0 ]]; then
+        echo -e "${YELLOW}[INFO] Missing dependencies detected: ${missing_pkgs[*]}${NC}"
+        echo -e "${YELLOW}[INFO] Updating system and installing packages... (This may take a while)${NC}"
+        pkg update -y && pkg upgrade -y
+        pkg install "${missing_pkgs[@]}" -y
+        echo -e "${GREEN}[INFO] Dependencies installed successfully!${NC}\n"
     fi
 }
 
@@ -70,12 +70,13 @@ setup_workspace() {
 
 # Select ecosystem patch
 select_ecosystem() {
-    echo -e "\n${WHITE}Select Ecosystem Patches:${NC}"
+    echo -e "${WHITE}Select Ecosystem Patches:${NC}"
     local ecosystems=(
-        "hxreborn" "piko" "kveld9" "rushiranpise" "arandomhooman"
-        "eco6" "eco7" "eco8" "eco9" "eco10"
-        "eco11" "eco12" "eco13" "eco14" "eco15"
-        "eco16" "eco17" "eco18" "eco19" "eco20" "eco21"
+        "ajstrick81" "anxyis" "arandomhooman" "BholeyKaBhakt" "browzomje"
+        "byehi98" "De-Vanced" "dh6k" "hoo-dles" "hxreborn"
+        "icysymmetra" "jasonwu1994" "kiraio-moe" "kuchingneko28" "kveld9"
+        "MiguelNinja19" "morphe" "PathxmOp" "piko" "rabilrbl"
+        "Riky" "rushiranpise" "SapitoSucio"
     )
     COLUMNS=20
     select ECO_CHOICE in "${ecosystems[@]}"; do

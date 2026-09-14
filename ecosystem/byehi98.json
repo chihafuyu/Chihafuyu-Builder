@@ -1,0 +1,171 @@
+{
+    "byehi98": {
+        "apps": {
+            "aliens-drive-me-crazy": {
+                "package": "com.rebeltwins.aliensdrivemecrazy",
+                "search_term": "Aliens Drive Me Crazy",
+                "stable": [
+                    "3.2.7"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "altos-adventure": {
+                "package": "com.noodlecake.altosadventure",
+                "search_term": "Alto's Adventure",
+                "stable": [
+                    "1.8.27"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "altos-odyssey": {
+                "package": "com.noodlecake.altosodyssey",
+                "search_term": "Alto's Odyssey",
+                "stable": [
+                    "1.0.42"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "doodle-jump": {
+                "package": "com.lima.doodlejump",
+                "search_term": "Doodle Jump",
+                "stable": [
+                    "3.11.40"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "earn-to-die-2": {
+                "package": "com.notdoppler.earntodie2",
+                "search_term": "Earn to Die 2",
+                "stable": [
+                    "1.4.58"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fancy-pants-adventures": {
+                "package": "com.overthetopgames.fancypants",
+                "search_term": "Fancy Pants Adventures",
+                "stable": [
+                    "1.0.30"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "hill-climb-racing": {
+                "package": "com.fingersoft.hillclimb",
+                "search_term": "Hill Climb Racing",
+                "stable": [
+                    "1.71.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "injustice-gods-among-us": {
+                "package": "com.wb.goog.injustice",
+                "search_term": "Injustice: Gods Among Us",
+                "stable": [
+                    "3.5.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "into-the-dead": {
+                "package": "com.sidheinteractive.sif.DR",
+                "search_term": "Into the Dead",
+                "stable": [
+                    "2.9.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "jetpack-joyride": {
+                "package": "com.halfbrick.jetpackjoyride",
+                "search_term": "Jetpack Joyride",
+                "stable": [
+                    "1.104.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "missiles": {
+                "package": "pl.macaque.Missiles",
+                "search_term": "Missiles",
+                "stable": [
+                    "1.41"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "only-one": {
+                "package": "com.rebelbinary.onlyone",
+                "search_term": "Only One",
+                "stable": [
+                    "1.3031"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "plague-inc": {
+                "package": "com.miniclip.plagueinc",
+                "search_term": "Plague Inc.",
+                "stable": [
+                    "1.25.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "prince-of-persia-the-lost-crown": {
+                "package": "com.ubisoft.princeofpersia.thelostcrown.mobile.action.adventure.platform",
+                "search_term": "Prince of Persia: The Lost Crown",
+                "stable": [
+                    "1.1.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "traffic-rider": {
+                "package": "com.skgames.trafficrider",
+                "search_term": "Traffic Rider",
+                "stable": [
+                    "2.11"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

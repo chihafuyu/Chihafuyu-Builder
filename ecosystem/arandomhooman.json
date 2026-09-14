@@ -38,7 +38,7 @@
                 "package": "com.paget96.batteryguru",
                 "search_term": "Battery Guru",
                 "stable": [
-                    "2.4.8.1"
+                    "2.5.0.6"
                 ],
                 "beta": [],
                 "strip": true,
@@ -49,7 +49,7 @@
                 "package": "com.cronometer.android.gold",
                 "search_term": "Cronometer",
                 "stable": [
-                    "4.56.0"
+                    "4.57.2"
                 ],
                 "beta": [],
                 "strip": true,
@@ -93,7 +93,7 @@
                 "package": "dk.tacit.android.foldersync.lite",
                 "search_term": "FolderSync",
                 "stable": [
-                    "4.9.3"
+                    "4.12.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -159,7 +159,18 @@
                 "package": "com.tumblr",
                 "search_term": "Tumblr",
                 "stable": [
-                    "45.0.0.109"
+                    "45.8.0.110"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "twitch": {
+                "package": "tv.twitch.android.app",
+                "search_term": "Twitch",
+                "stable": [
+                    "30.7.2"
                 ],
                 "beta": [],
                 "strip": true,
