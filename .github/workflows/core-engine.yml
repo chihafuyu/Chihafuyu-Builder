@@ -237,7 +237,7 @@ jobs:
 
       - name: Publish to GitHub Releases
         if: inputs.upload_github_release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3.0.3
         with:
           tag_name: ${{ inputs.release_tag_prefix }}-${{ github.run_id }}
           name: Patched Apps - ${{ inputs.release_tag_prefix }} (${{ github.run_id }})
