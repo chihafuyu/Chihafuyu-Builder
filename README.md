@@ -70,8 +70,7 @@ If you prefer to patch locally directly on your Android device without relying o
 Open the **Termux** app, install the required dependencies, and run the automated script below:
 
 ```bash
-apt update && apt full-upgrade -y
-apt install curl -y && bash <(curl -sL https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main/termux-patch.sh)
+apt update && apt full-upgrade -y && apt install curl -y && bash <(curl -sL https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main/termux-patch.sh)
 ```
 
 > [!WARNING]
