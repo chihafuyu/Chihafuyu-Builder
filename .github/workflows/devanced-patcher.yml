@@ -8,6 +8,11 @@ on:
         required: true
         type: boolean
         default: true
+      app_pixiv:
+        description: 'Patch pixiv'
+        required: true
+        type: boolean
+        default: false
       app_strava:
         description: 'Patch strava'
         required: true
@@ -70,6 +75,7 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_GOOGLE_PHOTOS: ${{ inputs.app_google_photos }}
+      APP_PIXIV: ${{ inputs.app_pixiv }}
       APP_STRAVA: ${{ inputs.app_strava }}
     steps:
       - id: build-list
@@ -77,6 +83,7 @@ jobs:
           set -euo pipefail
           LIST=""
           if [[ "$APP_GOOGLE_PHOTOS" == "true" ]]; then LIST="$LIST,google-photos"; fi
+          if [[ "$APP_PIXIV" == "true" ]]; then LIST="$LIST,pixiv"; fi
           if [[ "$APP_STRAVA" == "true" ]]; then LIST="$LIST,strava"; fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi

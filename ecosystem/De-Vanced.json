@@ -18,6 +18,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "pixiv": {
+                "package": "jp.pxv.android",
+                "search_term": "Pixiv",
+                "stable": [
+                    "6.196.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "strava": {
                 "package": "com.strava",
                 "search_term": "Strava",
