@@ -149,13 +149,7 @@ class ApkmirrorScraper(BaseScraper):
                 best_score = score
                 best_btn = btn
 
-        if best_btn:
-            is_bundle_btn = "bundle" in best_btn.text.lower()
-            if force_b and not is_bundle_btn:
-                return None
-            if not force_b and is_bundle_btn:
-                return None
-
+        # Removed the strict rejection block here to allow fallback scoring
         return best_btn
 
     def _process_variant_page(
@@ -195,15 +189,18 @@ class ApkmirrorScraper(BaseScraper):
         return None
 
     def _extract_row(
-        self, ctx: Context, row: Any, force_b: bool, ver_code: str
+        self, ctx: Context, row: Any, force_b: bool, ver_code: str, strict: bool = True
     ) -> Optional[str]:
         """Extracts the variant URL from a table row if it matches criteria."""
         text = row.text.lower()
         is_bundle = "bundle" in text
-        if force_b and not is_bundle:
-            return None
-        if not force_b and is_bundle:
-            return None
+
+        # In strict mode, rigidly reject non-preferred formats
+        if strict:
+            if force_b and not is_bundle:
+                return None
+            if not force_b and is_bundle:
+                return None
 
         target_arch = ctx.arch.lower()
         has_target_arch = target_arch in text
@@ -233,11 +230,20 @@ class ApkmirrorScraper(BaseScraper):
 
         soup = BeautifulSoup(resp.text, "html.parser")
         rows = soup.find_all("div", class_="table-row")
+
         if rows:
+            # Pass 1: Strict match (Preferred format only)
             for row in rows:
-                out = self._extract_row(ctx, row, force_b, ver_code)
+                out = self._extract_row(ctx, row, force_b, ver_code, strict=True)
                 if out:
                     return out
+
+            # Pass 2: Fallback match (Accept any available format)
+            for row in rows:
+                out = self._extract_row(ctx, row, force_b, ver_code, strict=False)
+                if out:
+                    return out
+
         elif soup.find("a", class_="downloadButton"):
             out = self._process_variant_page(ctx, rel_url, force_b)
             if out:
