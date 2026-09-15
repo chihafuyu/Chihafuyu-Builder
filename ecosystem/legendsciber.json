@@ -1,0 +1,72 @@
+{
+    "legendsciber": {
+        "apps": {
+            "block-blast": {
+                "package": "com.block.juggle",
+                "search_term": "Block Blast!",
+                "stable": [
+                    "10.4.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "extreme-car-driving-simulator": {
+                "package": "com.aim.racing",
+                "search_term": "Extreme Car Driving Simulator",
+                "stable": [
+                    "7.13.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "hill-climb-racing": {
+                "package": "com.fingersoft.hillclimb",
+                "search_term": "Hill Climb Racing",
+                "stable": [
+                    "1.71.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "shadow-fight-2": {
+                "package": "com.nekki.shadowfight",
+                "search_term": "Shadow Fight 2",
+                "stable": [
+                    "2.46.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "smash-hit": {
+                "package": "com.mediocre.smashhit",
+                "search_term": "Smash Hit",
+                "stable": [
+                    "1.5.14"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "toolbox-for-minecraft-pe": {
+                "package": "io.mrarm.mctoolbox",
+                "search_term": "Toolbox for Minecraft PE",
+                "stable": [
+                    "5.4.58"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

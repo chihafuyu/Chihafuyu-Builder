@@ -1,13 +1,38 @@
-name: 🎮 Byehi98 Ecosystem Patcher
+name: 🦸 Legendsciber Ecosystem Patcher
 
 on:
   workflow_dispatch:
     inputs:
-      apps_to_patch:
-        description: 'Apps to patch (comma-separated, or type "all" for everything)'
+      app_block_blast:
+        description: 'Patch block-blast'
         required: true
-        type: string
-        default: 'all'
+        type: boolean
+        default: false
+      app_extreme_car_driving_simulator:
+        description: 'Patch extreme-car-driving-simulator'
+        required: true
+        type: boolean
+        default: false
+      app_hill_climb_racing:
+        description: 'Patch hill-climb-racing'
+        required: true
+        type: boolean
+        default: false
+      app_shadow_fight_2:
+        description: 'Patch shadow-fight-2'
+        required: true
+        type: boolean
+        default: false
+      app_smash_hit:
+        description: 'Patch smash-hit'
+        required: true
+        type: boolean
+        default: false
+      app_toolbox_for_minecraft_pe:
+        description: 'Patch toolbox-for-minecraft-pe'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -64,18 +89,28 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APPS_TO_PATCH: ${{ inputs.apps_to_patch }}
+      APP_BLOCK_BLAST: ${{ inputs.app_block_blast }}
+      APP_EXTREME_CAR_DRIVING_SIMULATOR: ${{ inputs.app_extreme_car_driving_simulator }}
+      APP_HILL_CLimb_RACING: ${{ inputs.app_hill_climb_racing }}
+      APP_SHADOW_FIGHT_2: ${{ inputs.app_shadow_fight_2 }}
+      APP_SMASH_HIT: ${{ inputs.app_smash_hit }}
+      APP_TOOLBOX_FOR_MINECRAFT_PE: ${{ inputs.app_toolbox_for_minecraft_pe }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
-          if [[ -z "$APPS_TO_PATCH" ]]; then
-            echo "::error::No applications specified!"
-            exit 1
-          fi
+          LIST=""
+          if [[ "$APP_BLOCK_BLAST" == "true" ]]; then LIST="$LIST,block-blast"; fi
+          if [[ "$APP_EXTREME_CAR_DRIVING_SIMULATOR" == "true" ]]; then LIST="$LIST,extreme-car-driving-simulator"; fi
+          if [[ "$APP_HILL_CLimb_RACING" == "true" ]]; then LIST="$LIST,hill-climb-racing"; fi
+          if [[ "$APP_SHADOW_FIGHT_2" == "true" ]]; then LIST="$LIST,shadow-fight-2"; fi
+          if [[ "$APP_SMASH_HIT" == "true" ]]; then LIST="$LIST,smash-hit"; fi
+          if [[ "$APP_TOOLBOX_FOR_MINECRAFT_PE" == "true" ]]; then LIST="$LIST,toolbox-for-minecraft-pe"; fi
+          LIST="${LIST#,}"
+          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
           {
             echo "apps<<EOF"
-            echo "$APPS_TO_PATCH"
+            echo "$LIST"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -86,7 +121,7 @@ jobs:
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "byehi98"
+      ecosystem: "legendsciber"
       apps: ${{ needs.prepare-apps.outputs.selected }}
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
@@ -95,8 +130,8 @@ jobs:
       continue_on_error: ${{ inputs.continue_on_error }}
       cli_track: ${{ inputs.cli_track }}
       patches_track: ${{ inputs.patches_track }}
-      repo_url: "byehi98/okish-morphe-patches"
-      custom_patch_filename: "byehi98-custom.mpp"
+      repo_url: "legendsciber/morphe-patches"
+      custom_patch_filename: "legendsciber-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "byehi98"
+      release_tag_prefix: "legendsciber"

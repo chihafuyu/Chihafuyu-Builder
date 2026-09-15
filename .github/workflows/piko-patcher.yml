@@ -72,7 +72,7 @@ on:
         description: 'Send to Telegram'
         required: true
         type: boolean
-        default: true
+        default: false
 
 jobs:
   prepare-matrix:
