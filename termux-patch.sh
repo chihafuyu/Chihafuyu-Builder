@@ -183,7 +183,8 @@ execute_patch() {
     base_name=$(basename "$APK_CHOICE")
     
     local final_apk="$ECO_DIR/Patched-${base_name%.*}.apk"
-    local log_file="$WORK_DIR/patch_log_$(date +%s).txt"
+    local log_file
+    log_file="$WORK_DIR/patch_log_$(date +%s).txt"
     local export_log=""
 
     echo -e "\n${YELLOW}[INFO] Starting the patching process... (Do not close Termux!)${NC}"
