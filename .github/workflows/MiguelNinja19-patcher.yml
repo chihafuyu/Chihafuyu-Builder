@@ -1,6 +1,7 @@
+---
 name: 🥷 MiguelNinja19 Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_anger_of_stick_5:
@@ -59,7 +60,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -97,24 +107,41 @@ jobs:
       APP_ANGER_OF_STICK_5: ${{ inputs.app_anger_of_stick_5 }}
       APP_DUCK_LIFE_6_SPACE: ${{ inputs.app_duck_life_6_space }}
       APP_HUNTER_ASSASSIN: ${{ inputs.app_hunter_assassin }}
-      APP_LARA_CROFT_GUARDIAN_OF_LIGHT: ${{ inputs.app_lara_croft_guardian_of_light }}
-      APP_PLANTS_VS_ZOMBIES_FREE: ${{ inputs.app_plants_vs_zombies_free }}
-      APP_SUPREME_DUELIST_STICKMAN: ${{ inputs.app_supreme_duelist_stickman }}
-      APP_THE_BATTLE_OF_POLYTOPIA: ${{ inputs.app_the_battle_of_polytopia }}
+      APP_LARA_CROFT: ${{ inputs.app_lara_croft_guardian_of_light }}
+      APP_PVZ_FREE: ${{ inputs.app_plants_vs_zombies_free }}
+      APP_SUPREME_DUELIST: ${{ inputs.app_supreme_duelist_stickman }}
+      APP_BATTLE_POLYTOPIA: ${{ inputs.app_the_battle_of_polytopia }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_ANGER_OF_STICK_5" == "true" ]]; then LIST="$LIST,anger-of-stick-5"; fi
-          if [[ "$APP_DUCK_LIFE_6_SPACE" == "true" ]]; then LIST="$LIST,duck-life-6-space"; fi
-          if [[ "$APP_HUNTER_ASSASSIN" == "true" ]]; then LIST="$LIST,hunter-assassin"; fi
-          if [[ "$APP_LARA_CROFT_GUARDIAN_OF_LIGHT" == "true" ]]; then LIST="$LIST,lara-croft-guardian-of-light"; fi
-          if [[ "$APP_PLANTS_VS_ZOMBIES_FREE" == "true" ]]; then LIST="$LIST,plants-vs-zombies-free"; fi
-          if [[ "$APP_SUPREME_DUELIST_STICKMAN" == "true" ]]; then LIST="$LIST,supreme-duelist-stickman"; fi
-          if [[ "$APP_THE_BATTLE_OF_POLYTOPIA" == "true" ]]; then LIST="$LIST,the-battle-of-polytopia"; fi
+          if [[ "$APP_ANGER_OF_STICK_5" == "true" ]]; then
+            LIST="$LIST,anger-of-stick-5"
+          fi
+          if [[ "$APP_DUCK_LIFE_6_SPACE" == "true" ]]; then
+            LIST="$LIST,duck-life-6-space"
+          fi
+          if [[ "$APP_HUNTER_ASSASSIN" == "true" ]]; then
+            LIST="$LIST,hunter-assassin"
+          fi
+          if [[ "$APP_LARA_CROFT" == "true" ]]; then
+            LIST="$LIST,lara-croft-guardian-of-light"
+          fi
+          if [[ "$APP_PVZ_FREE" == "true" ]]; then
+            LIST="$LIST,plants-vs-zombies-free"
+          fi
+          if [[ "$APP_SUPREME_DUELIST" == "true" ]]; then
+            LIST="$LIST,supreme-duelist-stickman"
+          fi
+          if [[ "$APP_BATTLE_POLYTOPIA" == "true" ]]; then
+            LIST="$LIST,the-battle-of-polytopia"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"

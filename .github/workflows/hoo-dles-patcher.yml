@@ -1,6 +1,7 @@
+---
 name: 🍜 Hoo-dles Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_adguard:
@@ -104,7 +105,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -160,24 +170,59 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_ADGUARD" == "true" ]]; then LIST="$LIST,adguard"; fi
-          if [[ "$APP_BEND" == "true" ]]; then LIST="$LIST,bend"; fi
-          if [[ "$APP_BUNPO" == "true" ]]; then LIST="$LIST,bunpo"; fi
-          if [[ "$APP_CAMSCANNER" == "true" ]]; then LIST="$LIST,camscanner"; fi
-          if [[ "$APP_DUOLINGO" == "true" ]]; then LIST="$LIST,duolingo"; fi
-          if [[ "$APP_IBISPAINT" == "true" ]]; then LIST="$LIST,ibispaint"; fi
-          if [[ "$APP_LIGHTROOM_MOBILE" == "true" ]]; then LIST="$LIST,lightroom-mobile"; fi
-          if [[ "$APP_MIMO" == "true" ]]; then LIST="$LIST,mimo"; fi
-          if [[ "$APP_NIAGARA_LAUNCHER" == "true" ]]; then LIST="$LIST,niagara-launcher"; fi
-          if [[ "$APP_PYDROID3" == "true" ]]; then LIST="$LIST,pydroid3"; fi
-          if [[ "$APP_SLEEP_AS_ANDROID" == "true" ]]; then LIST="$LIST,sleep-as-android"; fi
-          if [[ "$APP_SMART_LAUNCHER" == "true" ]]; then LIST="$LIST,smart-launcher"; fi
-          if [[ "$APP_WINDY" == "true" ]]; then LIST="$LIST,windy"; fi
-          if [[ "$APP_WPS" == "true" ]]; then LIST="$LIST,wps"; fi
-          if [[ "$APP_XODO" == "true" ]]; then LIST="$LIST,xodo"; fi
-          if [[ "$APP_XRECORDER" == "true" ]]; then LIST="$LIST,xrecorder"; fi
+          if [[ "$APP_ADGUARD" == "true" ]]; then
+            LIST="$LIST,adguard"
+          fi
+          if [[ "$APP_BEND" == "true" ]]; then
+            LIST="$LIST,bend"
+          fi
+          if [[ "$APP_BUNPO" == "true" ]]; then
+            LIST="$LIST,bunpo"
+          fi
+          if [[ "$APP_CAMSCANNER" == "true" ]]; then
+            LIST="$LIST,camscanner"
+          fi
+          if [[ "$APP_DUOLINGO" == "true" ]]; then
+            LIST="$LIST,duolingo"
+          fi
+          if [[ "$APP_IBISPAINT" == "true" ]]; then
+            LIST="$LIST,ibispaint"
+          fi
+          if [[ "$APP_LIGHTROOM_MOBILE" == "true" ]]; then
+            LIST="$LIST,lightroom-mobile"
+          fi
+          if [[ "$APP_MIMO" == "true" ]]; then
+            LIST="$LIST,mimo"
+          fi
+          if [[ "$APP_NIAGARA_LAUNCHER" == "true" ]]; then
+            LIST="$LIST,niagara-launcher"
+          fi
+          if [[ "$APP_PYDROID3" == "true" ]]; then
+            LIST="$LIST,pydroid3"
+          fi
+          if [[ "$APP_SLEEP_AS_ANDROID" == "true" ]]; then
+            LIST="$LIST,sleep-as-android"
+          fi
+          if [[ "$APP_SMART_LAUNCHER" == "true" ]]; then
+            LIST="$LIST,smart-launcher"
+          fi
+          if [[ "$APP_WINDY" == "true" ]]; then
+            LIST="$LIST,windy"
+          fi
+          if [[ "$APP_WPS" == "true" ]]; then
+            LIST="$LIST,wps"
+          fi
+          if [[ "$APP_XODO" == "true" ]]; then
+            LIST="$LIST,xodo"
+          fi
+          if [[ "$APP_XRECORDER" == "true" ]]; then
+            LIST="$LIST,xrecorder"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"

@@ -1,6 +1,7 @@
+---
 name: 🦁 Kveld9 Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_brave_browser:
@@ -49,7 +50,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -94,13 +104,26 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_BRAVE_BROWSER" == "true" ]]; then LIST="$LIST,brave-browser"; fi
-          if [[ "$APP_HEVY" == "true" ]]; then LIST="$LIST,hevy"; fi
-          if [[ "$APP_TIKTOK_ASIA" == "true" ]]; then LIST="$LIST,tiktok-asia"; fi
-          if [[ "$APP_TIKTOK_GLOBAL" == "true" ]]; then LIST="$LIST,tiktok-global"; fi
-          if [[ "$APP_VIVALDI_BROWSER" == "true" ]]; then LIST="$LIST,vivaldi-browser"; fi
+          if [[ "$APP_BRAVE_BROWSER" == "true" ]]; then
+            LIST="$LIST,brave-browser"
+          fi
+          if [[ "$APP_HEVY" == "true" ]]; then
+            LIST="$LIST,hevy"
+          fi
+          if [[ "$APP_TIKTOK_ASIA" == "true" ]]; then
+            LIST="$LIST,tiktok-asia"
+          fi
+          if [[ "$APP_TIKTOK_GLOBAL" == "true" ]]; then
+            LIST="$LIST,tiktok-global"
+          fi
+          if [[ "$APP_VIVALDI_BROWSER" == "true" ]]; then
+            LIST="$LIST,vivaldi-browser"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"

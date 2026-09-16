@@ -1,6 +1,7 @@
+---
 name: 🔥 Hxreborn Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_1weather:
@@ -94,7 +95,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -148,22 +158,53 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_1WEATHER" == "true" ]]; then LIST="$LIST,1weather"; fi
-          if [[ "$APP_ALL_IN_ONE_CALCULATOR" == "true" ]]; then LIST="$LIST,all-in-one-calculator"; fi
-          if [[ "$APP_ALPINEQUEST" == "true" ]]; then LIST="$LIST,alpinequest"; fi
-          if [[ "$APP_BETTERSLEEP" == "true" ]]; then LIST="$LIST,bettersleep"; fi
-          if [[ "$APP_CX_FILE_EXPLORER" == "true" ]]; then LIST="$LIST,cx-file-explorer"; fi
-          if [[ "$APP_DWG_FASTVIEW" == "true" ]]; then LIST="$LIST,dwg-fastview"; fi
-          if [[ "$APP_NOTESNOOK" == "true" ]]; then LIST="$LIST,notesnook"; fi
-          if [[ "$APP_PHOTO_EDITOR_PRO" == "true" ]]; then LIST="$LIST,photo-editor-pro"; fi
-          if [[ "$APP_PROJECTIVY_LAUNCHER" == "true" ]]; then LIST="$LIST,projectivy-launcher"; fi
-          if [[ "$APP_PROTON_MAIL" == "true" ]]; then LIST="$LIST,proton-mail"; fi
-          if [[ "$APP_QURANIFY" == "true" ]]; then LIST="$LIST,quranify"; fi
-          if [[ "$APP_READERA" == "true" ]]; then LIST="$LIST,readera"; fi
-          if [[ "$APP_RISE_SLEEP_TRACKER" == "true" ]]; then LIST="$LIST,rise-sleep-tracker"; fi
-          if [[ "$APP_SYMFONIUM" == "true" ]]; then LIST="$LIST,symfonium"; fi
+          if [[ "$APP_1WEATHER" == "true" ]]; then
+            LIST="$LIST,1weather"
+          fi
+          if [[ "$APP_ALL_IN_ONE_CALCULATOR" == "true" ]]; then
+            LIST="$LIST,all-in-one-calculator"
+          fi
+          if [[ "$APP_ALPINEQUEST" == "true" ]]; then
+            LIST="$LIST,alpinequest"
+          fi
+          if [[ "$APP_BETTERSLEEP" == "true" ]]; then
+            LIST="$LIST,bettersleep"
+          fi
+          if [[ "$APP_CX_FILE_EXPLORER" == "true" ]]; then
+            LIST="$LIST,cx-file-explorer"
+          fi
+          if [[ "$APP_DWG_FASTVIEW" == "true" ]]; then
+            LIST="$LIST,dwg-fastview"
+          fi
+          if [[ "$APP_NOTESNOOK" == "true" ]]; then
+            LIST="$LIST,notesnook"
+          fi
+          if [[ "$APP_PHOTO_EDITOR_PRO" == "true" ]]; then
+            LIST="$LIST,photo-editor-pro"
+          fi
+          if [[ "$APP_PROJECTIVY_LAUNCHER" == "true" ]]; then
+            LIST="$LIST,projectivy-launcher"
+          fi
+          if [[ "$APP_PROTON_MAIL" == "true" ]]; then
+            LIST="$LIST,proton-mail"
+          fi
+          if [[ "$APP_QURANIFY" == "true" ]]; then
+            LIST="$LIST,quranify"
+          fi
+          if [[ "$APP_READERA" == "true" ]]; then
+            LIST="$LIST,readera"
+          fi
+          if [[ "$APP_RISE_SLEEP_TRACKER" == "true" ]]; then
+            LIST="$LIST,rise-sleep-tracker"
+          fi
+          if [[ "$APP_SYMFONIUM" == "true" ]]; then
+            LIST="$LIST,symfonium"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"

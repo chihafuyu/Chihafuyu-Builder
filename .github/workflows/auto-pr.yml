@@ -1,6 +1,7 @@
+---
 name: Open a PR to main
 
-on:
+"on":
   push:
     branches:
       - dev
@@ -31,8 +32,12 @@ jobs:
             - [ ] Ensure options.json injection works ⚙️
         run: |
           # Check if a PR from the current branch to main already exists
-          PR_EXISTS=$(gh pr list --base main --head ${{ github.ref_name }} --json number -q '.[0].number')
-          
+          PR_EXISTS=$(gh pr list \
+            --base main \
+            --head ${{ github.ref_name }} \
+            --json number \
+            -q '.[0].number')
+
           # If no PR exists, create a new draft PR
           if [ -z "$PR_EXISTS" ] || [ "$PR_EXISTS" == "null" ]; then
             gh pr create \

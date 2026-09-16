@@ -1,6 +1,7 @@
+---
 name: 🔄 De-Vanced Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_google_photos:
@@ -39,7 +40,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -82,11 +92,20 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_GOOGLE_PHOTOS" == "true" ]]; then LIST="$LIST,google-photos"; fi
-          if [[ "$APP_PIXIV" == "true" ]]; then LIST="$LIST,pixiv"; fi
-          if [[ "$APP_STRAVA" == "true" ]]; then LIST="$LIST,strava"; fi
+          if [[ "$APP_GOOGLE_PHOTOS" == "true" ]]; then
+            LIST="$LIST,google-photos"
+          fi
+          if [[ "$APP_PIXIV" == "true" ]]; then
+            LIST="$LIST,pixiv"
+          fi
+          if [[ "$APP_STRAVA" == "true" ]]; then
+            LIST="$LIST,strava"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"

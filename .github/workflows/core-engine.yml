@@ -1,6 +1,7 @@
+---
 name: ⚙️ Core Patcher Engine
 
-on:
+"on":
   workflow_call:
     inputs:
       ecosystem:
@@ -79,17 +80,19 @@ jobs:
 
           APKEEP_VERSION='1.0.0'
           APKEEP_ASSET='apkeep-x86_64-unknown-linux-gnu'
-          APKEEP_URL="https://github.com/EFForg/apkeep/releases/download/${APKEEP_VERSION}/${APKEEP_ASSET}"
+          DL_BASE="https://github.com/EFForg/apkeep/releases/download"
+          APKEEP_URL="${DL_BASE}/${APKEEP_VERSION}/${APKEEP_ASSET}"
 
           wget -q --show-progress --https-only "$APKEEP_URL" -O apkeep
 
+          JQ_Q=".assets[] | select(.name == \"$APKEEP_ASSET\") | .digest"
           EXPECTED_SHA256="$(
             gh api "repos/EFForg/apkeep/releases/tags/${APKEEP_VERSION}" \
-              --jq '.assets[] | select(.name == "'"$APKEEP_ASSET"'") | .digest' \
-              | sed 's/^sha256://'
+              --jq "$JQ_Q" | sed 's/^sha256://'
           )"
 
-          if [ -z "$EXPECTED_SHA256" ] || ! printf '%s  %s\n' "$EXPECTED_SHA256" apkeep | sha256sum --check --status; then
+          if [ -z "$EXPECTED_SHA256" ] || ! printf '%s  %s\n' \
+            "$EXPECTED_SHA256" apkeep | sha256sum --check --status; then
             echo "::error::apkeep SHA-256 verification failed"
             rm -f apkeep
             exit 1
@@ -107,68 +110,87 @@ jobs:
 
           # Fetch CLI
           if [[ "${{ inputs.cli_track }}" == "Pre-release" ]]; then
-            CLI_TAG="$(gh api repos/MorpheApp/morphe-desktop/releases --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
+            JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
+            JQ_FLTR="${JQ_FLTR}[0].tag_name // empty"
+            CLI_TAG="$(gh api repos/MorpheApp/morphe-desktop/releases \
+              --paginate | jq -r -s "$JQ_FLTR")"
             if [[ -z "$CLI_TAG" ]]; then
               echo "::error::No Morphe CLI pre-release was found"
               exit 1
             fi
-            gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
+            gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop \
+              --pattern "morphe-desktop-*-all.jar"
           else
-            gh release download -R MorpheApp/morphe-desktop --pattern "morphe-desktop-*-all.jar"
+            gh release download -R MorpheApp/morphe-desktop \
+              --pattern "morphe-desktop-*-all.jar"
           fi
 
-          mapfile -t JARS < <(find . -maxdepth 1 -type f -name 'morphe-desktop-*-all.jar' -print | sort -V)
+          mapfile -t JARS < <(find . -maxdepth 1 -type f \
+            -name 'morphe-desktop-*-all.jar' -print | sort -V)
           if (( ${#JARS[@]} == 0 )); then
             echo "::error::Morphe CLI JAR was not downloaded"
             exit 1
           fi
-          
+
           LATEST_JAR="${JARS[${#JARS[@]}-1]}"
-          if [[ "$LATEST_JAR" != "./morphe.jar" && "$LATEST_JAR" != "morphe.jar" ]]; then
+          if [[ "$LATEST_JAR" != "./morphe.jar" && \
+                "$LATEST_JAR" != "morphe.jar" ]]; then
             mv -- "$LATEST_JAR" morphe.jar
           fi
 
           # Fetch Patches
           REPO_URL="${{ inputs.repo_url }}"
-          echo "TARGET_REPO_URL=https://github.com/$REPO_URL" >> "$GITHUB_ENV"
+          TARGET_URL="https://github.com/$REPO_URL"
+          echo "TARGET_REPO_URL=$TARGET_URL" >> "$GITHUB_ENV"
 
           if [[ "${{ inputs.patches_track }}" == "Custom Local" ]]; then
             test -f "Custom-Patches/${{ inputs.custom_patch_filename }}"
-            cp -- "Custom-Patches/${{ inputs.custom_patch_filename }}" patches.mpp
+            cp -- "Custom-Patches/${{ inputs.custom_patch_filename }}" \
+              patches.mpp
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
-            
+
           elif [[ "${{ inputs.patches_track }}" == "Pre-release" ]]; then
-            PATCH_TAG="$(gh api "repos/$REPO_URL/releases" --paginate | jq -r -s 'add | map(select(.prerelease == true and .draft == false))[0].tag_name // empty')"
+            JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
+            JQ_FLTR="${JQ_FLTR}[0].tag_name // empty"
+            PATCH_TAG="$(gh api "repos/$REPO_URL/releases" \
+              --paginate | jq -r -s "$JQ_FLTR")"
             if [[ -z "$PATCH_TAG" ]]; then
               echo "::error::No patches pre-release found in $REPO_URL"
               exit 1
             fi
-            gh release download "$PATCH_TAG" -R "$REPO_URL" --pattern "*.mpp"
-            mapfile -t MPPS < <(find . -maxdepth 1 -type f -name '*.mpp' -print | sort -V)
+            gh release download "$PATCH_TAG" -R "$REPO_URL" \
+              --pattern "*.mpp"
+            mapfile -t MPPS < <(find . -maxdepth 1 -type f \
+              -name '*.mpp' -print | sort -V)
             if (( ${#MPPS[@]} == 0 )); then
               echo "::error::No .mpp patch bundle downloaded"
               exit 1
             fi
             LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
-            if [[ "$LATEST_MPP" != "./patches.mpp" && "$LATEST_MPP" != "patches.mpp" ]]; then
+            if [[ "$LATEST_MPP" != "./patches.mpp" && \
+                  "$LATEST_MPP" != "patches.mpp" ]]; then
               mv -- "$LATEST_MPP" patches.mpp
             fi
             echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
-            
+
           else
-            PATCH_TAG="$(gh api "repos/$REPO_URL/releases/latest" | jq -r '.tag_name // empty')"
+            PATCH_TAG="$(gh api "repos/$REPO_URL/releases/latest" \
+              | jq -r '.tag_name // empty')"
             if [[ -z "$PATCH_TAG" ]]; then
               echo "::error::No stable patches release found in $REPO_URL"
               exit 1
             fi
-            gh release download "$PATCH_TAG" -R "$REPO_URL" --pattern "*.mpp"
-            mapfile -t MPPS < <(find . -maxdepth 1 -type f -name '*.mpp' -print | sort -V)
+            gh release download "$PATCH_TAG" -R "$REPO_URL" \
+              --pattern "*.mpp"
+            mapfile -t MPPS < <(find . -maxdepth 1 -type f \
+              -name '*.mpp' -print | sort -V)
             if (( ${#MPPS[@]} == 0 )); then
               echo "::error::No .mpp patch bundle downloaded"
               exit 1
             fi
             LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
-            if [[ "$LATEST_MPP" != "./patches.mpp" && "$LATEST_MPP" != "patches.mpp" ]]; then
+            if [[ "$LATEST_MPP" != "./patches.mpp" && \
+                  "$LATEST_MPP" != "patches.mpp" ]]; then
               mv -- "$LATEST_MPP" patches.mpp
             fi
             echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
@@ -181,12 +203,20 @@ jobs:
             echo "::error::KEYSTORE_BASE64 secret is missing"
             exit 1
           fi
-          printf '%s' "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > custom.keystore
+          printf '%s' "${{ secrets.KEYSTORE_BASE64 }}" \
+            | base64 --decode > custom.keystore
           chmod 0600 custom.keystore
 
       - name: Evaluate Pre-release Flag
         run: |
-          if [[ "${{ inputs.cli_track }}" == "Pre-release" || "${{ inputs.patches_track }}" == "Pre-release" || "${{ inputs.patches_track }}" == "Custom Local" || "${{ inputs.version_selection }}" == "Beta" ]]; then
+          CLI_TRACK="${{ inputs.cli_track }}"
+          PATCH_TRACK="${{ inputs.patches_track }}"
+          VER_SEL="${{ inputs.version_selection }}"
+
+          if [[ "$CLI_TRACK" == "Pre-release" || \
+                "$PATCH_TRACK" == "Pre-release" || \
+                "$PATCH_TRACK" == "Custom Local" || \
+                "$VER_SEL" == "Beta" ]]; then
             echo "IS_PRERELEASE=true" >> "$GITHUB_ENV"
           else
             echo "IS_PRERELEASE=false" >> "$GITHUB_ENV"
@@ -240,7 +270,9 @@ jobs:
         uses: softprops/action-gh-release@v3.0.3
         with:
           tag_name: ${{ inputs.release_tag_prefix }}-${{ github.run_id }}
-          name: Patched Apps - ${{ inputs.release_tag_prefix }} (${{ github.run_id }})
+          name: >-
+            Patched Apps - ${{ inputs.release_tag_prefix }}
+            (${{ github.run_id }})
           body_path: ./${{ inputs.ecosystem }}/changelog.md
           files: ./${{ inputs.ecosystem }}/Output/*.apk
           prerelease: ${{ env.IS_PRERELEASE == 'true' }}

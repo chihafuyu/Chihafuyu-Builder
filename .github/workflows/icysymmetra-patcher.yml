@@ -1,6 +1,7 @@
+---
 name: ❄️ Icysymmetra Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_tiktok:
@@ -29,7 +30,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -70,9 +80,14 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_TIKTOK" == "true" ]]; then LIST="$LIST,tiktok"; fi
+          if [[ "$APP_TIKTOK" == "true" ]]; then
+            LIST="$LIST,tiktok"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"

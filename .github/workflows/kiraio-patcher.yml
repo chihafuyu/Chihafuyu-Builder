@@ -1,6 +1,7 @@
+---
 name: 🌸 Kiraio-moe Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_atomic:
@@ -94,7 +95,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -148,22 +158,53 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_ATOMIC" == "true" ]]; then LIST="$LIST,atomic"; fi
-          if [[ "$APP_PIXIV" == "true" ]]; then LIST="$LIST,pixiv"; fi
-          if [[ "$APP_BOORUSAMA" == "true" ]]; then LIST="$LIST,boorusama"; fi
-          if [[ "$APP_EPIC" == "true" ]]; then LIST="$LIST,epic"; fi
-          if [[ "$APP_FAKEGPS" == "true" ]]; then LIST="$LIST,fakegps"; fi
-          if [[ "$APP_HERMIT" == "true" ]]; then LIST="$LIST,hermit"; fi
-          if [[ "$APP_HIDDEN_SETTINGS" == "true" ]]; then LIST="$LIST,hidden-settings"; fi
-          if [[ "$APP_ILOVEPDF" == "true" ]]; then LIST="$LIST,ilovepdf"; fi
-          if [[ "$APP_KEY_MAPPER" == "true" ]]; then LIST="$LIST,key-mapper"; fi
-          if [[ "$APP_KEYMATE" == "true" ]]; then LIST="$LIST,keymate"; fi
-          if [[ "$APP_MANGA_PLUS" == "true" ]]; then LIST="$LIST,manga-plus"; fi
-          if [[ "$APP_PIXELLAB" == "true" ]]; then LIST="$LIST,pixellab"; fi
-          if [[ "$APP_TIMESTAMP_CAMERA" == "true" ]]; then LIST="$LIST,timestamp-camera"; fi
-          if [[ "$APP_NEKOPOI" == "true" ]]; then LIST="$LIST,nekopoi"; fi
+          if [[ "$APP_ATOMIC" == "true" ]]; then
+            LIST="$LIST,atomic"
+          fi
+          if [[ "$APP_PIXIV" == "true" ]]; then
+            LIST="$LIST,pixiv"
+          fi
+          if [[ "$APP_BOORUSAMA" == "true" ]]; then
+            LIST="$LIST,boorusama"
+          fi
+          if [[ "$APP_EPIC" == "true" ]]; then
+            LIST="$LIST,epic"
+          fi
+          if [[ "$APP_FAKEGPS" == "true" ]]; then
+            LIST="$LIST,fakegps"
+          fi
+          if [[ "$APP_HERMIT" == "true" ]]; then
+            LIST="$LIST,hermit"
+          fi
+          if [[ "$APP_HIDDEN_SETTINGS" == "true" ]]; then
+            LIST="$LIST,hidden-settings"
+          fi
+          if [[ "$APP_ILOVEPDF" == "true" ]]; then
+            LIST="$LIST,ilovepdf"
+          fi
+          if [[ "$APP_KEY_MAPPER" == "true" ]]; then
+            LIST="$LIST,key-mapper"
+          fi
+          if [[ "$APP_KEYMATE" == "true" ]]; then
+            LIST="$LIST,keymate"
+          fi
+          if [[ "$APP_MANGA_PLUS" == "true" ]]; then
+            LIST="$LIST,manga-plus"
+          fi
+          if [[ "$APP_PIXELLAB" == "true" ]]; then
+            LIST="$LIST,pixellab"
+          fi
+          if [[ "$APP_TIMESTAMP_CAMERA" == "true" ]]; then
+            LIST="$LIST,timestamp-camera"
+          fi
+          if [[ "$APP_NEKOPOI" == "true" ]]; then
+            LIST="$LIST,nekopoi"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"

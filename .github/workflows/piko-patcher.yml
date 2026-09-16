@@ -1,6 +1,7 @@
+---
 name: 🦊 Piko Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_x_twitter:
@@ -39,7 +40,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -92,18 +102,33 @@ jobs:
           set -euo pipefail
           MATRIX_JSON="["
           PIKO_APPS=""
-          
-          if [[ "$APP_X_TWITTER" == "true" ]]; then PIKO_APPS="x-twitter"; fi
+
+          if [[ "$APP_X_TWITTER" == "true" ]]; then
+            PIKO_APPS="x-twitter"
+          fi
           if [[ "$APP_INSTAGRAM" == "true" ]]; then
-            if [[ -n "$PIKO_APPS" ]]; then PIKO_APPS="$PIKO_APPS,instagram"; else PIKO_APPS="instagram"; fi
+            if [[ -n "$PIKO_APPS" ]]; then
+              PIKO_APPS="$PIKO_APPS,instagram"
+            else
+              PIKO_APPS="instagram"
+            fi
           fi
 
           if [[ -n "$PIKO_APPS" ]]; then
-            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"Reguler\", \"repo\": \"crimera/piko\", \"apps\": \"$PIKO_APPS\", \"track\": \"$REGULER_TRACK\", \"mpp_name\": \"piko-custom.mpp\"},"
+            JSON_BLOCK='{"target_name": "Reguler", "repo": "crimera/piko", '
+            JSON_BLOCK+='"apps": "'"$PIKO_APPS"'", '
+            JSON_BLOCK+='"track": "'"$REGULER_TRACK"'", '
+            JSON_BLOCK+='"mpp_name": "piko-custom.mpp"},'
+            MATRIX_JSON="${MATRIX_JSON}${JSON_BLOCK}"
           fi
 
           if [[ "$APP_NEWX_TWITTER" == "true" ]]; then
-            MATRIX_JSON="$MATRIX_JSON{\"target_name\": \"NewX\", \"repo\": \"crimera/piko-newx\", \"apps\": \"newx-twitter\", \"track\": \"$NEWX_TRACK\", \"mpp_name\": \"piko-newx.mpp\"},"
+            JSON_BLOCK='{"target_name": "NewX", '
+            JSON_BLOCK+='"repo": "crimera/piko-newx", '
+            JSON_BLOCK+='"apps": "newx-twitter", '
+            JSON_BLOCK+='"track": "'"$NEWX_TRACK"'", '
+            JSON_BLOCK+='"mpp_name": "piko-newx.mpp"},'
+            MATRIX_JSON="${MATRIX_JSON}${JSON_BLOCK}"
           fi
 
           MATRIX_JSON="${MATRIX_JSON%,}]"

@@ -1,6 +1,7 @@
+---
 name: 🧩 Riky Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_3bmeteo:
@@ -39,7 +40,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -82,11 +92,20 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_3BMETEO" == "true" ]]; then LIST="$LIST,3bmeteo"; fi
-          if [[ "$APP_CAPCUT" == "true" ]]; then LIST="$LIST,capcut"; fi
-          if [[ "$APP_ELECTRON" == "true" ]]; then LIST="$LIST,electron"; fi
+          if [[ "$APP_3BMETEO" == "true" ]]; then
+            LIST="$LIST,3bmeteo"
+          fi
+          if [[ "$APP_CAPCUT" == "true" ]]; then
+            LIST="$LIST,capcut"
+          fi
+          if [[ "$APP_ELECTRON" == "true" ]]; then
+            LIST="$LIST,electron"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"

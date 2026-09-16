@@ -1,6 +1,7 @@
+---
 name: 🧹 Automated Release Janitor
 
-on:
+"on":
   schedule:
     - cron: '15 5,17 * * *'
   workflow_dispatch:
@@ -23,9 +24,10 @@ jobs:
           set -euo pipefail
 
           echo "[INFO] Starting Total Release Janitor..."
-          gh release list --limit 1000 --json tagName -q '.[].tagName' | while read -r TAG_NAME; do
+          gh release list --limit 1000 --json tagName \
+            -q '.[].tagName' | while read -r TAG_NAME; do
             if [[ -n "$TAG_NAME" ]]; then
-              echo "[INFO] Initiating deletion for release and tag: $TAG_NAME"
+              echo "[INFO] Initiating deletion for: $TAG_NAME"
               gh release delete "$TAG_NAME" --yes --cleanup-tag || true
             fi
           done
@@ -37,15 +39,17 @@ jobs:
           set -euo pipefail
 
           echo "[INFO] Starting Total Workflow Run Janitor..."
-          
-          RUN_IDS=$(gh run list --limit 1000 --json databaseId -q '.[].databaseId')
+
+          RUN_IDS=$(gh run list --limit 1000 \
+            --json databaseId -q '.[].databaseId')
 
           if [[ -z "$RUN_IDS" ]]; then
-            echo "[INFO] No extra workflow runs to delete. The dashboard is clean!"
+            echo "[INFO] No extra workflow runs to delete."
+            echo "[INFO] The dashboard is clean!"
           else
             for RUN_ID in $RUN_IDS; do
               if [[ "$RUN_ID" == "${{ github.run_id }}" ]]; then
-                echo "[SKIP] Run ID $RUN_ID is the currently active Janitor job."
+                echo "[SKIP] Run ID $RUN_ID is the active job."
                 continue
               fi
 

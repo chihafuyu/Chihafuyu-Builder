@@ -1,6 +1,7 @@
+---
 name: 🦸 Legendsciber Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_block_blast:
@@ -54,7 +55,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -90,24 +100,39 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_BLOCK_BLAST: ${{ inputs.app_block_blast }}
-      APP_EXTREME_CAR_DRIVING_SIMULATOR: ${{ inputs.app_extreme_car_driving_simulator }}
-      APP_HILL_CLimb_RACING: ${{ inputs.app_hill_climb_racing }}
+      APP_EXTREME_CAR: ${{ inputs.app_extreme_car_driving_simulator }}
+      APP_HILL_CLIMB: ${{ inputs.app_hill_climb_racing }}
       APP_SHADOW_FIGHT_2: ${{ inputs.app_shadow_fight_2 }}
       APP_SMASH_HIT: ${{ inputs.app_smash_hit }}
-      APP_TOOLBOX_FOR_MINECRAFT_PE: ${{ inputs.app_toolbox_for_minecraft_pe }}
+      APP_TOOLBOX: ${{ inputs.app_toolbox_for_minecraft_pe }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_BLOCK_BLAST" == "true" ]]; then LIST="$LIST,block-blast"; fi
-          if [[ "$APP_EXTREME_CAR_DRIVING_SIMULATOR" == "true" ]]; then LIST="$LIST,extreme-car-driving-simulator"; fi
-          if [[ "$APP_HILL_CLimb_RACING" == "true" ]]; then LIST="$LIST,hill-climb-racing"; fi
-          if [[ "$APP_SHADOW_FIGHT_2" == "true" ]]; then LIST="$LIST,shadow-fight-2"; fi
-          if [[ "$APP_SMASH_HIT" == "true" ]]; then LIST="$LIST,smash-hit"; fi
-          if [[ "$APP_TOOLBOX_FOR_MINECRAFT_PE" == "true" ]]; then LIST="$LIST,toolbox-for-minecraft-pe"; fi
+          if [[ "$APP_BLOCK_BLAST" == "true" ]]; then
+            LIST="$LIST,block-blast"
+          fi
+          if [[ "$APP_EXTREME_CAR" == "true" ]]; then
+            LIST="$LIST,extreme-car-driving-simulator"
+          fi
+          if [[ "$APP_HILL_CLIMB" == "true" ]]; then
+            LIST="$LIST,hill-climb-racing"
+          fi
+          if [[ "$APP_SHADOW_FIGHT_2" == "true" ]]; then
+            LIST="$LIST,shadow-fight-2"
+          fi
+          if [[ "$APP_SMASH_HIT" == "true" ]]; then
+            LIST="$LIST,smash-hit"
+          fi
+          if [[ "$APP_TOOLBOX" == "true" ]]; then
+            LIST="$LIST,toolbox-for-minecraft-pe"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"

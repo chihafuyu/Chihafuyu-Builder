@@ -1,6 +1,7 @@
+---
 name: ☁️ Fluffy Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_alarmy:
@@ -34,7 +35,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -76,10 +86,17 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_ALARMY" == "true" ]]; then LIST="$LIST,alarmy"; fi
-          if [[ "$APP_BLOCKERX" == "true" ]]; then LIST="$LIST,blockerx"; fi
+          if [[ "$APP_ALARMY" == "true" ]]; then
+            LIST="$LIST,alarmy"
+          fi
+          if [[ "$APP_BLOCKERX" == "true" ]]; then
+            LIST="$LIST,blockerx"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"

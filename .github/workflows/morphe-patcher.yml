@@ -1,6 +1,7 @@
+---
 name: 🌌 Morphe Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_youtube:
@@ -39,7 +40,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -82,10 +92,16 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_YOUTUBE" == "true" ]]; then LIST="$LIST,youtube"; fi
-          if [[ "$APP_YOUTUBE_MUSIC" == "true" ]]; then LIST="$LIST,youtube-music"; fi
-          if [[ "$APP_REDDIT" == "true" ]]; then LIST="$LIST,reddit"; fi
-          
+          if [[ "$APP_YOUTUBE" == "true" ]]; then
+            LIST="$LIST,youtube"
+          fi
+          if [[ "$APP_YOUTUBE_MUSIC" == "true" ]]; then
+            LIST="$LIST,youtube-music"
+          fi
+          if [[ "$APP_REDDIT" == "true" ]]; then
+            LIST="$LIST,reddit"
+          fi
+
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
             echo "::error::No applications selected!"

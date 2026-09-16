@@ -1,6 +1,7 @@
+---
 name: 🕉️ BholeyKaBhakt Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_speedtest:
@@ -54,7 +55,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -100,14 +110,29 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_SPEEDTEST" == "true" ]]; then LIST="$LIST,speedtest"; fi
-          if [[ "$APP_STELLARIUM" == "true" ]]; then LIST="$LIST,stellarium"; fi
-          if [[ "$APP_PROTO" == "true" ]]; then LIST="$LIST,proto"; fi
-          if [[ "$APP_VPNIFY" == "true" ]]; then LIST="$LIST,vpnify"; fi
-          if [[ "$APP_BACKDROPS" == "true" ]]; then LIST="$LIST,backdrops"; fi
-          if [[ "$APP_SOLID_EXPLORER" == "true" ]]; then LIST="$LIST,solid-explorer"; fi
+          if [[ "$APP_SPEEDTEST" == "true" ]]; then
+            LIST="$LIST,speedtest"
+          fi
+          if [[ "$APP_STELLARIUM" == "true" ]]; then
+            LIST="$LIST,stellarium"
+          fi
+          if [[ "$APP_PROTO" == "true" ]]; then
+            LIST="$LIST,proto"
+          fi
+          if [[ "$APP_VPNIFY" == "true" ]]; then
+            LIST="$LIST,vpnify"
+          fi
+          if [[ "$APP_BACKDROPS" == "true" ]]; then
+            LIST="$LIST,backdrops"
+          fi
+          if [[ "$APP_SOLID_EXPLORER" == "true" ]]; then
+            LIST="$LIST,solid-explorer"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"

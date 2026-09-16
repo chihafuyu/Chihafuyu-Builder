@@ -1,6 +1,7 @@
+---
 name: 📺 Ajstrick81 Ecosystem Patcher
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       app_disneyplus:
@@ -74,7 +75,16 @@ on:
         required: true
         type: choice
         default: 'default'
-        options: [default, google_play, huggingface, archive, apkmirror, apkpure, apkcombo, aptoide, uptodown]
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+          - apkcombo
+          - aptoide
+          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
@@ -124,18 +134,41 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_DISNEYPLUS" == "true" ]]; then LIST="$LIST,disneyplus"; fi
-          if [[ "$APP_PRIME_VIDEO" == "true" ]]; then LIST="$LIST,prime-video"; fi
-          if [[ "$APP_NETFLIX" == "true" ]]; then LIST="$LIST,netflix"; fi
-          if [[ "$APP_HBO_MAX" == "true" ]]; then LIST="$LIST,hbo-max"; fi
-          if [[ "$APP_PEACOCK" == "true" ]]; then LIST="$LIST,peacock"; fi
-          if [[ "$APP_TUBI" == "true" ]]; then LIST="$LIST,tubi"; fi
-          if [[ "$APP_VIX" == "true" ]]; then LIST="$LIST,vix"; fi
-          if [[ "$APP_PLUTO_TV" == "true" ]]; then LIST="$LIST,pluto-tv"; fi
-          if [[ "$APP_PARAMOUNT_PLUS" == "true" ]]; then LIST="$LIST,paramount-plus"; fi
-          if [[ "$APP_TWITCH" == "true" ]]; then LIST="$LIST,twitch"; fi
+          if [[ "$APP_DISNEYPLUS" == "true" ]]; then
+            LIST="$LIST,disneyplus"
+          fi
+          if [[ "$APP_PRIME_VIDEO" == "true" ]]; then
+            LIST="$LIST,prime-video"
+          fi
+          if [[ "$APP_NETFLIX" == "true" ]]; then
+            LIST="$LIST,netflix"
+          fi
+          if [[ "$APP_HBO_MAX" == "true" ]]; then
+            LIST="$LIST,hbo-max"
+          fi
+          if [[ "$APP_PEACOCK" == "true" ]]; then
+            LIST="$LIST,peacock"
+          fi
+          if [[ "$APP_TUBI" == "true" ]]; then
+            LIST="$LIST,tubi"
+          fi
+          if [[ "$APP_VIX" == "true" ]]; then
+            LIST="$LIST,vix"
+          fi
+          if [[ "$APP_PLUTO_TV" == "true" ]]; then
+            LIST="$LIST,pluto-tv"
+          fi
+          if [[ "$APP_PARAMOUNT_PLUS" == "true" ]]; then
+            LIST="$LIST,paramount-plus"
+          fi
+          if [[ "$APP_TWITCH" == "true" ]]; then
+            LIST="$LIST,twitch"
+          fi
           LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then echo "::error::No applications selected!"; exit 1; fi
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
           {
             echo "apps<<EOF"
             echo "$LIST"
