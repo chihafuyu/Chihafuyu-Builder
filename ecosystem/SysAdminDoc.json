@@ -1,0 +1,19 @@
+{
+    "sysadmindoc": {
+        "apps": {
+            "tiktok-global": {
+                "package": "com.zhiliaoapp.musically",
+                "search_term": "TikTok",
+                "stable": [
+                    "46.2.3"
+                ],
+                "beta": [
+                    "46.9.3"
+                ],
+                "strip": true,
+                "archive_id": "SysAdminDoc",
+                "options_override": {}
+            }
+        }
+    }
+}

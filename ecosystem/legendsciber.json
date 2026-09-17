@@ -1,11 +1,11 @@
 {
     "legendsciber": {
         "apps": {
-            "block-blast": {
-                "package": "com.block.juggle",
-                "search_term": "Block Blast!",
+            "clumsy-ninja": {
+                "package": "com.naturalmotion.clumsyninja",
+                "search_term": "Clumsy Ninja",
                 "stable": [
-                    "10.4.5"
+                    "1.33.5"
                 ],
                 "beta": [],
                 "strip": true,
@@ -34,11 +34,11 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "shadow-fight-2": {
-                "package": "com.nekki.shadowfight",
-                "search_term": "Shadow Fight 2",
+            "red-ball-4": {
+                "package": "com.FDGEntertainment.redball4.gp",
+                "search_term": "Red Ball 4",
                 "stable": [
-                    "2.46.0"
+                    "1.17.03"
                 ],
                 "beta": [],
                 "strip": true,
