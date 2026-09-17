@@ -18,6 +18,11 @@
                 "stable": [
                     "7.13.1"
                 ],
+                "version_codes": {
+                    "arm64-v8a": "13300054",
+                    "armeabi-v7a": "13300054",
+                    "x86_64": "13300054"
+                },
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -29,6 +34,9 @@
                 "stable": [
                     "1.71.1"
                 ],
+                "version_codes": {
+                    "arm64-v8a": "12L+"
+                },
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",

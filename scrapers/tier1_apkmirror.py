@@ -11,13 +11,11 @@ from core.context import Context
 from core.utils import _is_waf_blocked, download_file_stream
 from .base import BaseScraper
 
-
 EDITION_SLUG_REGEX = re.compile(
     r"\b(amazon|fire-tablet|fire-tv|androidtv|wear|go-edition|"
     r"lite|enterprise|kids|headunit|auto)\b",
     re.IGNORECASE
 )
-
 
 class ApkmirrorScraper(BaseScraper):
     """Scrapes APKs from APKMirror handling WAF and variants."""
@@ -149,7 +147,6 @@ class ApkmirrorScraper(BaseScraper):
                 best_score = score
                 best_btn = btn
 
-        # Removed the strict rejection block here to allow fallback scoring
         return best_btn
 
     def _process_variant_page(
@@ -195,28 +192,35 @@ class ApkmirrorScraper(BaseScraper):
         text = row.text.lower()
         is_bundle = "bundle" in text
 
-        # In strict mode, rigidly reject non-preferred formats
-        if strict:
-            if force_b and not is_bundle:
-                return None
-            if not force_b and is_bundle:
-                return None
+        # Reject formats based on bundle preference strictly
+        if strict and ((force_b and not is_bundle) or (not force_b and is_bundle)):
+            return None
 
         target_arch = ctx.arch.lower()
-        has_target_arch = target_arch in text
-        has_universal = "universal" in text or "noarch" in text
 
-        has_any_arch = any(
-            a in text
-            for a in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi")
+        # Base architecture match logic
+        arch_match = (
+            target_arch in text
+            or "universal" in text
+            or "noarch" in text
+            or not any(a in text for a in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi"))
         )
 
-        if has_target_arch or has_universal or not has_any_arch:
-            if not ver_code or str(ver_code).lower() in text:
-                link = row.find("a", class_="accent_color")
-                if link:
-                    rel_url = urljoin("https://www.apkmirror.com", link["href"])
-                    return self._process_variant_page(ctx, rel_url, force_b)
+        # Handling for universal architecture targets
+        if target_arch == "universal":
+            if "arm64-v8a" in text and "armeabi-v7a" in text:
+                arch_match = True
+            elif not strict and ("arm64-v8a" in text or "armeabi-v7a" in text):
+                arch_match = True
+
+        # Process valid URLs
+        if arch_match and (not ver_code or str(ver_code).lower() in text):
+            link = row.find("a", class_="accent_color")
+            if link:
+                return self._process_variant_page(
+                    ctx, urljoin("https://www.apkmirror.com", link["href"]), force_b
+                )
+
         return None
 
     def _download_variant(
