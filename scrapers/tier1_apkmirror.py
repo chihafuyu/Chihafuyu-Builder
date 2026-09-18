@@ -197,6 +197,7 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         target_arch = ctx.arch.lower()
+        is_multi_arm = "arm64-v8a" in text and "armeabi-v7a" in text
 
         # Base architecture match logic
         arch_match = (
@@ -208,10 +209,16 @@ class ApkmirrorScraper(BaseScraper):
 
         # Handling for universal architecture targets
         if target_arch == "universal":
-            if "arm64-v8a" in text and "armeabi-v7a" in text:
+            if is_multi_arm:
                 arch_match = True
             elif not strict and ("arm64-v8a" in text or "armeabi-v7a" in text):
                 arch_match = True
+
+        # EXCEPTION: If the target is a specific ARM architecture (e.g., arm64-v8a),
+        # but the APKMirror file is a combined multi-ARM package (arm64-v8a + armeabi-v7a),
+        # treat it as a match because it contains the target architecture.
+        elif is_multi_arm and target_arch in ("arm64-v8a", "armeabi-v7a"):
+            arch_match = True
 
         # Process valid URLs
         if arch_match and (not ver_code or str(ver_code).lower() in text):
@@ -233,6 +240,8 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         soup = BeautifulSoup(resp.text, "html.parser")
+
+        # Look for standard variant rows
         rows = soup.find_all("div", class_="table-row")
 
         if rows:
@@ -248,10 +257,18 @@ class ApkmirrorScraper(BaseScraper):
                 if out:
                     return out
 
-        elif soup.find("a", class_="downloadButton"):
-            out = self._process_variant_page(ctx, rel_url, force_b)
-            if out:
-                return out
+        # Fallback for single-variant pages where the download button is present
+        # but there is no "table-row" variants list.
+        else:
+            # Look for ANY anchor tag that contains 'downloadButton' as part of its class list
+            dl_btn = soup.find(
+                lambda tag: tag.name == "a" and "downloadButton" in tag.get("class", [])
+            )
+
+            if dl_btn:
+                # If found, the current page IS the variant page
+                return self._process_variant_page(ctx, rel_url, force_b)
+
         return None
 
     def scrape(self, ctx: Context) -> Optional[str]:
