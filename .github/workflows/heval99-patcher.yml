@@ -1,5 +1,5 @@
 ---
-name: 🦸 Heval99 Ecosystem Patcher
+name: 📧 Heval99 Ecosystem Patcher
 
 "on":
   workflow_dispatch:

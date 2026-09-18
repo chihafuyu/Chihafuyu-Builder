@@ -1,5 +1,5 @@
 ---
-name: 🦸 Legendsciber Ecosystem Patcher
+name: ⚡ Legendsciber Ecosystem Patcher
 
 "on":
   workflow_dispatch:

@@ -1,5 +1,5 @@
 ---
-name: 🦸 SysAdminDoc Ecosystem Patcher
+name: 🛠️ SysAdminDoc Ecosystem Patcher
 
 "on":
   workflow_dispatch:
