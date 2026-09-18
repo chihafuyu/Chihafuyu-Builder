@@ -12,6 +12,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "dan-the-man": {
+                "package": "com.halfbrick.dantheman",
+                "search_term": "Dan The Man",
+                "stable": [
+                    "1.14.02"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "extreme-car-driving-simulator": {
                 "package": "com.aim.racing",
                 "search_term": "Extreme Car Driving Simulator",

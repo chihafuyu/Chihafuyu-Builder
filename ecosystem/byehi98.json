@@ -155,6 +155,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "swift-backup": {
+                "package": "org.swiftapps.swiftbackup",
+                "search_term": "Swift Backup",
+                "stable": [
+                    "5.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "traffic-rider": {
                 "package": "com.skgames.trafficrider",
                 "search_term": "Traffic Rider",

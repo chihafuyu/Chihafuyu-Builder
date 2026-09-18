@@ -1,0 +1,114 @@
+{
+    "heval99": {
+        "apps": {
+            "anydesk": {
+                "package": "com.anydesk.anydeskandroid",
+                "search_term": "AnyDesk",
+                "stable": [
+                    "9.0.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "aqua-mail": {
+                "package": "org.kman.AquaMail",
+                "search_term": "Aqua Mail",
+                "stable": [
+                    "2.7.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "box-box": {
+                "package": "club.boxbox.android",
+                "search_term": "Box Box",
+                "stable": [
+                    "5.4.15"
+                ],
+                "beta": [],
+                "strip": true,
+                "version_codes": {
+                    "universal": "12L+",
+                    "arm64-v8a": "12L+",
+                    "armeabi-v7a": "12L+",
+                    "x86_64": "12L+",
+                    "x86": "12L+"
+                },
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "easynotes": {
+                "package": "easynotes.notes.notepad.notebook.privatenotes.note",
+                "search_term": "EasyNotes",
+                "stable": [
+                    "1.3.61.0907"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fairemail": {
+                "package": "eu.faircode.email",
+                "search_term": "FairEmail",
+                "stable": [
+                    "1.2337"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "iptv": {
+                "package": "ru.iptvremote.android.iptv",
+                "search_term": "IPTV",
+                "stable": [
+                    "9.1.25"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "swift-backup": {
+                "package": "org.swiftapps.swiftbackup",
+                "search_term": "Swift Backup",
+                "stable": [
+                    "5.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "tasker": {
+                "package": "net.dinglisch.android.taskerm",
+                "search_term": "Tasker",
+                "stable": [
+                    "6.6.18"
+                ],
+                "beta": [
+                    "6.6.20"
+                ],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "weather-underground": {
+                "package": "com.wunderground.android.weather",
+                "search_term": "Weather Underground",
+                "stable": [
+                    "6.20.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "satanmerde": {
+        "apps": {
+            "hungry-shark-world": {
+                "package": "com.ubisoft.hungrysharkworld",
+                "search_term": "Hungry Shark World",
+                "stable": [
+                    "8.1.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

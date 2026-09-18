@@ -1,41 +1,51 @@
 ---
-name: 🦸 Legendsciber Ecosystem Patcher
+name: 🦸 Heval99 Ecosystem Patcher
 
 "on":
   workflow_dispatch:
     inputs:
-      app_clumsy_ninja:
-        description: 'Patch clumsy-ninja'
+      app_anydesk:
+        description: 'Patch anydesk'
         required: true
         type: boolean
         default: false
-      app_dan_the_man:
-        description: 'Patch dan-the-man'
+      app_aqua_mail:
+        description: 'Patch aqua-mail'
         required: true
         type: boolean
         default: false
-      app_extreme_car_driving_simulator:
-        description: 'Patch extreme-car-driving-simulator'
+      app_box_box:
+        description: 'Patch box-box'
         required: true
         type: boolean
         default: false
-      app_hill_climb_racing:
-        description: 'Patch hill-climb-racing'
+      app_easynotes:
+        description: 'Patch easynotes'
         required: true
         type: boolean
         default: false
-      app_red_ball_4:
-        description: 'Patch red-ball-4'
+      app_fairemail:
+        description: 'Patch fairemail'
         required: true
         type: boolean
         default: false
-      app_smash_hit:
-        description: 'Patch smash-hit'
+      app_iptv:
+        description: 'Patch iptv'
         required: true
         type: boolean
         default: false
-      app_toolbox_for_minecraft_pe:
-        description: 'Patch toolbox-for-minecraft-pe'
+      app_swift_backup:
+        description: 'Patch swift-backup'
+        required: true
+        type: boolean
+        default: false
+      app_tasker:
+        description: 'Patch tasker'
+        required: true
+        type: boolean
+        default: false
+      app_weather_underground:
+        description: 'Patch weather-underground'
         required: true
         type: boolean
         default: false
@@ -104,38 +114,46 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APP_CLUMSY_NINJA: ${{ inputs.app_clumsy_ninja }}
-      APP_DAN_THE_MAN: ${{ inputs.app_dan_the_man }}
-      APP_EXTREME_CAR: ${{ inputs.app_extreme_car_driving_simulator }}
-      APP_HILL_CLIMB: ${{ inputs.app_hill_climb_racing }}
-      APP_RED_BALL_4: ${{ inputs.app_red_ball_4 }}
-      APP_SMASH_HIT: ${{ inputs.app_smash_hit }}
-      APP_TOOLBOX: ${{ inputs.app_toolbox_for_minecraft_pe }}
+      APP_ANYDESK: ${{ inputs.app_anydesk }}
+      APP_AQUA_MAIL: ${{ inputs.app_aqua_mail }}
+      APP_BOX_BOX: ${{ inputs.app_box_box }}
+      APP_EASYNOTES: ${{ inputs.app_easynotes }}
+      APP_FAIREMAIL: ${{ inputs.app_fairemail }}
+      APP_IPTV: ${{ inputs.app_iptv }}
+      APP_SWIFT_BACKUP: ${{ inputs.app_swift_backup }}
+      APP_TASKER: ${{ inputs.app_tasker }}
+      APP_WEATHER_UNDERGROUND: ${{ inputs.app_weather_underground }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_CLUMSY_NINJA" == "true" ]]; then
-            LIST="$LIST,clumsy-ninja"
+          if [[ "$APP_ANYDESK" == "true" ]]; then
+            LIST="$LIST,anydesk"
           fi
-          if [[ "$APP_DAN_THE_MAN" == "true" ]]; then
-            LIST="$LIST,dan-the-man"
+          if [[ "$APP_AQUA_MAIL" == "true" ]]; then
+            LIST="$LIST,aqua-mail"
           fi
-          if [[ "$APP_EXTREME_CAR" == "true" ]]; then
-            LIST="$LIST,extreme-car-driving-simulator"
+          if [[ "$APP_BOX_BOX" == "true" ]]; then
+            LIST="$LIST,box-box"
           fi
-          if [[ "$APP_HILL_CLIMB" == "true" ]]; then
-            LIST="$LIST,hill-climb-racing"
+          if [[ "$APP_EASYNOTES" == "true" ]]; then
+            LIST="$LIST,easynotes"
           fi
-          if [[ "$APP_RED_BALL_4" == "true" ]]; then
-            LIST="$LIST,red-ball-4"
+          if [[ "$APP_FAIREMAIL" == "true" ]]; then
+            LIST="$LIST,fairemail"
           fi
-          if [[ "$APP_SMASH_HIT" == "true" ]]; then
-            LIST="$LIST,smash-hit"
+          if [[ "$APP_IPTV" == "true" ]]; then
+            LIST="$LIST,iptv"
           fi
-          if [[ "$APP_TOOLBOX" == "true" ]]; then
-            LIST="$LIST,toolbox-for-minecraft-pe"
+          if [[ "$APP_SWIFT_BACKUP" == "true" ]]; then
+            LIST="$LIST,swift-backup"
+          fi
+          if [[ "$APP_TASKER" == "true" ]]; then
+            LIST="$LIST,tasker"
+          fi
+          if [[ "$APP_WEATHER_UNDERGROUND" == "true" ]]; then
+            LIST="$LIST,weather-underground"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
@@ -155,7 +173,7 @@ jobs:
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "legendsciber"
+      ecosystem: "heval99"
       apps: ${{ needs.prepare-apps.outputs.selected }}
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
@@ -164,8 +182,8 @@ jobs:
       continue_on_error: ${{ inputs.continue_on_error }}
       cli_track: ${{ inputs.cli_track }}
       patches_track: ${{ inputs.patches_track }}
-      repo_url: "legendsciber/morphe-patches"
-      custom_patch_filename: "legendsciber-custom.mpp"
+      repo_url: "heval99/Heval-Morphe-Patches"
+      custom_patch_filename: "heval99-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "legendsciber"
+      release_tag_prefix: "heval99"
