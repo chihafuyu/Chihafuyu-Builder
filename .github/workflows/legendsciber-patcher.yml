@@ -4,11 +4,6 @@ name: ⚡ Legendsciber Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_clumsy_ninja:
-        description: 'Patch clumsy-ninja'
-        required: true
-        type: boolean
-        default: false
       app_dan_the_man:
         description: 'Patch dan-the-man'
         required: true
@@ -104,7 +99,6 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APP_CLUMSY_NINJA: ${{ inputs.app_clumsy_ninja }}
       APP_DAN_THE_MAN: ${{ inputs.app_dan_the_man }}
       APP_EXTREME_CAR: ${{ inputs.app_extreme_car_driving_simulator }}
       APP_HILL_CLIMB: ${{ inputs.app_hill_climb_racing }}
@@ -116,9 +110,6 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_CLUMSY_NINJA" == "true" ]]; then
-            LIST="$LIST,clumsy-ninja"
-          fi
           if [[ "$APP_DAN_THE_MAN" == "true" ]]; then
             LIST="$LIST,dan-the-man"
           fi

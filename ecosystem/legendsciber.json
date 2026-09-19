@@ -1,17 +1,6 @@
 {
     "legendsciber": {
         "apps": {
-            "clumsy-ninja": {
-                "package": "com.naturalmotion.clumsyninja",
-                "search_term": "Clumsy Ninja",
-                "stable": [
-                    "1.33.5"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "dan-the-man": {
                 "package": "com.halfbrick.dantheman",
                 "search_term": "Dan The Man",
@@ -29,11 +18,6 @@
                 "stable": [
                     "7.13.1"
                 ],
-                "version_codes": {
-                    "arm64-v8a": "13300054",
-                    "armeabi-v7a": "13300054",
-                    "x86_64": "13300054"
-                },
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
