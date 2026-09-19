@@ -119,7 +119,7 @@ class ApkmirrorScraper(BaseScraper):
     def _score_download_btn(self, btn: Any, force_b: bool) -> int:
         """Calculates a score for a given download button."""
         text = btn.text.lower()
-        href = btn["href"].lower()
+        href = btn.get("href", "").lower()
         score = 0
 
         is_bundle_btn = "bundle" in text
@@ -147,19 +147,26 @@ class ApkmirrorScraper(BaseScraper):
         best_score = -100
 
         for btn in soup.find_all("a"):
-            classes = btn.get("class", [])
             href = btn.get("href", "")
+            classes = btn.get("class", [])
 
-            if "variantsButton" in classes or not href or href.startswith("#"):
+            if isinstance(classes, str):
+                classes = [classes]
+
+            if not href or href.startswith("#") or "variantsButton" in classes:
                 continue
 
-            if "downloadButton" in classes or "/download/?key=" in href:
-                if href not in seen:
-                    seen.add(href)
-                    score = self._score_download_btn(btn, force_b)
-                    if score > best_score:
-                        best_score = score
-                        best_btn = btn
+            if "downloadButton" not in classes and "/download/?key=" not in href:
+                continue
+
+            if href in seen:
+                continue
+
+            seen.add(href)
+            score = self._score_download_btn(btn, force_b)
+            if score > best_score:
+                best_score = score
+                best_btn = btn
 
         return best_btn
 
@@ -169,12 +176,15 @@ class ApkmirrorScraper(BaseScraper):
         """Processes the specific variant page to find the final download link."""
         ctx.limiter.wait()
         v_resp = ctx.scraper.get(var_url, timeout=60)
+
         if _is_waf_blocked(v_resp.status_code, v_resp.text) or v_resp.status_code != 200:
+            print(f"[WARN] APKMirror variant page failed (HTTP {v_resp.status_code}).")
             return None
 
         v_soup = BeautifulSoup(v_resp.text, "html.parser")
         btn = self._select_download_button(v_soup, force_b)
         if not btn:
+            print("[WARN] Download button not found on variant page.")
             return None
 
         is_actual_bundle = "bundle" in btn.text.lower()
@@ -184,10 +194,12 @@ class ApkmirrorScraper(BaseScraper):
         file_type = "APKM Bundle" if is_actual_bundle else "Raw APK"
         print(f"[INFO] Preparing to extract: {file_type}")
 
-        dl_page = urljoin("https://www.apkmirror.com", btn["href"])
+        dl_page = urljoin("https://www.apkmirror.com", btn.get("href", ""))
         ctx.limiter.wait()
         d_resp = ctx.scraper.get(dl_page, timeout=60)
+
         if _is_waf_blocked(d_resp.status_code, d_resp.text) or d_resp.status_code != 200:
+            print(f"[WARN] APKMirror download page failed (HTTP {d_resp.status_code}).")
             return None
 
         d_soup = BeautifulSoup(d_resp.text, "html.parser")
@@ -206,47 +218,48 @@ class ApkmirrorScraper(BaseScraper):
             print(f"[INFO] Downloading {file_type} from APKMirror...")
             if download_file_stream(ctx.scraper, dl_url, out_path, dl_page):
                 return out_path
+        else:
+            print("[WARN] Final download link not found on APKMirror.")
+
         return None
 
+    def _is_arch_match(self, text: str, target_arch: str, pass_idx: int) -> bool:
+        """Helper to determine if the table row matches the requested architecture."""
+        if target_arch in text or "universal" in text or "noarch" in text:
+            return True
+
+        if not any(a in text for a in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi")):
+            return True
+
+        is_multi_arm = "arm64-v8a" in text and "armeabi-v7a" in text
+
+        if target_arch == "universal":
+            if is_multi_arm or (pass_idx == 3 and ("arm64-v8a" in text or "armeabi-v7a" in text)):
+                return True
+
+        if is_multi_arm and target_arch in ("arm64-v8a", "armeabi-v7a"):
+            return True
+
+        return False
+
     def _extract_row(
-        self, ctx: Context, row: Any, force_b: bool, ver_code: str, strict: bool = True
+        self, ctx: Context, row: Any, opts: dict
     ) -> Optional[str]:
         """Extracts the variant URL from a table row if it matches criteria."""
         text = row.text.lower()
-        is_bundle = "bundle" in text
+        pass_idx = opts.get("pass_idx", 1)
+        force_b = opts.get("force_b", False)
+        ver_code = opts.get("ver_code", "")
 
-        # Reject formats based on bundle preference strictly
-        if strict and ((force_b and not is_bundle) or (not force_b and is_bundle)):
+        if pass_idx in (1, 2):
+            is_bundle = "bundle" in text
+            if (force_b and not is_bundle) or (not force_b and is_bundle):
+                return None
+
+        if pass_idx == 1 and ver_code and str(ver_code).lower() not in text:
             return None
 
-        target_arch = ctx.arch.lower()
-        is_multi_arm = "arm64-v8a" in text and "armeabi-v7a" in text
-
-        # Base architecture match logic broken into multiline to comply with 100-char limit
-        arch_match = (
-            target_arch in text
-            or "universal" in text
-            or "noarch" in text
-            or not any(
-                a in text for a in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi")
-            )
-        )
-
-        # Handling for universal architecture targets
-        if target_arch == "universal":
-            if is_multi_arm:
-                arch_match = True
-            elif not strict and ("arm64-v8a" in text or "armeabi-v7a" in text):
-                arch_match = True
-
-        # EXCEPTION: If the target is a specific ARM architecture (e.g., arm64-v8a),
-        # but the APKMirror file is a combined multi-ARM package (arm64-v8a + armeabi-v7a),
-        # treat it as a match because it contains the target architecture.
-        elif is_multi_arm and target_arch in ("arm64-v8a", "armeabi-v7a"):
-            arch_match = True
-
-        # Process valid URLs
-        if arch_match and (not ver_code or str(ver_code).lower() in text):
+        if self._is_arch_match(text, ctx.arch.lower(), pass_idx):
             link = row.find("a", class_="accent_color")
             if link:
                 return self._process_variant_page(
@@ -261,39 +274,38 @@ class ApkmirrorScraper(BaseScraper):
         """Downloads the matching variant from the release page."""
         ctx.limiter.wait()
         resp = ctx.scraper.get(rel_url, timeout=60)
-        if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
+
+        if _is_waf_blocked(resp.status_code, resp.text):
+            print(f"[WARN] APKMirror WAF blocked release page (HTTP {resp.status_code}).")
+            return None
+        if resp.status_code != 200:
+            print(f"[WARN] APKMirror returned HTTP {resp.status_code} on release page.")
             return None
 
         soup = BeautifulSoup(resp.text, "html.parser")
-
-        # Look for standard variant rows
         rows = soup.find_all("div", class_="table-row")
 
         if rows:
-            # Pass 1: Strict match (Preferred format only)
-            for row in rows:
-                out = self._extract_row(ctx, row, force_b, ver_code, strict=True)
-                if out:
-                    return out
+            for pass_idx in (1, 2, 3):
+                opts = {"force_b": force_b, "ver_code": ver_code, "pass_idx": pass_idx}
+                for row in rows:
+                    out = self._extract_row(ctx, row, opts)
+                    if out:
+                        return out
 
-            # Pass 2: Fallback match (Accept any available format)
-            for row in rows:
-                out = self._extract_row(ctx, row, force_b, ver_code, strict=False)
-                if out:
-                    return out
+            print("[WARN] No matching variants found in release table.")
+            return None
 
         # Fallback for single-variant pages where the download button is present
         # but there is no "table-row" variants list.
-        else:
-            # Look for ANY anchor tag that contains 'downloadButton' as part of its class list
-            dl_btn = soup.find(
-                lambda tag: tag.name == "a" and "downloadButton" in tag.get("class", [])
-            )
+        dl_btn = soup.find(
+            lambda tag: tag.name == "a" and "downloadButton" in tag.get("class", [])
+        )
 
-            if dl_btn:
-                # If found, the current page IS the variant page
-                return self._process_variant_page(ctx, rel_url, force_b)
+        if dl_btn:
+            return self._process_variant_page(ctx, rel_url, force_b)
 
+        print("[WARN] Release table and fallback download button both missing.")
         return None
 
     def scrape(self, ctx: Context) -> Optional[str]:
@@ -306,10 +318,7 @@ class ApkmirrorScraper(BaseScraper):
                 print("[WARN] Release not found.")
                 return None
             return self._download_variant(
-                ctx,
-                rel_url,
-                ver_code,
-                ctx.app_data.get("force_bundle", False),
+                ctx, rel_url, ver_code, ctx.app_data.get("force_bundle", False)
             )
         except (requests.exceptions.RequestException, OSError) as err:
             print(f"[ERROR] Tier 1 failed: {err}")
