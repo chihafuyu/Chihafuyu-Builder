@@ -11,13 +11,14 @@ NC='\033[0m'
 TERMUX_PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 TERMUX_HOME="${HOME:-/data/data/com.termux/files/home}"
 USER_AGENT="ChihafuyuBuilder/1.0 (Termux; Android)"
-TEMP_PATCH="patches.mpp"
 WORK_DIR="$TERMUX_PREFIX/var/chihafuyu-workspace"
 REPO_URL="https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main"
 
+TEMP_PATCH=""
+
 cleanup() {
     local exit_code=$?
-    if [[ -f "$TEMP_PATCH" ]]; then
+    if [[ -n "$TEMP_PATCH" && -f "$TEMP_PATCH" ]]; then
         rm -f "$TEMP_PATCH"
     fi
     exit "$exit_code"
@@ -26,18 +27,16 @@ cleanup() {
 trap cleanup EXIT INT TERM ERR
 
 check_dependencies() {
-    local missing_pkgs=()
+    local missing=()
 
-    if ! command -v curl > /dev/null 2>&1; then missing_pkgs+=("curl"); fi
-    if ! command -v jq > /dev/null 2>&1; then missing_pkgs+=("jq"); fi
-    if ! command -v java > /dev/null 2>&1; then missing_pkgs+=("openjdk-21"); fi
+    command -v curl >/dev/null || missing+=("curl")
+    command -v jq >/dev/null || missing+=("jq")
+    command -v java >/dev/null || missing+=("openjdk-21")
 
-    if [[ ${#missing_pkgs[@]} -gt 0 ]]; then
-        echo -e "${YELLOW}[INFO] Missing dependencies detected: ${missing_pkgs[*]}${NC}"
-        echo -e "${YELLOW}[INFO] Updating system and installing packages... (This may take a while)${NC}"
-        pkg update -y && pkg upgrade -y
-        pkg install "${missing_pkgs[@]}" -y
-        echo -e "${GREEN}[INFO] Dependencies installed successfully!${NC}\n"
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        echo -e "${YELLOW}[INFO] Installing missing dependencies: ${missing[*]}${NC}"
+        pkg update -y && pkg install "${missing[@]}" -y
+        echo -e "${GREEN}[INFO] Dependencies installed!${NC}\n"
     fi
 }
 
@@ -59,9 +58,40 @@ ensure_storage_access() {
     fi
 }
 
-setup_workspace() {
-    mkdir -p "$WORK_DIR"
-    cd "$WORK_DIR" || exit 1
+set_eco_data() {
+    # Dynamically format the MPP filename
+    TARGET_MPP="${ECO_CHOICE}-custom.mpp"
+    TEMP_PATCH="$TARGET_MPP"
+
+    # Map target repositories and JSON configurations
+    case "$ECO_CHOICE" in
+        "ajstrick81")    TARGET_REPO="ajstrick81/morphe-androidtv-patches"; TARGET_JSON="ajstrick81.json" ;;
+        "anxyis")        TARGET_REPO="anxyis/anxy-patches"; TARGET_JSON="anxyis.json" ;;
+        "arandomhooman") TARGET_REPO="arandomhooman/hoomans-morphe-patches"; TARGET_JSON="arandomhooman.json" ;;
+        "BholeyKaBhakt") TARGET_REPO="BholeyKaBhakt/android-patches-xtra"; TARGET_JSON="bholeykabhakt.json" ;;
+        "browzomje")     TARGET_REPO="browzomje/browzomje-patches"; TARGET_JSON="browzomje.json" ;;
+        "byehi98")       TARGET_REPO="byehi98/okish-morphe-patches"; TARGET_JSON="byehi98.json" ;;
+        "De-Vanced")     TARGET_REPO="RookieEnough/De-Vanced"; TARGET_JSON="devanced.json" ;;
+        "dh6k")          TARGET_REPO="dh6k/morphe-patches"; TARGET_JSON="dh6k.json" ;;
+        "hoo-dles")      TARGET_REPO="hoo-dles/morphe-patches"; TARGET_JSON="hoo-dles.json" ;;
+        "hxreborn")      TARGET_REPO="hxreborn/morphe-patches"; TARGET_JSON="hxreborn.json" ;;
+        "icysymmetra")   TARGET_REPO="icysymmetra/tiktok-patches-for-morphe"; TARGET_JSON="icysymmetra.json" ;;
+        "jasonwu1994")   TARGET_REPO="jasonwu1994/Gboard-patches"; TARGET_JSON="jasonwu1994.json" ;;
+        "kiraio-moe")    TARGET_REPO="kiraio-moe/Lain-Patches"; TARGET_JSON="kiraio.json" ;;
+        "kuchingneko28") TARGET_REPO="kuchingneko28/ipusnas-patches"; TARGET_JSON="kuchingneko28.json" ;;
+        "kveld9")        TARGET_REPO="kveld9/kveld-morphe-patches"; TARGET_JSON="kveld9.json" ;;
+        "legendsciber")  TARGET_REPO="legendsciber/morphe-patches"; TARGET_JSON="legendsciber.json" ;;
+        "MiguelNinja19") TARGET_REPO="MiguelNinja19/miguel-morphe-patches"; TARGET_JSON="MiguelNinja19.json" ;;
+        "morphe")        TARGET_REPO="MorpheApp/morphe-patches"; TARGET_JSON="morphe.json" ;;
+        "PathxmOp")      TARGET_REPO="PrathxmOp/Prathxm-Patches"; TARGET_JSON="pathxmop.json" ;;
+        "piko")          TARGET_REPO="crimera/piko"; TARGET_JSON="piko.json" ;;
+        "rabilrbl")      TARGET_REPO="rabilrbl/fluffy-patches"; TARGET_JSON="rabilrbl.json" ;;
+        "Riky")          TARGET_REPO="riky-dev/morphe-patches"; TARGET_JSON="riky.json" ;;
+        "rushiranpise")  TARGET_REPO="rushiranpise/morphe-patches"; TARGET_JSON="rushiranpise.json" ;;
+        "SapitoSucio")   TARGET_REPO="SapitoSucio/FroggoMorphePatches"; TARGET_JSON="SapitoSucio.json" ;;
+        "satanmerde")    TARGET_REPO="SatanMerde/D-moniakPatches"; TARGET_JSON="satanmerde.json" ;;
+        "sysadmindoc")   TARGET_REPO="SysAdminDoc/hushfeed"; TARGET_JSON="SysAdminDoc.json" ;;
+    esac
 }
 
 select_ecosystem() {
@@ -71,8 +101,9 @@ select_ecosystem() {
         "byehi98" "De-Vanced" "dh6k" "hoo-dles" "hxreborn"
         "icysymmetra" "jasonwu1994" "kiraio-moe" "kuchingneko28" "kveld9"
         "legendsciber" "MiguelNinja19" "morphe" "PathxmOp" "piko" "rabilrbl"
-        "Riky" "rushiranpise" "SapitoSucio" "Exit"
+        "Riky" "rushiranpise" "SapitoSucio" "satanmerde" "sysadmindoc" "Exit"
     )
+    
     COLUMNS=20
     select ECO_CHOICE in "${ecosystems[@]}"; do
         if [[ "$ECO_CHOICE" == "Exit" ]]; then
@@ -80,6 +111,8 @@ select_ecosystem() {
             exit 0
         elif [[ -n "$ECO_CHOICE" ]]; then
             echo -e "${GREEN}Selected ecosystem: $ECO_CHOICE${NC}"
+            set_eco_data
+            
             ECO_DIR="$TERMUX_HOME/storage/downloads/Chihafuyu-$ECO_CHOICE"
             mkdir -p "$ECO_DIR"
             break
@@ -91,7 +124,7 @@ select_ecosystem() {
 
 show_supported_apps() {
     echo -e "\n${YELLOW}[INFO] Fetching supported apps for $ECO_CHOICE...${NC}"
-    local json_url="${REPO_URL}/ecosystem/${ECO_CHOICE}.json"
+    local json_url="${REPO_URL}/ecosystem/${TARGET_JSON}"
     
     if curl -sL -f "$json_url" -o eco.json; then
         echo -e "${CYAN}=== Supported Applications ===${NC}"
@@ -100,7 +133,6 @@ show_supported_apps() {
         rm -f eco.json
     else
         echo -e "${RED}[WARN] Could not fetch configuration for $ECO_CHOICE.${NC}"
-        echo -e "${WHITE}Make sure the ecosystem name matches the JSON file in your repository.${NC}"
     fi
 }
 
@@ -109,7 +141,6 @@ select_track() {
     local tracks=("Stable" "Pre-release" "Exit")
     select TRACK_CHOICE in "${tracks[@]}"; do
         if [[ "$TRACK_CHOICE" == "Exit" ]]; then
-            echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
             exit 0
         elif [[ -n "$TRACK_CHOICE" ]]; then
             echo -e "${GREEN}Selected track: $TRACK_CHOICE${NC}"
@@ -129,14 +160,15 @@ fetch_components() {
 
     local patch_url=""
     if [[ "$TRACK_CHOICE" == "Stable" ]]; then
-        patch_url="https://github.com/${ECO_CHOICE}/morphe-patches/releases/latest/download/patches.mpp"
+        patch_url="https://github.com/${TARGET_REPO}/releases/latest/download/${TARGET_MPP}"
     else
-        patch_url=$(curl -s -A "$USER_AGENT" "https://api.github.com/repos/${ECO_CHOICE}/morphe-patches/releases" | jq -r 'map(select(.prerelease == true)) | .[0].assets[] | select(.name == "patches.mpp") | .browser_download_url')
+        patch_url=$(curl -s -A "$USER_AGENT" "https://api.github.com/repos/${TARGET_REPO}/releases" | jq -r --arg MPP "$TARGET_MPP" 'map(select(.prerelease == true)) | .[0].assets[] | select(.name == $MPP) | .browser_download_url')
         if [[ "$patch_url" == "null" || -z "$patch_url" ]]; then
             echo -e "${RED}[ERROR] No Pre-release version found for $ECO_CHOICE.${NC}"
             exit 1
         fi
     fi
+    
     curl -sL -A "$USER_AGENT" "$patch_url" -o "$TEMP_PATCH"
 }
 
@@ -158,7 +190,6 @@ select_apk() {
 
     if [[ ${#apk_files[@]} -eq 0 ]]; then
         echo -e "${RED}[ERROR] No APK/Bundle files found in $ECO_DIR!${NC}"
-        echo -e "Make sure you moved the file correctly. Rerun the script to try again."
         exit 1
     fi
 
@@ -167,7 +198,6 @@ select_apk() {
     echo -e "${WHITE}Select the file to patch:${NC}"
     select APK_CHOICE in "${apk_files[@]}"; do
         if [[ "$APK_CHOICE" == "Exit" ]]; then
-            echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
             exit 0
         elif [[ -n "$APK_CHOICE" ]]; then
             echo -e "${GREEN}Target: $(basename "$APK_CHOICE")${NC}"
@@ -183,9 +213,7 @@ execute_patch() {
     base_name=$(basename "$APK_CHOICE")
     
     local final_apk="$ECO_DIR/Patched-${base_name%.*}.apk"
-    local log_file
-    log_file="$WORK_DIR/patch_log_$(date +%s).txt"
-    local export_log=""
+    local log_file="$WORK_DIR/patch_log_$(date +%s).txt"
 
     echo -e "\n${YELLOW}[INFO] Starting the patching process... (Do not close Termux!)${NC}"
 
@@ -193,8 +221,7 @@ execute_patch() {
         echo -e "\n${CYAN}=========================================${NC}"
         echo -e "${GREEN} SUCCESS! PATCHING COMPLETED             ${NC}"
         echo -e "${CYAN}=========================================${NC}"
-        echo -e "${YELLOW}Your patched app is ready at:${NC}"
-        echo -e "$final_apk"
+        echo -e "${YELLOW}Your patched app is ready at:${NC}\n$final_apk"
         
         echo -e "\n${WHITE}Do you want to export the debug log to the ecosystem folder? (y/n)${NC}"
         read -r -n 1 export_log || true
@@ -205,9 +232,8 @@ execute_patch() {
         fi
     else
         echo -e "\n${RED}[ERROR] Patching failed!${NC}"
-        echo -e "${WHITE}Exporting error log to ecosystem folder...${NC}"
         cp "$log_file" "$ECO_DIR/"
-        echo -e "${YELLOW}Check the log here: $ECO_DIR/$(basename "$log_file")${NC}"
+        echo -e "${YELLOW}Check the error log here: $ECO_DIR/$(basename "$log_file")${NC}"
         exit 1
     fi
 }
@@ -217,9 +243,11 @@ main() {
     echo -e "${YELLOW}       CHIHAFUYU LOCAL BUILDER           ${NC}"
     echo -e "${CYAN}=========================================${NC}\n"
 
+    mkdir -p "$WORK_DIR"
+    cd "$WORK_DIR" || exit 1
+
     check_dependencies
     ensure_storage_access
-    setup_workspace
     
     select_ecosystem
     show_supported_apps
