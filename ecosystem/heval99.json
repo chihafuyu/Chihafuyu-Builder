@@ -96,11 +96,9 @@
                 "package": "net.dinglisch.android.taskerm",
                 "search_term": "Tasker",
                 "stable": [
-                    "6.6.18"
-                ],
-                "beta": [
                     "6.6.20"
                 ],
+                "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
