@@ -172,6 +172,17 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "vpnify": {
+                "package": "com.vpn.free.hotspot.secure.vpnify",
+                "search_term": "vpnify",
+                "stable": [
+                    "2.3.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }

@@ -51,15 +51,17 @@ class ApkmirrorScraper(BaseScraper):
 
         return urljoin("https://www.apkmirror.com", href)
 
-    def _find_release(self, ctx: Context) -> Optional[str]:
-        """Finds the release page URL for the target version."""
-        base_ver = (
-            ctx.target_ver.split("-")[0]
-            if "-" in ctx.target_ver and ctx.target_ver[:1].isdigit()
-            else ctx.target_ver
-        )
-        search_term = ctx.app_data.get("search_term", ctx.pkg)
+    def _get_filter_kws(self, ctx: Context) -> tuple[list[str], list[str]]:
+        """Extracts excluded and included keywords from app data."""
+        exc_kws = ["secondary"] + [
+            k.lower() for k in ctx.app_data.get("apkm_exclude", []) if k.strip()
+        ]
+        inc_kws = [k.lower() for k in ctx.app_data.get("apkm_include", []) if k.strip()]
+        return exc_kws, inc_kws
 
+    def _get_search_queries(self, ctx: Context, base_ver: str) -> list[str]:
+        """Builds a list of search queries based on app data and target version."""
+        search_term = ctx.app_data.get("search_term", ctx.pkg)
         if "." in search_term and " " not in search_term:
             short_term = search_term
         else:
@@ -70,17 +72,23 @@ class ApkmirrorScraper(BaseScraper):
                 .strip()
             )
 
-        exc_kws = ["secondary"] + [
-            k.lower() for k in ctx.app_data.get("apkm_exclude", []) if k.strip()
-        ]
-        inc_kws = [k.lower() for k in ctx.app_data.get("apkm_include", []) if k.strip()]
-
-        queries = list(dict.fromkeys([
+        return list(dict.fromkeys([
             ctx.pkg,
             search_term,
             f"{search_term} {base_ver}",
             short_term
         ]))
+
+    def _find_release(self, ctx: Context) -> Optional[str]:
+        """Finds the release page URL for the target version."""
+        base_ver = (
+            ctx.target_ver.split("-")[0]
+            if "-" in ctx.target_ver and ctx.target_ver[:1].isdigit()
+            else ctx.target_ver
+        )
+
+        queries = self._get_search_queries(ctx, base_ver)
+        exc_kws, inc_kws = self._get_filter_kws(ctx)
 
         for query in queries:
             ctx.limiter.wait()
@@ -116,62 +124,44 @@ class ApkmirrorScraper(BaseScraper):
             if hash_match:
                 print(f"[INFO] Expected SHA-256 extracted: {hash_match.group(0)}")
 
-    def _score_download_btn(self, btn: Any, force_b: bool) -> int:
-        """Calculates a score for a given download button."""
-        text = btn.text.lower()
-        href = btn.get("href", "").lower()
-        score = 0
-
-        is_bundle_btn = "bundle" in text
-        is_force_base = "forcebaseapk" in href
-
-        if force_b:
-            score += 10 if (is_bundle_btn or is_force_base) else -50
-        else:
-            if is_force_base:
-                score += 20
-            elif is_bundle_btn:
-                score -= 50
-            else:
-                score += 10
-
-        if "download" in text:
-            score += 5
-
-        return score
-
-    def _select_download_button(self, soup: BeautifulSoup, force_b: bool) -> Optional[Any]:
-        """Selects the best download button from the variant page."""
-        seen = set()
-        best_btn = None
-        best_score = -100
-
-        for btn in soup.find_all("a"):
-            href = btn.get("href", "")
+    def _get_download_buttons(self, soup: BeautifulSoup) -> list[Any]:
+        """Extracts potential download button elements from variant page."""
+        btns = []
+        for btn in soup.find_all("a", href=True):
+            href = btn["href"]
             classes = btn.get("class", [])
-
             if isinstance(classes, str):
                 classes = [classes]
 
-            if not href or href.startswith("#") or "variantsButton" in classes:
+            if "variantsButton" in classes or href.startswith("#"):
                 continue
 
-            if "downloadButton" not in classes and "/download/?key=" not in href:
-                continue
+            if "downloadButton" in classes or "/download/?key=" in href:
+                btns.append(btn)
+        return btns
 
-            if href in seen:
-                continue
+    def _pick_variant_button(self, btns: list[Any], is_bundle: bool) -> Any:
+        """Picks the best variant button depending on bundle requirement."""
+        for btn in btns:
+            has_force = "forcebaseapk" in btn["href"].lower()
+            if (is_bundle and not has_force) or (not is_bundle and has_force):
+                return btn
+        return btns[0]
 
-            seen.add(href)
-            score = self._score_download_btn(btn, force_b)
-            if score > best_score:
-                best_score = score
-                best_btn = btn
+    def _get_final_download_link(self, d_soup: BeautifulSoup) -> Optional[Any]:
+        """Locates the final download link from the download page."""
+        dl_btn = d_soup.find("a", id="download-link")
+        if dl_btn:
+            return dl_btn
 
-        return best_btn
+        return d_soup.find(
+            lambda tag: tag.name == "a" and tag.has_attr("href") and (
+                "download.php" in tag["href"] or "/download/?key=" in tag["href"]
+            )
+        )
 
     def _process_variant_page(
-        self, ctx: Context, var_url: str, force_b: bool
+        self, ctx: Context, var_url: str, is_bundle: bool
     ) -> Optional[str]:
         """Processes the specific variant page to find the final download link."""
         ctx.limiter.wait()
@@ -182,19 +172,20 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         v_soup = BeautifulSoup(v_resp.text, "html.parser")
-        btn = self._select_download_button(v_soup, force_b)
-        if not btn:
+        btns = self._get_download_buttons(v_soup)
+        if not btns:
             print("[WARN] Download button not found on variant page.")
             return None
 
-        is_actual_bundle = "bundle" in btn.text.lower()
-        if not is_actual_bundle:
+        btn = self._pick_variant_button(btns, is_bundle)
+
+        if not is_bundle:
             self._log_expected_sha256(v_soup)
 
-        file_type = "APKM Bundle" if is_actual_bundle else "Raw APK"
+        file_type = "APKM Bundle" if is_bundle else "Raw APK"
         print(f"[INFO] Preparing to extract: {file_type}")
 
-        dl_page = urljoin("https://www.apkmirror.com", btn.get("href", ""))
+        dl_page = urljoin("https://www.apkmirror.com", btn["href"])
         ctx.limiter.wait()
         d_resp = ctx.scraper.get(dl_page, timeout=60)
 
@@ -203,24 +194,18 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         d_soup = BeautifulSoup(d_resp.text, "html.parser")
-        dl_btn = d_soup.find("a", id="download-link")
+        dl_btn = self._get_final_download_link(d_soup)
 
-        if not dl_btn:
-            dl_btn = d_soup.find(
-                lambda tag: tag.name == "a" and tag.has_attr("href") and (
-                    "download.php" in tag["href"] or "/download/?key=" in tag["href"]
-                )
-            )
-
-        if dl_btn and dl_btn.has_attr("href"):
-            out_path = ctx.get_out_path(".apkm" if is_actual_bundle else ".apk")
-            dl_url = urljoin("https://www.apkmirror.com", dl_btn["href"])
-            print(f"[INFO] Downloading {file_type} from APKMirror...")
-            if download_file_stream(ctx.scraper, dl_url, out_path, dl_page):
-                return out_path
-        else:
+        if not dl_btn or not dl_btn.has_attr("href"):
             print("[WARN] Final download link not found on APKMirror.")
+            return None
 
+        out_path = ctx.get_out_path(".apkm" if is_bundle else ".apk")
+        dl_url = urljoin("https://www.apkmirror.com", dl_btn["href"])
+        print(f"[INFO] Downloading {file_type} from APKMirror...")
+
+        if download_file_stream(ctx.scraper, dl_url, out_path, dl_page):
+            return out_path
         return None
 
     def _is_arch_match(self, text: str, target_arch: str, pass_idx: int) -> bool:
@@ -228,16 +213,17 @@ class ApkmirrorScraper(BaseScraper):
         if target_arch in text or "universal" in text or "noarch" in text:
             return True
 
-        if not any(a in text for a in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi")):
+        arch_list = ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi")
+        if not any(a in text for a in arch_list):
             return True
 
         is_multi_arm = "arm64-v8a" in text and "armeabi-v7a" in text
+        if is_multi_arm and target_arch in ("arm64-v8a", "armeabi-v7a", "universal"):
+            return True
 
-        if target_arch == "universal":
-            if is_multi_arm or (pass_idx == 3 and ("arm64-v8a" in text or "armeabi-v7a" in text)):
-                return True
-
-        if is_multi_arm and target_arch in ("arm64-v8a", "armeabi-v7a"):
+        if pass_idx == 3 and target_arch == "universal" and (
+            "arm64-v8a" in text or "armeabi-v7a" in text
+        ):
             return True
 
         return False
@@ -251,22 +237,23 @@ class ApkmirrorScraper(BaseScraper):
         force_b = opts.get("force_b", False)
         ver_code = opts.get("ver_code", "")
 
-        if pass_idx in (1, 2):
-            is_bundle = "bundle" in text
-            if (force_b and not is_bundle) or (not force_b and is_bundle):
-                return None
+        is_bundle = "bundle" in text
+        if pass_idx in (1, 2) and force_b != is_bundle:
+            return None
 
         if pass_idx == 1 and ver_code and str(ver_code).lower() not in text:
             return None
 
-        if self._is_arch_match(text, ctx.arch.lower(), pass_idx):
-            link = row.find("a", class_="accent_color")
-            if link:
-                return self._process_variant_page(
-                    ctx, urljoin("https://www.apkmirror.com", link["href"]), force_b
-                )
+        if not self._is_arch_match(text, ctx.arch.lower(), pass_idx):
+            return None
 
-        return None
+        link = row.find("a", class_="accent_color")
+        if not link:
+            return None
+
+        return self._process_variant_page(
+            ctx, urljoin("https://www.apkmirror.com", link["href"]), is_bundle
+        )
 
     def _download_variant(
         self, ctx: Context, rel_url: str, ver_code: str, force_b: bool
@@ -275,11 +262,8 @@ class ApkmirrorScraper(BaseScraper):
         ctx.limiter.wait()
         resp = ctx.scraper.get(rel_url, timeout=60)
 
-        if _is_waf_blocked(resp.status_code, resp.text):
-            print(f"[WARN] APKMirror WAF blocked release page (HTTP {resp.status_code}).")
-            return None
-        if resp.status_code != 200:
-            print(f"[WARN] APKMirror returned HTTP {resp.status_code} on release page.")
+        if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
+            print(f"[WARN] APKMirror release page failed (HTTP {resp.status_code}).")
             return None
 
         soup = BeautifulSoup(resp.text, "html.parser")
@@ -296,14 +280,13 @@ class ApkmirrorScraper(BaseScraper):
             print("[WARN] No matching variants found in release table.")
             return None
 
-        # Fallback for single-variant pages where the download button is present
-        # but there is no "table-row" variants list.
         dl_btn = soup.find(
             lambda tag: tag.name == "a" and "downloadButton" in tag.get("class", [])
         )
 
         if dl_btn:
-            return self._process_variant_page(ctx, rel_url, force_b)
+            is_bundle = "bundle" in dl_btn.text.lower()
+            return self._process_variant_page(ctx, rel_url, is_bundle)
 
         print("[WARN] Release table and fallback download button both missing.")
         return None

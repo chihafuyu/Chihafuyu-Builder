@@ -79,6 +79,11 @@ name: 🔥 Hxreborn Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_vpnify:
+        description: 'Patch vpnify'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -159,6 +164,7 @@ jobs:
       APP_RINGTONE_MAKER: ${{ inputs.app_ringtone_maker }}
       APP_RISE_SLEEP_TRACKER: ${{ inputs.app_rise_sleep_tracker }}
       APP_SYMFONIUM: ${{ inputs.app_symfonium }}
+      APP_VPNIFY: ${{ inputs.app_vpnify }}
     steps:
       - id: build-list
         run: |
@@ -208,6 +214,9 @@ jobs:
           fi
           if [[ "$APP_SYMFONIUM" == "true" ]]; then
             LIST="$LIST,symfonium"
+          fi
+          if [[ "$APP_VPNIFY" == "true" ]]; then
+            LIST="$LIST,vpnify"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
