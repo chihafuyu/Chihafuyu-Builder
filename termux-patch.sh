@@ -10,12 +10,20 @@ NC='\033[0m'
 
 TERMUX_PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 TERMUX_HOME="${HOME:-/data/data/com.termux/files/home}"
-USER_AGENT="ChihafuyuBuilder/1.0 (Termux; Android)"
+USER_AGENT="ChihafuyuBuilder/1.1 (Termux; Android)"
 WORK_DIR="$TERMUX_PREFIX/var/chihafuyu-workspace"
 REPO_URL="https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main"
 
 TEMP_PATCH=""
+ECO_CHOICE=""
+TARGET_REPO=""
+TARGET_JSON=""
+TARGET_MPP=""
+ECO_DIR=""
+TRACK_CHOICE=""
+APK_CHOICE=""
 
+# Clean up temporary files on exit or interrupt
 cleanup() {
     local exit_code=$?
     if [[ -n "$TEMP_PATCH" && -f "$TEMP_PATCH" ]]; then
@@ -29,9 +37,13 @@ trap cleanup EXIT INT TERM ERR
 check_dependencies() {
     local missing=()
 
-    command -v curl >/dev/null || missing+=("curl")
-    command -v jq >/dev/null || missing+=("jq")
-    command -v java >/dev/null || missing+=("openjdk-21")
+    command -v curl >/dev/null 2>&1 || missing+=("curl")
+    command -v jq >/dev/null 2>&1 || missing+=("jq")
+    
+    # Enforce Java 21 requirement
+    if ! java -version 2>&1 | grep -q 'version "21'; then
+        missing+=("openjdk-21")
+    fi
 
     if [[ ${#missing[@]} -gt 0 ]]; then
         echo -e "${YELLOW}[INFO] Installing missing dependencies: ${missing[*]}${NC}"
@@ -51,7 +63,7 @@ ensure_storage_access() {
             sleep 1
             ((attempts++))
             if [[ $attempts -ge 30 ]]; then
-                echo -e "${RED}[ERROR] Storage access timeout.${NC}"
+                echo -e "${RED}[ERROR] Storage access timeout.${NC}" >&2
                 exit 1
             fi
         done
@@ -59,11 +71,9 @@ ensure_storage_access() {
 }
 
 set_eco_data() {
-    # Dynamically format the MPP filename
     TARGET_MPP="${ECO_CHOICE}-custom.mpp"
     TEMP_PATCH="$TARGET_MPP"
 
-    # Map target repositories and JSON configurations
     case "$ECO_CHOICE" in
         "ajstrick81")    TARGET_REPO="ajstrick81/morphe-androidtv-patches"; TARGET_JSON="ajstrick81.json" ;;
         "anxyis")        TARGET_REPO="anxyis/anxy-patches"; TARGET_JSON="anxyis.json" ;;
@@ -105,11 +115,15 @@ select_ecosystem() {
     )
     
     COLUMNS=20
-    select ECO_CHOICE in "${ecosystems[@]}"; do
-        if [[ "$ECO_CHOICE" == "Exit" ]]; then
+    local PS3_BAK="$PS3"
+    PS3="Enter your choice: "
+    
+    select choice in "${ecosystems[@]}"; do
+        if [[ "$choice" == "Exit" ]]; then
             echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
             exit 0
-        elif [[ -n "$ECO_CHOICE" ]]; then
+        elif [[ -n "$choice" ]]; then
+            ECO_CHOICE="$choice"
             echo -e "${GREEN}Selected ecosystem: $ECO_CHOICE${NC}"
             set_eco_data
             
@@ -117,38 +131,44 @@ select_ecosystem() {
             mkdir -p "$ECO_DIR"
             break
         else
-            echo -e "${RED}Invalid selection.${NC}"
+            echo -e "${RED}Invalid selection.${NC}" >&2
         fi
     done
+    PS3="$PS3_BAK"
 }
 
 show_supported_apps() {
     echo -e "\n${YELLOW}[INFO] Fetching supported apps for $ECO_CHOICE...${NC}"
     local json_url="${REPO_URL}/ecosystem/${TARGET_JSON}"
     
-    if curl -sL -f "$json_url" -o eco.json; then
-        echo -e "${CYAN}=== Supported Applications ===${NC}"
-        jq -r '.[].apps | to_entries[] | " - \(.value.search_term) (v\(.value.stable[0] // "Any"))"' eco.json
-        echo -e "${CYAN}==============================${NC}"
-        rm -f eco.json
-    else
-        echo -e "${RED}[WARN] Could not fetch configuration for $ECO_CHOICE.${NC}"
+    echo -e "${CYAN}=== Supported Applications ===${NC}"
+    
+    # Pipe curl directly to jq to avoid creating temporary files
+    if ! curl -sL -f "$json_url" | jq -r '.[].apps | to_entries[] | " - \(.value.search_term) (v\(.value.stable[0] // "Any"))"'; then
+        echo -e "${RED}[WARN] Could not fetch configuration for $ECO_CHOICE.${NC}" >&2
     fi
+    echo -e "${CYAN}==============================${NC}"
 }
 
 select_track() {
     echo -e "\n${WHITE}Select Patch Track:${NC}"
     local tracks=("Stable" "Pre-release" "Exit")
-    select TRACK_CHOICE in "${tracks[@]}"; do
-        if [[ "$TRACK_CHOICE" == "Exit" ]]; then
+    
+    local PS3_BAK="$PS3"
+    PS3="Enter track number: "
+    
+    select choice in "${tracks[@]}"; do
+        if [[ "$choice" == "Exit" ]]; then
             exit 0
-        elif [[ -n "$TRACK_CHOICE" ]]; then
+        elif [[ -n "$choice" ]]; then
+            TRACK_CHOICE="$choice"
             echo -e "${GREEN}Selected track: $TRACK_CHOICE${NC}"
             break
         else
-            echo -e "${RED}Invalid selection.${NC}"
+            echo -e "${RED}Invalid selection.${NC}" >&2
         fi
     done
+    PS3="$PS3_BAK"
 }
 
 fetch_components() {
@@ -162,9 +182,11 @@ fetch_components() {
     if [[ "$TRACK_CHOICE" == "Stable" ]]; then
         patch_url="https://github.com/${TARGET_REPO}/releases/latest/download/${TARGET_MPP}"
     else
-        patch_url=$(curl -s -A "$USER_AGENT" "https://api.github.com/repos/${TARGET_REPO}/releases" | jq -r --arg MPP "$TARGET_MPP" 'map(select(.prerelease == true)) | .[0].assets[] | select(.name == $MPP) | .browser_download_url')
-        if [[ "$patch_url" == "null" || -z "$patch_url" ]]; then
-            echo -e "${RED}[ERROR] No Pre-release version found for $ECO_CHOICE.${NC}"
+        patch_url=$(curl -s -A "$USER_AGENT" "https://api.github.com/repos/${TARGET_REPO}/releases" | \
+            jq -r --arg MPP "$TARGET_MPP" 'map(select(.prerelease == true)) | .[0].assets[]? | select(.name == $MPP) | .browser_download_url')
+        
+        if [[ -z "$patch_url" || "$patch_url" == "null" ]]; then
+            echo -e "${RED}[ERROR] No Pre-release version found for $ECO_CHOICE.${NC}" >&2
             exit 1
         fi
     fi
@@ -178,34 +200,41 @@ wait_for_apk() {
     echo -e "Place the file(s) into this specific folder:"
     echo -e "${YELLOW}$ECO_DIR${NC}"
     echo -e "\nThe tool is in standby mode..."
-    echo -e "${CYAN}Press [ENTER] when you have placed the file(s) to continue...${NC}"
-    read -r _ || true
+    
+    read -r -p "$(echo -e "${CYAN}Press [ENTER] when you have placed the file(s) to continue...${NC}")" _
 }
 
 select_apk() {
     echo -e "\n${WHITE}Scanning $ECO_DIR for APKs...${NC}"
+    
+    # Ensure glob expansion evaluates gracefully if no files exist
     shopt -s nullglob
     local apk_files=("$ECO_DIR/"*.apk "$ECO_DIR/"*.apkm "$ECO_DIR/"*.xapk)
     shopt -u nullglob
 
     if [[ ${#apk_files[@]} -eq 0 ]]; then
-        echo -e "${RED}[ERROR] No APK/Bundle files found in $ECO_DIR!${NC}"
+        echo -e "${RED}[ERROR] No APK/Bundle files found in $ECO_DIR!${NC}" >&2
         exit 1
     fi
 
     apk_files+=("Exit")
 
     echo -e "${WHITE}Select the file to patch:${NC}"
-    select APK_CHOICE in "${apk_files[@]}"; do
-        if [[ "$APK_CHOICE" == "Exit" ]]; then
+    local PS3_BAK="$PS3"
+    PS3="Select APK number: "
+    
+    select choice in "${apk_files[@]}"; do
+        if [[ "$choice" == "Exit" ]]; then
             exit 0
-        elif [[ -n "$APK_CHOICE" ]]; then
+        elif [[ -n "$choice" ]]; then
+            APK_CHOICE="$choice"
             echo -e "${GREEN}Target: $(basename "$APK_CHOICE")${NC}"
             break
         else
-            echo -e "${RED}Invalid selection.${NC}"
+            echo -e "${RED}Invalid selection.${NC}" >&2
         fi
     done
+    PS3="$PS3_BAK"
 }
 
 execute_patch() {
@@ -213,7 +242,10 @@ execute_patch() {
     base_name=$(basename "$APK_CHOICE")
     
     local final_apk="$ECO_DIR/Patched-${base_name%.*}.apk"
-    local log_file="$WORK_DIR/patch_log_$(date +%s).txt"
+    local log_file
+    
+    # Separated declaration and assignment to avoid masking command substitution errors (SC2155)
+    log_file="$WORK_DIR/patch_log_$(date +%s).txt"
 
     echo -e "\n${YELLOW}[INFO] Starting the patching process... (Do not close Termux!)${NC}"
 
@@ -223,15 +255,14 @@ execute_patch() {
         echo -e "${CYAN}=========================================${NC}"
         echo -e "${YELLOW}Your patched app is ready at:${NC}\n$final_apk"
         
-        echo -e "\n${WHITE}Do you want to export the debug log to the ecosystem folder? (y/n)${NC}"
-        read -r -n 1 export_log || true
+        read -r -n 1 -p "$(echo -e "\n${WHITE}Do you want to export the debug log to the ecosystem folder? (y/n)${NC} ")" export_log
         echo ""
         if [[ "$export_log" =~ ^[Yy]$ ]]; then
             cp "$log_file" "$ECO_DIR/"
             echo -e "${GREEN}Log saved to: $ECO_DIR/$(basename "$log_file")${NC}"
         fi
     else
-        echo -e "\n${RED}[ERROR] Patching failed!${NC}"
+        echo -e "\n${RED}[ERROR] Patching failed!${NC}" >&2
         cp "$log_file" "$ECO_DIR/"
         echo -e "${YELLOW}Check the error log here: $ECO_DIR/$(basename "$log_file")${NC}"
         exit 1
