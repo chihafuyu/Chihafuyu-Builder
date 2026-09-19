@@ -34,8 +34,8 @@ name: 📧 Heval99 Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_swift_backup:
-        description: 'Patch swift-backup'
+      app_osmand:
+        description: 'Patch osmand'
         required: true
         type: boolean
         default: false
@@ -120,7 +120,7 @@ jobs:
       APP_EASYNOTES: ${{ inputs.app_easynotes }}
       APP_FAIREMAIL: ${{ inputs.app_fairemail }}
       APP_IPTV: ${{ inputs.app_iptv }}
-      APP_SWIFT_BACKUP: ${{ inputs.app_swift_backup }}
+      APP_OSMAND: ${{ inputs.app_osmand }}
       APP_TASKER: ${{ inputs.app_tasker }}
       APP_WEATHER_UNDERGROUND: ${{ inputs.app_weather_underground }}
     steps:
@@ -146,8 +146,8 @@ jobs:
           if [[ "$APP_IPTV" == "true" ]]; then
             LIST="$LIST,iptv"
           fi
-          if [[ "$APP_SWIFT_BACKUP" == "true" ]]; then
-            LIST="$LIST,swift-backup"
+          if [[ "$APP_OSMAND" == "true" ]]; then
+            LIST="$LIST,osmand"
           fi
           if [[ "$APP_TASKER" == "true" ]]; then
             LIST="$LIST,tasker"

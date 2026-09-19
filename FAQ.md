@@ -72,6 +72,7 @@ Because ecosystems like `rushiranpise` and `arandomhooman` support a massive lis
 - `plague-inc`
 - `prince-of-persia-the-lost-crown`
 - `traffic-rider`
+- `vector`
 
 `rushiranpise` Apps:
 - `1-1-1-1`

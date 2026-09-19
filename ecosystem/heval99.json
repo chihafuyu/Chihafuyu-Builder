@@ -74,14 +74,21 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "swift-backup": {
-                "package": "org.swiftapps.swiftbackup",
-                "search_term": "Swift Backup",
+            "osmand": {
+                "package": "net.osmand",
+                "search_term": "OsmAnd",
                 "stable": [
-                    "5.1.0"
+                    "5.4.5"
                 ],
                 "beta": [],
                 "strip": true,
+                "version_codes": {
+                    "universal": "5405",
+                    "arm64-v8a": "5405",
+                    "armeabi-v7a": "5405",
+                    "x86_64": "5405",
+                    "x86": "5405"
+                },
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },

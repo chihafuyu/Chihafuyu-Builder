@@ -126,7 +126,7 @@
                 "package": "com.rebelbinary.onlyone",
                 "search_term": "Only One",
                 "stable": [
-                    "1.3031"
+                    "1.3040"
                 ],
                 "beta": [],
                 "strip": true,
@@ -171,6 +171,17 @@
                 "search_term": "Traffic Rider",
                 "stable": [
                     "2.11"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "vector": {
+                "package": "com.nekki.vector",
+                "search_term": "Vector",
+                "stable": [
+                    "2.10.2"
                 ],
                 "beta": [],
                 "strip": true,

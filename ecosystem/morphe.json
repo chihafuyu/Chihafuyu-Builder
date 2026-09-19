@@ -28,15 +28,17 @@
                 "package": "com.google.android.youtube",
                 "search_term": "YouTube",
                 "stable": [
-                    "21.13.164"
+                    "21.16.256"
                 ],
                 "beta": [
                     "21.37.42"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "1561296049",
-                    "armeabi-v7a": "1561296049",
-                    "x86_64": "1561296049"
+                    "universal": "1561068412",
+                    "arm64-v8a": "1561068412",
+                    "armeabi-v7a": "1561068412",
+                    "x86_64": "1561068412",
+                    "x86": "1561068412"
                 },
                 "strip": true,
                 "force_bundle": false,
