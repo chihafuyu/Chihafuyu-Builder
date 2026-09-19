@@ -17,6 +17,7 @@ EDITION_SLUG_REGEX = re.compile(
     re.IGNORECASE
 )
 
+
 class ApkmirrorScraper(BaseScraper):
     """Scrapes APKs from APKMirror handling WAF and variants."""
 
@@ -115,37 +116,50 @@ class ApkmirrorScraper(BaseScraper):
             if hash_match:
                 print(f"[INFO] Expected SHA-256 extracted: {hash_match.group(0)}")
 
-    def _select_download_button(self, soup: BeautifulSoup, force_b: bool) -> Optional[Any]:
-        """Selects the best download button from the variant page."""
-        btns = [
-            btn for btn in soup.find_all("a", class_="downloadButton")
-            if "variantsButton" not in btn.get("class", []) and btn.has_attr("href")
-            and not btn["href"].startswith("#")
-        ]
-        if not btns:
-            return None
+    def _score_download_btn(self, btn: Any, force_b: bool) -> int:
+        """Calculates a score for a given download button."""
+        text = btn.text.lower()
+        href = btn["href"].lower()
+        score = 0
 
-        best_btn = None
-        best_score = -100
+        is_bundle_btn = "bundle" in text
+        is_force_base = "forcebaseapk" in href
 
-        for btn in btns:
-            text = btn.text.lower()
-            score = 0
-            is_bundle_btn = "bundle" in text
-
-            if force_b and not is_bundle_btn:
-                score -= 50
-            elif not force_b and is_bundle_btn:
+        if force_b:
+            score += 10 if (is_bundle_btn or is_force_base) else -50
+        else:
+            if is_force_base:
+                score += 20
+            elif is_bundle_btn:
                 score -= 50
             else:
                 score += 10
 
-            if "download" in text:
-                score += 5
+        if "download" in text:
+            score += 5
 
-            if score > best_score:
-                best_score = score
-                best_btn = btn
+        return score
+
+    def _select_download_button(self, soup: BeautifulSoup, force_b: bool) -> Optional[Any]:
+        """Selects the best download button from the variant page."""
+        seen = set()
+        best_btn = None
+        best_score = -100
+
+        for btn in soup.find_all("a"):
+            classes = btn.get("class", [])
+            href = btn.get("href", "")
+
+            if "variantsButton" in classes or not href or href.startswith("#"):
+                continue
+
+            if "downloadButton" in classes or "/download/?key=" in href:
+                if href not in seen:
+                    seen.add(href)
+                    score = self._score_download_btn(btn, force_b)
+                    if score > best_score:
+                        best_score = score
+                        best_btn = btn
 
         return best_btn
 
@@ -176,8 +190,17 @@ class ApkmirrorScraper(BaseScraper):
         if _is_waf_blocked(d_resp.status_code, d_resp.text) or d_resp.status_code != 200:
             return None
 
-        dl_btn = BeautifulSoup(d_resp.text, "html.parser").find("a", {"rel": "nofollow"})
-        if dl_btn and "href" in dl_btn.attrs:
+        d_soup = BeautifulSoup(d_resp.text, "html.parser")
+        dl_btn = d_soup.find("a", id="download-link")
+
+        if not dl_btn:
+            dl_btn = d_soup.find(
+                lambda tag: tag.name == "a" and tag.has_attr("href") and (
+                    "download.php" in tag["href"] or "/download/?key=" in tag["href"]
+                )
+            )
+
+        if dl_btn and dl_btn.has_attr("href"):
             out_path = ctx.get_out_path(".apkm" if is_actual_bundle else ".apk")
             dl_url = urljoin("https://www.apkmirror.com", dl_btn["href"])
             print(f"[INFO] Downloading {file_type} from APKMirror...")
@@ -199,12 +222,14 @@ class ApkmirrorScraper(BaseScraper):
         target_arch = ctx.arch.lower()
         is_multi_arm = "arm64-v8a" in text and "armeabi-v7a" in text
 
-        # Base architecture match logic
+        # Base architecture match logic broken into multiline to comply with 100-char limit
         arch_match = (
             target_arch in text
             or "universal" in text
             or "noarch" in text
-            or not any(a in text for a in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi"))
+            or not any(
+                a in text for a in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi")
+            )
         )
 
         # Handling for universal architecture targets
