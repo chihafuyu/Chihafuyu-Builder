@@ -53,6 +53,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    concurrency:
+      group: telegram-session-lock
+      cancel-in-progress: false
 
     steps:
       - name: Checkout Repository
