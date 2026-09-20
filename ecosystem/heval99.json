@@ -74,6 +74,24 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "jetaudio": {
+                "package": "com.jetappfactory.jetaudio",
+                "search_term": "jetAudio",
+                "stable": [
+                    "13.1.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "version_codes": {
+                    "universal": "261320",
+                    "arm64-v8a": "261320",
+                    "armeabi-v7a": "261320",
+                    "x86_64": "261320",
+                    "x86": "261320"
+                },
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "osmand": {
                 "package": "net.osmand",
                 "search_term": "OsmAnd",
@@ -100,6 +118,42 @@
                 ],
                 "beta": [],
                 "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "textra": {
+                "package": "com.textra",
+                "search_term": "Textra",
+                "stable": [
+                    "4.85"
+                ],
+                "beta": [],
+                "strip": true,
+                "version_codes": {
+                    "universal": "48561",
+                    "arm64-v8a": "48561",
+                    "armeabi-v7a": "48561",
+                    "x86_64": "48561",
+                    "x86": "48561"
+                },
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "unified-remote": {
+                "package": "com.Relmtech.Remote",
+                "search_term": "Unified Remote",
+                "stable": [
+                    "3.25.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "version_codes": {
+                    "universal": "325001",
+                    "arm64-v8a": "325001",
+                    "armeabi-v7a": "325001",
+                    "x86_64": "325001",
+                    "x86": "325001"
+                },
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },

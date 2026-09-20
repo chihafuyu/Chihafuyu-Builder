@@ -34,6 +34,11 @@ name: 📧 Heval99 Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_jetaudio:
+        description: 'Patch jetaudio'
+        required: true
+        type: boolean
+        default: false
       app_osmand:
         description: 'Patch osmand'
         required: true
@@ -41,6 +46,16 @@ name: 📧 Heval99 Ecosystem Patcher
         default: false
       app_tasker:
         description: 'Patch tasker'
+        required: true
+        type: boolean
+        default: false
+      app_textra:
+        description: 'Patch textra'
+        required: true
+        type: boolean
+        default: false
+      app_unified_remote:
+        description: 'Patch unified-remote'
         required: true
         type: boolean
         default: false
@@ -120,8 +135,11 @@ jobs:
       APP_EASYNOTES: ${{ inputs.app_easynotes }}
       APP_FAIREMAIL: ${{ inputs.app_fairemail }}
       APP_IPTV: ${{ inputs.app_iptv }}
+      APP_JETAUDIO: ${{ inputs.app_jetaudio }}
       APP_OSMAND: ${{ inputs.app_osmand }}
       APP_TASKER: ${{ inputs.app_tasker }}
+      APP_TEXTRA: ${{ inputs.app_textra }}
+      APP_UNIFIED_REMOTE: ${{ inputs.app_unified_remote }}
       APP_WEATHER_UNDERGROUND: ${{ inputs.app_weather_underground }}
     steps:
       - id: build-list
@@ -146,11 +164,20 @@ jobs:
           if [[ "$APP_IPTV" == "true" ]]; then
             LIST="$LIST,iptv"
           fi
+          if [[ "$APP_JETAUDIO" == "true" ]]; then
+            LIST="$LIST,jetaudio"
+          fi
           if [[ "$APP_OSMAND" == "true" ]]; then
             LIST="$LIST,osmand"
           fi
           if [[ "$APP_TASKER" == "true" ]]; then
             LIST="$LIST,tasker"
+          fi
+          if [[ "$APP_TEXTRA" == "true" ]]; then
+            LIST="$LIST,textra"
+          fi
+          if [[ "$APP_UNIFIED_REMOTE" == "true" ]]; then
+            LIST="$LIST,unified-remote"
           fi
           if [[ "$APP_WEATHER_UNDERGROUND" == "true" ]]; then
             LIST="$LIST,weather-underground"
