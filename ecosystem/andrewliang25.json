@@ -1,0 +1,28 @@
+{
+    "andrewliang25": {
+        "apps": {
+            "facebook": {
+                "package": "com.facebook.katana",
+                "search_term": "Facebook",
+                "stable": [
+                    "577.0.0.50.72"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "line": {
+                "package": "jp.naver.line.android",
+                "search_term": "LINE",
+                "stable": [
+                    "26.14.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

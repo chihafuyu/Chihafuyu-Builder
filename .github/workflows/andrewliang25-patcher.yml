@@ -1,5 +1,5 @@
 ---
-name: 🐸 SapitoSucio Ecosystem Patcher
+name: ⚡ Andrewliang25 Ecosystem Patcher
 
 "on":
   workflow_dispatch:
@@ -9,12 +9,17 @@ name: 🐸 SapitoSucio Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_line:
+        description: 'Patch line'
+        required: true
+        type: boolean
+        default: true
       architecture:
-        description: 'Target Architecture (Only supports arm64-v8a)'
+        description: 'Target Architecture'
         required: true
         type: choice
         default: 'arm64-v8a'
-        options: [arm64-v8a]
+        options: [arm64-v8a, armeabi-v7a, x86_64, x86, universal]
       version_selection:
         description: 'App Version Selection'
         required: true
@@ -75,6 +80,7 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_FACEBOOK: ${{ inputs.app_facebook }}
+      APP_LINE: ${{ inputs.app_line }}
     steps:
       - id: build-list
         run: |
@@ -82,6 +88,9 @@ jobs:
           LIST=""
           if [[ "$APP_FACEBOOK" == "true" ]]; then
             LIST="$LIST,facebook"
+          fi
+          if [[ "$APP_LINE" == "true" ]]; then
+            LIST="$LIST,line"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
@@ -101,7 +110,7 @@ jobs:
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "SapitoSucio"
+      ecosystem: "andrewliang25"
       apps: ${{ needs.prepare-apps.outputs.selected }}
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
@@ -110,8 +119,8 @@ jobs:
       continue_on_error: ${{ inputs.continue_on_error }}
       cli_track: ${{ inputs.cli_track }}
       patches_track: ${{ inputs.patches_track }}
-      repo_url: "SapitoSucio/FroggoMorphePatches"
-      custom_patch_filename: "SapitoSucio-custom.mpp"
+      repo_url: "andrewliang25/morphe-patches"
+      custom_patch_filename: "andrewliang25-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "SapitoSucio"
+      release_tag_prefix: "andrewliang25"
