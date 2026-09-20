@@ -1,0 +1,25 @@
+{
+    "Akash-Sriram": {
+        "apps": {
+            "google-photos": {
+                "package": "com.google.android.apps.photos",
+                "search_term": "Google Photos",
+                "stable": [
+                    "7.93.0.982110057"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "52416788"
+                },
+                "strip": true,
+                "force_bundle": false,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
+            }
+        }
+    }
+}

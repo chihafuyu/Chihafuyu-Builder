@@ -1,41 +1,16 @@
 ---
-name: ⚡ Legendsciber Ecosystem Patcher
+name: 🧩 Zeldrisho Ecosystem Patcher
 
 "on":
   workflow_dispatch:
     inputs:
-      app_dan_the_man:
-        description: 'Patch dan-the-man'
+      app_threads:
+        description: 'Patch threads'
         required: true
         type: boolean
-        default: false
-      app_extreme_car_driving_simulator:
-        description: 'Patch extreme-car-driving-simulator'
-        required: true
-        type: boolean
-        default: false
-      app_hill_climb_racing:
-        description: 'Patch hill-climb-racing'
-        required: true
-        type: boolean
-        default: false
-      app_red_ball_4:
-        description: 'Patch red-ball-4'
-        required: true
-        type: boolean
-        default: false
-      app_smash_hit:
-        description: 'Patch smash-hit'
-        required: true
-        type: boolean
-        default: false
-      app_toolbox_for_minecraft_pe:
-        description: 'Patch toolbox-for-minecraft-pe'
-        required: true
-        type: boolean
-        default: false
-      app_world_soccer_champs:
-        description: 'Patch world-soccer-champs'
+        default: true
+      app_zalo:
+        description: 'Patch zalo'
         required: true
         type: boolean
         default: false
@@ -104,38 +79,18 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APP_DAN_THE_MAN: ${{ inputs.app_dan_the_man }}
-      APP_EXTREME_CAR: ${{ inputs.app_extreme_car_driving_simulator }}
-      APP_HILL_CLIMB: ${{ inputs.app_hill_climb_racing }}
-      APP_RED_BALL_4: ${{ inputs.app_red_ball_4 }}
-      APP_SMASH_HIT: ${{ inputs.app_smash_hit }}
-      APP_TOOLBOX: ${{ inputs.app_toolbox_for_minecraft_pe }}
-      APP_WORLD_SOCCER_CHAMPS: ${{ inputs.app_world_soccer_champs }}
+      APP_THREADS: ${{ inputs.app_threads }}
+      APP_ZALO: ${{ inputs.app_zalo }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_DAN_THE_MAN" == "true" ]]; then
-            LIST="$LIST,dan-the-man"
+          if [[ "$APP_THREADS" == "true" ]]; then
+            LIST="$LIST,threads"
           fi
-          if [[ "$APP_EXTREME_CAR" == "true" ]]; then
-            LIST="$LIST,extreme-car-driving-simulator"
-          fi
-          if [[ "$APP_HILL_CLIMB" == "true" ]]; then
-            LIST="$LIST,hill-climb-racing"
-          fi
-          if [[ "$APP_RED_BALL_4" == "true" ]]; then
-            LIST="$LIST,red-ball-4"
-          fi
-          if [[ "$APP_SMASH_HIT" == "true" ]]; then
-            LIST="$LIST,smash-hit"
-          fi
-          if [[ "$APP_TOOLBOX" == "true" ]]; then
-            LIST="$LIST,toolbox-for-minecraft-pe"
-          fi
-          if [[ "$APP_WORLD_SOCCER_CHAMPS" == "true" ]]; then
-            LIST="$LIST,world-soccer-champs"
+          if [[ "$APP_ZALO" == "true" ]]; then
+            LIST="$LIST,zalo"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
@@ -155,7 +110,7 @@ jobs:
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "legendsciber"
+      ecosystem: "zeldrisho"
       apps: ${{ needs.prepare-apps.outputs.selected }}
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
@@ -164,8 +119,8 @@ jobs:
       continue_on_error: ${{ inputs.continue_on_error }}
       cli_track: ${{ inputs.cli_track }}
       patches_track: ${{ inputs.patches_track }}
-      repo_url: "legendsciber/morphe-patches"
-      custom_patch_filename: "legendsciber-custom.mpp"
+      repo_url: "zeldrisho/morphe-patches"
+      custom_patch_filename: "zeldrisho-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "legendsciber"
+      release_tag_prefix: "zeldrisho"

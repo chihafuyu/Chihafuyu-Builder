@@ -69,6 +69,25 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "world-soccer-champs": {
+                "package": "com.monkeyibrow.worldsoccerchamps",
+                "search_term": "World Soccer Champs",
+                "stable": [
+                    "11.5.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "version_codes": {
+                    "universal": "465",
+                    "arm64-v8a": "465",
+                    "armeabi-v7a": "465",
+                    "x86_64": "465",
+                    "x86": "465"
+                },
+                "force_bundle": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }
