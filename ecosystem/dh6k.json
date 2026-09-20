@@ -4,7 +4,7 @@
             "quetta-browser": {
                 "package": "net.quetta.browser",
                 "search_term": "Quetta Browser",
-                "stable": [],
+                "stable": ["2.0.5"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -13,7 +13,7 @@
             "quetta-browser-official": {
                 "package": "net.quetta.browser.official",
                 "search_term": "Quetta Browser",
-                "stable": [],
+                "stable": ["2.0.2"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
