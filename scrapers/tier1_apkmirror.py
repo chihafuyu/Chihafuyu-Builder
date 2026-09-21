@@ -75,12 +75,14 @@ class ApkmirrorScraper(BaseScraper):
     def __init__(self) -> None:
         super().__init__()
         self._current_profile_idx = 0
-        self._profiles = ["chrome", "safari_ios", "safari", "firefox"]
-        # Enforce HTTP/2 to prevent CF Turnstile flags caused by UDP/QUIC drops on CI runners
+        # Safari profile prioritized: fallback to HTTP/2 is natural for Safari,
+        self._profiles = ["safari_ios", "safari", "chrome124", "chrome120", "firefox"]
+
         self.session = cffi_requests.Session(
             impersonate=self._profiles[self._current_profile_idx],
             http_version="v2"
         )
+        self._last_url = "https://www.apkmirror.com/"
 
     @property
     def tier_name(self) -> str:
@@ -95,6 +97,7 @@ class ApkmirrorScraper(BaseScraper):
             impersonate=self._profiles[self._current_profile_idx],
             http_version="v2"
         )
+        self._last_url = "https://www.apkmirror.com/"
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
         ctx.limiter.wait()
@@ -102,9 +105,12 @@ class ApkmirrorScraper(BaseScraper):
 
         for attempt in range(4):
             try:
-                resp = self.session.get(url, timeout=30)
+                # Referer chaining: Simulates natural user navigation from the previous page.
+                headers = {"Referer": self._last_url}
+                resp = self.session.get(url, timeout=30, headers=headers)
                 text = resp.text.lower()
 
+                # Expanded detection for Cloudflare Turnstile 200 OK challenges
                 is_blocked = (
                     resp.status_code in (403, 429, 503) or
                     "too many requests" in text or
@@ -112,7 +118,9 @@ class ApkmirrorScraper(BaseScraper):
                     "verify you are human" in text or
                     "ray id" in text or
                     "attention required" in text or
-                    "security check" in text
+                    "security check" in text or
+                    "just a moment" in text or
+                    ("cloudflare" in text and "enable javascript" in text)
                 )
 
                 if is_blocked or _is_waf_blocked(resp.status_code, text):
@@ -125,6 +133,7 @@ class ApkmirrorScraper(BaseScraper):
                     continue
 
                 if resp.status_code == 200:
+                    self._last_url = str(resp.url)
                     return resp
 
             except Exception as err:  # pylint: disable=broad-except
