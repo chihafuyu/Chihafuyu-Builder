@@ -101,14 +101,28 @@ class ApkmirrorScraper(BaseScraper):
                     self.session.headers.update({"Referer": "https://www.google.com/"})
 
                 resp = self.session.get(url, timeout=30)
+                text = resp.text.lower()
 
-                if resp.status_code == 429:
-                    print(f"[WARN] HTTP 429. Backing off (attempt {attempt + 1}).")
+                # Detect hard limits and soft-blocks (200 OK but blocking content)
+                is_soft_blocked = (
+                    resp.status_code in (429, 503) or
+                    "too many requests" in text or
+                    "ad blocker" in text
+                )
+
+                if is_soft_blocked:
+                    print(
+                        f"[WARN] Soft-block/429 detected. "
+                        f"Backing off (attempt {attempt + 1})."
+                    )
                     time.sleep(random.uniform(10.0, 15.0) * (attempt + 1))
                     continue
 
-                if _is_waf_blocked(resp.status_code, resp.text):
-                    print(f"[WARN] WAF blocked. Rotating to '{profile}' (attempt {attempt + 1}).")
+                if _is_waf_blocked(resp.status_code, text):
+                    print(
+                        f"[WARN] WAF blocked. Rotating to '{profile}' "
+                        f"(attempt {attempt + 1})."
+                    )
                     time.sleep(random.uniform(8.0, 12.0))
                     continue
 
@@ -271,7 +285,8 @@ class ApkmirrorScraper(BaseScraper):
         if not is_bundle:
             self._log_expected_sha256(v_soup)
 
-        print(f"[INFO] Preparing to extract: {'APKM Bundle' if is_bundle else 'Raw APK'}")
+        p_type = 'APKM Bundle' if is_bundle else 'Raw APK'
+        print(f"[INFO] Preparing to extract: {p_type}")
 
         dl_page = urljoin("https://www.apkmirror.com", btn["href"])
         d_resp = self._safe_get(ctx, dl_page)
@@ -287,7 +302,10 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         out_path = ctx.get_out_path(".apkm" if is_bundle else ".apk")
-        print(f"[INFO] Downloading {'APKM Bundle' if is_bundle else 'Raw APK'} from APKMirror...")
+        print(f"[INFO] Downloading {p_type} from APKMirror...")
+
+        # Mimic human behavior by waiting for the server-side token generation to complete
+        time.sleep(random.uniform(3.0, 5.0))
 
         if download_file_stream(
             _CffiSessionWrapper(self.session),
@@ -370,6 +388,8 @@ class ApkmirrorScraper(BaseScraper):
                     out = self._extract_row(ctx, row, opts)
                     if out:
                         return out
+                    # Break the "Soft-Block Death Loop" by resting before the next variant
+                    time.sleep(random.uniform(4.0, 7.0))
 
             print("[WARN] No matching variants found in release table.")
             return None
