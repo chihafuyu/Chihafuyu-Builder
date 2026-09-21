@@ -1,5 +1,5 @@
 {
-    "sysadmindoc": {
+    "SysAdminDoc": {
         "apps": {
             "tiktok-global": {
                 "package": "com.zhiliaoapp.musically",
@@ -9,7 +9,7 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "archive_id": "SysAdminDoc",
+                "archive_id": "ZeNiX",
                 "options_override": {}
             }
         }
