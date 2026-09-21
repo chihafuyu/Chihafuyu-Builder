@@ -51,10 +51,20 @@ class _CffiSessionWrapper:
         self.session = session
 
     def get(self, *args: Any, **kwargs: Any) -> Any:
-        """Executes GET request while intercepting incompatible kwargs."""
+        """Executes GET request while intercepting incompatible kwargs and fake streams."""
         if "timeout" in kwargs and isinstance(kwargs["timeout"], tuple):
             kwargs["timeout"] = kwargs["timeout"][1]  # Use read timeout only
-        return _CffiResponseContext(self.session.get(*args, **kwargs))
+
+        resp = self.session.get(*args, **kwargs)
+
+        # Validate streaming responses to prevent downloading HTML block pages
+        if kwargs.get("stream"):
+            c_type = resp.headers.get("Content-Type", "").lower()
+            if "text/html" in c_type:
+                print("[WARN] Stream returned HTML. WAF trap or expired token detected.")
+                resp.status_code = 403  # Force rejection in utils.py
+
+        return _CffiResponseContext(resp)
 
     def close(self) -> None:
         """Closes the underlying curl_cffi session gracefully."""
