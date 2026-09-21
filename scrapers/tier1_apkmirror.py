@@ -76,9 +76,9 @@ class ApkmirrorScraper(BaseScraper):
 
     def __init__(self) -> None:
         super().__init__()
-        # Rely on curl_cffi's flawless native impersonation with HTTP/3 (QUIC)
-        # HTTP/3 avoids strict WAF TLS fingerprinting and reduces block rates
-        self.session = cffi_requests.Session(impersonate="chrome", http_version="v3")
+        # Mobile fingerprint bypasses many WAF heuristics on mobile-focused APK sites.
+        # Persistent session prevents dropping APKMirror tokens during the pipeline.
+        self.session = cffi_requests.Session(impersonate="safari_ios", http_version="v3")
 
     @property
     def tier_name(self) -> str:
@@ -87,45 +87,28 @@ class ApkmirrorScraper(BaseScraper):
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
         ctx.limiter.wait()
-        time.sleep(random.uniform(1.5, 3.5))
+        time.sleep(random.uniform(2.5, 4.5))
 
-        # Rotate browser fingerprints if Cloudflare flags the Data Center IP
-        profiles = ["chrome", "safari", "safari_ios"]
-
-        for attempt, profile in enumerate(profiles):
+        for attempt in range(4):
             try:
-                if attempt > 0:
-                    # Close the old session strictly to prevent socket memory leaks
-                    self.session.close()
-                    # Cycle session to clear sticky WAF block states
-                    self.session = cffi_requests.Session(
-                        impersonate=profile, http_version="v3"
-                    )
-
                 resp = self.session.get(url, timeout=30)
                 text = resp.text.lower()
 
-                # Detect hard limits and soft-blocks (200 OK but blocking content)
+                # Detect hard limits and silent Cloudflare JS challenges (200 OK)
                 is_soft_blocked = (
                     resp.status_code in (429, 503) or
                     "too many requests" in text or
-                    "ad blocker" in text
+                    "ad blocker" in text or
+                    "verify you are human" in text or
+                    "ray id" in text
                 )
 
-                if is_soft_blocked:
+                if is_soft_blocked or _is_waf_blocked(resp.status_code, text):
                     print(
-                        f"[WARN] Soft-block/429 detected. "
-                        f"Backing off (attempt {attempt + 1})."
+                        f"[WARN] Soft-block/WAF detected. "
+                        f"Backing off (attempt {attempt + 1}/4)..."
                     )
                     time.sleep(random.uniform(10.0, 15.0) * (attempt + 1))
-                    continue
-
-                if _is_waf_blocked(resp.status_code, text):
-                    print(
-                        f"[WARN] WAF blocked. Rotating to '{profile}' "
-                        f"(attempt {attempt + 1})."
-                    )
-                    time.sleep(random.uniform(8.0, 12.0))
                     continue
 
                 if resp.status_code == 200:
