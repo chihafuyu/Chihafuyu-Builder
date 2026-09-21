@@ -1,4 +1,4 @@
-"""Tier 1 Scraper: APKMirror with Stealth and Anti-Bot Bypass."""
+"""Tier 1 Scraper: APKMirror with Dynamic Stealth Rotation to Bypass WAF."""
 
 import random
 import re
@@ -26,27 +26,10 @@ class ApkmirrorScraper(BaseScraper):
 
     def __init__(self) -> None:
         super().__init__()
-        # Impersonate modern Chrome and inject organic navigation headers to bypass WAF
-        headers = {
-            "Accept": (
-                "text/html,application/xhtml+xml,application/xml;q=0.9,"
-                "image/avif,image/webp,image/apng,*/*;q=0.8,"
-                "application/signed-exchange;v=b3;q=0.7"
-            ),
-            "Accept-Encoding": "gzip, deflate, br, zstd",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Sec-Ch-Ua": (
-                '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"'
-            ),
-            "Sec-Ch-Ua-Mobile": "?0",
-            "Sec-Ch-Ua-Platform": '"Windows"',
-            "Sec-Fetch-Dest": "document",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-Site": "none",
-            "Sec-Fetch-User": "?1",
-            "Upgrade-Insecure-Requests": "1"
-        }
-        self.session = cffi_requests.Session(impersonate="chrome124", headers=headers)
+        # Rely on curl_cffi's flawless native impersonation (defaults to latest)
+        self.session = cffi_requests.Session(impersonate="chrome")
+        # Inject an organic Referer to simulate natural search engine traffic
+        self.session.headers.update({"Referer": "https://www.google.com/"})
 
     @property
     def tier_name(self) -> str:
@@ -56,22 +39,36 @@ class ApkmirrorScraper(BaseScraper):
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
         ctx.limiter.wait()
         time.sleep(random.uniform(1.5, 3.5))
-        for attempt in range(3):
+
+        # Rotate browser fingerprints if Cloudflare flags the Data Center IP
+        profiles = ["chrome", "safari", "safari_ios"]
+
+        for attempt, profile in enumerate(profiles):
             try:
+                if attempt > 0:
+                    # Cycling session to clear sticky WAF block states
+                    self.session = cffi_requests.Session(impersonate=profile)
+                    self.session.headers.update({"Referer": "https://www.google.com/"})
+
                 resp = self.session.get(url, timeout=30)
+
                 if resp.status_code == 429:
                     print(f"[WARN] HTTP 429. Backing off (attempt {attempt + 1}).")
                     time.sleep(random.uniform(10.0, 15.0) * (attempt + 1))
                     continue
+
                 if _is_waf_blocked(resp.status_code, resp.text):
-                    print(f"[WARN] WAF blocked. Backing off (attempt {attempt + 1}).")
+                    print(f"[WARN] WAF blocked. Rotating to '{profile}' (attempt {attempt + 1}).")
                     time.sleep(random.uniform(8.0, 12.0))
                     continue
+
                 if resp.status_code == 200:
                     return resp
+
             except Exception as err:  # pylint: disable=broad-except
                 print(f"[WARN] Request failed: {err}")
                 time.sleep(random.uniform(4.0, 7.0))
+
         return None
 
     @staticmethod
@@ -245,7 +242,7 @@ class ApkmirrorScraper(BaseScraper):
         dl_url = urljoin("https://www.apkmirror.com", dl_btn["href"])
         print(f"[INFO] Downloading {file_type} from APKMirror...")
 
-        # Inject session directly into the generic downloader core
+        # Inject the successful rotated session directly into the core downloader
         if download_file_stream(self.session, dl_url, out_path, dl_page):
             return out_path
         return None
