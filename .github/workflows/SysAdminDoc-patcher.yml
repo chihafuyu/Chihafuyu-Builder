@@ -101,7 +101,7 @@ jobs:
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "sysadmindoc"
+      ecosystem: "SysAdminDoc"
       apps: ${{ needs.prepare-apps.outputs.selected }}
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
@@ -111,7 +111,7 @@ jobs:
       cli_track: ${{ inputs.cli_track }}
       patches_track: ${{ inputs.patches_track }}
       repo_url: "SysAdminDoc/hushfeed"
-      custom_patch_filename: "sysadmindoc-custom.mpp"
+      custom_patch_filename: "SysAdminDoc-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "sysadmindoc"
+      release_tag_prefix: "SysAdminDoc"
