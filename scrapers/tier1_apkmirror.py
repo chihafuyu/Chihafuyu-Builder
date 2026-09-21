@@ -1,15 +1,18 @@
-"""Tier 1 Scraper: APKMirror."""
+"""Tier 1 Scraper: APKMirror with Stealth and Anti-Bot Bypass."""
 
+import random
 import re
+import time
 from typing import Any, Optional
 from urllib.parse import quote_plus, urljoin
 
-import requests
 from bs4 import BeautifulSoup
+from curl_cffi import requests as cffi_requests
 
 from core.context import Context
 from core.utils import _is_waf_blocked, download_file_stream
 from .base import BaseScraper
+
 
 EDITION_SLUG_REGEX = re.compile(
     r"\b(amazon|fire-tablet|fire-tv|androidtv|wear|go-edition|"
@@ -19,17 +22,44 @@ EDITION_SLUG_REGEX = re.compile(
 
 
 class ApkmirrorScraper(BaseScraper):
-    """Scrapes APKs from APKMirror handling WAF and variants."""
+    """Scrapes APKs from APKMirror handling WAF, variants, and dynamic rate limits."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        # Impersonate Chrome to bypass WAF and Ad-Blocker penalties
+        self.session = cffi_requests.Session(impersonate="chrome110")
 
     @property
     def tier_name(self) -> str:
         """Returns the tier identifier."""
         return "apkmirror"
 
+    def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
+        # Executes GET request with jitter and exponential backoff
+        ctx.limiter.wait()
+        time.sleep(random.uniform(1.5, 3.5))
+        for attempt in range(3):
+            try:
+                resp = self.session.get(url, timeout=30)
+                if resp.status_code == 429:
+                    print(f"[WARN] HTTP 429. Backing off (attempt {attempt + 1}).")
+                    time.sleep(random.uniform(10.0, 15.0) * (attempt + 1))
+                    continue
+                if _is_waf_blocked(resp.status_code, resp.text):
+                    print(f"[WARN] WAF blocked. Backing off (attempt {attempt + 1}).")
+                    time.sleep(random.uniform(8.0, 12.0))
+                    continue
+                if resp.status_code == 200:
+                    return resp
+            except Exception as err:  # pylint: disable=broad-except
+                print(f"[WARN] Request failed: {err}")
+                time.sleep(random.uniform(4.0, 7.0))
+        return None
+
+    @staticmethod
     def _is_valid_release_link(
-        self, link: Any, base_ver: str, exc_kws: list, inc_kws: list
+        link: Any, base_ver: str, exc_kws: list[str], inc_kws: list[str]
     ) -> Optional[str]:
-        """Validates if a release link matches the required criteria strictly."""
         href = link.get("href", "")
         if not href or EDITION_SLUG_REGEX.search(href):
             return None
@@ -51,16 +81,16 @@ class ApkmirrorScraper(BaseScraper):
 
         return urljoin("https://www.apkmirror.com", href)
 
-    def _get_filter_kws(self, ctx: Context) -> tuple[list[str], list[str]]:
-        """Extracts excluded and included keywords from app data."""
+    @staticmethod
+    def _get_filter_kws(ctx: Context) -> tuple[list[str], list[str]]:
         exc_kws = ["secondary"] + [
             k.lower() for k in ctx.app_data.get("apkm_exclude", []) if k.strip()
         ]
         inc_kws = [k.lower() for k in ctx.app_data.get("apkm_include", []) if k.strip()]
         return exc_kws, inc_kws
 
-    def _get_search_queries(self, ctx: Context, base_ver: str) -> list[str]:
-        """Builds a list of search queries based on app data and target version."""
+    @staticmethod
+    def _get_search_queries(ctx: Context, base_ver: str) -> list[str]:
         search_term = ctx.app_data.get("search_term", ctx.pkg)
         if "." in search_term and " " not in search_term:
             short_term = search_term
@@ -80,7 +110,6 @@ class ApkmirrorScraper(BaseScraper):
         ]))
 
     def _find_release(self, ctx: Context) -> Optional[str]:
-        """Finds the release page URL for the target version."""
         base_ver = (
             ctx.target_ver.split("-")[0]
             if "-" in ctx.target_ver and ctx.target_ver[:1].isdigit()
@@ -91,17 +120,15 @@ class ApkmirrorScraper(BaseScraper):
         exc_kws, inc_kws = self._get_filter_kws(ctx)
 
         for query in queries:
-            ctx.limiter.wait()
             url = f"https://www.apkmirror.com/?post_type=app_release&s={quote_plus(query)}"
-            resp = ctx.scraper.get(url, timeout=60)
+            resp = self._safe_get(ctx, url)
 
-            if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
+            if not resp:
                 continue
 
-            # Handle automatic redirection directly to a release page
             if "?post_type=app_release" not in resp.url and "-release/" in resp.url:
                 print("[INFO] Auto-redirected to release page.")
-                return resp.url
+                return str(resp.url)
 
             soup = BeautifulSoup(resp.text, "html.parser")
             for link in soup.find_all("a", class_="fontBlack"):
@@ -111,8 +138,8 @@ class ApkmirrorScraper(BaseScraper):
 
         return None
 
-    def _log_expected_sha256(self, soup: BeautifulSoup) -> None:
-        """Extracts and logs the expected SHA-256 hash from the variant page."""
+    @staticmethod
+    def _log_expected_sha256(soup: BeautifulSoup) -> None:
         modal = soup.select_one("#safeDownload .modal-body, .safeDownload .modal-body")
         if not modal:
             return
@@ -124,8 +151,8 @@ class ApkmirrorScraper(BaseScraper):
             if hash_match:
                 print(f"[INFO] Expected SHA-256 extracted: {hash_match.group(0)}")
 
-    def _get_download_buttons(self, soup: BeautifulSoup) -> list[Any]:
-        """Extracts potential download button elements from variant page."""
+    @staticmethod
+    def _get_download_buttons(soup: BeautifulSoup) -> list[Any]:
         btns = []
         for btn in soup.find_all("a", href=True):
             href = btn["href"]
@@ -140,18 +167,18 @@ class ApkmirrorScraper(BaseScraper):
                 btns.append(btn)
         return btns
 
-    def _pick_variant_button(self, btns: list[Any], is_bundle: bool) -> Any:
-        """Picks the best variant button depending on bundle requirement."""
+    @staticmethod
+    def _pick_variant_button(btns: list[Any], is_bundle: bool) -> Any:
         for btn in btns:
             has_force = "forcebaseapk" in btn["href"].lower()
             if (is_bundle and not has_force) or (not is_bundle and has_force):
                 return btn
         return btns[0]
 
-    def _get_final_download_link(self, d_soup: BeautifulSoup) -> Optional[Any]:
-        """Locates the final download link from the download page."""
+    @staticmethod
+    def _get_final_download_link(d_soup: BeautifulSoup) -> Optional[Any]:
         dl_btn = d_soup.find("a", id="download-link")
-        if dl_btn:
+        if dl_btn and dl_btn.has_attr("href"):
             return dl_btn
 
         return d_soup.find(
@@ -163,12 +190,9 @@ class ApkmirrorScraper(BaseScraper):
     def _process_variant_page(
         self, ctx: Context, var_url: str, is_bundle: bool
     ) -> Optional[str]:
-        """Processes the specific variant page to find the final download link."""
-        ctx.limiter.wait()
-        v_resp = ctx.scraper.get(var_url, timeout=60)
-
-        if _is_waf_blocked(v_resp.status_code, v_resp.text) or v_resp.status_code != 200:
-            print(f"[WARN] APKMirror variant page failed (HTTP {v_resp.status_code}).")
+        v_resp = self._safe_get(ctx, var_url)
+        if not v_resp:
+            print("[WARN] APKMirror variant page failed.")
             return None
 
         v_soup = BeautifulSoup(v_resp.text, "html.parser")
@@ -186,11 +210,10 @@ class ApkmirrorScraper(BaseScraper):
         print(f"[INFO] Preparing to extract: {file_type}")
 
         dl_page = urljoin("https://www.apkmirror.com", btn["href"])
-        ctx.limiter.wait()
-        d_resp = ctx.scraper.get(dl_page, timeout=60)
+        d_resp = self._safe_get(ctx, dl_page)
 
-        if _is_waf_blocked(d_resp.status_code, d_resp.text) or d_resp.status_code != 200:
-            print(f"[WARN] APKMirror download page failed (HTTP {d_resp.status_code}).")
+        if not d_resp:
+            print("[WARN] APKMirror download page failed.")
             return None
 
         d_soup = BeautifulSoup(d_resp.text, "html.parser")
@@ -204,12 +227,13 @@ class ApkmirrorScraper(BaseScraper):
         dl_url = urljoin("https://www.apkmirror.com", dl_btn["href"])
         print(f"[INFO] Downloading {file_type} from APKMirror...")
 
-        if download_file_stream(ctx.scraper, dl_url, out_path, dl_page):
+        # Inject session directly into the generic downloader core
+        if download_file_stream(self.session, dl_url, out_path, dl_page):
             return out_path
         return None
 
-    def _is_arch_match(self, text: str, target_arch: str, pass_idx: int) -> bool:
-        """Helper to determine if the table row matches the requested architecture."""
+    @staticmethod
+    def _is_arch_match(text: str, target_arch: str, pass_idx: int) -> bool:
         if target_arch in text or "universal" in text or "noarch" in text:
             return True
 
@@ -228,16 +252,23 @@ class ApkmirrorScraper(BaseScraper):
 
         return False
 
+    @staticmethod
+    def _is_bundle_row(row: Any) -> bool:
+        badges = row.find_all("span", class_=re.compile(r"badge", re.IGNORECASE))
+        for badge in badges:
+            if "BUNDLE" in badge.text.upper() or "APKM" in badge.text.upper():
+                return True
+        return "bundle" in row.text.lower()
+
     def _extract_row(
         self, ctx: Context, row: Any, opts: dict
     ) -> Optional[str]:
-        """Extracts the variant URL from a table row if it matches criteria."""
         text = row.text.lower()
         pass_idx = opts.get("pass_idx", 1)
         force_b = opts.get("force_b", False)
         ver_code = opts.get("ver_code", "")
 
-        is_bundle = "bundle" in text
+        is_bundle = self._is_bundle_row(row)
         if pass_idx in (1, 2) and force_b != is_bundle:
             return None
 
@@ -258,12 +289,9 @@ class ApkmirrorScraper(BaseScraper):
     def _download_variant(
         self, ctx: Context, rel_url: str, ver_code: str, force_b: bool
     ) -> Optional[str]:
-        """Downloads the matching variant from the release page."""
-        ctx.limiter.wait()
-        resp = ctx.scraper.get(rel_url, timeout=60)
-
-        if _is_waf_blocked(resp.status_code, resp.text) or resp.status_code != 200:
-            print(f"[WARN] APKMirror release page failed (HTTP {resp.status_code}).")
+        resp = self._safe_get(ctx, rel_url)
+        if not resp:
+            print("[WARN] APKMirror release page failed.")
             return None
 
         soup = BeautifulSoup(resp.text, "html.parser")
@@ -303,6 +331,6 @@ class ApkmirrorScraper(BaseScraper):
             return self._download_variant(
                 ctx, rel_url, ver_code, ctx.app_data.get("force_bundle", False)
             )
-        except (requests.exceptions.RequestException, OSError) as err:
+        except Exception as err:  # pylint: disable=broad-except
             print(f"[ERROR] Tier 1 failed: {err}")
         return None
