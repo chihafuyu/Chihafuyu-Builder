@@ -26,8 +26,27 @@ class ApkmirrorScraper(BaseScraper):
 
     def __init__(self) -> None:
         super().__init__()
-        # Impersonate Chrome to bypass WAF and Ad-Blocker penalties
-        self.session = cffi_requests.Session(impersonate="chrome110")
+        # Impersonate modern Chrome and inject organic navigation headers to bypass WAF
+        headers = {
+            "Accept": (
+                "text/html,application/xhtml+xml,application/xml;q=0.9,"
+                "image/avif,image/webp,image/apng,*/*;q=0.8,"
+                "application/signed-exchange;v=b3;q=0.7"
+            ),
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Sec-Ch-Ua": (
+                '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"'
+            ),
+            "Sec-Ch-Ua-Mobile": "?0",
+            "Sec-Ch-Ua-Platform": '"Windows"',
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
+            "Upgrade-Insecure-Requests": "1"
+        }
+        self.session = cffi_requests.Session(impersonate="chrome124", headers=headers)
 
     @property
     def tier_name(self) -> str:
@@ -35,7 +54,6 @@ class ApkmirrorScraper(BaseScraper):
         return "apkmirror"
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
-        # Executes GET request with jitter and exponential backoff
         ctx.limiter.wait()
         time.sleep(random.uniform(1.5, 3.5))
         for attempt in range(3):
