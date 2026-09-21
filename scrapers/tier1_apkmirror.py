@@ -28,7 +28,6 @@ class _CffiResponseContext:
         self.resp = resp
 
     def __enter__(self) -> Any:
-        # Patch iter_content to ignore chunk_size if curl_cffi throws a TypeError
         original_iter = getattr(self.resp, "iter_content", None)
         if original_iter:
             def safe_iter_content(*args: Any, **kwargs: Any) -> Any:
@@ -53,16 +52,15 @@ class _CffiSessionWrapper:
     def get(self, *args: Any, **kwargs: Any) -> Any:
         """Executes GET request while intercepting incompatible kwargs and fake streams."""
         if "timeout" in kwargs and isinstance(kwargs["timeout"], tuple):
-            kwargs["timeout"] = kwargs["timeout"][1]  # Use read timeout only
+            kwargs["timeout"] = kwargs["timeout"][1]
 
         resp = self.session.get(*args, **kwargs)
 
-        # Validate streaming responses to prevent downloading HTML block pages
         if kwargs.get("stream"):
             c_type = resp.headers.get("Content-Type", "").lower()
             if "text/html" in c_type:
                 print("[WARN] Stream returned HTML. WAF trap or expired token detected.")
-                resp.status_code = 403  # Force rejection in utils.py
+                resp.status_code = 403
 
         return _CffiResponseContext(resp)
 
@@ -76,9 +74,7 @@ class ApkmirrorScraper(BaseScraper):
 
     def __init__(self) -> None:
         super().__init__()
-        # Mobile fingerprint bypasses many WAF heuristics on mobile-focused APK sites.
-        # Persistent session prevents dropping APKMirror tokens during the pipeline.
-        self.session = cffi_requests.Session(impersonate="safari_ios", http_version="v3")
+        self.session = cffi_requests.Session(impersonate="chrome124", http_version="v3")
 
     @property
     def tier_name(self) -> str:
@@ -94,21 +90,29 @@ class ApkmirrorScraper(BaseScraper):
                 resp = self.session.get(url, timeout=30)
                 text = resp.text.lower()
 
-                # Detect hard limits and silent Cloudflare JS challenges (200 OK)
-                is_soft_blocked = (
-                    resp.status_code in (429, 503) or
+                is_blocked = (
+                    resp.status_code in (403, 429, 503) or
                     "too many requests" in text or
                     "ad blocker" in text or
                     "verify you are human" in text or
-                    "ray id" in text
+                    "ray id" in text or
+                    "attention required" in text or
+                    "security check" in text
                 )
 
-                if is_soft_blocked or _is_waf_blocked(resp.status_code, text):
+                if is_blocked or _is_waf_blocked(resp.status_code, text):
                     print(
-                        f"[WARN] Soft-block/WAF detected. "
+                        f"[WARN] WAF/Block detected (HTTP {resp.status_code}). "
                         f"Backing off (attempt {attempt + 1}/4)..."
                     )
                     time.sleep(random.uniform(10.0, 15.0) * (attempt + 1))
+
+                    if attempt == 2:
+                        print("[INFO] Re-initializing session to clear sticky WAF state.")
+                        self.session.close()
+                        self.session = cffi_requests.Session(
+                            impersonate="chrome124", http_version="v3"
+                        )
                     continue
 
                 if resp.status_code == 200:
@@ -257,6 +261,7 @@ class ApkmirrorScraper(BaseScraper):
         v_resp = self._safe_get(ctx, var_url)
         if not v_resp:
             print("[WARN] APKMirror variant page failed.")
+            time.sleep(random.uniform(4.0, 7.0))
             return None
 
         v_soup = BeautifulSoup(v_resp.text, "html.parser")
@@ -289,7 +294,6 @@ class ApkmirrorScraper(BaseScraper):
         out_path = ctx.get_out_path(".apkm" if is_bundle else ".apk")
         print(f"[INFO] Downloading {p_type} from APKMirror...")
 
-        # Mimic human behavior by waiting for the server-side token generation to complete
         time.sleep(random.uniform(3.0, 5.0))
 
         if download_file_stream(
@@ -373,14 +377,14 @@ class ApkmirrorScraper(BaseScraper):
                     out = self._extract_row(ctx, row, opts)
                     if out:
                         return out
-                    # Break the "Soft-Block Death Loop" by resting before the next variant
-                    time.sleep(random.uniform(4.0, 7.0))
 
             print("[WARN] No matching variants found in release table.")
             return None
 
         dl_btn = soup.find(
-            lambda tag: tag.name == "a" and "downloadButton" in tag.get("class", [])
+            lambda tag: tag.name == "a"
+            and "downloadButton" in tag.get("class", [])
+            and "variantsButton" not in tag.get("class", [])
         )
 
         if dl_btn:
