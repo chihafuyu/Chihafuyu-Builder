@@ -54,7 +54,7 @@ jobs:
     permissions:
       contents: write
     concurrency:
-      group: telegram-session-lock
+      group: ${{ inputs.send_to_telegram == true && 'telegram-session-lock' || github.run_id }}
       cancel-in-progress: false
 
     steps:
