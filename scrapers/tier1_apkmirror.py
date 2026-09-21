@@ -76,10 +76,9 @@ class ApkmirrorScraper(BaseScraper):
 
     def __init__(self) -> None:
         super().__init__()
-        # Rely on curl_cffi's flawless native impersonation (defaults to latest)
-        self.session = cffi_requests.Session(impersonate="chrome")
-        # Inject an organic Referer to simulate natural search engine traffic
-        self.session.headers.update({"Referer": "https://www.google.com/"})
+        # Rely on curl_cffi's flawless native impersonation with HTTP/3 (QUIC)
+        # HTTP/3 avoids strict WAF TLS fingerprinting and reduces block rates
+        self.session = cffi_requests.Session(impersonate="chrome", http_version="v3")
 
     @property
     def tier_name(self) -> str:
@@ -96,9 +95,12 @@ class ApkmirrorScraper(BaseScraper):
         for attempt, profile in enumerate(profiles):
             try:
                 if attempt > 0:
-                    # Cycling session to clear sticky WAF block states
-                    self.session = cffi_requests.Session(impersonate=profile)
-                    self.session.headers.update({"Referer": "https://www.google.com/"})
+                    # Close the old session strictly to prevent socket memory leaks
+                    self.session.close()
+                    # Cycle session to clear sticky WAF block states
+                    self.session = cffi_requests.Session(
+                        impersonate=profile, http_version="v3"
+                    )
 
                 resp = self.session.get(url, timeout=30)
                 text = resp.text.lower()
