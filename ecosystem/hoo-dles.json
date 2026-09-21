@@ -23,7 +23,7 @@
                 "package": "com.bowerydigital.bend",
                 "search_term": "Bend",
                 "stable": [
-                    "7.6.6"
+                    "7.8.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -35,7 +35,7 @@
                 "package": "com.bunpoapp",
                 "search_term": "Bunpo",
                 "stable": [
-                    "3.21.0"
+                    "3.23.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -82,10 +82,16 @@
                 "package": "com.adobe.lrmobile",
                 "search_term": "Lightroom",
                 "stable": [
-                    "11.5.22"
+                    "11.5.31"
                 ],
                 "beta": [],
+                "version_codes": {
+                    "universal": "711105310",
+                    "arm64-v8a": "711105310",
+                    "x86_64": "711105310"
+                },
                 "strip": true,
+                "force_bundle": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },

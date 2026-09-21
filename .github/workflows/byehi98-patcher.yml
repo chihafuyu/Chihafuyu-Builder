@@ -4,13 +4,86 @@ name: 🎮 Byehi98 Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      apps_to_patch:
-        description: >-
-          Apps to patch (comma-separated, or type "all" for
-          everything)
+      app_aliens_drive_me_crazy:
+        description: 'Patch aliens-drive-me-crazy'
         required: true
-        type: string
-        default: 'all'
+        type: boolean
+        default: false
+      app_altos_adventure:
+        description: 'Patch altos-adventure'
+        required: true
+        type: boolean
+        default: false
+      app_altos_odyssey:
+        description: 'Patch altos-odyssey'
+        required: true
+        type: boolean
+        default: false
+      app_doodle_jump:
+        description: 'Patch doodle-jump'
+        required: true
+        type: boolean
+        default: false
+      app_earn_to_die_2:
+        description: 'Patch earn-to-die-2'
+        required: true
+        type: boolean
+        default: false
+      app_fancy_pants_adventures:
+        description: 'Patch fancy-pants-adventures'
+        required: true
+        type: boolean
+        default: false
+      app_hill_climb_racing:
+        description: 'Patch hill-climb-racing'
+        required: true
+        type: boolean
+        default: false
+      app_injustice_gods_among_us:
+        description: 'Patch injustice-gods-among-us'
+        required: true
+        type: boolean
+        default: false
+      app_into_the_dead:
+        description: 'Patch into-the-dead'
+        required: true
+        type: boolean
+        default: false
+      app_jetpack_joyride:
+        description: 'Patch jetpack-joyride'
+        required: true
+        type: boolean
+        default: false
+      app_missiles:
+        description: 'Patch missiles'
+        required: true
+        type: boolean
+        default: false
+      app_only_one:
+        description: 'Patch only-one'
+        required: true
+        type: boolean
+        default: false
+      app_plague_inc:
+        description: 'Patch plague-inc'
+        required: true
+        type: boolean
+        default: false
+      app_prince_of_persia_the_lost_crown:
+        description: 'Patch prince-of-persia-the-lost-crown'
+        required: true
+        type: boolean
+        default: false
+      app_traffic_rider:
+        description: 'Patch traffic-rider'
+        required: true
+        type: boolean
+        default: false
+      app_vector:
+        description: 'Patch vector'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -76,18 +149,83 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APPS_TO_PATCH: ${{ inputs.apps_to_patch }}
+      APP_ALIENS_DRIVE_ME_CRAZY: ${{ inputs.app_aliens_drive_me_crazy }}
+      APP_ALTOS_ADVENTURE: ${{ inputs.app_altos_adventure }}
+      APP_ALTOS_ODYSSEY: ${{ inputs.app_altos_odyssey }}
+      APP_DOODLE_JUMP: ${{ inputs.app_doodle_jump }}
+      APP_EARN_TO_DIE_2: ${{ inputs.app_earn_to_die_2 }}
+      APP_FANCY_PANTS_ADVENTURES: ${{ inputs.app_fancy_pants_adventures }}
+      APP_HILL_CLIMB_RACING: ${{ inputs.app_hill_climb_racing }}
+      APP_INJUSTICE_GODS_AMONG_US: ${{ inputs.app_injustice_gods_among_us }}
+      APP_INTO_THE_DEAD: ${{ inputs.app_into_the_dead }}
+      APP_JETPACK_JOYRIDE: ${{ inputs.app_jetpack_joyride }}
+      APP_MISSILES: ${{ inputs.app_missiles }}
+      APP_ONLY_ONE: ${{ inputs.app_only_one }}
+      APP_PLAGUE_INC: ${{ inputs.app_plague_inc }}
+      APP_PRINCE_OF_PERSIA: ${{ inputs.app_prince_of_persia_the_lost_crown }}
+      APP_TRAFFIC_RIDER: ${{ inputs.app_traffic_rider }}
+      APP_VECTOR: ${{ inputs.app_vector }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
-          if [[ -z "$APPS_TO_PATCH" ]]; then
-            echo "::error::No applications specified!"
+          LIST=""
+          if [[ "$APP_ALIENS_DRIVE_ME_CRAZY" == "true" ]]; then
+            LIST="$LIST,aliens-drive-me-crazy"
+          fi
+          if [[ "$APP_ALTOS_ADVENTURE" == "true" ]]; then
+            LIST="$LIST,altos-adventure"
+          fi
+          if [[ "$APP_ALTOS_ODYSSEY" == "true" ]]; then
+            LIST="$LIST,altos-odyssey"
+          fi
+          if [[ "$APP_DOODLE_JUMP" == "true" ]]; then
+            LIST="$LIST,doodle-jump"
+          fi
+          if [[ "$APP_EARN_TO_DIE_2" == "true" ]]; then
+            LIST="$LIST,earn-to-die-2"
+          fi
+          if [[ "$APP_FANCY_PANTS_ADVENTURES" == "true" ]]; then
+            LIST="$LIST,fancy-pants-adventures"
+          fi
+          if [[ "$APP_HILL_CLIMB_RACING" == "true" ]]; then
+            LIST="$LIST,hill-climb-racing"
+          fi
+          if [[ "$APP_INJUSTICE_GODS_AMONG_US" == "true" ]]; then
+            LIST="$LIST,injustice-gods-among-us"
+          fi
+          if [[ "$APP_INTO_THE_DEAD" == "true" ]]; then
+            LIST="$LIST,into-the-dead"
+          fi
+          if [[ "$APP_JETPACK_JOYRIDE" == "true" ]]; then
+            LIST="$LIST,jetpack-joyride"
+          fi
+          if [[ "$APP_MISSILES" == "true" ]]; then
+            LIST="$LIST,missiles"
+          fi
+          if [[ "$APP_ONLY_ONE" == "true" ]]; then
+            LIST="$LIST,only-one"
+          fi
+          if [[ "$APP_PLAGUE_INC" == "true" ]]; then
+            LIST="$LIST,plague-inc"
+          fi
+          if [[ "$APP_PRINCE_OF_PERSIA" == "true" ]]; then
+            LIST="$LIST,prince-of-persia-the-lost-crown"
+          fi
+          if [[ "$APP_TRAFFIC_RIDER" == "true" ]]; then
+            LIST="$LIST,traffic-rider"
+          fi
+          if [[ "$APP_VECTOR" == "true" ]]; then
+            LIST="$LIST,vector"
+          fi
+          LIST="${LIST#,}"
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
             exit 1
           fi
           {
             echo "apps<<EOF"
-            echo "$APPS_TO_PATCH"
+            echo "$LIST"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 

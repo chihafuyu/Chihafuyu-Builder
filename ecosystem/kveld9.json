@@ -5,7 +5,7 @@
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
                 "stable": [
-                    "1.95.101"
+                    "1.95.104"
                 ],
                 "beta": [],
                 "strip": true,
@@ -53,7 +53,7 @@
                 "package": "com.ss.android.ugc.trill",
                 "search_term": "TikTok Asia",
                 "description": "Any TikTok version (Asia nodpi APK)",
-                "stable": ["46.9.3"],
+                "stable": ["47.0.3"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -63,7 +63,7 @@
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok Global",
                 "description": "Any TikTok version (Global nodpi APK)",
-                "stable": ["46.9.3"],
+                "stable": ["47.0.3"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -73,7 +73,7 @@
                 "package": "com.vivaldi.browser",
                 "search_term": "Vivaldi Browser",
                 "stable": [
-                    "8.2.4147.77"
+                    "8.2.4147.93"
                 ],
                 "beta": [],
                 "strip": true,
