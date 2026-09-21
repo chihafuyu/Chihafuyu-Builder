@@ -74,12 +74,27 @@ class ApkmirrorScraper(BaseScraper):
 
     def __init__(self) -> None:
         super().__init__()
-        self.session = cffi_requests.Session(impersonate="chrome124", http_version="v3")
+        self._current_profile_idx = 0
+        self._profiles = ["chrome", "safari_ios", "safari", "firefox"]
+        # Enforce HTTP/2 to prevent CF Turnstile flags caused by UDP/QUIC drops on CI runners
+        self.session = cffi_requests.Session(
+            impersonate=self._profiles[self._current_profile_idx],
+            http_version="v2"
+        )
 
     @property
     def tier_name(self) -> str:
         """Returns the tier identifier."""
         return "apkmirror"
+
+    def _rotate_session(self) -> None:
+        """Closes current session and rotates the impersonation profile to evade WAF."""
+        self.session.close()
+        self._current_profile_idx = (self._current_profile_idx + 1) % len(self._profiles)
+        self.session = cffi_requests.Session(
+            impersonate=self._profiles[self._current_profile_idx],
+            http_version="v2"
+        )
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
         ctx.limiter.wait()
@@ -102,17 +117,11 @@ class ApkmirrorScraper(BaseScraper):
 
                 if is_blocked or _is_waf_blocked(resp.status_code, text):
                     print(
-                        f"[WARN] WAF/Block detected (HTTP {resp.status_code}). "
-                        f"Backing off (attempt {attempt + 1}/4)..."
+                        f"[WARN] WAF/Block (HTTP {resp.status_code}). "
+                        f"Rotating profile and backing off (attempt {attempt + 1}/4)..."
                     )
-                    time.sleep(random.uniform(10.0, 15.0) * (attempt + 1))
-
-                    if attempt == 2:
-                        print("[INFO] Re-initializing session to clear sticky WAF state.")
-                        self.session.close()
-                        self.session = cffi_requests.Session(
-                            impersonate="chrome124", http_version="v3"
-                        )
+                    self._rotate_session()
+                    time.sleep(random.uniform(8.0, 12.0))
                     continue
 
                 if resp.status_code == 200:
@@ -120,6 +129,7 @@ class ApkmirrorScraper(BaseScraper):
 
             except Exception as err:  # pylint: disable=broad-except
                 print(f"[WARN] Request failed: {err}")
+                self._rotate_session()
                 time.sleep(random.uniform(4.0, 7.0))
 
         return None
