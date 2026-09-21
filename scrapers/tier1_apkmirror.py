@@ -21,6 +21,46 @@ EDITION_SLUG_REGEX = re.compile(
 )
 
 
+class _CffiResponseContext:
+    """Context manager wrapper for curl_cffi Response to support 'with' statements."""
+
+    def __init__(self, resp: Any) -> None:
+        self.resp = resp
+
+    def __enter__(self) -> Any:
+        # Patch iter_content to ignore chunk_size if curl_cffi throws a TypeError
+        original_iter = getattr(self.resp, "iter_content", None)
+        if original_iter:
+            def safe_iter_content(*args: Any, **kwargs: Any) -> Any:
+                try:
+                    return original_iter(*args, **kwargs)
+                except TypeError:
+                    return original_iter()
+            self.resp.iter_content = safe_iter_content
+        return self.resp
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        if hasattr(self.resp, "close"):
+            self.resp.close()
+
+
+class _CffiSessionWrapper:
+    """Wraps curl_cffi Session to ensure compatibility with generic requests downloaders."""
+
+    def __init__(self, session: cffi_requests.Session) -> None:
+        self.session = session
+
+    def get(self, *args: Any, **kwargs: Any) -> Any:
+        """Executes GET request while intercepting incompatible kwargs."""
+        if "timeout" in kwargs and isinstance(kwargs["timeout"], tuple):
+            kwargs["timeout"] = kwargs["timeout"][1]  # Use read timeout only
+        return _CffiResponseContext(self.session.get(*args, **kwargs))
+
+    def close(self) -> None:
+        """Closes the underlying curl_cffi session gracefully."""
+        self.session.close()
+
+
 class ApkmirrorScraper(BaseScraper):
     """Scrapes APKs from APKMirror handling WAF, variants, and dynamic rate limits."""
 
@@ -221,8 +261,7 @@ class ApkmirrorScraper(BaseScraper):
         if not is_bundle:
             self._log_expected_sha256(v_soup)
 
-        file_type = "APKM Bundle" if is_bundle else "Raw APK"
-        print(f"[INFO] Preparing to extract: {file_type}")
+        print(f"[INFO] Preparing to extract: {'APKM Bundle' if is_bundle else 'Raw APK'}")
 
         dl_page = urljoin("https://www.apkmirror.com", btn["href"])
         d_resp = self._safe_get(ctx, dl_page)
@@ -231,19 +270,21 @@ class ApkmirrorScraper(BaseScraper):
             print("[WARN] APKMirror download page failed.")
             return None
 
-        d_soup = BeautifulSoup(d_resp.text, "html.parser")
-        dl_btn = self._get_final_download_link(d_soup)
+        dl_btn = self._get_final_download_link(BeautifulSoup(d_resp.text, "html.parser"))
 
         if not dl_btn or not dl_btn.has_attr("href"):
             print("[WARN] Final download link not found on APKMirror.")
             return None
 
         out_path = ctx.get_out_path(".apkm" if is_bundle else ".apk")
-        dl_url = urljoin("https://www.apkmirror.com", dl_btn["href"])
-        print(f"[INFO] Downloading {file_type} from APKMirror...")
+        print(f"[INFO] Downloading {'APKM Bundle' if is_bundle else 'Raw APK'} from APKMirror...")
 
-        # Inject the successful rotated session directly into the core downloader
-        if download_file_stream(self.session, dl_url, out_path, dl_page):
+        if download_file_stream(
+            _CffiSessionWrapper(self.session),
+            urljoin("https://www.apkmirror.com", dl_btn["href"]),
+            out_path,
+            dl_page
+        ):
             return out_path
         return None
 
