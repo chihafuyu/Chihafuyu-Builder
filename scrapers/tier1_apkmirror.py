@@ -75,12 +75,11 @@ class ApkmirrorScraper(BaseScraper):
     def __init__(self) -> None:
         super().__init__()
         self._current_profile_idx = 0
-        # Safari profile prioritized: fallback to HTTP/2 is natural for Safari,
+        # Profiles prioritizing Safari since it naturally falls back to HTTP/2
         self._profiles = ["safari_ios", "safari", "chrome124", "chrome120", "firefox"]
 
         self.session = cffi_requests.Session(
-            impersonate=self._profiles[self._current_profile_idx],
-            http_version="v2"
+            impersonate=self._profiles[self._current_profile_idx]
         )
         self._last_url = "https://www.apkmirror.com/"
 
@@ -94,8 +93,7 @@ class ApkmirrorScraper(BaseScraper):
         self.session.close()
         self._current_profile_idx = (self._current_profile_idx + 1) % len(self._profiles)
         self.session = cffi_requests.Session(
-            impersonate=self._profiles[self._current_profile_idx],
-            http_version="v2"
+            impersonate=self._profiles[self._current_profile_idx]
         )
         self._last_url = "https://www.apkmirror.com/"
 
@@ -106,11 +104,15 @@ class ApkmirrorScraper(BaseScraper):
         for attempt in range(4):
             try:
                 # Referer chaining: Simulates natural user navigation from the previous page.
-                headers = {"Referer": self._last_url}
+                headers = {
+                    "Referer": getattr(self, "_last_url", "https://www.apkmirror.com/"),
+                    "Accept-Language": "en-US,en;q=0.9",
+                    "Upgrade-Insecure-Requests": "1"
+                }
                 resp = self.session.get(url, timeout=30, headers=headers)
                 text = resp.text.lower()
 
-                # Expanded detection for Cloudflare Turnstile 200 OK challenges
+                # Expanded detection for Cloudflare Turnstile and challenge pages
                 is_blocked = (
                     resp.status_code in (403, 429, 503) or
                     "too many requests" in text or
@@ -120,6 +122,9 @@ class ApkmirrorScraper(BaseScraper):
                     "attention required" in text or
                     "security check" in text or
                     "just a moment" in text or
+                    "challenges.cloudflare.com" in text or
+                    "cf-turnstile" in text or
+                    "checking your browser" in text or
                     ("cloudflare" in text and "enable javascript" in text)
                 )
 
@@ -284,9 +289,15 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         v_soup = BeautifulSoup(v_resp.text, "html.parser")
+        
+        # Double check for Cloudflare challenge that might have slipped through
+        if v_soup.find("div", id="turnstile-wrapper") or "challenges.cloudflare.com" in v_resp.text:
+            print("[WARN] Turnstile challenge detected on variant page!")
+            return None
+            
         btns = self._get_download_buttons(v_soup)
         if not btns:
-            print("[WARN] Download button not found on variant page.")
+            print("[WARN] Download button not found on variant page. Possible layout change or WAF.")
             return None
 
         btn = self._pick_variant_button(btns, is_bundle)
