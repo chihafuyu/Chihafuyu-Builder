@@ -1,2 +1,3 @@
 beautifulsoup4
-cloudscraper
+ai-cloudscraper[hybrid] @ git+https://github.com/zinzied/ai-cloudscraper.git
+js2py
