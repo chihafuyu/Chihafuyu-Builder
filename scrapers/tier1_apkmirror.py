@@ -1,13 +1,13 @@
-"""Tier 1 Scraper: APKMirror with Dynamic Stealth Rotation to Bypass WAF."""
+"""Tier 1 Scraper: APKMirror utilizing Cloudscraper with Stealth Mode to Bypass WAF."""
 
-import random
 import re
 import time
+import random
 from typing import Any, Optional
 from urllib.parse import quote_plus, urljoin
 
 from bs4 import BeautifulSoup
-from curl_cffi import requests as cffi_requests
+import cloudscraper
 
 from core.context import Context
 from core.utils import _is_waf_blocked, download_file_stream
@@ -21,105 +21,45 @@ EDITION_SLUG_REGEX = re.compile(
 )
 
 
-class _CffiResponseContext:
-    """Context manager wrapper for curl_cffi Response to support 'with' statements."""
-
-    def __init__(self, resp: Any) -> None:
-        self.resp = resp
-
-    def __enter__(self) -> Any:
-        original_iter = getattr(self.resp, "iter_content", None)
-        if original_iter:
-            def safe_iter_content(*args: Any, **kwargs: Any) -> Any:
-                try:
-                    return original_iter(*args, **kwargs)
-                except TypeError:
-                    return original_iter()
-            self.resp.iter_content = safe_iter_content
-        return self.resp
-
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        if hasattr(self.resp, "close"):
-            self.resp.close()
-
-
-class _CffiSessionWrapper:
-    """Wraps curl_cffi Session to ensure compatibility with generic requests downloaders."""
-
-    def __init__(self, session: cffi_requests.Session) -> None:
-        self.session = session
-
-    def get(self, *args: Any, **kwargs: Any) -> Any:
-        """Executes GET request while intercepting incompatible kwargs and fake streams."""
-        if "timeout" in kwargs and isinstance(kwargs["timeout"], tuple):
-            kwargs["timeout"] = kwargs["timeout"][1]
-
-        resp = self.session.get(*args, **kwargs)
-
-        if kwargs.get("stream"):
-            c_type = resp.headers.get("Content-Type", "").lower()
-            if "text/html" in c_type:
-                print("[WARN] Stream returned HTML. WAF trap or expired token detected.")
-                resp.status_code = 403
-
-        return _CffiResponseContext(resp)
-
-    def close(self) -> None:
-        """Closes the underlying curl_cffi session gracefully."""
-        self.session.close()
-
-
 class ApkmirrorScraper(BaseScraper):
     """Scrapes APKs from APKMirror handling WAF, variants, and dynamic rate limits."""
 
     def __init__(self) -> None:
         super().__init__()
-        self._current_profile_idx = 0
-        # Prioritize Safari profiles. Enforce HTTP/2 to prevent QUIC drops on CI runners.
-        self._profiles = ["safari_ios", "safari", "chrome124", "chrome120", "firefox"]
-
-        self.session = cffi_requests.Session(
-            impersonate=self._profiles[self._current_profile_idx],
-            http_version="v2"
+        self.session = cloudscraper.create_scraper(
+            browser={
+                "browser": "chrome",
+                "platform": "windows",
+                "desktop": True
+            },
+            interpreter="js2py",
+            enable_stealth=True,
+            stealth_options={
+                "min_delay": 2.0,
+                "max_delay": 5.0,
+                "human_like_delays": True,
+                "randomize_headers": True,
+                "browser_quirks": True
+            }
         )
-        self._last_url = "https://www.apkmirror.com/"
+        self.session.headers.update({"Referer": "https://www.google.com/"})
 
     @property
     def tier_name(self) -> str:
         """Returns the tier identifier."""
         return "apkmirror"
 
-    def _rotate_session(self) -> None:
-        """Closes current session and rotates the impersonation profile to evade WAF."""
-        self.session.close()
-        self._current_profile_idx = (self._current_profile_idx + 1) % len(self._profiles)
-        self.session = cffi_requests.Session(
-            impersonate=self._profiles[self._current_profile_idx],
-            http_version="v2"
-        )
-        self._last_url = "https://www.apkmirror.com/"
-
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
         ctx.limiter.wait()
         time.sleep(random.uniform(2.5, 4.5))
 
-        for attempt in range(4):
+        for attempt in range(3):
             try:
-                # Simulate natural user navigation from the previous page.
-                headers = {
-                    "Referer": getattr(self, "_last_url", "https://www.apkmirror.com/"),
-                    "Accept-Language": "en-US,en;q=0.9",
-                    "Upgrade-Insecure-Requests": "1"
-                }
-                resp = self.session.get(url, timeout=30, headers=headers)
+                resp = self.session.get(url, timeout=30)
                 text = resp.text.lower()
-
-                title_match = re.search(r"<title>(.*?)</title>", text)
-                title = title_match.group(1) if title_match else ""
 
                 is_blocked = (
                     resp.status_code in (403, 429, 503) or
-                    "apkmirror" not in title or
                     "too many requests" in text or
                     "ad blocker" in text or
                     "verify you are human" in text or
@@ -127,28 +67,23 @@ class ApkmirrorScraper(BaseScraper):
                     "attention required" in text or
                     "security check" in text or
                     "just a moment" in text or
-                    "challenges.cloudflare.com" in text or
-                    "cf-turnstile" in text or
-                    "checking your browser" in text or
                     ("cloudflare" in text and "enable javascript" in text)
                 )
 
                 if is_blocked or _is_waf_blocked(resp.status_code, text):
                     print(
                         f"[WARN] WAF/Block (HTTP {resp.status_code}). "
-                        f"Rotating profile and backing off (attempt {attempt + 1}/4)..."
+                        f"Backing off (attempt {attempt + 1}/3)..."
                     )
-                    self._rotate_session()
-                    time.sleep(random.uniform(8.0, 12.0))
+                    time.sleep(random.uniform(10.0, 15.0) * (attempt + 1))
                     continue
 
                 if resp.status_code == 200:
-                    self._last_url = str(resp.url)
+                    self.session.headers.update({"Referer": str(resp.url)})
                     return resp
 
             except Exception as err:  # pylint: disable=broad-except
                 print(f"[WARN] Request failed: {err}")
-                self._rotate_session()
                 time.sleep(random.uniform(4.0, 7.0))
 
         return None
@@ -327,7 +262,7 @@ class ApkmirrorScraper(BaseScraper):
             print(f"[INFO] Downloading {p_type} from APKMirror...")
             time.sleep(random.uniform(3.0, 5.0))
             if not download_file_stream(
-                _CffiSessionWrapper(self.session),
+                self.session,
                 urljoin("https://www.apkmirror.com", dl_btn["href"]),
                 out_path,
                 dl_page
