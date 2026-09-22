@@ -76,7 +76,7 @@ jobs:
         run: |
           docker run -d --name=flaresolverr -p 127.0.0.1:8191:8191 -e LOG_LEVEL=info ghcr.io/flaresolverr/flaresolverr:latest
           echo "Waiting for FlareSolverr to initialize..."
-          timeout 30 bash -c 'while ! curl -s http://localhost:8191/ > /dev/null; do sleep 2; done'
+          timeout 30 bash -c 'while ! curl -sf http://localhost:8191/ > /dev/null; do sleep 2; done'
           echo "FlareSolverr proxy is online!"
 
       - name: Install Dependencies & apkeep

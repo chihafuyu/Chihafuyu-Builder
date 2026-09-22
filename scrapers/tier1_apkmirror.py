@@ -3,7 +3,6 @@
 import random
 import re
 import time
-from dataclasses import dataclass
 from typing import Any, Optional
 from urllib.parse import quote_plus, urljoin
 
@@ -22,12 +21,26 @@ EDITION_SLUG_REGEX = re.compile(
 )
 
 
-@dataclass
 class _DummyResponse:
     """Mock requests.Response object for FlareSolverr HTML returns."""
-    status_code: int
-    text: str
-    url: str
+
+    def __init__(self, status_code: int, text: str, url: str) -> None:
+        self.status_code = status_code
+        self.text = text
+        self.url = url
+        self.headers: dict[str, str] = {}
+        self.content = text.encode("utf-8")
+
+    def raise_for_status(self) -> None:
+        """Raises stored HTTP error, if one occurred."""
+        if self.status_code >= 400:
+            raise requests.exceptions.HTTPError(f"Error: {self.status_code}")
+
+    def __enter__(self) -> "_DummyResponse":
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        pass
 
 
 class _FlareSolverrSession:
@@ -36,10 +49,22 @@ class _FlareSolverrSession:
     def __init__(self) -> None:
         self.proxy_url = "http://localhost:8191/v1"
         self.session = requests.Session()
+        self.proxy_session_id = self._create_session()
+
+    def _create_session(self) -> str:
+        """Initializes a persistent browser session in FlareSolverr to improve speed."""
+        try:
+            res = requests.post(
+                self.proxy_url, json={"cmd": "sessions.create"}, timeout=15
+            )
+            return res.json().get("session", "")
+        except (requests.exceptions.RequestException, ValueError):
+            return ""
 
     def get(self, *args: Any, **kwargs: Any) -> Any:
         """Executes GET requests using the appropriate transport layer."""
         if kwargs.get("stream"):
+            # Stream binary payloads directly via authenticated native session
             return self.session.get(*args, **kwargs)
 
         url = args[0] if args else kwargs.get("url")
@@ -52,6 +77,8 @@ class _FlareSolverrSession:
             "url": url,
             "maxTimeout": int(timeout * 1000)
         }
+        if self.proxy_session_id:
+            payload["session"] = self.proxy_session_id
 
         try:
             res = requests.post(self.proxy_url, json=payload, timeout=timeout + 15)
@@ -62,6 +89,7 @@ class _FlareSolverrSession:
                 html = solution.get("response", "")
                 solved_url = solution.get("url", url)
 
+                # Propagate clearance cookies to native session for WAF-free binary downloads
                 for cookie in solution.get("cookies", []):
                     self.session.cookies.set(
                         cookie["name"],
@@ -78,12 +106,21 @@ class _FlareSolverrSession:
             print(f"[WARN] FlareSolverr returned error status: {err_msg}")
             return _DummyResponse(status_code=403, text="", url=url)
 
-        except requests.exceptions.RequestException as err:
+        except (requests.exceptions.RequestException, ValueError) as err:
             print(f"[WARN] FlareSolverr connection failed: {err}")
             return _DummyResponse(status_code=500, text="", url=url)
 
     def close(self) -> None:
-        """Closes the underlying native requests session."""
+        """Destroys proxy session and closes the underlying native requests session."""
+        if self.proxy_session_id:
+            try:
+                requests.post(
+                    self.proxy_url,
+                    json={"cmd": "sessions.destroy", "session": self.proxy_session_id},
+                    timeout=10
+                )
+            except (requests.exceptions.RequestException, ValueError):
+                pass
         self.session.close()
 
 
@@ -130,8 +167,9 @@ class ApkmirrorScraper(BaseScraper):
         has_ver_href = href_ver.lower() in href.lower()
 
         if not has_ver_text and not has_ver_href:
-            major_ver = base_ver.split(".")[0]
-            major_pattern = rf"\b{re.escape(major_ver)}\b"
+            parts = base_ver.split(".")
+            major_minor = ".".join(parts[:2]) if len(parts) >= 2 else base_ver
+            major_pattern = rf"\b{re.escape(major_minor)}\b"
             if not re.search(major_pattern, text) and not re.search(major_pattern, href):
                 return None
 

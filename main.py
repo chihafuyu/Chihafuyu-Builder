@@ -185,15 +185,17 @@ def _generate_options_json(app_name: str, args: Any, app_data: dict, workspace: 
 
 
 def _resolve_target_version(app_data: dict, args: Any, custom_ver: str) -> str:
-    """Resolves target version safely avoiding index errors."""
-    t_ver = custom_ver if custom_ver else app_data.get("stable", [""])[0]
+    """Resolves target version safely avoiding index errors from empty fallback lists."""
+    t_ver = custom_ver if custom_ver else (app_data.get("stable") or [""])[0]
+
     if args.version_selection.lower() in ["beta", "pre-release", "latest", "experimental"]:
-        beta_list = app_data.get("beta", [])
+        beta_list = app_data.get("beta") or []
         if beta_list:
             t_ver = beta_list[0]
         else:
-            stable_list = app_data.get("stable", [t_ver])
+            stable_list = app_data.get("stable") or [t_ver]
             t_ver = stable_list[0] if stable_list else t_ver
+
     return t_ver
 
 
