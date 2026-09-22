@@ -112,9 +112,13 @@ class ApkmirrorScraper(BaseScraper):
                 resp = self.session.get(url, timeout=30, headers=headers)
                 text = resp.text.lower()
 
-                # Expanded detection for Cloudflare Turnstile and challenge pages
+                # Robust WAF detection: check title and main content
+                title_match = re.search(r"<title>(.*?)</title>", text)
+                title = title_match.group(1) if title_match else ""
+
                 is_blocked = (
                     resp.status_code in (403, 429, 503) or
+                    "apkmirror" not in title or
                     "too many requests" in text or
                     "ad blocker" in text or
                     "verify you are human" in text or
