@@ -1,16 +1,19 @@
 """Tier 1 Scraper: APKMirror."""
 
+import os
 import random
 import re
+import subprocess
+import tempfile
 import time
+from dataclasses import dataclass
 from typing import Any, Optional
 from urllib.parse import quote_plus, urljoin
 
 from bs4 import BeautifulSoup
-import cloudscraper
 
 from core.context import Context
-from core.utils import _is_waf_blocked, download_file_stream
+from core.utils import _is_waf_blocked
 from .base import BaseScraper
 
 
@@ -21,14 +24,65 @@ EDITION_SLUG_REGEX = re.compile(
 )
 
 
+@dataclass
+class DummyResponse:
+    """A mock requests.Response object for CurlSession."""
+    status_code: int
+    text: str
+    url: str
+
+
+class CurlSession:
+    """A robust wrapper around the system curl executable to mimic a Requests session."""
+
+    def __init__(self) -> None:
+        fd, self.cookie_file = tempfile.mkstemp(suffix=".txt")
+        os.close(fd)
+        self.user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0"
+
+    def get(self, url: str, timeout: int = 30, headers: Optional[dict] = None) -> DummyResponse:
+        """Executes a GET request via curl and returns a DummyResponse."""
+        cmd = [
+            "curl", "-L",
+            "-c", self.cookie_file,
+            "-b", self.cookie_file,
+            "--connect-timeout", str(timeout),
+            "-s", "-S",
+            "-w", "%{http_code}",
+            "-H", f"User-Agent: {self.user_agent}"
+        ]
+        if headers:
+            for key, val in headers.items():
+                cmd.extend(["-H", f"{key}: {val}"])
+        cmd.append(url)
+
+        res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", check=False)
+        output = res.stdout
+
+        if len(output) >= 3 and output[-3:].isdigit():
+            status = int(output[-3:])
+            text = output[:-3]
+        else:
+            status = 500
+            text = ""
+
+        return DummyResponse(status, text, url)
+
+    def close(self) -> None:
+        """Cleans up the temporary cookie file."""
+        try:
+            if os.path.exists(self.cookie_file):
+                os.remove(self.cookie_file)
+        except Exception:  # pylint: disable=broad-except
+            pass
+
+
 class ApkmirrorScraper(BaseScraper):
     """Scrapes APKs from APKMirror handling WAF, variants, and dynamic rate limits."""
 
     def __init__(self) -> None:
         super().__init__()
-        self.session = cloudscraper.create_scraper(
-            browser={"browser": "chrome", "platform": "windows", "desktop": True}
-        )
+        self.session = CurlSession()
         self._last_url = "https://www.apkmirror.com/"
 
     @property
@@ -39,10 +93,30 @@ class ApkmirrorScraper(BaseScraper):
     def _rotate_session(self) -> None:
         """Closes current session and rotates the impersonation profile to evade WAF."""
         self.session.close()
-        self.session = cloudscraper.create_scraper(
-            browser={"browser": "chrome", "platform": "windows", "desktop": True}
-        )
+        self.session = CurlSession()
         self._last_url = "https://www.apkmirror.com/"
+
+    def _curl_download_file(self, url: str, out_path: str, referer: str) -> bool:
+        """Downloads a file directly to disk using curl to prevent memory exhaustion."""
+        cmd = [
+            "curl", "-L",
+            "-c", self.session.cookie_file,
+            "-b", self.session.cookie_file,
+            "--connect-timeout", "30",
+            "-s", "-S",
+            "-w", "%{http_code}",
+            "-H", f"User-Agent: {self.session.user_agent}",
+            "-H", f"Referer: {referer}",
+            "-o", out_path,
+            url
+        ]
+        res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", check=False)
+        output = res.stdout
+        if len(output) >= 3 and output[-3:].isdigit():
+            status = int(output[-3:])
+            if status in (200, 206):
+                return True
+        return False
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
         ctx.limiter.wait()
@@ -83,7 +157,7 @@ class ApkmirrorScraper(BaseScraper):
                         f"[WARN] WAF/Block (HTTP {resp.status_code}). "
                         f"Rotating profile and backing off (attempt {attempt + 1}/2)..."
                     )
-                    raise RuntimeError("Cloudscraper failed with WAF Block. Aborting Tier 1.")
+                    raise RuntimeError("Curl failed with WAF Block. Aborting Tier 1.")
 
                 if resp.status_code == 200:
                     self._last_url = str(resp.url)
@@ -278,8 +352,7 @@ class ApkmirrorScraper(BaseScraper):
             out_path = ctx.get_out_path(".apkm" if is_bundle else ".apk")
             print(f"[INFO] Downloading {p_type} from APKMirror...")
             time.sleep(random.uniform(3.0, 5.0))
-            if not download_file_stream(
-                self.session,
+            if not self._curl_download_file(
                 urljoin("https://www.apkmirror.com", dl_btn["href"]),
                 out_path,
                 dl_page
