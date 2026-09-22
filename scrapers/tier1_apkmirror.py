@@ -28,19 +28,21 @@ class _CffiResponseContext:
         self.resp = resp
 
     def __enter__(self) -> Any:
-        original_iter = getattr(self.resp, "iter_content", None)
-        if original_iter:
-            def safe_iter_content(*args: Any, **kwargs: Any) -> Any:
-                try:
-                    return original_iter(*args, **kwargs)
-                except TypeError:
-                    return original_iter()
-            self.resp.iter_content = safe_iter_content
-        return self.resp
+        return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         if hasattr(self.resp, "close"):
             self.resp.close()
+
+    def iter_content(self, *args: Any, **kwargs: Any) -> Any:
+        """Safely invoke iter_content, ignoring unsupported arguments like chunk_size."""
+        original_iter = getattr(self.resp, "iter_content", None)
+        if not original_iter:
+            return []
+        try:
+            return original_iter(*args, **kwargs)
+        except TypeError:
+            return original_iter()
 
     def __getattr__(self, name: str) -> Any:
         """Delegate missing attributes to the underlying response object."""
@@ -84,7 +86,7 @@ class ApkmirrorScraper(BaseScraper):
     def __init__(self) -> None:
         super().__init__()
         self._current_profile_idx = 0
-        self._profiles = ["chrome124", "chrome120", "edge101", "safari"]
+        self._profiles = ["chrome124", "chrome120", "edge101", "safari15_5"]
 
         self.session = cffi_requests.Session(
             impersonate=self._profiles[self._current_profile_idx],
@@ -117,14 +119,8 @@ class ApkmirrorScraper(BaseScraper):
                 resp = self.session.get(url, timeout=30, headers=headers)
                 text = resp.text.lower()
 
-                title_match = re.search(
-                    r"<title[^>]*>(.*?)</title>", text, re.IGNORECASE | re.DOTALL
-                )
-                title = title_match.group(1).strip() if title_match else ""
-
                 is_blocked = (
                     resp.status_code in (403, 429, 503) or
-                    "apkmirror" not in title or
                     "too many requests" in text or
                     "ad blocker" in text or
                     "verify you are human" in text or
@@ -196,7 +192,7 @@ class ApkmirrorScraper(BaseScraper):
         search_term = ctx.app_data.get("search_term", ctx.pkg)
 
         short_term = search_term.replace(" Browser", "").replace(" App", "").strip()
-        if "." in short_term:
+        if "." in short_term and " " not in short_term:
             parts = short_term.split(".")
             short_term = parts[-1] if len(parts[-1]) > 3 else parts[-2]
 
