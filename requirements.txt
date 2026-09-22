@@ -1,3 +1,5 @@
+ai-cloudscraper @ git+https://github.com/zinzied/ai-cloudscraper.git
 beautifulsoup4
-ai-cloudscraper[hybrid] @ git+https://github.com/zinzied/ai-cloudscraper.git
+curl_cffi>=0.7.0
 js2py
+playwright>=1.40.0

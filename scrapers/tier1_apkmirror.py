@@ -58,41 +58,21 @@ class ApkmirrorScraper(BaseScraper):
         return "apkmirror"
 
     def _initialize_session(self, browser_type: str = "chrome") -> None:
-        """Generates a fresh cloudscraper session using the Hybrid Engine."""
+        """Generates a fresh cloudscraper session strictly using the Hybrid Engine."""
         if self._session:
             self._session.close()
 
-        try:
-            # Utilizing the 'hybrid' interpreter and 'research' behavior profile
-            # as highly recommended by ai-cloudscraper documentation for Turnstile.
-            self._session = cloudscraper.create_scraper(
-                browser={
-                    "browser": browser_type,
-                    "platform": "windows",
-                    "desktop": True
-                },
-                interpreter="hybrid",
-                behavior_profile="research",
-                enable_stealth=True,
-                stealth_options={
-                    "min_delay": 2.0,
-                    "max_delay": 6.0,
-                    "human_like_delays": True,
-                    "randomize_headers": True,
-                    "browser_quirks": True
-                }
-            )
-        except TypeError:
-            print("[INFO] Advanced hybrid engine not detected. Falling back to js2py.")
-            self._session = cloudscraper.create_scraper(
-                browser={
-                    "browser": browser_type,
-                    "platform": "windows",
-                    "desktop": True
-                },
-                interpreter="js2py",
-                enable_stealth=True
-            )
+        # Enforce 'hybrid' interpreter. Removed try-except fallback to prevent
+        # silent downgrades to standard requests which fail against Turnstile.
+        self._session = cloudscraper.create_scraper(
+            browser={
+                "browser": browser_type,
+                "platform": "windows",
+                "desktop": True
+            },
+            interpreter="hybrid",
+            delay=5.0
+        )
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
         ctx.limiter.wait()
