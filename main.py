@@ -60,8 +60,7 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
 
     fallback_order = [
         "direct", "github", "huggingface", "apkmirror",
-        "archive", "uptodown", "apkcombo", "apkpure",
-        "aptoide", "google_play"
+        "archive", "apkpure", "google_play"
     ]
 
     for src_name in fallback_order:

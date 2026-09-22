@@ -42,9 +42,6 @@ name: 🛡️ Dh6k Ecosystem Patcher
           - archive
           - apkmirror
           - apkpure
-          - apkcombo
-          - aptoide
-          - uptodown
       continue_on_error:
         description: 'Debug: Continue on patch error'
         required: true
