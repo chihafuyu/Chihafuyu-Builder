@@ -86,13 +86,12 @@ class ApkmirrorScraper(BaseScraper):
     def __init__(self) -> None:
         super().__init__()
         self._current_profile_idx = 0
-        self._profiles = ["chrome124", "chrome120", "edge101", "safari15_5"]
+        self._profiles = ["chrome131_android", "safari180_ios", "chrome", "safari"]
 
         self.session = cffi_requests.Session(
             impersonate=self._profiles[self._current_profile_idx],
             http_version="v2"
         )
-        self._last_url = "https://www.apkmirror.com/"
 
     @property
     def tier_name(self) -> str:
@@ -107,7 +106,6 @@ class ApkmirrorScraper(BaseScraper):
             impersonate=self._profiles[self._current_profile_idx],
             http_version="v2"
         )
-        self._last_url = "https://www.apkmirror.com/"
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
         ctx.limiter.wait()
@@ -115,8 +113,7 @@ class ApkmirrorScraper(BaseScraper):
 
         for attempt in range(4):
             try:
-                headers = {"Referer": getattr(self, "_last_url", "https://www.apkmirror.com/")}
-                resp = self.session.get(url, timeout=30, headers=headers)
+                resp = self.session.get(url, timeout=30)
                 text = resp.text.lower()
 
                 is_blocked = (
@@ -144,7 +141,6 @@ class ApkmirrorScraper(BaseScraper):
                     continue
 
                 if resp.status_code == 200:
-                    self._last_url = str(resp.url)
                     return resp
 
             except Exception as err:  # pylint: disable=broad-except
@@ -169,7 +165,9 @@ class ApkmirrorScraper(BaseScraper):
         has_ver_href = href_ver.lower() in href.lower()
 
         if not has_ver_text and not has_ver_href:
-            return None
+            major_ver = base_ver.split(".")[0]
+            if major_ver not in text and major_ver not in href:
+                return None
 
         if any(k in text for k in exc_kws):
             return None
