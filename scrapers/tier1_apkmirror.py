@@ -24,7 +24,7 @@ EDITION_SLUG_REGEX = re.compile(
 
 @dataclass
 class _DummyResponse:
-    """A mock requests.Response object for FlareSolverr HTML returns."""
+    """Mock requests.Response object for FlareSolverr HTML returns."""
     status_code: int
     text: str
     url: str
@@ -38,9 +38,9 @@ class _FlareSolverrSession:
         self.session = requests.Session()
 
     def get(self, *args: Any, **kwargs: Any) -> Any:
-        """Executes GET requests. Streams are native; others use FlareSolverr proxy."""
+        """Executes GET requests using the appropriate transport layer."""
         if kwargs.get("stream"):
-            # Native requests session uses the solved cookies for binary downloads
+            # Stream binary payloads directly via authenticated native session
             return self.session.get(*args, **kwargs)
 
         url = args[0] if args else kwargs.get("url")
@@ -63,7 +63,7 @@ class _FlareSolverrSession:
                 html = solution.get("response", "")
                 solved_url = solution.get("url", url)
 
-                # Inject clearance cookies into the native session for subsequent downloads
+                # Propagate clearance cookies to native session for WAF-free binary downloads
                 for cookie in solution.get("cookies", []):
                     self.session.cookies.set(
                         cookie["name"],
@@ -81,11 +81,11 @@ class _FlareSolverrSession:
             return _DummyResponse(status_code=403, text="", url=url)
 
         except requests.exceptions.RequestException as err:
-            print(f"[WARN] FlareSolverr microservice connection failed: {err}")
+            print(f"[WARN] FlareSolverr connection failed: {err}")
             return _DummyResponse(status_code=500, text="", url=url)
 
     def close(self) -> None:
-        """Closes the native requests session."""
+        """Closes the underlying native requests session."""
         self.session.close()
 
 
@@ -102,7 +102,7 @@ class ApkmirrorScraper(BaseScraper):
         return "apkmirror"
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
-        """Fetches page source ensuring FlareSolverr correctly resolves the WAF."""
+        """Fetches page source ensuring FlareSolverr correctly resolves WAF challenges."""
         ctx.limiter.wait()
         time.sleep(random.uniform(2.5, 4.5))
 
@@ -112,7 +112,7 @@ class ApkmirrorScraper(BaseScraper):
             if resp.status_code == 200 and "apkmirror.com" in str(resp.url):
                 return resp
 
-            print(f"[WARN] FlareSolverr unable to solve WAF (attempt {attempt + 1}/3)...")
+            print(f"[WARN] FlareSolverr WAF resolution failed (attempt {attempt + 1}/3)...")
             time.sleep(random.uniform(5.0, 10.0))
 
         return None
@@ -262,7 +262,7 @@ class ApkmirrorScraper(BaseScraper):
 
         btns = self._get_download_buttons(v_soup)
         if not btns:
-            print("[WARN] Download button not found on variant page. Possible WAF block.")
+            print("[WARN] Download button not found on variant page.")
             return None
 
         btn = self._pick_variant_button(btns, is_bundle)
@@ -312,7 +312,7 @@ class ApkmirrorScraper(BaseScraper):
         if is_multi_arm and target_arch in ("arm64-v8a", "armeabi-v7a", "universal"):
             return True
 
-        if pass_idx == 3 and target_arch == "universal" and (
+        if pass_idx >= 3 and target_arch == "universal" and (
             "arm64-v8a" in text or "armeabi-v7a" in text
         ):
             return True
@@ -332,15 +332,19 @@ class ApkmirrorScraper(BaseScraper):
     ) -> Optional[str]:
         text = row.text.lower()
         pass_idx = opts.get("pass_idx", 1)
-        force_b = opts.get("force_b", False)
         ver_code = str(opts.get("ver_code", "")).lower()
 
         is_bundle = self._is_bundle_row(row)
 
-        if pass_idx == 1 and force_b != is_bundle:
+        # Pass 1 & 2: Strictly prioritize raw APKs over APKM bundles
+        if pass_idx in (1, 2) and is_bundle:
             return None
 
-        if pass_idx in (1, 2) and ver_code and ver_code not in text:
+        # Pass 3 & 4: Fallback to APKM bundles if raw APKs are unavailable
+        if pass_idx in (3, 4) and not is_bundle:
+            pass
+
+        if pass_idx in (1, 3) and ver_code and ver_code not in text:
             return None
 
         if not self._is_arch_match(text, ctx.arch.lower(), pass_idx):
@@ -355,10 +359,10 @@ class ApkmirrorScraper(BaseScraper):
         )
 
     def _find_variant_in_rows(
-        self, ctx: Context, rows: list[Any], ver_code: str, force_b: bool
+        self, ctx: Context, rows: list[Any], ver_code: str
     ) -> Optional[str]:
         for pass_idx in (1, 2, 3, 4):
-            opts = {"force_b": force_b, "ver_code": ver_code, "pass_idx": pass_idx}
+            opts = {"ver_code": ver_code, "pass_idx": pass_idx}
             for row in rows:
                 link = row.find("a", class_="accent_color")
                 if not link:
@@ -374,7 +378,7 @@ class ApkmirrorScraper(BaseScraper):
         return None
 
     def _download_variant(
-        self, ctx: Context, rel_url: str, ver_code: str, force_b: bool
+        self, ctx: Context, rel_url: str, ver_code: str
     ) -> Optional[str]:
         resp = self._safe_get(ctx, rel_url)
         if not resp:
@@ -389,7 +393,7 @@ class ApkmirrorScraper(BaseScraper):
         )
 
         if rows:
-            out = self._find_variant_in_rows(ctx, rows, ver_code, force_b)
+            out = self._find_variant_in_rows(ctx, rows, ver_code)
             if out:
                 return out
 
@@ -417,9 +421,7 @@ class ApkmirrorScraper(BaseScraper):
             if not rel_url:
                 print("[WARN] Release not found.")
                 return None
-            return self._download_variant(
-                ctx, rel_url, ver_code, ctx.app_data.get("force_bundle", False)
-            )
+            return self._download_variant(ctx, rel_url, ver_code)
         except Exception as err:  # pylint: disable=broad-except
             print(f"[ERROR] Tier 1 failed: {err}")
         return None
