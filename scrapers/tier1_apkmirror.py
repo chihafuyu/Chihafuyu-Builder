@@ -1,19 +1,16 @@
-"""Tier 1 Scraper: APKMirror."""
+"""Tier 1 Scraper: APKMirror utilizing pure Cloudscraper with Stealth Mode."""
 
-import os
 import random
 import re
-import subprocess
-import tempfile
 import time
-from dataclasses import dataclass
 from typing import Any, Optional
 from urllib.parse import quote_plus, urljoin
 
 from bs4 import BeautifulSoup
+import cloudscraper
 
 from core.context import Context
-from core.utils import _is_waf_blocked
+from core.utils import _is_waf_blocked, download_file_stream
 from .base import BaseScraper
 
 
@@ -24,57 +21,27 @@ EDITION_SLUG_REGEX = re.compile(
 )
 
 
-@dataclass
-class DummyResponse:
-    """A mock requests.Response object for CurlSession."""
-    status_code: int
-    text: str
-    url: str
+class _CloudscraperWrapper:
+    """Wraps Cloudscraper Session to intercept HTML streams and prevent corrupt downloads."""
 
+    def __init__(self, session: cloudscraper.CloudScraper) -> None:
+        self.session = session
 
-class CurlSession:
-    """A robust wrapper around the system curl executable to mimic a Requests session."""
+    def get(self, *args: Any, **kwargs: Any) -> Any:
+        """Executes GET request and forces HTTP 403 if an HTML block page is streamed."""
+        resp = self.session.get(*args, **kwargs)
 
-    def __init__(self) -> None:
-        fd, self.cookie_file = tempfile.mkstemp(suffix=".txt")
-        os.close(fd)
-        self.user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0"
+        if kwargs.get("stream"):
+            c_type = resp.headers.get("Content-Type", "").lower()
+            if "text/html" in c_type:
+                print("[WARN] Stream returned HTML. WAF trap or expired token detected.")
+                resp.status_code = 403
 
-    def get(self, url: str, timeout: int = 30, headers: Optional[dict] = None) -> DummyResponse:
-        """Executes a GET request via curl and returns a DummyResponse."""
-        cmd = [
-            "curl", "-L",
-            "-c", self.cookie_file,
-            "-b", self.cookie_file,
-            "--connect-timeout", str(timeout),
-            "-s", "-S",
-            "-w", "%{http_code}",
-            "-H", f"User-Agent: {self.user_agent}"
-        ]
-        if headers:
-            for key, val in headers.items():
-                cmd.extend(["-H", f"{key}: {val}"])
-        cmd.append(url)
-
-        res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", check=False)
-        output = res.stdout
-
-        if len(output) >= 3 and output[-3:].isdigit():
-            status = int(output[-3:])
-            text = output[:-3]
-        else:
-            status = 500
-            text = ""
-
-        return DummyResponse(status, text, url)
+        return resp
 
     def close(self) -> None:
-        """Cleans up the temporary cookie file."""
-        try:
-            if os.path.exists(self.cookie_file):
-                os.remove(self.cookie_file)
-        except Exception:  # pylint: disable=broad-except
-            pass
+        """Closes the underlying session gracefully."""
+        self.session.close()
 
 
 class ApkmirrorScraper(BaseScraper):
@@ -82,59 +49,64 @@ class ApkmirrorScraper(BaseScraper):
 
     def __init__(self) -> None:
         super().__init__()
-        self.session = CurlSession()
         self._last_url = "https://www.apkmirror.com/"
+        self._session: Optional[cloudscraper.CloudScraper] = None
 
     @property
     def tier_name(self) -> str:
         """Returns the tier identifier."""
         return "apkmirror"
 
-    def _rotate_session(self) -> None:
-        """Closes current session and rotates the impersonation profile to evade WAF."""
-        self.session.close()
-        self.session = CurlSession()
-        self._last_url = "https://www.apkmirror.com/"
+    def _initialize_session(self, browser_type: str = "chrome") -> None:
+        """Generates a fresh cloudscraper session with fallback for standard versions."""
+        if self._session:
+            self._session.close()
 
-    def _curl_download_file(self, url: str, out_path: str, referer: str) -> bool:
-        """Downloads a file directly to disk using curl to prevent memory exhaustion."""
-        cmd = [
-            "curl", "-L",
-            "-c", self.session.cookie_file,
-            "-b", self.session.cookie_file,
-            "--connect-timeout", "30",
-            "-s", "-S",
-            "-w", "%{http_code}",
-            "-H", f"User-Agent: {self.session.user_agent}",
-            "-H", f"Referer: {referer}",
-            "-o", out_path,
-            url
-        ]
-        res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", check=False)
-        output = res.stdout
-        if len(output) >= 3 and output[-3:].isdigit():
-            status = int(output[-3:])
-            if status in (200, 206):
-                return True
-        return False
+        try:
+            self._session = cloudscraper.create_scraper(
+                browser={
+                    "browser": browser_type,
+                    "platform": "windows",
+                    "desktop": True
+                },
+                interpreter="js2py",
+                enable_stealth=True,
+                stealth_options={
+                    "min_delay": 2.0,
+                    "max_delay": 5.0,
+                    "human_like_delays": True,
+                    "randomize_headers": True,
+                    "browser_quirks": True
+                }
+            )
+        except TypeError:
+            print("[INFO] Enhanced cloudscraper not detected. Falling back to standard mode.")
+            self._session = cloudscraper.create_scraper(
+                browser={
+                    "browser": browser_type,
+                    "platform": "windows",
+                    "desktop": True
+                },
+                interpreter="js2py"
+            )
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
         ctx.limiter.wait()
         time.sleep(random.uniform(2.5, 4.5))
 
-        for attempt in range(2):
-            try:
-                # Referer chaining
-                headers = {
-                    "Referer": getattr(self, "_last_url", "https://www.apkmirror.com/")
-                }
+        if not self._session:
+            self._initialize_session()
 
-                resp = self.session.get(url, timeout=30, headers=headers)
+        for attempt in range(4):
+            try:
+                headers = {"Referer": self._last_url}
+                resp = self._session.get(url, timeout=30, headers=headers)
                 text = resp.text.lower()
 
-                # Robust WAF detection via title tag
-                t_match = re.search(r"<title[^>]*>(.*?)</title>", text, re.IGNORECASE | re.DOTALL)
-                title = t_match.group(1).strip() if t_match else ""
+                title_match = re.search(
+                    r"<title[^>]*>(.*?)</title>", text, re.IGNORECASE | re.DOTALL
+                )
+                title = title_match.group(1).strip() if title_match else ""
 
                 is_blocked = (
                     resp.status_code in (403, 429, 503) or
@@ -155,22 +127,24 @@ class ApkmirrorScraper(BaseScraper):
                 if is_blocked or _is_waf_blocked(resp.status_code, text):
                     print(
                         f"[WARN] WAF/Block (HTTP {resp.status_code}). "
-                        f"Rotating profile and backing off (attempt {attempt + 1}/2)..."
+                        f"Backing off (attempt {attempt + 1}/4)..."
                     )
-                    raise RuntimeError("Curl failed with WAF Block. Aborting Tier 1.")
+                    if attempt == 2:
+                        print("[INFO] Re-initializing cloudscraper session to evade block.")
+                        self._initialize_session(browser_type="firefox")
+
+                    time.sleep(random.uniform(8.0, 12.0))
+                    continue
 
                 if resp.status_code == 200:
                     self._last_url = str(resp.url)
                     return resp
 
-            except RuntimeError:
-                raise
             except Exception as err:  # pylint: disable=broad-except
                 print(f"[WARN] Request failed: {err}")
-                self._rotate_session()
                 time.sleep(random.uniform(4.0, 7.0))
 
-        raise RuntimeError("WAF bypass limits exhausted. Aborting Tier 1.")
+        return None
 
     @staticmethod
     def _is_valid_release_link(
@@ -188,12 +162,7 @@ class ApkmirrorScraper(BaseScraper):
 
         if not has_ver_text and not has_ver_href:
             major_ver = base_ver.split(".")[0]
-            if not major_ver:
-                return None
-
-            # Ensure word boundaries so e.g. '1' doesn't blindly match '12' or '21'
-            major_pat = rf"\b{re.escape(major_ver)}\b"
-            if not (re.search(major_pat, text) or re.search(major_pat, href)):
+            if major_ver not in text and major_ver not in href:
                 return None
 
         if any(k in text for k in exc_kws):
@@ -320,7 +289,6 @@ class ApkmirrorScraper(BaseScraper):
 
         v_soup = BeautifulSoup(v_resp.text, "html.parser")
 
-        # Secondary Turnstile check
         if v_soup.find("div", id="turnstile-wrapper") or "challenges.cloudflare.com" in v_resp.text:
             print("[WARN] Turnstile challenge detected on variant page!")
             return None
@@ -352,7 +320,8 @@ class ApkmirrorScraper(BaseScraper):
             out_path = ctx.get_out_path(".apkm" if is_bundle else ".apk")
             print(f"[INFO] Downloading {p_type} from APKMirror...")
             time.sleep(random.uniform(3.0, 5.0))
-            if not self._curl_download_file(
+            if not download_file_stream(
+                _CloudscraperWrapper(self._session),
                 urljoin("https://www.apkmirror.com", dl_btn["href"]),
                 out_path,
                 dl_page
@@ -376,8 +345,7 @@ class ApkmirrorScraper(BaseScraper):
         if is_multi_arm and target_arch in ("arm64-v8a", "armeabi-v7a", "universal"):
             return True
 
-        # Pass 4 allows loose architecture matching
-        if pass_idx == 4 and target_arch == "universal" and (
+        if pass_idx == 3 and target_arch == "universal" and (
             "arm64-v8a" in text or "armeabi-v7a" in text
         ):
             return True
@@ -402,15 +370,12 @@ class ApkmirrorScraper(BaseScraper):
 
         is_bundle = self._is_bundle_row(row)
 
-        # Pass 1: Strict bundle preference
         if pass_idx == 1 and force_b != is_bundle:
             return None
 
-        # Pass 1 & 2: Strict version code matching
         if pass_idx in (1, 2) and ver_code and ver_code not in text:
             return None
 
-        # All passes: Architecture matching
         if not self._is_arch_match(text, ctx.arch.lower(), pass_idx):
             return None
 
@@ -428,7 +393,6 @@ class ApkmirrorScraper(BaseScraper):
         for pass_idx in (1, 2, 3, 4):
             opts = {"force_b": force_b, "ver_code": ver_code, "pass_idx": pass_idx}
             for row in rows:
-                # Safeguard against false positive release links
                 link = row.find("a", class_="accent_color")
                 if not link:
                     continue
@@ -452,7 +416,6 @@ class ApkmirrorScraper(BaseScraper):
 
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # Isolate variants table to avoid parsing 'Related Releases'
         v_table = soup.find("div", class_=re.compile(r"variants-table", re.IGNORECASE))
         rows = v_table.find_all("div", class_="table-row") if v_table else soup.find_all(
             "div", class_="table-row"
