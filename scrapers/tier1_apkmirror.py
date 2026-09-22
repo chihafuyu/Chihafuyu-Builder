@@ -1,4 +1,4 @@
-"""Tier 1 Scraper: APKMirror with Pure curl_cffi Stealth and Advanced Query Routing."""
+"""Tier 1 Scraper: APKMirror with Dynamic Stealth Rotation to Bypass WAF."""
 
 import random
 import re
@@ -28,25 +28,19 @@ class _CffiResponseContext:
         self.resp = resp
 
     def __enter__(self) -> Any:
-        return self
+        original_iter = getattr(self.resp, "iter_content", None)
+        if original_iter:
+            def safe_iter_content(*args: Any, **kwargs: Any) -> Any:
+                try:
+                    return original_iter(*args, **kwargs)
+                except TypeError:
+                    return original_iter()
+            self.resp.iter_content = safe_iter_content
+        return self.resp
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         if hasattr(self.resp, "close"):
             self.resp.close()
-
-    def iter_content(self, *args: Any, **kwargs: Any) -> Any:
-        """Safely invoke iter_content, ignoring unsupported arguments like chunk_size."""
-        original_iter = getattr(self.resp, "iter_content", None)
-        if not original_iter:
-            return []
-        try:
-            return original_iter(*args, **kwargs)
-        except TypeError:
-            return original_iter()
-
-    def __getattr__(self, name: str) -> Any:
-        """Delegate missing attributes to the underlying response object."""
-        return getattr(self.resp, name)
 
 
 class _CffiSessionWrapper:
@@ -57,9 +51,8 @@ class _CffiSessionWrapper:
 
     def get(self, *args: Any, **kwargs: Any) -> Any:
         """Executes GET request while intercepting incompatible kwargs and fake streams."""
-        timeout_arg = kwargs.get("timeout")
-        if isinstance(timeout_arg, tuple):
-            kwargs["timeout"] = timeout_arg[-1] if len(timeout_arg) > 1 else timeout_arg[0]
+        if "timeout" in kwargs and isinstance(kwargs["timeout"], tuple):
+            kwargs["timeout"] = kwargs["timeout"][1]
 
         resp = self.session.get(*args, **kwargs)
 
@@ -75,10 +68,6 @@ class _CffiSessionWrapper:
         """Closes the underlying curl_cffi session gracefully."""
         self.session.close()
 
-    def __getattr__(self, name: str) -> Any:
-        """Delegate missing attributes and methods to the underlying session object."""
-        return getattr(self.session, name)
-
 
 class ApkmirrorScraper(BaseScraper):
     """Scrapes APKs from APKMirror handling WAF, variants, and dynamic rate limits."""
@@ -86,12 +75,13 @@ class ApkmirrorScraper(BaseScraper):
     def __init__(self) -> None:
         super().__init__()
         self._current_profile_idx = 0
-        self._profiles = ["chrome131_android", "safari180_ios", "chrome", "safari"]
+        # Chrome, Safari, and Safari iOS currently exhibit the best TLS fingerprint success rates
+        self._profiles = ["chrome", "safari_ios", "safari"]
 
         self.session = cffi_requests.Session(
-            impersonate=self._profiles[self._current_profile_idx],
-            http_version="v2"
+            impersonate=self._profiles[self._current_profile_idx]
         )
+        self._last_url = "https://www.apkmirror.com/"
 
     @property
     def tier_name(self) -> str:
@@ -103,9 +93,9 @@ class ApkmirrorScraper(BaseScraper):
         self.session.close()
         self._current_profile_idx = (self._current_profile_idx + 1) % len(self._profiles)
         self.session = cffi_requests.Session(
-            impersonate=self._profiles[self._current_profile_idx],
-            http_version="v2"
+            impersonate=self._profiles[self._current_profile_idx]
         )
+        self._last_url = "https://www.apkmirror.com/"
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
         ctx.limiter.wait()
@@ -113,11 +103,22 @@ class ApkmirrorScraper(BaseScraper):
 
         for attempt in range(4):
             try:
-                resp = self.session.get(url, timeout=30)
+                # Referer chaining: Simulates natural user navigation from the previous page.
+                headers = {
+                    "Referer": getattr(self, "_last_url", "https://www.apkmirror.com/"),
+                    "Accept-Language": "en-US,en;q=0.9",
+                    "Upgrade-Insecure-Requests": "1"
+                }
+                resp = self.session.get(url, timeout=30, headers=headers)
                 text = resp.text.lower()
+
+                # Robust WAF detection: check title and main content
+                title_match = re.search(r"<title[^>]*>(.*?)</title>", text, re.IGNORECASE)
+                title = title_match.group(1) if title_match else ""
 
                 is_blocked = (
                     resp.status_code in (403, 429, 503) or
+                    "apkmirror" not in title or
                     "too many requests" in text or
                     "ad blocker" in text or
                     "verify you are human" in text or
@@ -141,6 +142,7 @@ class ApkmirrorScraper(BaseScraper):
                     continue
 
                 if resp.status_code == 200:
+                    self._last_url = str(resp.url)
                     return resp
 
             except Exception as err:  # pylint: disable=broad-except
@@ -293,6 +295,7 @@ class ApkmirrorScraper(BaseScraper):
 
         v_soup = BeautifulSoup(v_resp.text, "html.parser")
 
+        # Double check for Cloudflare challenge that might have slipped through
         if v_soup.find("div", id="turnstile-wrapper") or "challenges.cloudflare.com" in v_resp.text:
             print("[WARN] Turnstile challenge detected on variant page!")
             return None
@@ -400,6 +403,7 @@ class ApkmirrorScraper(BaseScraper):
 
         soup = BeautifulSoup(resp.text, "html.parser")
 
+        # Extract rows only from the variants table to avoid "See more releases" links.
         v_table = soup.find("div", class_=re.compile(r"variants-table", re.IGNORECASE))
         rows = v_table.find_all("div", class_="table-row") if v_table else soup.find_all(
             "div", class_="table-row"
@@ -409,6 +413,11 @@ class ApkmirrorScraper(BaseScraper):
             for pass_idx in (1, 2, 3):
                 opts = {"force_b": force_b, "ver_code": ver_code, "pass_idx": pass_idx}
                 for row in rows:
+                    # Safeguard: ensure the link is a variant download, not a release page
+                    link = row.find("a", class_="accent_color")
+                    if link and "-release/" in link.get("href", ""):
+                        continue
+
                     out = self._extract_row(ctx, row, opts)
                     if out:
                         return out
@@ -423,8 +432,7 @@ class ApkmirrorScraper(BaseScraper):
         )
 
         if dl_btn:
-            is_bundle = "bundle" in dl_btn.text.lower()
-            return self._process_variant_page(ctx, rel_url, is_bundle)
+            return self._process_variant_page(ctx, rel_url, "bundle" in dl_btn.text.lower())
 
         print("[WARN] Release table and fallback download button both missing.")
         return None
