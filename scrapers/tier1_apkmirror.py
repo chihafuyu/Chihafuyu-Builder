@@ -40,7 +40,6 @@ class _FlareSolverrSession:
     def get(self, *args: Any, **kwargs: Any) -> Any:
         """Executes GET requests using the appropriate transport layer."""
         if kwargs.get("stream"):
-            # Stream binary payloads directly via authenticated native session
             return self.session.get(*args, **kwargs)
 
         url = args[0] if args else kwargs.get("url")
@@ -63,12 +62,11 @@ class _FlareSolverrSession:
                 html = solution.get("response", "")
                 solved_url = solution.get("url", url)
 
-                # Propagate clearance cookies to native session for WAF-free binary downloads
                 for cookie in solution.get("cookies", []):
                     self.session.cookies.set(
                         cookie["name"],
                         cookie["value"],
-                        domain=cookie.get("domain", "")
+                        domain=cookie.get("domain") or None
                     )
 
                 if "userAgent" in solution:
@@ -133,7 +131,8 @@ class ApkmirrorScraper(BaseScraper):
 
         if not has_ver_text and not has_ver_href:
             major_ver = base_ver.split(".")[0]
-            if major_ver not in text and major_ver not in href:
+            major_pattern = rf"\b{re.escape(major_ver)}\b"
+            if not re.search(major_pattern, text) and not re.search(major_pattern, href):
                 return None
 
         if any(k in text for k in exc_kws):
@@ -159,7 +158,8 @@ class ApkmirrorScraper(BaseScraper):
         short_term = search_term.replace(" Browser", "").replace(" App", "").strip()
         if "." in short_term and " " not in short_term:
             parts = short_term.split(".")
-            short_term = parts[-1] if len(parts[-1]) > 3 else parts[-2]
+            if len(parts) >= 2:
+                short_term = parts[-1] if len(parts[-1]) > 3 else parts[-2]
 
         short_term = short_term.split("-")[0].strip()
 
@@ -336,13 +336,11 @@ class ApkmirrorScraper(BaseScraper):
 
         is_bundle = self._is_bundle_row(row)
 
-        # Pass 1 & 2: Strictly prioritize raw APKs over APKM bundles
         if pass_idx in (1, 2) and is_bundle:
             return None
 
-        # Pass 3 & 4: Fallback to APKM bundles if raw APKs are unavailable
         if pass_idx in (3, 4) and not is_bundle:
-            pass
+            return None
 
         if pass_idx in (1, 3) and ver_code and ver_code not in text:
             return None
