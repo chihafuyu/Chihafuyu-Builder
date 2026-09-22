@@ -75,11 +75,12 @@ class ApkmirrorScraper(BaseScraper):
     def __init__(self) -> None:
         super().__init__()
         self._current_profile_idx = 0
-        # Profiles prioritizing Safari since it naturally falls back to HTTP/2
+        # Prioritize Safari profiles. Enforce HTTP/2 to prevent QUIC drops on CI runners.
         self._profiles = ["safari_ios", "safari", "chrome124", "chrome120", "firefox"]
 
         self.session = cffi_requests.Session(
-            impersonate=self._profiles[self._current_profile_idx]
+            impersonate=self._profiles[self._current_profile_idx],
+            http_version="v2"
         )
         self._last_url = "https://www.apkmirror.com/"
 
@@ -93,7 +94,8 @@ class ApkmirrorScraper(BaseScraper):
         self.session.close()
         self._current_profile_idx = (self._current_profile_idx + 1) % len(self._profiles)
         self.session = cffi_requests.Session(
-            impersonate=self._profiles[self._current_profile_idx]
+            impersonate=self._profiles[self._current_profile_idx],
+            http_version="v2"
         )
         self._last_url = "https://www.apkmirror.com/"
 
@@ -103,7 +105,7 @@ class ApkmirrorScraper(BaseScraper):
 
         for attempt in range(4):
             try:
-                # Referer chaining: Simulates natural user navigation from the previous page.
+                # Simulate natural user navigation from the previous page.
                 headers = {
                     "Referer": getattr(self, "_last_url", "https://www.apkmirror.com/"),
                     "Accept-Language": "en-US,en;q=0.9",
@@ -112,7 +114,6 @@ class ApkmirrorScraper(BaseScraper):
                 resp = self.session.get(url, timeout=30, headers=headers)
                 text = resp.text.lower()
 
-                # Robust WAF detection: check title and main content
                 title_match = re.search(r"<title>(.*?)</title>", text)
                 title = title_match.group(1) if title_match else ""
 
@@ -294,7 +295,6 @@ class ApkmirrorScraper(BaseScraper):
 
         v_soup = BeautifulSoup(v_resp.text, "html.parser")
 
-        # Double check for Cloudflare challenge that might have slipped through
         if v_soup.find("div", id="turnstile-wrapper") or "challenges.cloudflare.com" in v_resp.text:
             print("[WARN] Turnstile challenge detected on variant page!")
             return None
@@ -402,7 +402,6 @@ class ApkmirrorScraper(BaseScraper):
 
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # Extract rows only from the variants table to avoid "See more releases" links.
         v_table = soup.find("div", class_=re.compile(r"variants-table", re.IGNORECASE))
         rows = v_table.find_all("div", class_="table-row") if v_table else soup.find_all(
             "div", class_="table-row"
@@ -412,11 +411,6 @@ class ApkmirrorScraper(BaseScraper):
             for pass_idx in (1, 2, 3):
                 opts = {"force_b": force_b, "ver_code": ver_code, "pass_idx": pass_idx}
                 for row in rows:
-                    # Safeguard: ensure the link is a variant download, not a release page
-                    link = row.find("a", class_="accent_color")
-                    if link and "-release/" in link.get("href", ""):
-                        continue
-
                     out = self._extract_row(ctx, row, opts)
                     if out:
                         return out
@@ -431,7 +425,8 @@ class ApkmirrorScraper(BaseScraper):
         )
 
         if dl_btn:
-            return self._process_variant_page(ctx, rel_url, "bundle" in dl_btn.text.lower())
+            is_bundle = "bundle" in dl_btn.text.lower()
+            return self._process_variant_page(ctx, rel_url, is_bundle)
 
         print("[WARN] Release table and fallback download button both missing.")
         return None
