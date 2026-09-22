@@ -289,15 +289,15 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         v_soup = BeautifulSoup(v_resp.text, "html.parser")
-        
+
         # Double check for Cloudflare challenge that might have slipped through
         if v_soup.find("div", id="turnstile-wrapper") or "challenges.cloudflare.com" in v_resp.text:
             print("[WARN] Turnstile challenge detected on variant page!")
             return None
-            
+
         btns = self._get_download_buttons(v_soup)
         if not btns:
-            print("[WARN] Download button not found on variant page. Possible layout change or WAF.")
+            print("[WARN] Download button not found on variant page. Possible WAF block.")
             return None
 
         btn = self._pick_variant_button(btns, is_bundle)
@@ -317,23 +317,22 @@ class ApkmirrorScraper(BaseScraper):
 
         dl_btn = self._get_final_download_link(BeautifulSoup(d_resp.text, "html.parser"))
 
-        if not dl_btn or not dl_btn.has_attr("href"):
+        out_path = None
+        if dl_btn and dl_btn.has_attr("href"):
+            out_path = ctx.get_out_path(".apkm" if is_bundle else ".apk")
+            print(f"[INFO] Downloading {p_type} from APKMirror...")
+            time.sleep(random.uniform(3.0, 5.0))
+            if not download_file_stream(
+                _CffiSessionWrapper(self.session),
+                urljoin("https://www.apkmirror.com", dl_btn["href"]),
+                out_path,
+                dl_page
+            ):
+                out_path = None
+        else:
             print("[WARN] Final download link not found on APKMirror.")
-            return None
 
-        out_path = ctx.get_out_path(".apkm" if is_bundle else ".apk")
-        print(f"[INFO] Downloading {p_type} from APKMirror...")
-
-        time.sleep(random.uniform(3.0, 5.0))
-
-        if download_file_stream(
-            _CffiSessionWrapper(self.session),
-            urljoin("https://www.apkmirror.com", dl_btn["href"]),
-            out_path,
-            dl_page
-        ):
-            return out_path
-        return None
+        return out_path
 
     @staticmethod
     def _is_arch_match(text: str, target_arch: str, pass_idx: int) -> bool:
@@ -398,12 +397,22 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         soup = BeautifulSoup(resp.text, "html.parser")
-        rows = soup.find_all("div", class_="table-row")
+
+        # Extract rows only from the variants table to avoid "See more releases" links.
+        v_table = soup.find("div", class_=re.compile(r"variants-table", re.IGNORECASE))
+        rows = v_table.find_all("div", class_="table-row") if v_table else soup.find_all(
+            "div", class_="table-row"
+        )
 
         if rows:
             for pass_idx in (1, 2, 3):
                 opts = {"force_b": force_b, "ver_code": ver_code, "pass_idx": pass_idx}
                 for row in rows:
+                    # Safeguard: ensure the link is a variant download, not a release page
+                    link = row.find("a", class_="accent_color")
+                    if link and "-release/" in link.get("href", ""):
+                        continue
+
                     out = self._extract_row(ctx, row, opts)
                     if out:
                         return out
@@ -418,8 +427,7 @@ class ApkmirrorScraper(BaseScraper):
         )
 
         if dl_btn:
-            is_bundle = "bundle" in dl_btn.text.lower()
-            return self._process_variant_page(ctx, rel_url, is_bundle)
+            return self._process_variant_page(ctx, rel_url, "bundle" in dl_btn.text.lower())
 
         print("[WARN] Release table and fallback download button both missing.")
         return None
