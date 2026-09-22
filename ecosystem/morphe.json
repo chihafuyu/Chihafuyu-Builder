@@ -33,10 +33,10 @@
                     "21.16.256"
                 ],
                 "beta": [
-                    "21.38.123"
+                    "21.38.124"
                 ],
                 "version_codes": {
-                    "universal": "1561297201"
+                    "universal": "1561297210"
                 },
                 "strip": true,
                 "force_bundle": false,

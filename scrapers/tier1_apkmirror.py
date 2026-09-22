@@ -379,7 +379,8 @@ class ApkmirrorScraper(BaseScraper):
         if is_multi_arm and target_arch in ("arm64-v8a", "armeabi-v7a", "universal"):
             return True
 
-        if pass_idx == 3 and target_arch == "universal" and (
+        # Pass 4 allows loose architecture matching
+        if pass_idx == 4 and target_arch == "universal" and (
             "arm64-v8a" in text or "armeabi-v7a" in text
         ):
             return True
@@ -400,15 +401,19 @@ class ApkmirrorScraper(BaseScraper):
         text = row.text.lower()
         pass_idx = opts.get("pass_idx", 1)
         force_b = opts.get("force_b", False)
-        ver_code = opts.get("ver_code", "")
+        ver_code = str(opts.get("ver_code", "")).lower()
 
         is_bundle = self._is_bundle_row(row)
-        if pass_idx in (1, 2) and force_b != is_bundle:
+
+        # Pass 1: Strict bundle preference
+        if pass_idx == 1 and force_b != is_bundle:
             return None
 
-        if pass_idx == 1 and ver_code and str(ver_code).lower() not in text:
+        # Pass 1 & 2: Strict version code matching
+        if pass_idx in (1, 2) and ver_code and ver_code not in text:
             return None
 
+        # All passes: Architecture matching
         if not self._is_arch_match(text, ctx.arch.lower(), pass_idx):
             return None
 
@@ -419,6 +424,26 @@ class ApkmirrorScraper(BaseScraper):
         return self._process_variant_page(
             ctx, urljoin("https://www.apkmirror.com", link["href"]), is_bundle
         )
+
+    def _find_variant_in_rows(
+        self, ctx: Context, rows: list[Any], ver_code: str, force_b: bool
+    ) -> Optional[str]:
+        for pass_idx in (1, 2, 3, 4):
+            opts = {"force_b": force_b, "ver_code": ver_code, "pass_idx": pass_idx}
+            for row in rows:
+                # Safeguard against false positive release links
+                link = row.find("a", class_="accent_color")
+                if not link:
+                    continue
+
+                href = link.get("href", "")
+                if href.endswith("-release/") or href.endswith("-release"):
+                    continue
+
+                out = self._extract_row(ctx, row, opts)
+                if out:
+                    return out
+        return None
 
     def _download_variant(
         self, ctx: Context, rel_url: str, ver_code: str, force_b: bool
@@ -437,17 +462,9 @@ class ApkmirrorScraper(BaseScraper):
         )
 
         if rows:
-            for pass_idx in (1, 2, 3):
-                opts = {"force_b": force_b, "ver_code": ver_code, "pass_idx": pass_idx}
-                for row in rows:
-                    # Safeguard against false positive release links
-                    link = row.find("a", class_="accent_color")
-                    if link and "-release/" in link.get("href", ""):
-                        continue
-
-                    out = self._extract_row(ctx, row, opts)
-                    if out:
-                        return out
+            out = self._find_variant_in_rows(ctx, rows, ver_code, force_b)
+            if out:
+                return out
 
             print("[WARN] No matching variants found in release table.")
             return None
