@@ -42,6 +42,10 @@ class _CffiResponseContext:
         if hasattr(self.resp, "close"):
             self.resp.close()
 
+    def __getattr__(self, name: str) -> Any:
+        """Delegate missing attributes to the underlying response object."""
+        return getattr(self.resp, name)
+
 
 class _CffiSessionWrapper:
     """Wraps curl_cffi Session to ensure compatibility with generic requests downloaders."""
@@ -51,8 +55,9 @@ class _CffiSessionWrapper:
 
     def get(self, *args: Any, **kwargs: Any) -> Any:
         """Executes GET request while intercepting incompatible kwargs and fake streams."""
-        if "timeout" in kwargs and isinstance(kwargs["timeout"], tuple):
-            kwargs["timeout"] = kwargs["timeout"][1]
+        timeout_arg = kwargs.get("timeout")
+        if isinstance(timeout_arg, tuple):
+            kwargs["timeout"] = timeout_arg[-1] if len(timeout_arg) > 1 else timeout_arg[0]
 
         resp = self.session.get(*args, **kwargs)
 
@@ -68,6 +73,10 @@ class _CffiSessionWrapper:
         """Closes the underlying curl_cffi session gracefully."""
         self.session.close()
 
+    def __getattr__(self, name: str) -> Any:
+        """Delegate missing attributes and methods to the underlying session object."""
+        return getattr(self.session, name)
+
 
 class ApkmirrorScraper(BaseScraper):
     """Scrapes APKs from APKMirror handling WAF, variants, and dynamic rate limits."""
@@ -75,7 +84,7 @@ class ApkmirrorScraper(BaseScraper):
     def __init__(self) -> None:
         super().__init__()
         self._current_profile_idx = 0
-        self._profiles = ["chrome124", "chrome120", "safari_ios", "safari"]
+        self._profiles = ["chrome124", "chrome120", "edge101", "safari"]
 
         self.session = cffi_requests.Session(
             impersonate=self._profiles[self._current_profile_idx],
@@ -104,12 +113,14 @@ class ApkmirrorScraper(BaseScraper):
 
         for attempt in range(4):
             try:
-                # Intentionally omitting custom headers to preserve pure TLS fingerprints
-                resp = self.session.get(url, timeout=30)
+                headers = {"Referer": getattr(self, "_last_url", "https://www.apkmirror.com/")}
+                resp = self.session.get(url, timeout=30, headers=headers)
                 text = resp.text.lower()
 
-                title_match = re.search(r"<title>(.*?)</title>", text)
-                title = title_match.group(1) if title_match else ""
+                title_match = re.search(
+                    r"<title[^>]*>(.*?)</title>", text, re.IGNORECASE | re.DOTALL
+                )
+                title = title_match.group(1).strip() if title_match else ""
 
                 is_blocked = (
                     resp.status_code in (403, 429, 503) or
@@ -161,13 +172,8 @@ class ApkmirrorScraper(BaseScraper):
         has_ver_text = base_ver.lower() in text
         has_ver_href = href_ver.lower() in href.lower()
 
-        # Relaxed validation to account for APKMirror URL formatting anomalies
-        # where the package name does not strictly match the URL slug.
         if not has_ver_text and not has_ver_href:
-            # Fallback: Check if at least the major version number is present
-            major_ver = base_ver.split(".")[0]
-            if major_ver not in text and major_ver not in href:
-                return None
+            return None
 
         if any(k in text for k in exc_kws):
             return None
@@ -189,11 +195,9 @@ class ApkmirrorScraper(BaseScraper):
     def _get_search_queries(ctx: Context, base_ver: str) -> list[str]:
         search_term = ctx.app_data.get("search_term", ctx.pkg)
 
-        # Enhance short term generation to handle complex package names and apps
         short_term = search_term.replace(" Browser", "").replace(" App", "").strip()
         if "." in short_term:
             parts = short_term.split(".")
-            # Target the most descriptive part of the package name (usually the last or middle part)
             short_term = parts[-1] if len(parts[-1]) > 3 else parts[-2]
 
         short_term = short_term.split("-")[0].strip()
