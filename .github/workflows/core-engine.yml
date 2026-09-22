@@ -71,6 +71,13 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: '3.14'
+          
+      - name: Start FlareSolverr Microservice
+        run: |
+          docker run -d --name=flaresolverr -p 8191:8191 -e LOG_LEVEL=info ghcr.io/flaresolverr/flaresolverr:latest
+          echo "Waiting for FlareSolverr to initialize..."
+          timeout 30 bash -c 'while ! curl -s http://localhost:8191/ > /dev/null; do sleep 2; done' || true
+          echo "FlareSolverr proxy is online!"
 
       - name: Install Dependencies & apkeep
         env:

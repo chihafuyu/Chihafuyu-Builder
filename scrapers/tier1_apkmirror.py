@@ -1,17 +1,17 @@
-"""Tier 1 Scraper: APKMirror utilizing ai-cloudscraper Hybrid Engine to Bypass WAF."""
+"""Tier 1 Scraper: APKMirror utilizing FlareSolverr Microservice to Bypass WAF."""
 
 import random
 import re
-import subprocess
 import time
+from dataclasses import dataclass
 from typing import Any, Optional
 from urllib.parse import quote_plus, urljoin
 
 from bs4 import BeautifulSoup
-import cloudscraper
+import requests
 
 from core.context import Context
-from core.utils import _is_waf_blocked, download_file_stream
+from core.utils import download_file_stream
 from .base import BaseScraper
 
 
@@ -22,129 +22,98 @@ EDITION_SLUG_REGEX = re.compile(
 )
 
 
-class _CloudscraperWrapper:
-    """Wraps Cloudscraper Session to intercept HTML streams and prevent corrupt downloads."""
+@dataclass
+class _DummyResponse:
+    """A mock requests.Response object for FlareSolverr HTML returns."""
+    status_code: int
+    text: str
+    url: str
 
-    def __init__(self, session: cloudscraper.CloudScraper) -> None:
-        self.session = session
+
+class _FlareSolverrSession:
+    """Routes HTML requests through FlareSolverr and binary streams through native requests."""
+
+    def __init__(self) -> None:
+        self.proxy_url = "http://localhost:8191/v1"
+        self.session = requests.Session()
 
     def get(self, *args: Any, **kwargs: Any) -> Any:
-        """Executes GET request and forces HTTP 403 if an HTML block page is streamed."""
-        resp = self.session.get(*args, **kwargs)
-
+        """Executes GET requests. Streams are native; others use FlareSolverr proxy."""
         if kwargs.get("stream"):
-            c_type = resp.headers.get("Content-Type", "").lower()
-            if "text/html" in c_type:
-                print("[WARN] Stream returned HTML. WAF trap or expired token detected.")
-                resp.status_code = 403
+            # Native requests session uses the solved cookies for binary downloads
+            return self.session.get(*args, **kwargs)
 
-        return resp
+        url = args[0] if args else kwargs.get("url")
+        timeout = kwargs.get("timeout", 45)
+        if isinstance(timeout, tuple):
+            timeout = timeout[0]
+
+        payload = {
+            "cmd": "request.get",
+            "url": url,
+            "maxTimeout": int(timeout * 1000)
+        }
+
+        try:
+            res = requests.post(self.proxy_url, json=payload, timeout=timeout + 15)
+            data = res.json()
+
+            if data.get("status") == "ok":
+                solution = data.get("solution", {})
+                html = solution.get("response", "")
+                solved_url = solution.get("url", url)
+
+                # Inject clearance cookies into the native session for subsequent downloads
+                for cookie in solution.get("cookies", []):
+                    self.session.cookies.set(
+                        cookie["name"],
+                        cookie["value"],
+                        domain=cookie.get("domain", "")
+                    )
+
+                if "userAgent" in solution:
+                    self.session.headers.update({"User-Agent": solution["userAgent"]})
+
+                return _DummyResponse(status_code=200, text=html, url=solved_url)
+
+            err_msg = data.get("message", "Unknown FlareSolverr error")
+            print(f"[WARN] FlareSolverr returned error status: {err_msg}")
+            return _DummyResponse(status_code=403, text="", url=url)
+
+        except requests.exceptions.RequestException as err:
+            print(f"[WARN] FlareSolverr microservice connection failed: {err}")
+            return _DummyResponse(status_code=500, text="", url=url)
 
     def close(self) -> None:
-        """Closes the underlying session gracefully."""
+        """Closes the native requests session."""
         self.session.close()
 
 
 class ApkmirrorScraper(BaseScraper):
-    """Scrapes APKs from APKMirror handling WAF, variants, and dynamic rate limits."""
-
-    _playwright_provisioned = False
+    """Scrapes APKs from APKMirror handling WAF via local FlareSolverr instance."""
 
     def __init__(self) -> None:
         super().__init__()
-        self._session: Optional[cloudscraper.CloudScraper] = None
+        self._session = _FlareSolverrSession()
 
     @property
     def tier_name(self) -> str:
         """Returns the tier identifier."""
         return "apkmirror"
 
-    def _provision_playwright(self) -> None:
-        """Dynamically installs Playwright browsers required for the Hybrid Engine bridge."""
-        if not ApkmirrorScraper._playwright_provisioned:
-            print("[INFO] Provisioning Playwright Chromium for Hybrid Engine...")
-            subprocess.run(
-                ["python", "-m", "playwright", "install", "chromium"],
-                capture_output=True,
-                check=False
-            )
-            ApkmirrorScraper._playwright_provisioned = True
-
-    def _initialize_session(self, browser_type: str = "chrome") -> None:
-        """Generates a fresh cloudscraper session strictly using the Hybrid Engine."""
-        if self._session:
-            self._session.close()
-
-        self._provision_playwright()
-
-        # Utilizing Hybrid Engine, Research profile, and AI OCR Captcha fallbacks
-        # exactly as specified in ai-cloudscraper documentation for Turnstile bypass.
-        self._session = cloudscraper.create_scraper(
-            browser={
-                "browser": browser_type,
-                "platform": "windows",
-                "desktop": True
-            },
-            interpreter="hybrid",
-            behavior_profile="research",
-            captcha={
-                "provider": "hybrid",
-                "fallbacks": ["ai_ocr"]
-            },
-            delay=5.0
-        )
-
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
+        """Fetches page source ensuring FlareSolverr correctly resolves the WAF."""
         ctx.limiter.wait()
         time.sleep(random.uniform(2.5, 4.5))
 
-        if not self._session:
-            self._initialize_session()
+        for attempt in range(3):
+            resp = self._session.get(url, timeout=45)
 
-        for attempt in range(4):
-            try:
-                # Removed manual headers injection (like Referer) as it corrupts
-                # the strict HTTP/2 pseudo-header ordering maintained by curl_cffi,
-                # which causes immediate Cloudflare 403 rejections.
-                resp = self._session.get(url, timeout=30)
-                text = resp.text.lower()
+            if resp.status_code == 200 and "apkmirror.com" in str(resp.url):
+                return resp
 
-                # Robust False-Positive Prevention:
-                # Variant pages dynamically generated by APKMirror frequently omit the site name,
-                # triggering self-sabotaging rotation loops on valid HTTP 200s if checked.
-                is_blocked = (
-                    resp.status_code in (403, 429, 503) or
-                    "too many requests" in text or
-                    "ad blocker" in text or
-                    "verify you are human" in text or
-                    "ray id" in text or
-                    "attention required" in text or
-                    "security check" in text or
-                    "just a moment" in text or
-                    "challenges.cloudflare.com" in text or
-                    "cf-turnstile" in text or
-                    "checking your browser" in text or
-                    ("cloudflare" in text and "enable javascript" in text)
-                )
-
-                if is_blocked or _is_waf_blocked(resp.status_code, text):
-                    print(
-                        f"[WARN] WAF/Block (HTTP {resp.status_code}). "
-                        f"Backing off (attempt {attempt + 1}/4)..."
-                    )
-                    if attempt == 2:
-                        print("[INFO] Re-initializing cloudscraper session to evade block.")
-                        self._initialize_session(browser_type="firefox")
-
-                    time.sleep(random.uniform(8.0, 12.0))
-                    continue
-
-                if resp.status_code == 200:
-                    return resp
-
-            except Exception as err:  # pylint: disable=broad-except
-                print(f"[WARN] Request failed: {err}")
-                time.sleep(random.uniform(4.0, 7.0))
+            print(f"[WARN] FlareSolverr unable to solve WAF (attempt {attempt + 1}/3)...")
+            time.sleep(random.uniform(5.0, 10.0))
 
         return None
 
@@ -291,13 +260,6 @@ class ApkmirrorScraper(BaseScraper):
 
         v_soup = BeautifulSoup(v_resp.text, "html.parser")
 
-        if (
-            v_soup.find("div", id="turnstile-wrapper")
-            or "challenges.cloudflare.com" in v_resp.text
-        ):
-            print("[WARN] Turnstile challenge detected on variant page!")
-            return None
-
         btns = self._get_download_buttons(v_soup)
         if not btns:
             print("[WARN] Download button not found on variant page. Possible WAF block.")
@@ -326,7 +288,7 @@ class ApkmirrorScraper(BaseScraper):
             print(f"[INFO] Downloading {p_type} from APKMirror...")
             time.sleep(random.uniform(3.0, 5.0))
             if not download_file_stream(
-                _CloudscraperWrapper(self._session),
+                self._session,
                 urljoin("https://www.apkmirror.com", dl_btn["href"]),
                 out_path,
                 dl_page
