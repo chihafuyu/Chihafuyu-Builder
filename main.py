@@ -184,13 +184,9 @@ def _generate_options_json(app_name: str, args: Any, app_data: dict, workspace: 
     return json_file
 
 
-def process_single_app(
-    app_name: str, args: Any, app_data: dict, custom_ver: str, state: dict
-) -> None:
-    """Processes a single application for downloading and patching safely."""
+def _resolve_target_version(app_data: dict, args: Any, custom_ver: str) -> str:
+    """Resolves target version safely avoiding index errors."""
     t_ver = custom_ver if custom_ver else app_data.get("stable", [""])[0]
-
-    # Safely resolve target version avoiding IndexError if beta track is missing
     if args.version_selection.lower() in ["beta", "pre-release", "latest", "experimental"]:
         beta_list = app_data.get("beta", [])
         if beta_list:
@@ -198,7 +194,14 @@ def process_single_app(
         else:
             stable_list = app_data.get("stable", [t_ver])
             t_ver = stable_list[0] if stable_list else t_ver
+    return t_ver
 
+
+def process_single_app(
+    app_name: str, args: Any, app_data: dict, custom_ver: str, state: dict
+) -> None:
+    """Processes a single application for downloading and patching safely."""
+    t_ver = _resolve_target_version(app_data, args, custom_ver)
     arch = app_data.get("force_arch", args.arch)
     print(f"\n--- {app_name} ({app_data['package']}) ---")
 
