@@ -49,25 +49,58 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "nokoprint": {
+                "package": "com.nokoprint",
+                "search_term": "NokoPrint",
+                "stable": [
+                    "5.10.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_arch": "universal",
+                "version_codes": {
+                    "universal": "318"
+                },
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "tiktok-asia": {
                 "package": "com.ss.android.ugc.trill",
                 "search_term": "TikTok Asia",
                 "description": "Any TikTok version (Asia nodpi APK)",
-                "stable": ["47.0.3"],
+                "stable": [
+                    "47.0.3"
+                ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Language Pack Purger": {
+                        "enabled": true,
+                        "options": {
+                            "locales": "en, id"
+                        }
+                    }
+                }
             },
             "tiktok-global": {
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok Global",
                 "description": "Any TikTok version (Global nodpi APK)",
-                "stable": ["47.0.3"],
+                "stable": [
+                    "47.0.3"
+                ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Language Pack Purger": {
+                        "enabled": true,
+                        "options": {
+                            "locales": "en, id"
+                        }
+                    }
+                }
             },
             "vivaldi-browser": {
                 "package": "com.vivaldi.browser",
