@@ -1,16 +1,16 @@
-"""Tier 1 Scraper: APKMirror utilizing Cloudscraper with Stealth Mode to Bypass WAF."""
+"""Tier 1 Scraper: APKMirror utilizing FlareSolverr Microservice to Bypass WAF."""
 
+import random
 import re
 import time
-import random
 from typing import Any, Optional
 from urllib.parse import quote_plus, urljoin
 
 from bs4 import BeautifulSoup
-import cloudscraper
+import requests
 
 from core.context import Context
-from core.utils import _is_waf_blocked, download_file_stream
+from core.utils import download_file_stream
 from .base import BaseScraper
 
 
@@ -21,28 +21,115 @@ EDITION_SLUG_REGEX = re.compile(
 )
 
 
+class _DummyResponse:
+    """Mock requests.Response object for FlareSolverr HTML returns."""
+
+    def __init__(self, status_code: int, text: str, url: str) -> None:
+        self.status_code = status_code
+        self.text = text
+        self.url = url
+        self.headers: dict[str, str] = {}
+        self.content = text.encode("utf-8")
+
+    def raise_for_status(self) -> None:
+        """Raises stored HTTP error, if one occurred."""
+        if self.status_code >= 400:
+            raise requests.exceptions.HTTPError(f"Error: {self.status_code}")
+
+    def __enter__(self) -> "_DummyResponse":
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        pass
+
+
+class _FlareSolverrSession:
+    """Routes HTML requests through FlareSolverr and binary streams through native requests."""
+
+    def __init__(self) -> None:
+        self.proxy_url = "http://localhost:8191/v1"
+        self.session = requests.Session()
+        self.proxy_session_id = self._create_session()
+
+    def _create_session(self) -> str:
+        """Initializes a persistent browser session in FlareSolverr to improve speed."""
+        try:
+            res = requests.post(
+                self.proxy_url, json={"cmd": "sessions.create"}, timeout=15
+            )
+            return res.json().get("session", "")
+        except (requests.exceptions.RequestException, ValueError):
+            return ""
+
+    def get(self, *args: Any, **kwargs: Any) -> Any:
+        """Executes GET requests using the appropriate transport layer."""
+        if kwargs.get("stream"):
+            # Stream binary payloads directly via authenticated native session
+            return self.session.get(*args, **kwargs)
+
+        url = args[0] if args else kwargs.get("url")
+        timeout = kwargs.get("timeout", 45)
+        if isinstance(timeout, tuple):
+            timeout = timeout[0]
+
+        payload = {
+            "cmd": "request.get",
+            "url": url,
+            "maxTimeout": int(timeout * 1000)
+        }
+        if self.proxy_session_id:
+            payload["session"] = self.proxy_session_id
+
+        try:
+            res = requests.post(self.proxy_url, json=payload, timeout=timeout + 15)
+            data = res.json()
+
+            if data.get("status") == "ok":
+                solution = data.get("solution", {})
+                html = solution.get("response", "")
+                solved_url = solution.get("url", url)
+
+                # Propagate clearance cookies to native session for WAF-free binary downloads
+                for cookie in solution.get("cookies", []):
+                    self.session.cookies.set(
+                        cookie["name"],
+                        cookie["value"],
+                        domain=cookie.get("domain") or None
+                    )
+
+                if "userAgent" in solution:
+                    self.session.headers.update({"User-Agent": solution["userAgent"]})
+
+                return _DummyResponse(status_code=200, text=html, url=solved_url)
+
+            err_msg = data.get("message", "Unknown FlareSolverr error")
+            print(f"[WARN] FlareSolverr returned error status: {err_msg}")
+            return _DummyResponse(status_code=403, text="", url=url)
+
+        except (requests.exceptions.RequestException, ValueError) as err:
+            print(f"[WARN] FlareSolverr connection failed: {err}")
+            return _DummyResponse(status_code=500, text="", url=url)
+
+    def close(self) -> None:
+        """Destroys proxy session and closes the underlying native requests session."""
+        if self.proxy_session_id:
+            try:
+                requests.post(
+                    self.proxy_url,
+                    json={"cmd": "sessions.destroy", "session": self.proxy_session_id},
+                    timeout=10
+                )
+            except (requests.exceptions.RequestException, ValueError):
+                pass
+        self.session.close()
+
+
 class ApkmirrorScraper(BaseScraper):
-    """Scrapes APKs from APKMirror handling WAF, variants, and dynamic rate limits."""
+    """Scrapes APKs from APKMirror handling WAF via local FlareSolverr instance."""
 
     def __init__(self) -> None:
         super().__init__()
-        self.session = cloudscraper.create_scraper(
-            browser={
-                "browser": "chrome",
-                "platform": "windows",
-                "desktop": True
-            },
-            interpreter="js2py",
-            enable_stealth=True,
-            stealth_options={
-                "min_delay": 2.0,
-                "max_delay": 5.0,
-                "human_like_delays": True,
-                "randomize_headers": True,
-                "browser_quirks": True
-            }
-        )
-        self.session.headers.update({"Referer": "https://www.google.com/"})
+        self._session = _FlareSolverrSession()
 
     @property
     def tier_name(self) -> str:
@@ -50,41 +137,18 @@ class ApkmirrorScraper(BaseScraper):
         return "apkmirror"
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
+        """Fetches page source ensuring FlareSolverr correctly resolves WAF challenges."""
         ctx.limiter.wait()
         time.sleep(random.uniform(2.5, 4.5))
 
         for attempt in range(3):
-            try:
-                resp = self.session.get(url, timeout=30)
-                text = resp.text.lower()
+            resp = self._session.get(url, timeout=45)
 
-                is_blocked = (
-                    resp.status_code in (403, 429, 503) or
-                    "too many requests" in text or
-                    "ad blocker" in text or
-                    "verify you are human" in text or
-                    "ray id" in text or
-                    "attention required" in text or
-                    "security check" in text or
-                    "just a moment" in text or
-                    ("cloudflare" in text and "enable javascript" in text)
-                )
+            if resp.status_code == 200 and "apkmirror.com" in str(resp.url):
+                return resp
 
-                if is_blocked or _is_waf_blocked(resp.status_code, text):
-                    print(
-                        f"[WARN] WAF/Block (HTTP {resp.status_code}). "
-                        f"Backing off (attempt {attempt + 1}/3)..."
-                    )
-                    time.sleep(random.uniform(10.0, 15.0) * (attempt + 1))
-                    continue
-
-                if resp.status_code == 200:
-                    self.session.headers.update({"Referer": str(resp.url)})
-                    return resp
-
-            except Exception as err:  # pylint: disable=broad-except
-                print(f"[WARN] Request failed: {err}")
-                time.sleep(random.uniform(4.0, 7.0))
+            print(f"[WARN] FlareSolverr WAF resolution failed (attempt {attempt + 1}/3)...")
+            time.sleep(random.uniform(5.0, 10.0))
 
         return None
 
@@ -103,7 +167,11 @@ class ApkmirrorScraper(BaseScraper):
         has_ver_href = href_ver.lower() in href.lower()
 
         if not has_ver_text and not has_ver_href:
-            return None
+            parts = base_ver.split(".")
+            major_minor = ".".join(parts[:2]) if len(parts) >= 2 else base_ver
+            major_pattern = rf"\b{re.escape(major_minor)}\b"
+            if not re.search(major_pattern, text) and not re.search(major_pattern, href):
+                return None
 
         if any(k in text for k in exc_kws):
             return None
@@ -124,20 +192,20 @@ class ApkmirrorScraper(BaseScraper):
     @staticmethod
     def _get_search_queries(ctx: Context, base_ver: str) -> list[str]:
         search_term = ctx.app_data.get("search_term", ctx.pkg)
-        if "." in search_term and " " not in search_term:
-            short_term = search_term
-        else:
-            short_term = (
-                search_term.replace(" Browser", "")
-                .replace(" App", "")
-                .split("-")[0]
-                .strip()
-            )
+
+        short_term = search_term.replace(" Browser", "").replace(" App", "").strip()
+        if "." in short_term and " " not in short_term:
+            parts = short_term.split(".")
+            if len(parts) >= 2:
+                short_term = parts[-1] if len(parts[-1]) > 3 else parts[-2]
+
+        short_term = short_term.split("-")[0].strip()
 
         return list(dict.fromkeys([
             ctx.pkg,
             search_term,
             f"{search_term} {base_ver}",
+            f"{short_term} {base_ver}",
             short_term
         ]))
 
@@ -230,13 +298,9 @@ class ApkmirrorScraper(BaseScraper):
 
         v_soup = BeautifulSoup(v_resp.text, "html.parser")
 
-        if v_soup.find("div", id="turnstile-wrapper") or "challenges.cloudflare.com" in v_resp.text:
-            print("[WARN] Turnstile challenge detected on variant page!")
-            return None
-
         btns = self._get_download_buttons(v_soup)
         if not btns:
-            print("[WARN] Download button not found on variant page. Possible WAF block.")
+            print("[WARN] Download button not found on variant page.")
             return None
 
         btn = self._pick_variant_button(btns, is_bundle)
@@ -262,7 +326,7 @@ class ApkmirrorScraper(BaseScraper):
             print(f"[INFO] Downloading {p_type} from APKMirror...")
             time.sleep(random.uniform(3.0, 5.0))
             if not download_file_stream(
-                self.session,
+                self._session,
                 urljoin("https://www.apkmirror.com", dl_btn["href"]),
                 out_path,
                 dl_page
@@ -286,7 +350,7 @@ class ApkmirrorScraper(BaseScraper):
         if is_multi_arm and target_arch in ("arm64-v8a", "armeabi-v7a", "universal"):
             return True
 
-        if pass_idx == 3 and target_arch == "universal" and (
+        if pass_idx >= 3 and target_arch == "universal" and (
             "arm64-v8a" in text or "armeabi-v7a" in text
         ):
             return True
@@ -306,14 +370,17 @@ class ApkmirrorScraper(BaseScraper):
     ) -> Optional[str]:
         text = row.text.lower()
         pass_idx = opts.get("pass_idx", 1)
-        force_b = opts.get("force_b", False)
-        ver_code = opts.get("ver_code", "")
+        ver_code = str(opts.get("ver_code", "")).lower()
 
         is_bundle = self._is_bundle_row(row)
-        if pass_idx in (1, 2) and force_b != is_bundle:
+
+        if pass_idx in (1, 2) and is_bundle:
             return None
 
-        if pass_idx == 1 and ver_code and str(ver_code).lower() not in text:
+        if pass_idx in (3, 4) and not is_bundle:
+            return None
+
+        if pass_idx in (1, 3) and ver_code and ver_code not in text:
             return None
 
         if not self._is_arch_match(text, ctx.arch.lower(), pass_idx):
@@ -327,8 +394,27 @@ class ApkmirrorScraper(BaseScraper):
             ctx, urljoin("https://www.apkmirror.com", link["href"]), is_bundle
         )
 
+    def _find_variant_in_rows(
+        self, ctx: Context, rows: list[Any], ver_code: str
+    ) -> Optional[str]:
+        for pass_idx in (1, 2, 3, 4):
+            opts = {"ver_code": ver_code, "pass_idx": pass_idx}
+            for row in rows:
+                link = row.find("a", class_="accent_color")
+                if not link:
+                    continue
+
+                href = link.get("href", "")
+                if href.endswith("-release/") or href.endswith("-release"):
+                    continue
+
+                out = self._extract_row(ctx, row, opts)
+                if out:
+                    return out
+        return None
+
     def _download_variant(
-        self, ctx: Context, rel_url: str, ver_code: str, force_b: bool
+        self, ctx: Context, rel_url: str, ver_code: str
     ) -> Optional[str]:
         resp = self._safe_get(ctx, rel_url)
         if not resp:
@@ -343,12 +429,9 @@ class ApkmirrorScraper(BaseScraper):
         )
 
         if rows:
-            for pass_idx in (1, 2, 3):
-                opts = {"force_b": force_b, "ver_code": ver_code, "pass_idx": pass_idx}
-                for row in rows:
-                    out = self._extract_row(ctx, row, opts)
-                    if out:
-                        return out
+            out = self._find_variant_in_rows(ctx, rows, ver_code)
+            if out:
+                return out
 
             print("[WARN] No matching variants found in release table.")
             return None
@@ -360,8 +443,7 @@ class ApkmirrorScraper(BaseScraper):
         )
 
         if dl_btn:
-            is_bundle = "bundle" in dl_btn.text.lower()
-            return self._process_variant_page(ctx, rel_url, is_bundle)
+            return self._process_variant_page(ctx, rel_url, "bundle" in dl_btn.text.lower())
 
         print("[WARN] Release table and fallback download button both missing.")
         return None
@@ -375,9 +457,7 @@ class ApkmirrorScraper(BaseScraper):
             if not rel_url:
                 print("[WARN] Release not found.")
                 return None
-            return self._download_variant(
-                ctx, rel_url, ver_code, ctx.app_data.get("force_bundle", False)
-            )
+            return self._download_variant(ctx, rel_url, ver_code)
         except Exception as err:  # pylint: disable=broad-except
             print(f"[ERROR] Tier 1 failed: {err}")
         return None

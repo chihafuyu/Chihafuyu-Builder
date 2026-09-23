@@ -8,25 +8,27 @@ import json
 import os
 import shutil
 import tempfile
-import zipfile
-from typing import Any
+from typing import Any, Optional
 from urllib.parse import urlparse
+import zipfile
+
 import requests
-import cloudscraper
 
 MAX_DOWNLOAD_BYTES = 1024 * 1024 * 1024
 CHUNK_SIZE = 1024 * 1024
 
 
-def get_scraper() -> Any:
-    """Initializes and returns a cloudscraper instance."""
-    scraper = cloudscraper.create_scraper(
-        browser={'browser': 'chrome', 'platform': 'windows', 'desktop': True}
-    )
-    scraper.headers.update({
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126.0.0"
+def get_scraper() -> requests.Session:
+    """Initializes and returns a configured requests session instance."""
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/126.0.0.0 Safari/537.36"
+        )
     })
-    return scraper
+    return session
 
 
 def _safe_filename(name: str, fallback: str = "artifact") -> str:
@@ -63,7 +65,9 @@ def _check_virustotal(file_hash: str) -> bool:
     try:
         resp = requests.get(url, headers={"x-apikey": vt_key}, timeout=10)
         if resp.status_code == 200:
-            stats = resp.json().get("data", {}).get("attributes", {}).get("last_analysis_stats", {})
+            stats = resp.json().get("data", {}).get(
+                "attributes", {}
+            ).get("last_analysis_stats", {})
             mal = stats.get("malicious", 0)
             sus = stats.get("suspicious", 0)
             if mal > 0 or sus > 0:
@@ -147,14 +151,16 @@ def verify_file_hash(file_path: str) -> None:
         print(f"[WARN] Hash verification skipped due to error: {err}")
 
 
-def download_file_stream(scraper: Any, url: str, out_path: str,
-                         referer: str = "", check_dmca: bool = False) -> bool:
+def download_file_stream(
+    scraper: Any, url: str, out_path: str, referer: str = "", check_dmca: bool = False
+) -> bool:
     """Downloads a file safely with streaming, size limits, and atomic replacement."""
     try:
         _validate_http_url(url)
         headers = {"Referer": referer} if referer else None
-        with scraper.get(url, stream=True, headers=headers, timeout=(10, 60),
-                         allow_redirects=True) as resp:
+        with scraper.get(
+            url, stream=True, headers=headers, timeout=(10, 60), allow_redirects=True
+        ) as resp:
             if resp.status_code != 200:
                 return False
             disp = resp.headers.get('Content-Disposition', '').lower()
@@ -206,7 +212,7 @@ def _extract_xapk(file_path: str, zip_obj: zipfile.ZipFile, namelist: list) -> s
     return file_path
 
 
-def process_downloaded_file(file_path: str) -> str | None:
+def process_downloaded_file(file_path: str) -> Optional[str]:
     """Processes downloaded files, handling pure APKs and wrappers."""
     try:
         if not zipfile.is_zipfile(file_path):
@@ -255,7 +261,9 @@ def _search_and_update(obj: Any, patch_name: str, override_data: dict) -> bool:
     return found
 
 
-def update_options_json(filepath: str, overrides: dict, exclusive_patches: list = None) -> None:
+def update_options_json(
+    filepath: str, overrides: dict, exclusive_patches: Optional[list] = None
+) -> None:
     """Injects custom options and handles exclusive patch restrictions into the JSON file."""
     try:
         with open(filepath, 'r', encoding='utf-8') as opt_file:
@@ -263,7 +271,8 @@ def update_options_json(filepath: str, overrides: dict, exclusive_patches: list 
 
         if exclusive_patches:
             print("[INFO] Enforcing exclusive patch states inside options.json...")
-            def _apply_exclusivity(node: Any):
+
+            def _apply_exclusivity(node: Any) -> None:
                 if isinstance(node, dict):
                     for k, v in node.items():
                         if isinstance(v, dict) and "enabled" in v:
@@ -272,6 +281,7 @@ def update_options_json(filepath: str, overrides: dict, exclusive_patches: list 
                 elif isinstance(node, list):
                     for item in node:
                         _apply_exclusivity(item)
+
             _apply_exclusivity(data)
 
         for patch_name, override_data in overrides.items():

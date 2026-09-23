@@ -23,7 +23,7 @@ from core.utils import (
 
 
 def load_config(ecosystem_name: str) -> Dict[str, Any]:
-    """Loads the ecosystem configuration from the specific JSON file."""
+    """Loads ecosystem configuration from the specific JSON file."""
     config_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         "ecosystem",
@@ -44,7 +44,7 @@ def load_config(ecosystem_name: str) -> Dict[str, Any]:
 
 
 def download_apk(ctx: Context, args: Any) -> Optional[str]:
-    """Fallback mechanism or targeted download for APK through multiple dynamic sources."""
+    """Downloads target APK through fallback sources or primary scraper."""
     if ctx.target_ver.lower() == "any":
         print("[ERROR] Version defined as 'Any'. Skipping.")
         return None
@@ -60,8 +60,7 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
 
     fallback_order = [
         "direct", "github", "huggingface", "apkmirror",
-        "archive", "uptodown", "apkcombo", "apkpure",
-        "aptoide", "google_play"
+        "archive", "apkpure", "google_play"
     ]
 
     for src_name in fallback_order:
@@ -76,7 +75,7 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
 
 
 def write_changelog(args: Any, apps_patched: list, workspace: str, clean_ver: str) -> None:
-    """Write the patched apps changelog to a markdown file."""
+    """Writes the patched apps changelog to a markdown file."""
     log_path = os.path.join(workspace, "changelog.md")
     with open(log_path, "w", encoding="utf-8") as f_obj:
         f_obj.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
@@ -114,7 +113,7 @@ def _get_patched_apk_path(app: str, ver: str, arch: str, args: Any, state: dict)
 
 
 def build_patch_command(args: Any, app_data: dict, paths: tuple, target_arch: str) -> list:
-    """Builds the shell command for the CLI, including exclusive patch handling."""
+    """Builds the CLI shell command including exclusive patch parameters."""
     cmd = [
         "java", "-Xmx4G", "-jar", args.cli, "patch", "--patches", args.patches,
         "--options-file", paths[1], "--out", paths[2], "--bytecode-mode", "FULL"
@@ -167,7 +166,7 @@ def execute_patch_cli(patch_cmd: list) -> tuple:
 
 
 def _generate_options_json(app_name: str, args: Any, app_data: dict, workspace: str) -> str:
-    """Generates the options.json file required for patching."""
+    """Generates options.json file required for patching."""
     json_file = os.path.join(workspace, f"{_safe_filename(app_name)}-options.json")
     cmd = ["java", "-jar", args.cli, "options-create", "--patches", args.patches,
            "--out", json_file, "--filter-package-name", app_data["package"]]
@@ -185,14 +184,26 @@ def _generate_options_json(app_name: str, args: Any, app_data: dict, workspace: 
     return json_file
 
 
+def _resolve_target_version(app_data: dict, args: Any, custom_ver: str) -> str:
+    """Resolves target version safely avoiding index errors from empty fallback lists."""
+    t_ver = custom_ver if custom_ver else (app_data.get("stable") or [""])[0]
+
+    if args.version_selection.lower() in ["beta", "pre-release", "latest", "experimental"]:
+        beta_list = app_data.get("beta") or []
+        if beta_list:
+            t_ver = beta_list[0]
+        else:
+            stable_list = app_data.get("stable") or [t_ver]
+            t_ver = stable_list[0] if stable_list else t_ver
+
+    return t_ver
+
+
 def process_single_app(
     app_name: str, args: Any, app_data: dict, custom_ver: str, state: dict
 ) -> None:
-    """Processes a single app for downloading and patching."""
-    t_ver = custom_ver if custom_ver else app_data.get("stable", [""])[0]
-    if args.version_selection.lower() in ["beta", "pre-release", "latest", "experimental"]:
-        t_ver = app_data.get("beta", [t_ver])[0]
-
+    """Processes a single application for downloading and patching safely."""
+    t_ver = _resolve_target_version(app_data, args, custom_ver)
     arch = app_data.get("force_arch", args.arch)
     print(f"\n--- {app_name} ({app_data['package']}) ---")
 
@@ -223,7 +234,7 @@ def process_single_app(
 
 
 def run_patcher(args: Any) -> None:
-    """Main execution function to handle the patching loop."""
+    """Main execution function handling the patching loop."""
     eco_config = load_config(args.ecosystem)
 
     workspace = f"./{_safe_filename(args.ecosystem)}"
