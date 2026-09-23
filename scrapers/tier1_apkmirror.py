@@ -3,6 +3,7 @@
 import random
 import re
 import time
+from dataclasses import dataclass
 from typing import Any, Optional
 from urllib.parse import quote_plus, urljoin
 
@@ -21,15 +22,12 @@ EDITION_SLUG_REGEX = re.compile(
 )
 
 
+@dataclass
 class _DummyResponse:
     """Mock requests.Response object for FlareSolverr HTML returns."""
-
-    def __init__(self, status_code: int, text: str, url: str) -> None:
-        self.status_code = status_code
-        self.text = text
-        self.url = url
-        self.headers: dict[str, str] = {}
-        self.content = text.encode("utf-8")
+    status_code: int
+    text: str
+    url: str
 
     def raise_for_status(self) -> None:
         """Raises stored HTTP error, if one occurred."""
@@ -64,7 +62,6 @@ class _FlareSolverrSession:
     def get(self, *args: Any, **kwargs: Any) -> Any:
         """Executes GET requests using the appropriate transport layer."""
         if kwargs.get("stream"):
-            # Stream binary payloads directly via authenticated native session
             return self.session.get(*args, **kwargs)
 
         url = args[0] if args else kwargs.get("url")
@@ -89,7 +86,6 @@ class _FlareSolverrSession:
                 html = solution.get("response", "")
                 solved_url = solution.get("url", url)
 
-                # Propagate clearance cookies to native session for WAF-free binary downloads
                 for cookie in solution.get("cookies", []):
                     self.session.cookies.set(
                         cookie["name"],
@@ -370,20 +366,21 @@ class ApkmirrorScraper(BaseScraper):
     ) -> Optional[str]:
         text = row.text.lower()
         pass_idx = opts.get("pass_idx", 1)
+        force_b = opts.get("force_b", False)
         ver_code = str(opts.get("ver_code", "")).lower()
 
         is_bundle = self._is_bundle_row(row)
 
-        if pass_idx in (1, 2) and is_bundle:
+        # Consolidate fallback logic to minimize return statements.
+        target_bundle = is_bundle if force_b else not is_bundle
+        if pass_idx in (1, 2) and target_bundle:
+            return None
+        if pass_idx in (3, 4) and not target_bundle:
             return None
 
-        if pass_idx in (3, 4) and not is_bundle:
-            return None
-
-        if pass_idx in (1, 3) and ver_code and ver_code not in text:
-            return None
-
-        if not self._is_arch_match(text, ctx.arch.lower(), pass_idx):
+        # Consolidate strict version code and architecture matching.
+        invalid_ver = pass_idx in (1, 3) and ver_code and ver_code not in text
+        if invalid_ver or not self._is_arch_match(text, ctx.arch.lower(), pass_idx):
             return None
 
         link = row.find("a", class_="accent_color")
@@ -395,10 +392,10 @@ class ApkmirrorScraper(BaseScraper):
         )
 
     def _find_variant_in_rows(
-        self, ctx: Context, rows: list[Any], ver_code: str
+        self, ctx: Context, rows: list[Any], ver_code: str, force_b: bool
     ) -> Optional[str]:
         for pass_idx in (1, 2, 3, 4):
-            opts = {"ver_code": ver_code, "pass_idx": pass_idx}
+            opts = {"ver_code": ver_code, "pass_idx": pass_idx, "force_b": force_b}
             for row in rows:
                 link = row.find("a", class_="accent_color")
                 if not link:
@@ -414,7 +411,7 @@ class ApkmirrorScraper(BaseScraper):
         return None
 
     def _download_variant(
-        self, ctx: Context, rel_url: str, ver_code: str
+        self, ctx: Context, rel_url: str, ver_code: str, force_b: bool
     ) -> Optional[str]:
         resp = self._safe_get(ctx, rel_url)
         if not resp:
@@ -429,7 +426,7 @@ class ApkmirrorScraper(BaseScraper):
         )
 
         if rows:
-            out = self._find_variant_in_rows(ctx, rows, ver_code)
+            out = self._find_variant_in_rows(ctx, rows, ver_code, force_b)
             if out:
                 return out
 
@@ -457,7 +454,9 @@ class ApkmirrorScraper(BaseScraper):
             if not rel_url:
                 print("[WARN] Release not found.")
                 return None
-            return self._download_variant(ctx, rel_url, ver_code)
+            return self._download_variant(
+                ctx, rel_url, ver_code, ctx.app_data.get("force_bundle", False)
+            )
         except Exception as err:  # pylint: disable=broad-except
             print(f"[ERROR] Tier 1 failed: {err}")
         return None
