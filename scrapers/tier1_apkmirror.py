@@ -371,11 +371,13 @@ class ApkmirrorScraper(BaseScraper):
 
         is_bundle = self._is_bundle_row(row)
 
-        # Consolidate fallback logic to minimize return statements.
-        target_bundle = is_bundle if force_b else not is_bundle
-        if pass_idx in (1, 2) and target_bundle:
+        # Consolidate fallback logic correctly to minimize return statements.
+        # is_mismatch is True if the row type is NOT the preferred type for pass 1/2.
+        is_mismatch = not is_bundle if force_b else is_bundle
+
+        if pass_idx in (1, 2) and is_mismatch:
             return None
-        if pass_idx in (3, 4) and not target_bundle:
+        if pass_idx in (3, 4) and not is_mismatch:
             return None
 
         # Consolidate strict version code and architecture matching.
