@@ -59,6 +59,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "soccer-star": {
+                "package": "com.soccer.score.star",
+                "search_term": "Soccer Star",
+                "stable": [
+                    "0.3.88"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "toolbox-for-minecraft-pe": {
                 "package": "io.mrarm.mctoolbox",
                 "search_term": "Toolbox for Minecraft PE",

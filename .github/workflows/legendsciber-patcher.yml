@@ -29,6 +29,11 @@ name: 👑 Legendsciber Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_soccer_star:
+        description: 'Patch soccer-star'
+        required: true
+        type: boolean
+        default: false
       app_toolbox_for_minecraft_pe:
         description: 'Patch toolbox-for-minecraft-pe'
         required: true
@@ -106,6 +111,7 @@ jobs:
       APP_HILL_CLIMB: ${{ inputs.app_hill_climb_racing }}
       APP_RED_BALL_4: ${{ inputs.app_red_ball_4 }}
       APP_SMASH_HIT: ${{ inputs.app_smash_hit }}
+      APP_SOCCER_STAR: ${{ inputs.app_soccer_star }}
       APP_TOOLBOX: ${{ inputs.app_toolbox_for_minecraft_pe }}
       APP_WORLD_SOCCER_CHAMPS: ${{ inputs.app_world_soccer_champs }}
     steps:
@@ -127,6 +133,9 @@ jobs:
           fi
           if [[ "$APP_SMASH_HIT" == "true" ]]; then
             LIST="$LIST,smash-hit"
+          fi
+          if [[ "$APP_SOCCER_STAR" == "true" ]]; then
+            LIST="$LIST,soccer-star"
           fi
           if [[ "$APP_TOOLBOX" == "true" ]]; then
             LIST="$LIST,toolbox-for-minecraft-pe"

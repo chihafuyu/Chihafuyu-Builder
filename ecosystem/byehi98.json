@@ -34,6 +34,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "crossy-road": {
+                "package": "com.yodo1.crossyroad",
+                "search_term": "Crossy Road",
+                "stable": [
+                    "7.13.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "doodle-jump": {
                 "package": "com.lima.doodlejump",
                 "search_term": "Doodle Jump",

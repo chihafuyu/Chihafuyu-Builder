@@ -19,6 +19,11 @@ name: 🎮 Byehi98 Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_crossy_road:
+        description: 'Patch crossy-road'
+        required: true
+        type: boolean
+        default: false
       app_doodle_jump:
         description: 'Patch doodle-jump'
         required: true
@@ -149,6 +154,7 @@ jobs:
       APP_ALIENS_DRIVE_ME_CRAZY: ${{ inputs.app_aliens_drive_me_crazy }}
       APP_ALTOS_ADVENTURE: ${{ inputs.app_altos_adventure }}
       APP_ALTOS_ODYSSEY: ${{ inputs.app_altos_odyssey }}
+      APP_CROSSY_ROAD: ${{ inputs.app_crossy_road }}
       APP_DOODLE_JUMP: ${{ inputs.app_doodle_jump }}
       APP_EARN_TO_DIE_2: ${{ inputs.app_earn_to_die_2 }}
       APP_FANCY_PANTS_ADVENTURES: ${{ inputs.app_fancy_pants_adventures }}
@@ -175,6 +181,9 @@ jobs:
           fi
           if [[ "$APP_ALTOS_ODYSSEY" == "true" ]]; then
             LIST="$LIST,altos-odyssey"
+          fi
+          if [[ "$APP_CROSSY_ROAD" == "true" ]]; then
+            LIST="$LIST,crossy-road"
           fi
           if [[ "$APP_DOODLE_JUMP" == "true" ]]; then
             LIST="$LIST,doodle-jump"
