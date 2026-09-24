@@ -35,4 +35,4 @@ jobs:
       - name: Analyze code with Pylint
         run: |
           set -euo pipefail
-          python -m pylint *.py
+          python -m pylint $(git ls-files '*.py')

@@ -54,7 +54,10 @@ jobs:
     permissions:
       contents: write
     concurrency:
-      group: ${{ inputs.send_to_telegram == true && 'telegram-session-lock' || format('{0}-{1}-{2}', github.run_id, inputs.ecosystem, inputs.release_tag_prefix) }}
+      group: >-
+        ${{ inputs.send_to_telegram == true && 'telegram-session-lock' ||
+        format('{0}-{1}-{2}', github.run_id, inputs.ecosystem,
+        inputs.release_tag_prefix) }}
       cancel-in-progress: false
 
     steps:
@@ -71,12 +74,17 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: '3.14'
-          
+
       - name: Start FlareSolverr Microservice
         run: |
-          docker run -d --name=flaresolverr -p 127.0.0.1:8191:8191 -e LOG_LEVEL=info ghcr.io/flaresolverr/flaresolverr:latest
+          docker run -d --name=flaresolverr -p 127.0.0.1:8191:8191 \
+            -e LOG_LEVEL=info ghcr.io/flaresolverr/flaresolverr:latest
           echo "Waiting for FlareSolverr to initialize..."
-          timeout 30 bash -c 'while ! curl -sf http://localhost:8191/ > /dev/null; do sleep 2; done'
+          timeout 30 bash -c '
+            while ! curl -sf http://localhost:8191/ > /dev/null; do
+              sleep 2
+            done
+          '
           echo "FlareSolverr proxy is online!"
 
       - name: Install Dependencies & apkeep
@@ -120,7 +128,8 @@ jobs:
 
           # Fetch CLI
           if [[ "${{ inputs.cli_track }}" == "Pre-release" ]]; then
-            JQ_FLTR='add | map(select(.prerelease==true and .draft==false)) | .[].tag_name'
+            JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
+            JQ_FLTR="${JQ_FLTR} | .[].tag_name"
             CLI_TAG="$(gh api repos/MorpheApp/morphe-desktop/releases \
               --paginate | jq -r -s "$JQ_FLTR" | sort -V | tail -n 1)"
             if [[ -z "$CLI_TAG" ]]; then
@@ -159,7 +168,8 @@ jobs:
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
 
           elif [[ "${{ inputs.patches_track }}" == "Pre-release" ]]; then
-            JQ_FLTR='add | map(select(.prerelease==true and .draft==false)) | .[].tag_name'
+            JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
+            JQ_FLTR="${JQ_FLTR} | .[].tag_name"
             PATCH_TAG="$(gh api "repos/$REPO_URL/releases" \
               --paginate | jq -r -s "$JQ_FLTR" | sort -V | tail -n 1)"
             if [[ -z "$PATCH_TAG" ]]; then
