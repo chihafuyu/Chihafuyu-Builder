@@ -34,11 +34,6 @@ name: 🎮 Byehi98 Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_fancy_pants_adventures:
-        description: 'Patch fancy-pants-adventures'
-        required: true
-        type: boolean
-        default: false
       app_hill_climb_racing:
         description: 'Patch hill-climb-racing'
         required: true
@@ -157,7 +152,6 @@ jobs:
       APP_CROSSY_ROAD: ${{ inputs.app_crossy_road }}
       APP_DOODLE_JUMP: ${{ inputs.app_doodle_jump }}
       APP_EARN_TO_DIE_2: ${{ inputs.app_earn_to_die_2 }}
-      APP_FANCY_PANTS_ADVENTURES: ${{ inputs.app_fancy_pants_adventures }}
       APP_HILL_CLIMB_RACING: ${{ inputs.app_hill_climb_racing }}
       APP_INJUSTICE_GODS_AMONG_US: ${{ inputs.app_injustice_gods_among_us }}
       APP_INTO_THE_DEAD: ${{ inputs.app_into_the_dead }}
@@ -190,9 +184,6 @@ jobs:
           fi
           if [[ "$APP_EARN_TO_DIE_2" == "true" ]]; then
             LIST="$LIST,earn-to-die-2"
-          fi
-          if [[ "$APP_FANCY_PANTS_ADVENTURES" == "true" ]]; then
-            LIST="$LIST,fancy-pants-adventures"
           fi
           if [[ "$APP_HILL_CLIMB_RACING" == "true" ]]; then
             LIST="$LIST,hill-climb-racing"

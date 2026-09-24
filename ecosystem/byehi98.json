@@ -67,17 +67,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "fancy-pants-adventures": {
-                "package": "com.overthetopgames.fancypants",
-                "search_term": "Fancy Pants Adventures",
-                "stable": [
-                    "1.0.30"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "hill-climb-racing": {
                 "package": "com.fingersoft.hillclimb",
                 "search_term": "Hill Climb Racing",
