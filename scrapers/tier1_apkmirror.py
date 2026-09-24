@@ -157,17 +157,20 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         text = link.text.lower()
-        href_ver = base_ver.replace(".", "-")
 
         has_ver_text = base_ver.lower() in text
-        has_ver_href = href_ver.lower() in href.lower()
+        has_ver_href = base_ver.replace(".", "-").lower() in href.lower()
 
-        if not has_ver_text and not has_ver_href:
-            parts = base_ver.split(".")
-            major_minor = ".".join(parts[:2]) if len(parts) >= 2 else base_ver
-            major_pattern = rf"\b{re.escape(major_minor)}\b"
-            if not re.search(major_pattern, text) and not re.search(major_pattern, href):
-                return None
+        is_smart_match = False
+        if not (has_ver_text or has_ver_href):
+            # Dynamic segment matching: enforces strict versioning but forgives standard suffixes
+            base_parts = base_ver.split(".")
+            pattern = r"\b" + r"-".join(map(re.escape, base_parts)) + r"(?:-[a-zA-Z0-9]+)*\b"
+            if re.search(pattern, href, re.IGNORECASE):
+                is_smart_match = True
+
+        if not (has_ver_text or has_ver_href or is_smart_match):
+            return None
 
         if any(k in text for k in exc_kws):
             return None
@@ -371,16 +374,12 @@ class ApkmirrorScraper(BaseScraper):
 
         is_bundle = self._is_bundle_row(row)
 
-        # Consolidate fallback logic correctly to minimize return statements.
-        # is_mismatch is True if the row type is NOT the preferred type for pass 1/2.
         is_mismatch = not is_bundle if force_b else is_bundle
-
         if pass_idx in (1, 2) and is_mismatch:
             return None
         if pass_idx in (3, 4) and not is_mismatch:
             return None
 
-        # Consolidate strict version code and architecture matching.
         invalid_ver = pass_idx in (1, 3) and ver_code and ver_code not in text
         if invalid_ver or not self._is_arch_match(text, ctx.arch.lower(), pass_idx):
             return None

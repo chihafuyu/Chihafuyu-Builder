@@ -15,7 +15,7 @@
                 "force_bundle": false,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Change package name": {
+                    "Change to official package name": {
                         "enabled": false
                     }
                 }
