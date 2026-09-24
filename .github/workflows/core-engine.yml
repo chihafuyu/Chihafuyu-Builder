@@ -120,10 +120,9 @@ jobs:
 
           # Fetch CLI
           if [[ "${{ inputs.cli_track }}" == "Pre-release" ]]; then
-            JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
-            JQ_FLTR="${JQ_FLTR}[0].tag_name // empty"
+            JQ_FLTR='add | map(select(.prerelease==true and .draft==false)) | .[].tag_name'
             CLI_TAG="$(gh api repos/MorpheApp/morphe-desktop/releases \
-              --paginate | jq -r -s "$JQ_FLTR")"
+              --paginate | jq -r -s "$JQ_FLTR" | sort -V | tail -n 1)"
             if [[ -z "$CLI_TAG" ]]; then
               echo "::error::No Morphe CLI pre-release was found"
               exit 1
@@ -160,10 +159,9 @@ jobs:
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
 
           elif [[ "${{ inputs.patches_track }}" == "Pre-release" ]]; then
-            JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
-            JQ_FLTR="${JQ_FLTR}[0].tag_name // empty"
+            JQ_FLTR='add | map(select(.prerelease==true and .draft==false)) | .[].tag_name'
             PATCH_TAG="$(gh api "repos/$REPO_URL/releases" \
-              --paginate | jq -r -s "$JQ_FLTR")"
+              --paginate | jq -r -s "$JQ_FLTR" | sort -V | tail -n 1)"
             if [[ -z "$PATCH_TAG" ]]; then
               echo "::error::No patches pre-release found in $REPO_URL"
               exit 1
