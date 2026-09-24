@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
-          python -m pip install pylint kurigram tgcrypto
+          python -m pip install pylint kurigram tgcrypto google-genai httpx
           if [ -f requirements.txt ]; then
             python -m pip install -r requirements.txt
           fi
