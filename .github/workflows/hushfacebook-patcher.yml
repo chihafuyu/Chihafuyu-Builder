@@ -1,11 +1,11 @@
 ---
-name: 🛠️ SysAdminDoc Ecosystem Patcher
+name: 📘 Hushfacebook Ecosystem Patcher
 
 "on":
   workflow_dispatch:
     inputs:
-      app_tiktok_global:
-        description: 'Patch tiktok-global'
+      app_facebook:
+        description: 'Patch facebook'
         required: true
         type: boolean
         default: true
@@ -75,14 +75,14 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APP_TIKTOK_GLOBAL: ${{ inputs.app_tiktok_global }}
+      APP_FACEBOOK: ${{ inputs.app_facebook }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_TIKTOK_GLOBAL" == "true" ]]; then
-            LIST="$LIST,tiktok-global"
+          if [[ "$APP_FACEBOOK" == "true" ]]; then
+            LIST="$LIST,facebook"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
@@ -102,7 +102,7 @@ jobs:
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "SysAdminDoc"
+      ecosystem: "hushfacebook"
       apps: ${{ needs.prepare-apps.outputs.selected }}
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
@@ -112,8 +112,8 @@ jobs:
       cli_track: ${{ inputs.cli_track }}
       custom_cli_version: ${{ inputs.custom_cli_version }}
       patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/hushfeed"
-      custom_patch_filename: "SysAdminDoc-custom.mpp"
+      repo_url: "SysAdminDoc/hushfacebook"
+      custom_patch_filename: "hushfacebook-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "SysAdminDoc"
+      release_tag_prefix: "hushfacebook"

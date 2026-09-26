@@ -1,0 +1,21 @@
+{
+    "hushfacebook": {
+        "apps": {
+            "facebook": {
+                "package": "com.facebook.katana",
+                "search_term": "Facebook",
+                "stable": [
+                    "580.0.0.51.74"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_bundle": true,
+                "version_codes": {
+                    "arm64-v8a": "475019344"
+                },
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

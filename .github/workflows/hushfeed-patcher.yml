@@ -1,0 +1,119 @@
+---
+name: 🛠️ Hushfeed Ecosystem Patcher
+
+"on":
+  workflow_dispatch:
+    inputs:
+      app_tiktok_global:
+        description: 'Patch tiktok-global'
+        required: true
+        type: boolean
+        default: true
+      architecture:
+        description: 'Target Architecture'
+        required: true
+        type: choice
+        default: 'arm64-v8a'
+        options: [arm64-v8a, armeabi-v7a, x86_64, x86, universal]
+      version_selection:
+        description: 'App Version Selection'
+        required: true
+        type: choice
+        default: 'Latest Recommended'
+        options: [Latest Recommended, Beta, Custom]
+      custom_version:
+        description: 'Custom App Version'
+        required: false
+        default: ''
+      download_source:
+        description: 'Download Source'
+        required: true
+        type: choice
+        default: 'default'
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+      continue_on_error:
+        description: 'Debug: Continue on patch error'
+        required: true
+        type: boolean
+        default: false
+      cli_track:
+        description: 'Morphe CLI Track'
+        required: true
+        type: choice
+        default: 'Stable'
+        options: [Stable, Pre-release, Custom]
+      custom_cli_version:
+        description: 'Custom CLI Version (e.g. v1.16.0)'
+        required: false
+        default: ''
+      patches_track:
+        description: 'Ecosystem Patches Track'
+        required: true
+        type: choice
+        default: 'Stable'
+        options: [Stable, Pre-release, Custom Local]
+      upload_github_release:
+        description: 'Upload to GitHub Release'
+        required: true
+        type: boolean
+        default: true
+      send_to_telegram:
+        description: 'Send to Telegram'
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  prepare-apps:
+    runs-on: ubuntu-latest
+    outputs:
+      selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_TIKTOK_GLOBAL: ${{ inputs.app_tiktok_global }}
+    steps:
+      - id: build-list
+        run: |
+          set -euo pipefail
+          LIST=""
+          if [[ "$APP_TIKTOK_GLOBAL" == "true" ]]; then
+            LIST="$LIST,tiktok-global"
+          fi
+          LIST="${LIST#,}"
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
+          {
+            echo "apps<<EOF"
+            echo "$LIST"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+  call-patcher:
+    needs: prepare-apps
+    permissions:
+      contents: write
+    uses: ./.github/workflows/core-engine.yml
+    secrets: inherit
+    with:
+      ecosystem: "hushfeed"
+      apps: ${{ needs.prepare-apps.outputs.selected }}
+      architecture: ${{ inputs.architecture }}
+      version_selection: ${{ inputs.version_selection }}
+      custom_version: ${{ inputs.custom_version }}
+      download_source: ${{ inputs.download_source }}
+      continue_on_error: ${{ inputs.continue_on_error }}
+      cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
+      patches_track: ${{ inputs.patches_track }}
+      repo_url: "SysAdminDoc/hushfeed"
+      custom_patch_filename: "hushfeed-custom.mpp"
+      upload_github_release: ${{ inputs.upload_github_release }}
+      send_to_telegram: ${{ inputs.send_to_telegram }}
+      release_tag_prefix: "hushfeed"
