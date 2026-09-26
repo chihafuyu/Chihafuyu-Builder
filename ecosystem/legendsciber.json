@@ -37,6 +37,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "hungry-shark-evolution": {
+                "package": "com.fgol.HungrySharkEvolution",
+                "search_term": "Hungry Shark Evolution",
+                "stable": [
+                    "14.5.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "red-ball-4": {
                 "package": "com.FDGEntertainment.redball4.gp",
                 "search_term": "Red Ball 4",
@@ -64,6 +75,17 @@
                 "search_term": "Soccer Star",
                 "stable": [
                     "0.3.88"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "subway-surfers": {
+                "package": "com.kiloo.subwaysurf",
+                "search_term": "Subway Surfers",
+                "stable": [
+                    "3.69.1"
                 ],
                 "beta": [],
                 "strip": true,

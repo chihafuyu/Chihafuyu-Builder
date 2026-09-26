@@ -100,6 +100,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "into-the-dead-2": {
+                "package": "com.pikpok.dr2.play",
+                "search_term": "Into the Dead 2",
+                "stable": [
+                    "1.87.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "jetpack-joyride": {
                 "package": "com.halfbrick.jetpackjoyride",
                 "search_term": "Jetpack Joyride",
@@ -116,17 +127,6 @@
                 "search_term": "Missiles",
                 "stable": [
                     "1.41"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "only-one": {
-                "package": "com.rebelbinary.onlyone",
-                "search_term": "Only One",
-                "stable": [
-                    "1.3043"
                 ],
                 "beta": [],
                 "strip": true,
@@ -155,6 +155,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "subway-surfers": {
+                "package": "com.kiloo.subwaysurf",
+                "search_term": "Subway Surfers",
+                "stable": [
+                    "3.69.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "swift-backup": {
                 "package": "org.swiftapps.swiftbackup",
                 "search_term": "Swift Backup",
@@ -171,17 +182,6 @@
                 "search_term": "Traffic Rider",
                 "stable": [
                     "2.11"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "vector": {
-                "package": "com.nekki.vector",
-                "search_term": "Vector",
-                "stable": [
-                    "2.10.2"
                 ],
                 "beta": [],
                 "strip": true,

@@ -64,11 +64,6 @@ name: 🔥 Hxreborn Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_ringtone_maker:
-        description: 'Patch ringtone-maker'
-        required: true
-        type: boolean
-        default: false
       app_rise_sleep_tracker:
         description: 'Patch rise-sleep-tracker'
         required: true
@@ -79,8 +74,13 @@ name: 🔥 Hxreborn Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_vpnify:
-        description: 'Patch vpnify'
+      app_terabox:
+        description: 'Patch terabox'
+        required: true
+        type: boolean
+        default: false
+      app_vllo:
+        description: 'Patch vllo'
         required: true
         type: boolean
         default: false
@@ -158,10 +158,10 @@ jobs:
       APP_PROTON_MAIL: ${{ inputs.app_proton_mail }}
       APP_QURANIFY: ${{ inputs.app_quranify }}
       APP_READERA: ${{ inputs.app_readera }}
-      APP_RINGTONE_MAKER: ${{ inputs.app_ringtone_maker }}
       APP_RISE_SLEEP_TRACKER: ${{ inputs.app_rise_sleep_tracker }}
       APP_SYMFONIUM: ${{ inputs.app_symfonium }}
-      APP_VPNIFY: ${{ inputs.app_vpnify }}
+      APP_TERABOX: ${{ inputs.app_terabox }}
+      APP_VLLO: ${{ inputs.app_vllo }}
     steps:
       - id: build-list
         run: |
@@ -203,17 +203,17 @@ jobs:
           if [[ "$APP_READERA" == "true" ]]; then
             LIST="$LIST,readera"
           fi
-          if [[ "$APP_RINGTONE_MAKER" == "true" ]]; then
-            LIST="$LIST,ringtone-maker"
-          fi
           if [[ "$APP_RISE_SLEEP_TRACKER" == "true" ]]; then
             LIST="$LIST,rise-sleep-tracker"
           fi
           if [[ "$APP_SYMFONIUM" == "true" ]]; then
             LIST="$LIST,symfonium"
           fi
-          if [[ "$APP_VPNIFY" == "true" ]]; then
-            LIST="$LIST,vpnify"
+          if [[ "$APP_TERABOX" == "true" ]]; then
+            LIST="$LIST,terabox"
+          fi
+          if [[ "$APP_VLLO" == "true" ]]; then
+            LIST="$LIST,vllo"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

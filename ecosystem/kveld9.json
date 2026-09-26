@@ -5,7 +5,7 @@
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
                 "stable": [
-                    "1.95.104"
+                    "1.96.59"
                 ],
                 "beta": [],
                 "strip": true,
@@ -53,7 +53,7 @@
                 "package": "com.nokoprint",
                 "search_term": "NokoPrint",
                 "stable": [
-                    "5.10.8"
+                    "5.28.4"
                 ],
                 "beta": [],
                 "strip": true,
@@ -99,53 +99,6 @@
                         "options": {
                             "locales": "en, id"
                         }
-                    }
-                }
-            },
-            "vivaldi-browser": {
-                "package": "com.vivaldi.browser",
-                "search_term": "Vivaldi Browser",
-                "stable": [
-                    "8.2.4147.93"
-                ],
-                "beta": [],
-                "strip": true,
-                "force_arch": "arm64-v8a",
-                "force_bundle": true,
-                "version_codes": {
-                    "arm64-v8a": "12L+"
-                },
-                "archive_id": "ZeNiX",
-                "options_override": {
-                    "APK Junk Cleaner": {
-                        "enabled": false
-                    },
-                    "Locale Resource Slimmer": {
-                        "enabled": false,
-                        "options": {
-                            "locales": "en, id"
-                        }
-                    },
-                    "Locale PAK Slimmer": {
-                        "enabled": true,
-                        "options": {
-                            "locales": "en, en-US, id"
-                        }
-                    },
-                    "DPI Resource Slimmer": {
-                        "enabled": false,
-                        "options": {
-                            "dpis": "xxhdpi"
-                        }
-                    },
-                    "PNG Asset Optimizer": {
-                        "enabled": false
-                    },
-                    "Block Vivaldi Sync": {
-                        "enabled": true
-                    },
-                    "Close Tabs on Exit": {
-                        "enabled": true
                     }
                 }
             }

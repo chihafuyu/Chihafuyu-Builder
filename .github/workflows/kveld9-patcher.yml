@@ -29,11 +29,6 @@ name: 🦁 Kveld9 Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_vivaldi_browser:
-        description: 'Patch vivaldi-browser'
-        required: true
-        type: boolean
-        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -101,7 +96,6 @@ jobs:
       APP_NOKOPRINT: ${{ inputs.app_nokoprint }}
       APP_TIKTOK_ASIA: ${{ inputs.app_tiktok_asia }}
       APP_TIKTOK_GLOBAL: ${{ inputs.app_tiktok_global }}
-      APP_VIVALDI_BROWSER: ${{ inputs.app_vivaldi_browser }}
     steps:
       - id: build-list
         run: |
@@ -121,9 +115,6 @@ jobs:
           fi
           if [[ "$APP_TIKTOK_GLOBAL" == "true" ]]; then
             LIST="$LIST,tiktok-global"
-          fi
-          if [[ "$APP_VIVALDI_BROWSER" == "true" ]]; then
-            LIST="$LIST,vivaldi-browser"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

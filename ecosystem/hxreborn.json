@@ -133,24 +133,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "ringtone-maker": {
-                "package": "ringtonemaker.musiccutter.customringtones.freeringtonemaker",
-                "search_term": "Ringtone Maker",
-                "stable": [
-                    "1.01.99.0909"
-                ],
-                "beta": [],
-                "strip": true,
-                "version_codes": {
-                    "universal": "10153",
-                    "arm64-v8a": "10153",
-                    "armeabi-v7a": "10153",
-                    "x86_64": "10153",
-                    "x86": "10153"
-                },
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "rise-sleep-tracker": {
                 "package": "com.risesci.nyx",
                 "search_term": "RISE Sleep Tracker",
@@ -173,11 +155,22 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "vpnify": {
-                "package": "com.vpn.free.hotspot.secure.vpnify",
-                "search_term": "vpnify",
+            "terabox": {
+                "package": "com.dubox.drive",
+                "search_term": "TeraBox",
                 "stable": [
-                    "2.3.0"
+                    "4.26.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "vllo": {
+                "package": "com.darinsoft.vimo",
+                "search_term": "VLLO",
+                "stable": [
+                    "13.7.4"
                 ],
                 "beta": [],
                 "strip": true,
