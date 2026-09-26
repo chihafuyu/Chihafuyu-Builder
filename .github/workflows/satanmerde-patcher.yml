@@ -9,6 +9,11 @@ name: 😈 SatanMerde Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_spotify:
+        description: 'Patch spotify'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -76,6 +81,7 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_HUNGRY_SHARK_WORLD: ${{ inputs.app_hungry_shark_world }}
+      APP_SPOTIFY: ${{ inputs.app_spotify }}
     steps:
       - id: build-list
         run: |
@@ -83,6 +89,9 @@ jobs:
           LIST=""
           if [[ "$APP_HUNGRY_SHARK_WORLD" == "true" ]]; then
             LIST="$LIST,hungry-shark-world"
+          fi
+          if [[ "$APP_SPOTIFY" == "true" ]]; then
+            LIST="$LIST,spotify"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

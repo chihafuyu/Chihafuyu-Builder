@@ -11,6 +11,22 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "spotify": {
+                "package": "com.spotify.music",
+                "search_term": "Spotify: Music and Podcasts",
+                "stable": [
+                    "9.1.84.2231"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_arch": "universal",
+                "force_bundle": false,
+                "version_codes": {
+                    "universal": "146291969"
+                },
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }
