@@ -119,7 +119,7 @@ select_ecosystem() {
     )
     
     COLUMNS=20
-    local PS3_BAK="$PS3"
+    local PS3_BAK="${PS3:-}"
     PS3="Enter your choice: "
     
     select choice in "${ecosystems[@]}"; do
@@ -158,7 +158,7 @@ select_track() {
     echo -e "\n${WHITE}Select Patch Track:${NC}"
     local tracks=("Stable" "Pre-release" "Exit")
     
-    local PS3_BAK="$PS3"
+    local PS3_BAK="${PS3:-}"
     PS3="Enter track number: "
     
     select choice in "${tracks[@]}"; do
@@ -224,7 +224,7 @@ select_apk() {
     apk_files+=("Exit")
 
     echo -e "${WHITE}Select the file to patch:${NC}"
-    local PS3_BAK="$PS3"
+    local PS3_BAK="${PS3:-}"
     PS3="Select APK number: "
     
     select choice in "${apk_files[@]}"; do
