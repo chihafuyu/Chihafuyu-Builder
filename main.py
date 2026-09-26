@@ -77,13 +77,22 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
 def write_changelog(args: Any, apps_patched: list, workspace: str, clean_ver: str) -> None:
     """Writes the patched apps changelog to a markdown file."""
     log_path = os.path.join(workspace, "changelog.md")
+    cli_version = args.cli_version if args.cli_version else "Unknown"
+    repo = args.repo_url
+
     with open(log_path, "w", encoding="utf-8") as f_obj:
         f_obj.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
         if args.is_prerelease.lower() == "true":
             f_obj.write("> [!WARNING]\n")
             f_obj.write("> **Patched using pre-release tools. Use with caution.**\n\n")
-        f_obj.write(f"Generated using **v{clean_ver}** from `{args.ecosystem}`.\n")
-        f_obj.write(f"**Source:** [Repository]({args.repo_url})\n\n### Apps:\n")
+
+        f_obj.write("Generated using:\n")
+        f_obj.write(f"- Patches version **v{clean_ver}** from `{args.ecosystem}`. ")
+        f_obj.write(f"Source: [Repository](https://github.com/{repo})\n")
+        f_obj.write(f"- CLI version **v{cli_version.lstrip('v')}** from `morphe-desktop`. ")
+        f_obj.write("Source: [Repository](https://github.com/MorpheApp/morphe-desktop)\n\n")
+
+        f_obj.write("### Apps:\n")
         for app in apps_patched:
             b_str = f" (Build: {app['build']})" if app.get('build') else ""
             line = f"- **{app['name']}** (v{app['version']}{b_str} - `{app['arch']}`)\n"
@@ -277,6 +286,7 @@ def parse_arguments() -> Any:
     parser.add_argument("--microg-url",
                         default="https://github.com/MorpheApp/MicroG-RE/releases/latest")
     parser.add_argument("--cli", required=True)
+    parser.add_argument("--cli-version", default="")
     parser.add_argument("--patches", required=True)
     parser.add_argument("--patches-version", required=True)
     parser.add_argument("--repo-url", required=True)
