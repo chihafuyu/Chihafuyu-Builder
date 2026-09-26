@@ -14,7 +14,32 @@
                     "arm64-v8a": "475019344"
                 },
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Download any video": {
+                        "enabled": true
+                    },
+                    "Hide Reels in the feed": {
+                        "enabled": true
+                    },
+                    "Block background-return feed refresh": {
+                        "enabled": true
+                    },
+                    "Hide Stories tray": {
+                        "enabled": true
+                    },
+                    "AMOLED black theme": {
+                        "enabled": true
+                    },
+                    "Material You theme": {
+                        "enabled": true
+                    },
+                    "Clean up Reels": {
+                        "enabled": true
+                    },
+                    "Stop Story auto-advance": {
+                        "enabled": true
+                    }
+                }
             }
         }
     }
