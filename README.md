@@ -10,10 +10,10 @@
 **Chihafuyu Builder** utilizes GitHub Actions to provide a fully automated environment for fetching APKs from various sources and patching them using a compatible `CLI`. Built with modularity at its core, this repository serves as a template. You can easily fork or use it to build your own cloud-based APK factory for any patch ecosystem—without writing a single line of Python.
 
 ## ✨ Features
-- 🤖 **Automated Workflow:** Trigger the patching process directly from GitHub Actions without requiring local setup.
+- 🤖 **Automated & Parallelized Workflow:** Trigger the patching process directly from GitHub Actions with optimized matrix concurrency scoping to prevent CI bottlenecks.
 - 🎛️ **Granular Dispatch Controls:** Choose to patch specific apps or run the entire ecosystem, and optionally dispatch the output to GitHub Releases or a Telegram Channel.
-- 📥 **9-Tier Smart Downloader:** Retrieves APKs using an aggressive fallback mechanism (`Google Play Store`, `HuggingFace`, `Archive.org`, `APKMirror`, `APKPure`, `APKCombo`, `Aptoide`, `Uptodown`, and direct `GitHub Releases`). Includes dynamic WAF/Captcha detection and search engine fallback routing.
-- 📦 **Split/Bundle Support:** Natively bypasses base-APK limitations to pull specific XAPK/APKM bundles when required by patches (e.g., Google Apps).
+- 📥 **Multi-Tier Smart Downloader:** Retrieves APKs using an aggressive fallback mechanism (`Google Play Store`, `HuggingFace`, `Archive.org`, `APKMirror`, `APKPure`, and direct `GitHub Releases`). Supercharged with a **local FlareSolverr Docker microservice** to seamlessly `bypass Cloudflare WAF and Turnstile natively` within GitHub Actions!
+- 📦 **Split/Bundle Support:** Natively bypasses base-APK limitations to pull specific XAPK/APKM bundles when required by patches (e.g., Google Apps). Includes dynamic segment matching for bulletproof version accuracy.
 - ⚙️ **Dynamic Options Injection:** Automatically generates and modifies the `options.json` file on-the-fly to apply custom patch preferences and locale stripping.
 - 📁 **Local Patch Support:** Allows the use of custom patch bundles directly from your repository.
 - 🚀 **Seamless Distribution:** Automatically signs and uploads the finished APKs directly to GitHub Releases and your private Telegram channels using Session Strings.

@@ -76,42 +76,46 @@ set_eco_data() {
 
     case "$ECO_CHOICE" in
         "ajstrick81")    TARGET_REPO="ajstrick81/morphe-androidtv-patches"; TARGET_JSON="ajstrick81.json" ;;
+        "Akash-Sriram")  TARGET_REPO="Akash-Sriram/morphe-google-photos"; TARGET_JSON="Akash-Sriram.json" ;;
+        "andrewliang25") TARGET_REPO="andrewliang25/morphe-patches"; TARGET_JSON="andrewliang25.json" ;;
         "anxyis")        TARGET_REPO="anxyis/anxy-patches"; TARGET_JSON="anxyis.json" ;;
         "arandomhooman") TARGET_REPO="arandomhooman/hoomans-morphe-patches"; TARGET_JSON="arandomhooman.json" ;;
-        "BholeyKaBhakt") TARGET_REPO="BholeyKaBhakt/android-patches-xtra"; TARGET_JSON="bholeykabhakt.json" ;;
+        "BholeyKaBhakt") TARGET_REPO="BholeyKaBhakt/android-patches-xtra"; TARGET_JSON="BholeyKaBhakt.json" ;;
         "browzomje")     TARGET_REPO="browzomje/browzomje-patches"; TARGET_JSON="browzomje.json" ;;
         "byehi98")       TARGET_REPO="byehi98/okish-morphe-patches"; TARGET_JSON="byehi98.json" ;;
-        "De-Vanced")     TARGET_REPO="RookieEnough/De-Vanced"; TARGET_JSON="devanced.json" ;;
+        "De-Vanced")     TARGET_REPO="RookieEnough/De-Vanced"; TARGET_JSON="De-Vanced.json" ;;
         "dh6k")          TARGET_REPO="dh6k/morphe-patches"; TARGET_JSON="dh6k.json" ;;
+        "heval99")       TARGET_REPO="heval99/Heval-Morphe-Patches"; TARGET_JSON="heval99.json" ;;
         "hoo-dles")      TARGET_REPO="hoo-dles/morphe-patches"; TARGET_JSON="hoo-dles.json" ;;
+        "hushfacebook")  TARGET_REPO="SysAdminDoc/hushfacebook"; TARGET_JSON="hushfacebook.json" ;;
+        "hushfeed")      TARGET_REPO="SysAdminDoc/hushfeed"; TARGET_JSON="hushfeed.json" ;;
         "hxreborn")      TARGET_REPO="hxreborn/morphe-patches"; TARGET_JSON="hxreborn.json" ;;
         "icysymmetra")   TARGET_REPO="icysymmetra/tiktok-patches-for-morphe"; TARGET_JSON="icysymmetra.json" ;;
         "jasonwu1994")   TARGET_REPO="jasonwu1994/Gboard-patches"; TARGET_JSON="jasonwu1994.json" ;;
-        "kiraio-moe")    TARGET_REPO="kiraio-moe/Lain-Patches"; TARGET_JSON="kiraio.json" ;;
+        "kiraio-moe")    TARGET_REPO="kiraio-moe/Lain-Patches"; TARGET_JSON="kiraio-moe.json" ;;
         "kuchingneko28") TARGET_REPO="kuchingneko28/ipusnas-patches"; TARGET_JSON="kuchingneko28.json" ;;
         "kveld9")        TARGET_REPO="kveld9/kveld-morphe-patches"; TARGET_JSON="kveld9.json" ;;
         "legendsciber")  TARGET_REPO="legendsciber/morphe-patches"; TARGET_JSON="legendsciber.json" ;;
         "MiguelNinja19") TARGET_REPO="MiguelNinja19/miguel-morphe-patches"; TARGET_JSON="MiguelNinja19.json" ;;
         "morphe")        TARGET_REPO="MorpheApp/morphe-patches"; TARGET_JSON="morphe.json" ;;
-        "PathxmOp")      TARGET_REPO="PrathxmOp/Prathxm-Patches"; TARGET_JSON="pathxmop.json" ;;
+        "PathxmOp")      TARGET_REPO="PrathxmOp/Prathxm-Patches"; TARGET_JSON="PathxmOp.json" ;;
         "piko")          TARGET_REPO="crimera/piko"; TARGET_JSON="piko.json" ;;
         "rabilrbl")      TARGET_REPO="rabilrbl/fluffy-patches"; TARGET_JSON="rabilrbl.json" ;;
-        "Riky")          TARGET_REPO="riky-dev/morphe-patches"; TARGET_JSON="riky.json" ;;
+        "Riky")          TARGET_REPO="riky-dev/morphe-patches"; TARGET_JSON="Riky.json" ;;
         "rushiranpise")  TARGET_REPO="rushiranpise/morphe-patches"; TARGET_JSON="rushiranpise.json" ;;
-        "SapitoSucio")   TARGET_REPO="SapitoSucio/FroggoMorphePatches"; TARGET_JSON="SapitoSucio.json" ;;
         "satanmerde")    TARGET_REPO="SatanMerde/D-moniakPatches"; TARGET_JSON="satanmerde.json" ;;
-        "sysadmindoc")   TARGET_REPO="SysAdminDoc/hushfeed"; TARGET_JSON="SysAdminDoc.json" ;;
+        "zeldrisho")     TARGET_REPO="zeldrisho/morphe-patches"; TARGET_JSON="zeldrisho.json" ;;
     esac
 }
 
 select_ecosystem() {
     echo -e "${WHITE}Select Ecosystem Patches:${NC}"
     local ecosystems=(
-        "ajstrick81" "anxyis" "arandomhooman" "BholeyKaBhakt" "browzomje"
-        "byehi98" "De-Vanced" "dh6k" "hoo-dles" "hxreborn"
-        "icysymmetra" "jasonwu1994" "kiraio-moe" "kuchingneko28" "kveld9"
-        "legendsciber" "MiguelNinja19" "morphe" "PathxmOp" "piko" "rabilrbl"
-        "Riky" "rushiranpise" "SapitoSucio" "satanmerde" "sysadmindoc" "Exit"
+        "ajstrick81" "Akash-Sriram" "andrewliang25" "anxyis" "arandomhooman" "BholeyKaBhakt"
+        "browzomje" "byehi98" "De-Vanced" "dh6k" "heval99" "hoo-dles" "hushfacebook"
+        "hushfeed" "hxreborn" "icysymmetra" "jasonwu1994" "kiraio-moe" "kuchingneko28"
+        "kveld9" "legendsciber" "MiguelNinja19" "morphe" "PathxmOp" "piko" "rabilrbl"
+        "Riky" "rushiranpise" "satanmerde" "zeldrisho" "Exit"
     )
     
     COLUMNS=20
