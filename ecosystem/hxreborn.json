@@ -56,17 +56,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "dwg-fastview": {
-                "package": "com.gstarmc.android",
-                "search_term": "DWG FastView",
-                "stable": [
-                    "5.21.0"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "notesnook": {
                 "package": "com.streetwriters.notesnook",
                 "search_term": "Notesnook",

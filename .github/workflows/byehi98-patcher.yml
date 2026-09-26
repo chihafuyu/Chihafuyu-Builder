@@ -59,11 +59,6 @@ name: 🎮 Byehi98 Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_missiles:
-        description: 'Patch missiles'
-        required: true
-        type: boolean
-        default: false
       app_plague_inc:
         description: 'Patch plague-inc'
         required: true
@@ -161,7 +156,6 @@ jobs:
       APP_INTO_THE_DEAD: ${{ inputs.app_into_the_dead }}
       APP_INTO_THE_DEAD_2: ${{ inputs.app_into_the_dead_2 }}
       APP_JETPACK_JOYRIDE: ${{ inputs.app_jetpack_joyride }}
-      APP_MISSILES: ${{ inputs.app_missiles }}
       APP_PLAGUE_INC: ${{ inputs.app_plague_inc }}
       APP_PRINCE_OF_PERSIA: ${{ inputs.app_prince_of_persia_the_lost_crown }}
       APP_SUBWAY_SURFERS: ${{ inputs.app_subway_surfers }}
@@ -203,9 +197,6 @@ jobs:
           fi
           if [[ "$APP_JETPACK_JOYRIDE" == "true" ]]; then
             LIST="$LIST,jetpack-joyride"
-          fi
-          if [[ "$APP_MISSILES" == "true" ]]; then
-            LIST="$LIST,missiles"
           fi
           if [[ "$APP_PLAGUE_INC" == "true" ]]; then
             LIST="$LIST,plague-inc"

@@ -14,11 +14,6 @@ name: 🍜 Hoo-dles Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_bunpo:
-        description: 'Patch bunpo'
-        required: true
-        type: boolean
-        default: false
       app_camscanner:
         description: 'Patch camscanner'
         required: true
@@ -152,7 +147,6 @@ jobs:
     env:
       APP_ADGUARD: ${{ inputs.app_adguard }}
       APP_BEND: ${{ inputs.app_bend }}
-      APP_BUNPO: ${{ inputs.app_bunpo }}
       APP_CAMSCANNER: ${{ inputs.app_camscanner }}
       APP_DUOLINGO: ${{ inputs.app_duolingo }}
       APP_IBISPAINT: ${{ inputs.app_ibispaint }}
@@ -176,9 +170,6 @@ jobs:
           fi
           if [[ "$APP_BEND" == "true" ]]; then
             LIST="$LIST,bend"
-          fi
-          if [[ "$APP_BUNPO" == "true" ]]; then
-            LIST="$LIST,bunpo"
           fi
           if [[ "$APP_CAMSCANNER" == "true" ]]; then
             LIST="$LIST,camscanner"

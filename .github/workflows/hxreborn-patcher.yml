@@ -29,11 +29,6 @@ name: 🔥 Hxreborn Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_dwg_fastview:
-        description: 'Patch dwg-fastview'
-        required: true
-        type: boolean
-        default: false
       app_notesnook:
         description: 'Patch notesnook'
         required: true
@@ -155,7 +150,6 @@ jobs:
       APP_ALPINEQUEST: ${{ inputs.app_alpinequest }}
       APP_BETTERSLEEP: ${{ inputs.app_bettersleep }}
       APP_CX_FILE_EXPLORER: ${{ inputs.app_cx_file_explorer }}
-      APP_DWG_FASTVIEW: ${{ inputs.app_dwg_fastview }}
       APP_NOTESNOOK: ${{ inputs.app_notesnook }}
       APP_PHOTO_EDITOR_PRO: ${{ inputs.app_photo_editor_pro }}
       APP_PROJECTIVY_LAUNCHER: ${{ inputs.app_projectivy_launcher }}
@@ -185,9 +179,6 @@ jobs:
           fi
           if [[ "$APP_CX_FILE_EXPLORER" == "true" ]]; then
             LIST="$LIST,cx-file-explorer"
-          fi
-          if [[ "$APP_DWG_FASTVIEW" == "true" ]]; then
-            LIST="$LIST,dwg-fastview"
           fi
           if [[ "$APP_NOTESNOOK" == "true" ]]; then
             LIST="$LIST,notesnook"

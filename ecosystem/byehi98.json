@@ -122,17 +122,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "missiles": {
-                "package": "pl.macaque.Missiles",
-                "search_term": "Missiles",
-                "stable": [
-                    "1.41"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "plague-inc": {
                 "package": "com.miniclip.plagueinc",
                 "search_term": "Plague Inc.",
