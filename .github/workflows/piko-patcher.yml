@@ -57,7 +57,11 @@ name: 🦊 Piko Ecosystem Patcher
         required: true
         type: choice
         default: 'Stable'
-        options: [Stable, Pre-release]
+        options: [Stable, Pre-release, Custom]
+      custom_cli_version:
+        description: 'Custom CLI Version (e.g. v1.16.0)'
+        required: false
+        default: ''
       reguler_patches_track:
         description: 'Reguler Patches Track (Twitter/IG)'
         required: true
@@ -160,6 +164,7 @@ jobs:
       download_source: ${{ inputs.download_source }}
       continue_on_error: ${{ inputs.continue_on_error }}
       cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
       patches_track: ${{ matrix.track }}
       repo_url: ${{ matrix.repo }}
       custom_patch_filename: ${{ matrix.mpp_name }}

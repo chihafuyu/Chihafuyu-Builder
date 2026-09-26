@@ -29,6 +29,10 @@ name: ⚙️ Core Patcher Engine
       cli_track:
         required: true
         type: string
+      custom_cli_version:
+        required: false
+        type: string
+        default: ''
       patches_track:
         required: true
         type: string
@@ -127,7 +131,15 @@ jobs:
           set -euo pipefail
 
           # Fetch CLI
-          if [[ "${{ inputs.cli_track }}" == "Pre-release" ]]; then
+          if [[ "${{ inputs.cli_track }}" == "Custom" ]]; then
+            CLI_TAG="${{ inputs.custom_cli_version }}"
+            if [[ -z "$CLI_TAG" ]]; then
+              echo "::error::Custom CLI version input is empty!"
+              exit 1
+            fi
+            gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop \
+              --pattern "morphe-desktop-*-all.jar"
+          elif [[ "${{ inputs.cli_track }}" == "Pre-release" ]]; then
             JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
             JQ_FLTR="${JQ_FLTR} | .[].tag_name"
             CLI_TAG="$(gh api repos/MorpheApp/morphe-desktop/releases \

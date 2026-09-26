@@ -92,7 +92,11 @@ name: 👑 Legendsciber Ecosystem Patcher
         required: true
         type: choice
         default: 'Stable'
-        options: [Stable, Pre-release]
+        options: [Stable, Pre-release, Custom]
+      custom_cli_version:
+        description: 'Custom CLI Version (e.g. v1.16.0)'
+        required: false
+        default: ''
       patches_track:
         description: 'Ecosystem Patches Track'
         required: true
@@ -187,6 +191,7 @@ jobs:
       download_source: ${{ inputs.download_source }}
       continue_on_error: ${{ inputs.continue_on_error }}
       cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
       patches_track: ${{ inputs.patches_track }}
       repo_url: "legendsciber/morphe-patches"
       custom_patch_filename: "legendsciber-custom.mpp"
