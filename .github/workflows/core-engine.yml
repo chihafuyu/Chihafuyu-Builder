@@ -109,7 +109,7 @@ jobs:
 
           JQ_Q=".assets[] | select(.name == \"$APKEEP_ASSET\") | .digest"
           EXPECTED_SHA256="$(
-            gh api "repos/EFForg/apkeep/releases/tags/${APKEEP_VERSION}" \
+            gh api "repos/EFForg/apkeep/releases/tags/$APKEEP_VERSION" \
               --jq "$JQ_Q" | sed 's/^sha256://'
           )"
 
@@ -254,6 +254,7 @@ jobs:
 
       - name: Execute Chihafuyu Builder
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_SIGNER_NAME: ${{ secrets.KEYSTORE_SIGNER_NAME }}
@@ -266,21 +267,22 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Fetch real CLI version based on the selected track
+          # Fetch real CLI version using GitHub CLI to avoid rate limits
           if [[ "${{ inputs.cli_track }}" == "Stable" ]]; then
-            API="https://api.github.com/repos/MorpheApp/morphe-cli"
-            REAL_CLI_TAG="$(curl -s "$API/releases/latest" \
-              | jq -r '.tag_name')"
+            R="repos/MorpheApp/morphe-desktop/releases/latest"
+            REAL_CLI_TAG="$(gh api "$R" \
+              | jq -r '.tag_name // empty')"
           elif [[ "${{ inputs.cli_track }}" == "Pre-release" ]]; then
-            API="https://api.github.com/repos/MorpheApp/morphe-cli"
-            JQ_F='map(select(.prerelease == true)) | .[0].tag_name'
-            REAL_CLI_TAG="$(curl -s "$API/releases" \
+            R="repos/MorpheApp/morphe-desktop/releases"
+            JQ_F='map(select(.prerelease == true))'
+            JQ_F="${JQ_F} | .[0].tag_name // empty"
+            REAL_CLI_TAG="$(gh api "$R" \
               | jq -r "$JQ_F")"
           else
             REAL_CLI_TAG="${{ inputs.custom_cli_version }}"
           fi
 
-          # Fallback just in case GitHub API rate limits are hit
+          # Fallback if GitHub API fails or tag is empty
           if [[ -z "$REAL_CLI_TAG" || "$REAL_CLI_TAG" == "null" ]]; then
             REAL_CLI_TAG="${{ inputs.cli_track }}"
           fi
