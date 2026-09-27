@@ -45,8 +45,12 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "force_arch": "universal",
                 "force_bundle": true,
+                "version_codes": {
+                    "universal": "10752",
+                    "arm64-v8a": "10752",
+                    "armeabi-v7a": "10752"
+                },
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
