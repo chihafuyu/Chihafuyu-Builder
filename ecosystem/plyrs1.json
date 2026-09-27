@@ -1,0 +1,50 @@
+{
+    "plyrs1": {
+        "apps": {
+            "e-ujian-browser": {
+                "package": "com.doovera.eujianbrowser",
+                "search_term": "E-Ujian Browser",
+                "stable": [
+                    "3.1.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pertaminiku": {
+                "package": "com.pertaminiku",
+                "search_term": "Pertaminiku",
+                "stable": [
+                    "1.0.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "struk-pom": {
+                "package": "com.garnesapps.strukpom",
+                "search_term": "Struk POM",
+                "stable": [
+                    "1.17.057"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "struk-pom-spbu": {
+                "package": "com.ogestudio.strukpertamini",
+                "search_term": "Struk Pom / SPBU",
+                "stable": [
+                    "1.2.7"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}
