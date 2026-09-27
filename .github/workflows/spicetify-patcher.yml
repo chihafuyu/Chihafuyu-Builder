@@ -1,11 +1,11 @@
 ---
-name: 😈 SatanMerde Ecosystem Patcher
+name: 🎶 Spicetify Ecosystem Patcher
 
 "on":
   workflow_dispatch:
     inputs:
-      app_hungry_shark_world:
-        description: 'Patch hungry-shark-world'
+      app_spotify:
+        description: 'Patch spotify'
         required: true
         type: boolean
         default: true
@@ -75,14 +75,14 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APP_HUNGRY_SHARK_WORLD: ${{ inputs.app_hungry_shark_world }}
+      APP_SPOTIFY: ${{ inputs.app_spotify }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_HUNGRY_SHARK_WORLD" == "true" ]]; then
-            LIST="$LIST,hungry-shark-world"
+          if [[ "$APP_SPOTIFY" == "true" ]]; then
+            LIST="$LIST,spotify"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
@@ -102,7 +102,7 @@ jobs:
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "satanmerde"
+      ecosystem: "spicetify"
       apps: ${{ needs.prepare-apps.outputs.selected }}
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
@@ -112,8 +112,8 @@ jobs:
       cli_track: ${{ inputs.cli_track }}
       custom_cli_version: ${{ inputs.custom_cli_version }}
       patches_track: ${{ inputs.patches_track }}
-      repo_url: "SatanMerde/D-moniakPatches"
-      custom_patch_filename: "satanmerde-custom.mpp"
+      repo_url: "spicetify/morphe-patches"
+      custom_patch_filename: "spicetify-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "satanmerde"
+      release_tag_prefix: "spicetify"

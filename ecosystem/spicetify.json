@@ -1,0 +1,23 @@
+{
+    "spicetify": {
+        "apps": {
+            "spotify": {
+                "package": "com.spotify.music",
+                "search_term": "Spotify: Music and Podcasts",
+                "stable": [
+                    "9.1.80.2221"
+                ],
+                "beta": [],
+                "strip": true,
+                "download_arch": "universal",
+                "force_bundle": false,
+                "version_codes": {
+                    "universal": "145767611",
+                    "arm64-v8a": "145767611"
+                },
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}
