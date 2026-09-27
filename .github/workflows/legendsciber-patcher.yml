@@ -49,11 +49,6 @@ name: 👑 Legendsciber Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_world_soccer_champs:
-        description: 'Patch world-soccer-champs'
-        required: true
-        type: boolean
-        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -129,7 +124,6 @@ jobs:
       APP_SOCCER_STAR: ${{ inputs.app_soccer_star }}
       APP_SUBWAY_SURFERS: ${{ inputs.app_subway_surfers }}
       APP_TOOLBOX: ${{ inputs.app_toolbox_for_minecraft_pe }}
-      APP_WORLD_SOCCER_CHAMPS: ${{ inputs.app_world_soccer_champs }}
     steps:
       - id: build-list
         run: |
@@ -161,9 +155,6 @@ jobs:
           fi
           if [[ "$APP_TOOLBOX" == "true" ]]; then
             LIST="$LIST,toolbox-for-minecraft-pe"
-          fi
-          if [[ "$APP_WORLD_SOCCER_CHAMPS" == "true" ]]; then
-            LIST="$LIST,world-soccer-champs"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
