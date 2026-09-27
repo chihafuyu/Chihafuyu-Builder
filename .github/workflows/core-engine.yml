@@ -59,8 +59,8 @@ jobs:
       contents: write
     concurrency:
       group: >-
-        ${{ inputs.send_to_telegram == true && 'telegram-session-lock' ||
-        format('{0}-{1}-{2}', github.run_id, inputs.ecosystem,
+        ${{ inputs.send_to_telegram == true && 'telegram-session-lock'
+        || format('{0}-{1}-{2}', github.run_id, inputs.ecosystem,
         inputs.release_tag_prefix) }}
       cancel-in-progress: false
 
@@ -265,6 +265,26 @@ jobs:
           DEVICE_PROPERTIES_B64: ${{ secrets.DEVICE_PROPERTIES_B64 }}
         run: |
           set -euo pipefail
+
+          # Fetch real CLI version based on the selected track
+          if [[ "${{ inputs.cli_track }}" == "Stable" ]]; then
+            API="https://api.github.com/repos/MorpheApp/morphe-cli"
+            REAL_CLI_TAG="$(curl -s "$API/releases/latest" \
+              | jq -r '.tag_name')"
+          elif [[ "${{ inputs.cli_track }}" == "Pre-release" ]]; then
+            API="https://api.github.com/repos/MorpheApp/morphe-cli"
+            JQ_F='map(select(.prerelease == true)) | .[0].tag_name'
+            REAL_CLI_TAG="$(curl -s "$API/releases" \
+              | jq -r "$JQ_F")"
+          else
+            REAL_CLI_TAG="${{ inputs.custom_cli_version }}"
+          fi
+
+          # Fallback just in case GitHub API rate limits are hit
+          if [[ -z "$REAL_CLI_TAG" || "$REAL_CLI_TAG" == "null" ]]; then
+            REAL_CLI_TAG="${{ inputs.cli_track }}"
+          fi
+
           python -u main.py \
             --ecosystem "${{ inputs.ecosystem }}" \
             --apps "${{ inputs.apps }}" \
@@ -274,6 +294,7 @@ jobs:
             --download-source "${{ inputs.download_source }}" \
             --continue-on-error "${{ inputs.continue_on_error }}" \
             --cli "morphe.jar" \
+            --cli-version "$REAL_CLI_TAG" \
             --patches "patches.mpp" \
             --patches-version "$PATCHES_VERSION" \
             --repo-url "$TARGET_REPO_URL" \
