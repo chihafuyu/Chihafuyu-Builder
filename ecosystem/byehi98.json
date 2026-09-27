@@ -144,17 +144,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "subway-surfers": {
-                "package": "com.kiloo.subwaysurf",
-                "search_term": "Subway Surfers",
-                "stable": [
-                    "3.69.2"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "swift-backup": {
                 "package": "org.swiftapps.swiftbackup",
                 "search_term": "Swift Backup",

@@ -69,11 +69,6 @@ name: 🎮 Byehi98 Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_subway_surfers:
-        description: 'Patch subway-surfers'
-        required: true
-        type: boolean
-        default: false
       app_traffic_rider:
         description: 'Patch traffic-rider'
         required: true
@@ -158,7 +153,6 @@ jobs:
       APP_JETPACK_JOYRIDE: ${{ inputs.app_jetpack_joyride }}
       APP_PLAGUE_INC: ${{ inputs.app_plague_inc }}
       APP_PRINCE_OF_PERSIA: ${{ inputs.app_prince_of_persia_the_lost_crown }}
-      APP_SUBWAY_SURFERS: ${{ inputs.app_subway_surfers }}
       APP_TRAFFIC_RIDER: ${{ inputs.app_traffic_rider }}
     steps:
       - id: build-list
@@ -203,9 +197,6 @@ jobs:
           fi
           if [[ "$APP_PRINCE_OF_PERSIA" == "true" ]]; then
             LIST="$LIST,prince-of-persia-the-lost-crown"
-          fi
-          if [[ "$APP_SUBWAY_SURFERS" == "true" ]]; then
-            LIST="$LIST,subway-surfers"
           fi
           if [[ "$APP_TRAFFIC_RIDER" == "true" ]]; then
             LIST="$LIST,traffic-rider"
