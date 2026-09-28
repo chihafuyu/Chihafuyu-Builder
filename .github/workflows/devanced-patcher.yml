@@ -4,6 +4,11 @@ name: 🔄 De-Vanced Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
+      app_facebook:
+        description: 'Patch facebook'
+        required: true
+        type: boolean
+        default: true
       app_google_photos:
         description: 'Patch google-photos'
         required: true
@@ -85,6 +90,7 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
+      APP_FACEBOOK: ${{ inputs.app_facebook }}
       APP_GOOGLE_PHOTOS: ${{ inputs.app_google_photos }}
       APP_PIXIV: ${{ inputs.app_pixiv }}
       APP_STRAVA: ${{ inputs.app_strava }}
@@ -93,6 +99,9 @@ jobs:
         run: |
           set -euo pipefail
           LIST=""
+          if [[ "$APP_FACEBOOK" == "true" ]]; then
+            LIST="$LIST,facebook"
+          fi
           if [[ "$APP_GOOGLE_PHOTOS" == "true" ]]; then
             LIST="$LIST,google-photos"
           fi
