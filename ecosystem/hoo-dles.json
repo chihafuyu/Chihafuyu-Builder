@@ -51,7 +51,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Unlimited RampUp time": {
+                        "enabled": true
+                    }
+                }
             },
             "ibispaint": {
                 "package": "jp.ne.ibis.ibispaintx.app",
@@ -59,10 +63,11 @@
                 "stable": [
                     "14.1.0"
                 ],
-                "beta": ["14.1.1"],
+                "beta": [
+                    "14.1.1"
+                ],
                 "strip": true,
                 "force_arch": "arm64-v8a",
-                "uptodown_url": "https://ibispaint-x.en.uptodown.com/android",
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },

@@ -16,7 +16,18 @@
                     "arm64-v8a": "145767611"
                 },
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Pin shortcuts on Home": {
+                        "enabled": true
+                    },
+                    "Local files from a server": {
+                        "enabled": true
+                    },
+                    "Theme colors": {
+                        "enabled": true,
+                        "options": {}
+                    }
+                }
             }
         }
     }
