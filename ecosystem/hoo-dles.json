@@ -46,7 +46,7 @@
                 "package": "com.duolingo",
                 "search_term": "Duolingo",
                 "stable": [
-                    "6.95.4"
+                    "6.98.4"
                 ],
                 "beta": [],
                 "strip": true,
@@ -87,7 +87,7 @@
                 "package": "com.getmimo",
                 "search_term": "Mimo",
                 "stable": [
-                    "9.24"
+                    "9.30"
                 ],
                 "beta": [],
                 "strip": true,
