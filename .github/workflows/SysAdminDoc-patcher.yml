@@ -1,14 +1,24 @@
 ---
-name: 📘 Hushfacebook Ecosystem Patcher
+name: 🛠️ SysAdminDoc Ecosystem Patcher
 
 "on":
   workflow_dispatch:
     inputs:
-      app_facebook:
-        description: 'Patch facebook'
+      app_feed:
+        description: 'Patch Hush Feed'
         required: true
         type: boolean
-        default: true
+        default: false
+      app_facebook:
+        description: 'Patch Hush Facebook'
+        required: true
+        type: boolean
+        default: false
+      app_messenger:
+        description: 'Patch Hush Messenger'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -70,40 +80,15 @@ name: 📘 Hushfacebook Ecosystem Patcher
         default: false
 
 jobs:
-  prepare-apps:
-    runs-on: ubuntu-latest
-    outputs:
-      selected: ${{ steps.build-list.outputs.apps }}
-    env:
-      APP_FACEBOOK: ${{ inputs.app_facebook }}
-    steps:
-      - id: build-list
-        run: |
-          set -euo pipefail
-          LIST=""
-          if [[ "$APP_FACEBOOK" == "true" ]]; then
-            LIST="$LIST,facebook"
-          fi
-          LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then
-            echo "::error::No applications selected!"
-            exit 1
-          fi
-          {
-            echo "apps<<EOF"
-            echo "$LIST"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
-
-  call-patcher:
-    needs: prepare-apps
+  patch-feed:
+    if: inputs.app_feed == true
     permissions:
       contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "hushfacebook"
-      apps: ${{ needs.prepare-apps.outputs.selected }}
+      ecosystem: "hushfeed"
+      apps: "feed"
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
       custom_version: ${{ inputs.custom_version }}
@@ -112,8 +97,54 @@ jobs:
       cli_track: ${{ inputs.cli_track }}
       custom_cli_version: ${{ inputs.custom_cli_version }}
       patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/hushfacebook"
+      repo_url: "SysAdminDoc/HushFeed"
+      custom_patch_filename: "hushfeed-custom.mpp"
+      upload_github_release: ${{ inputs.upload_github_release }}
+      send_to_telegram: ${{ inputs.send_to_telegram }}
+      release_tag_prefix: "hushfeed"
+
+  patch-facebook:
+    if: inputs.app_facebook == true
+    permissions:
+      contents: write
+    uses: ./.github/workflows/core-engine.yml
+    secrets: inherit
+    with:
+      ecosystem: "hushfacebook"
+      apps: "facebook"
+      architecture: ${{ inputs.architecture }}
+      version_selection: ${{ inputs.version_selection }}
+      custom_version: ${{ inputs.custom_version }}
+      download_source: ${{ inputs.download_source }}
+      continue_on_error: ${{ inputs.continue_on_error }}
+      cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
+      patches_track: ${{ inputs.patches_track }}
+      repo_url: "SysAdminDoc/HushFacebook"
       custom_patch_filename: "hushfacebook-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: "hushfacebook"
+
+  patch-messenger:
+    if: inputs.app_messenger == true
+    permissions:
+      contents: write
+    uses: ./.github/workflows/core-engine.yml
+    secrets: inherit
+    with:
+      ecosystem: "hushmessenger"
+      apps: "messenger"
+      architecture: ${{ inputs.architecture }}
+      version_selection: ${{ inputs.version_selection }}
+      custom_version: ${{ inputs.custom_version }}
+      download_source: ${{ inputs.download_source }}
+      continue_on_error: ${{ inputs.continue_on_error }}
+      cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
+      patches_track: ${{ inputs.patches_track }}
+      repo_url: "SysAdminDoc/HushMessenger"
+      custom_patch_filename: "hushmessenger-custom.mpp"
+      upload_github_release: ${{ inputs.upload_github_release }}
+      send_to_telegram: ${{ inputs.send_to_telegram }}
+      release_tag_prefix: "hushmessenger"

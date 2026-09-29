@@ -1,4 +1,19 @@
 {
+    "hushfeed": {
+        "apps": {
+            "tiktok-global": {
+                "package": "com.zhiliaoapp.musically",
+                "search_term": "TikTok",
+                "stable": [
+                    "47.1.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    },
     "hushfacebook": {
         "apps": {
             "facebook": {
@@ -7,12 +22,11 @@
                 "stable": [
                     "580.0.0.51.74"
                 ],
-                "beta": [],
-                "strip": true,
-                "force_bundle": true,
                 "version_codes": {
                     "arm64-v8a": "475019344"
                 },
+                "force_bundle": true,
+                "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Download any video": {
@@ -40,6 +54,24 @@
                         "enabled": true
                     }
                 }
+            }
+        }
+    },
+    "hushmessenger": {
+        "apps": {
+            "messenger": {
+                "package": "com.facebook.orca",
+                "search_term": "Messenger",
+                "stable": [
+                    "580.0.0.49.91"
+                ],
+                "version_codes": {
+                    "arm64-v8a": "346013440"
+                },
+                "force_bundle": false,
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }

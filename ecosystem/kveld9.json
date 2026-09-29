@@ -78,7 +78,7 @@
                     "Language Pack Purger": {
                         "enabled": true,
                         "options": {
-                            "locales": "en, id"
+                            "locales": "en, id, in"
                         }
                     }
                 }
@@ -97,7 +97,7 @@
                     "Language Pack Purger": {
                         "enabled": true,
                         "options": {
-                            "locales": "en, id"
+                            "locales": "en, id, in"
                         }
                     }
                 }

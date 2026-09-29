@@ -12,6 +12,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "habitica": {
+                "package": "com.habitrpg.android.habitica",
+                "search_term": "Habitica",
+                "stable": [
+                    "4.10.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "pertaminiku": {
                 "package": "com.pertaminiku",
                 "search_term": "Pertaminiku",
