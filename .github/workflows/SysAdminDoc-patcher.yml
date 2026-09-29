@@ -4,18 +4,18 @@ name: 🛠️ SysAdminDoc Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_feed:
-        description: 'Patch Hush Feed'
+      app_tiktok_global:
+        description: 'Patch HushFeed'
         required: true
         type: boolean
         default: false
       app_facebook:
-        description: 'Patch Hush Facebook'
+        description: 'Patch HushFacebook'
         required: true
         type: boolean
         default: false
       app_messenger:
-        description: 'Patch Hush Messenger'
+        description: 'Patch HushMessenger'
         required: true
         type: boolean
         default: false
@@ -80,15 +80,15 @@ name: 🛠️ SysAdminDoc Ecosystem Patcher
         default: false
 
 jobs:
-  patch-feed:
-    if: inputs.app_feed == true
+  patch-tiktok-global:
+    if: inputs.app_tiktok_global == true
     permissions:
       contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "hushfeed"
-      apps: "feed"
+      ecosystem: "SysAdminDoc"
+      apps: "tiktok-global"
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
       custom_version: ${{ inputs.custom_version }}
@@ -110,7 +110,7 @@ jobs:
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "hushfacebook"
+      ecosystem: "SysAdminDoc"
       apps: "facebook"
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
@@ -133,7 +133,7 @@ jobs:
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
-      ecosystem: "hushmessenger"
+      ecosystem: "SysAdminDoc"
       apps: "messenger"
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}

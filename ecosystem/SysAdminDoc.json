@@ -1,27 +1,19 @@
 {
-    "hushfeed": {
+    "SysAdminDoc": {
         "apps": {
             "tiktok-global": {
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok",
-                "stable": [
-                    "47.1.3"
-                ],
+                "stable": ["47.1.3"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
-            }
-        }
-    },
-    "hushfacebook": {
-        "apps": {
+            },
             "facebook": {
                 "package": "com.facebook.katana",
                 "search_term": "Facebook",
-                "stable": [
-                    "580.0.0.51.74"
-                ],
+                "stable": ["580.0.0.51.74"],
                 "version_codes": {
                     "arm64-v8a": "475019344"
                 },
@@ -54,17 +46,11 @@
                         "enabled": true
                     }
                 }
-            }
-        }
-    },
-    "hushmessenger": {
-        "apps": {
+            },
             "messenger": {
                 "package": "com.facebook.orca",
                 "search_term": "Messenger",
-                "stable": [
-                    "580.0.0.49.91"
-                ],
+                "stable": ["580.0.0.49.91"],
                 "version_codes": {
                     "arm64-v8a": "346013440"
                 },
