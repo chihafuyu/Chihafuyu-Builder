@@ -110,6 +110,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "pi-music-player": {
+                "package": "com.Project100Pi.themusicplayer",
+                "search_term": "Pi Music Player",
+                "stable": [
+                    "3.2.0.0_release_2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "tasker": {
                 "package": "net.dinglisch.android.taskerm",
                 "search_term": "Tasker",

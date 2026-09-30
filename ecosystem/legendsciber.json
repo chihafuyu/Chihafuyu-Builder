@@ -76,11 +76,11 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "soccer-star": {
-                "package": "com.soccer.score.star",
-                "search_term": "Soccer Star",
+            "stick-war-legacy": {
+                "package": "com.maxgames.stickwarlegacy",
+                "search_term": "Stick War: Legacy",
                 "stable": [
-                    "0.3.88"
+                    "2026.1.983"
                 ],
                 "beta": [],
                 "strip": true,

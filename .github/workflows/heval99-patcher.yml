@@ -44,6 +44,11 @@ name: 📧 Heval99 Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_pi_music_player:
+        description: 'Patch pi-music-player'
+        required: true
+        type: boolean
+        default: false
       app_tasker:
         description: 'Patch tasker'
         required: true
@@ -143,6 +148,7 @@ jobs:
       APP_IPTV: ${{ inputs.app_iptv }}
       APP_JETAUDIO: ${{ inputs.app_jetaudio }}
       APP_OSMAND: ${{ inputs.app_osmand }}
+      APP_PI_MUSIC_PLAYER: ${{ inputs.app_pi_music_player }}
       APP_TASKER: ${{ inputs.app_tasker }}
       APP_TEXTRA: ${{ inputs.app_textra }}
       APP_UNIFIED_REMOTE: ${{ inputs.app_unified_remote }}
@@ -176,6 +182,9 @@ jobs:
           fi
           if [[ "$APP_OSMAND" == "true" ]]; then
             LIST="$LIST,osmand"
+          fi
+          if [[ "$APP_PI_MUSIC_PLAYER" == "true" ]]; then
+            LIST="$LIST,pi-music-player"
           fi
           if [[ "$APP_TASKER" == "true" ]]; then
             LIST="$LIST,tasker"

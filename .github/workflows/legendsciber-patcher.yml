@@ -34,8 +34,8 @@ name: 👑 Legendsciber Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_soccer_star:
-        description: 'Patch soccer-star'
+      app_stick_war_legacy:
+        description: 'Patch stick-war-legacy'
         required: true
         type: boolean
         default: false
@@ -121,7 +121,7 @@ jobs:
       APP_HUNGRY_SHARK: ${{ inputs.app_hungry_shark_evolution }}
       APP_RED_BALL_4: ${{ inputs.app_red_ball_4 }}
       APP_SMASH_HIT: ${{ inputs.app_smash_hit }}
-      APP_SOCCER_STAR: ${{ inputs.app_soccer_star }}
+      APP_STICK_WAR_LEGACY: ${{ inputs.app_stick_war_legacy }}
       APP_SUBWAY_SURFERS: ${{ inputs.app_subway_surfers }}
       APP_TOOLBOX: ${{ inputs.app_toolbox_for_minecraft_pe }}
     steps:
@@ -147,8 +147,8 @@ jobs:
           if [[ "$APP_SMASH_HIT" == "true" ]]; then
             LIST="$LIST,smash-hit"
           fi
-          if [[ "$APP_SOCCER_STAR" == "true" ]]; then
-            LIST="$LIST,soccer-star"
+          if [[ "$APP_STICK_WAR_LEGACY" == "true" ]]; then
+            LIST="$LIST,stick-war-legacy"
           fi
           if [[ "$APP_SUBWAY_SURFERS" == "true" ]]; then
             LIST="$LIST,subway-surfers"
