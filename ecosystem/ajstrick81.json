@@ -47,7 +47,7 @@
             "peacock": {
                 "package": "com.peacocktv.peacockandroid",
                 "search_term": "Peacock",
-                "stable": ["7.8.100"],
+                "stable": ["7.10.102"],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -77,7 +77,7 @@
                 "package": "com.tubitv",
                 "search_term": "Tubi",
                 "stable": [
-                    "10.28.5000"
+                    "10.36.5000"
                 ],
                 "beta": [],
                 "strip": true,

@@ -24,6 +24,11 @@ name: 🎮 Byehi98 Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_dead_trigger:
+        description: 'Patch dead-trigger'
+        required: true
+        type: boolean
+        default: false
       app_doodle_jump:
         description: 'Patch doodle-jump'
         required: true
@@ -41,11 +46,6 @@ name: 🎮 Byehi98 Ecosystem Patcher
         default: false
       app_injustice_gods_among_us:
         description: 'Patch injustice-gods-among-us'
-        required: true
-        type: boolean
-        default: false
-      app_into_the_dead:
-        description: 'Patch into-the-dead'
         required: true
         type: boolean
         default: false
@@ -144,11 +144,11 @@ jobs:
       APP_ALTOS_ADVENTURE: ${{ inputs.app_altos_adventure }}
       APP_ALTOS_ODYSSEY: ${{ inputs.app_altos_odyssey }}
       APP_CROSSY_ROAD: ${{ inputs.app_crossy_road }}
+      APP_DEAD_TRIGGER: ${{ inputs.app_dead_trigger }}
       APP_DOODLE_JUMP: ${{ inputs.app_doodle_jump }}
       APP_EARN_TO_DIE_2: ${{ inputs.app_earn_to_die_2 }}
       APP_HILL_CLIMB_RACING: ${{ inputs.app_hill_climb_racing }}
       APP_INJUSTICE_GODS_AMONG_US: ${{ inputs.app_injustice_gods_among_us }}
-      APP_INTO_THE_DEAD: ${{ inputs.app_into_the_dead }}
       APP_INTO_THE_DEAD_2: ${{ inputs.app_into_the_dead_2 }}
       APP_JETPACK_JOYRIDE: ${{ inputs.app_jetpack_joyride }}
       APP_PLAGUE_INC: ${{ inputs.app_plague_inc }}
@@ -171,6 +171,9 @@ jobs:
           if [[ "$APP_CROSSY_ROAD" == "true" ]]; then
             LIST="$LIST,crossy-road"
           fi
+          if [[ "$APP_DEAD_TRIGGER" == "true" ]]; then
+            LIST="$LIST,dead-trigger"
+          fi
           if [[ "$APP_DOODLE_JUMP" == "true" ]]; then
             LIST="$LIST,doodle-jump"
           fi
@@ -182,9 +185,6 @@ jobs:
           fi
           if [[ "$APP_INJUSTICE_GODS_AMONG_US" == "true" ]]; then
             LIST="$LIST,injustice-gods-among-us"
-          fi
-          if [[ "$APP_INTO_THE_DEAD" == "true" ]]; then
-            LIST="$LIST,into-the-dead"
           fi
           if [[ "$APP_INTO_THE_DEAD_2" == "true" ]]; then
             LIST="$LIST,into-the-dead-2"

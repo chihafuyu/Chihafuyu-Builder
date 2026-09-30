@@ -19,6 +19,11 @@ name: 🛠️ SysAdminDoc Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_threads:
+        description: 'Patch HushThreads'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -148,3 +153,26 @@ jobs:
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: "hushmessenger"
+
+  patch-threads:
+    if: inputs.app_threads == true
+    permissions:
+      contents: write
+    uses: ./.github/workflows/core-engine.yml
+    secrets: inherit
+    with:
+      ecosystem: "SysAdminDoc"
+      apps: "threads"
+      architecture: ${{ inputs.architecture }}
+      version_selection: ${{ inputs.version_selection }}
+      custom_version: ${{ inputs.custom_version }}
+      download_source: ${{ inputs.download_source }}
+      continue_on_error: ${{ inputs.continue_on_error }}
+      cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
+      patches_track: ${{ inputs.patches_track }}
+      repo_url: "SysAdminDoc/HushThreads"
+      custom_patch_filename: "hushthreads-custom.mpp"
+      upload_github_release: ${{ inputs.upload_github_release }}
+      send_to_telegram: ${{ inputs.send_to_telegram }}
+      release_tag_prefix: "hushthreads"

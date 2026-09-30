@@ -5,9 +5,13 @@
                 "package": "com.alightcreative.motion",
                 "search_term": "Alight Motion",
                 "stable": [
-                    "5.0.273.1028425"
+                    "5.0.270.1002578"
                 ],
                 "beta": [],
+                "version_codes": {
+                    "universal": "1002578"
+                },
+                "force_bundle": true,
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}

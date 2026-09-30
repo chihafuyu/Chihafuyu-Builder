@@ -45,6 +45,22 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "dead-trigger": {
+                "package": "com.madfingergames.deadtrigger",
+                "search_term": "Dead Trigger: Survival Shooter",
+                "stable": [
+                    "2.3.4"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "arm64-v8a": "210800208",
+                    "universal": "210800208"
+                },
+                "force_bundle": true,
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "doodle-jump": {
                 "package": "com.lima.doodlejump",
                 "search_term": "Doodle Jump",
@@ -60,7 +76,7 @@
                 "package": "com.notdoppler.earntodie2",
                 "search_term": "Earn to Die 2",
                 "stable": [
-                    "1.4.58"
+                    "1.5.6"
                 ],
                 "beta": [],
                 "strip": true,
@@ -83,17 +99,6 @@
                 "search_term": "Injustice: Gods Among Us",
                 "stable": [
                     "3.5.1"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "into-the-dead": {
-                "package": "com.sidheinteractive.sif.DR",
-                "search_term": "Into the Dead",
-                "stable": [
-                    "2.9.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -126,7 +131,7 @@
                 "package": "com.miniclip.plagueinc",
                 "search_term": "Plague Inc.",
                 "stable": [
-                    "1.25.2"
+                    "1.26.1"
                 ],
                 "beta": [],
                 "strip": true,

@@ -167,6 +167,24 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "youcut": {
+                "package": "com.camerasideas.trimmer",
+                "search_term": "YouCut",
+                "stable": [
+                    "1.716.1222"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "1222",
+                    "arm64-v8a": "1222",
+                    "armeabi-v7a": "1222",
+                    "x86_64": "1222",
+                    "x86": "1222"
+                },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }

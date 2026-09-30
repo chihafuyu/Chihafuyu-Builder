@@ -64,6 +64,11 @@ name: 📧 Heval99 Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_youcut:
+        description: 'Patch youcut'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -142,6 +147,7 @@ jobs:
       APP_TEXTRA: ${{ inputs.app_textra }}
       APP_UNIFIED_REMOTE: ${{ inputs.app_unified_remote }}
       APP_WEATHER_UNDERGROUND: ${{ inputs.app_weather_underground }}
+      APP_YOUCUT: ${{ inputs.app_youcut }}
     steps:
       - id: build-list
         run: |
@@ -182,6 +188,9 @@ jobs:
           fi
           if [[ "$APP_WEATHER_UNDERGROUND" == "true" ]]; then
             LIST="$LIST,weather-underground"
+          fi
+          if [[ "$APP_YOUCUT" == "true" ]]; then
+            LIST="$LIST,youcut"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

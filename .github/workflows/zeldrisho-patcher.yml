@@ -4,11 +4,6 @@ name: ⚔️ Zeldrisho Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_threads:
-        description: 'Patch threads'
-        required: true
-        type: boolean
-        default: true
       app_zalo:
         description: 'Patch zalo'
         required: true
@@ -80,16 +75,12 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APP_THREADS: ${{ inputs.app_threads }}
       APP_ZALO: ${{ inputs.app_zalo }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_THREADS" == "true" ]]; then
-            LIST="$LIST,threads"
-          fi
           if [[ "$APP_ZALO" == "true" ]]; then
             LIST="$LIST,zalo"
           fi
