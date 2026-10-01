@@ -76,17 +76,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "stick-war-legacy": {
-                "package": "com.maxgames.stickwarlegacy",
-                "search_term": "Stick War: Legacy",
-                "stable": [
-                    "2026.1.983"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "subway-surfers": {
                 "package": "com.kiloo.subwaysurf",
                 "search_term": "Subway Surfers",
