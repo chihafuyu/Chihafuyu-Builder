@@ -17,6 +17,15 @@
                 },
                 "archive_id": "ZeNiX",
                 "options_override": {
+                    "Hide Home and Browse ads": {
+                        "enabled": true
+                    },
+                    "Hide player ad cards": {
+                        "enabled": true
+                    },
+                    "Hide Premium tab": {
+                        "enabled": true
+                    },
                     "Pin shortcuts on Home": {
                         "enabled": true
                     },
@@ -24,7 +33,7 @@
                         "enabled": true
                     },
                     "Theme colors": {
-                        "enabled": true,
+                        "enabled": false,
                         "options": {}
                     }
                 }
