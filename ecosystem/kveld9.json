@@ -64,25 +64,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "tiktok-asia": {
-                "package": "com.ss.android.ugc.trill",
-                "search_term": "TikTok Asia",
-                "description": "Any TikTok version (Asia nodpi APK)",
-                "stable": [
-                    "47.1.4"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {
-                    "Language Pack Purger": {
-                        "enabled": true,
-                        "options": {
-                            "locales": "en, id, in"
-                        }
-                    }
-                }
-            },
             "tiktok-global": {
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok Global",
@@ -91,6 +72,11 @@
                     "47.1.4"
                 ],
                 "beta": [],
+                "version_codes": {
+                    "universal": "2024701040",
+                    "arm64-v8a": "2024701040"
+                },
+                "force_bundle": false,
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {

@@ -19,11 +19,6 @@ name: 🦁 Kveld9 Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_tiktok_asia:
-        description: 'Patch tiktok-asia'
-        required: true
-        type: boolean
-        default: true
       app_tiktok_global:
         description: 'Patch tiktok-global'
         required: true
@@ -98,7 +93,6 @@ jobs:
       APP_BRAVE_BROWSER: ${{ inputs.app_brave_browser }}
       APP_HEVY: ${{ inputs.app_hevy }}
       APP_NOKOPRINT: ${{ inputs.app_nokoprint }}
-      APP_TIKTOK_ASIA: ${{ inputs.app_tiktok_asia }}
       APP_TIKTOK_GLOBAL: ${{ inputs.app_tiktok_global }}
     steps:
       - id: build-list
@@ -113,9 +107,6 @@ jobs:
           fi
           if [[ "$APP_NOKOPRINT" == "true" ]]; then
             LIST="$LIST,nokoprint"
-          fi
-          if [[ "$APP_TIKTOK_ASIA" == "true" ]]; then
-            LIST="$LIST,tiktok-asia"
           fi
           if [[ "$APP_TIKTOK_GLOBAL" == "true" ]]; then
             LIST="$LIST,tiktok-global"
