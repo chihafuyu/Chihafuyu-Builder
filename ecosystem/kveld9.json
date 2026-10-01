@@ -85,6 +85,63 @@
                         "options": {
                             "locales": "en, id, in"
                         }
+                    },
+                    "Disable Search History Recording": {
+                        "enabled": true
+                    },
+                    "Disable Watch History Recording": {
+                        "enabled": true
+                    },
+                    "Feed Live Stream Blocker": {
+                        "enabled": true
+                    },
+                    "Hide AI-Generated Content": {
+                        "enabled": true
+                    },
+                    "SIM Region Selector": {
+                        "enabled": true
+                    },
+                    "Studio & Creation De-bloat": {
+                        "enabled": true
+                    },
+                    "Auto-Pause First Video": {
+                        "enabled": true
+                    },
+                    "Hide Seen Videos": {
+                        "enabled": true
+                    },
+                    "Playback Speed Persistence": {
+                        "enabled": true
+                    },
+                    "Resume Video After Scroll": {
+                        "enabled": true
+                    },
+                    "Stop Video Looping": {
+                        "enabled": true
+                    },
+                    "Video Quality Governor": {
+                        "enabled": true
+                    },
+                    "Disable Push Notifications": {
+                        "enabled": true
+                    },
+                    "Display Refresh Rate Governor": {
+                        "enabled": true
+                    },
+                    "Live Stream 3D Gift Optimizer": {
+                        "enabled": true
+                    },
+                    "Live Stream SDK & Minigame De-bloat": {
+                        "enabled": true
+                    },
+                    "Disable Profile Photo LIVE Status": {
+                        "enabled": true
+                    },
+                    "Disable Double Tap to Like": {
+                        "enabled": true
+                    },
+                    "Disable Post-Download Share Dialog": {
+                        "enabled": true
                     }
                 }
             }
