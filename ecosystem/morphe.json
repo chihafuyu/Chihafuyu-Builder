@@ -5,7 +5,7 @@
                 "package": "com.reddit.frontpage",
                 "search_term": "Reddit",
                 "stable": [
-                    "2026.14.0"
+                    "2026.24.0"
                 ],
                 "beta": [
                     "2026.38.0"
@@ -55,7 +55,7 @@
                 "package": "com.google.android.apps.youtube.music",
                 "search_term": "YouTube Music",
                 "stable": [
-                    "9.15.51"
+                    "9.20.53"
                 ],
                 "beta": [
                     "9.26.56"
