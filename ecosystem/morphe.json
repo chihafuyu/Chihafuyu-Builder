@@ -8,7 +8,7 @@
                     "2026.24.0"
                 ],
                 "beta": [
-                    "2026.38.0"
+                    "2026.39.0"
                 ],
                 "version_codes": {
                     "universal": "12L+",
@@ -59,7 +59,7 @@
                 "package": "com.google.android.apps.youtube.music",
                 "search_term": "YouTube Music",
                 "stable": [
-                    "9.20.53"
+                    "9.15.51"
                 ],
                 "beta": [
                     "9.26.56"
