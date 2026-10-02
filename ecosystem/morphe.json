@@ -36,7 +36,11 @@
                     "21.39.522"
                 ],
                 "version_codes": {
-                    "universal": "1561299901"
+                    "universal": "1561299901",
+                    "arm64-v8a": "1561299901",
+                    "armeabi-v7a": "1561299901",
+                    "x86_64": "1561299901",
+                    "x86": "1561299901"
                 },
                 "strip": true,
                 "force_bundle": false,
