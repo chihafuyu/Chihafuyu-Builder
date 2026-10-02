@@ -116,6 +116,33 @@
                     },
                     "View stories anonymously": {
                         "enabled": true
+                    },
+                    "Hide the Explore grid": {
+                        "enabled": true
+                    },
+                    "Start Home on Following": {
+                        "enabled": true
+                    },
+                    "Remove the empty space at the bottom": {
+                        "enabled": true
+                    },
+                    "Open developer options": {
+                        "enabled": true
+                    },
+                    "Pure black dark mode": {
+                        "enabled": true
+                    },
+                    "Keep the reel speed": {
+                        "enabled": true
+                    },
+                    "Hide the Repost button": {
+                        "enabled": true
+                    },
+                    "Hide group buttons on the share sheet": {
+                        "enabled": true
+                    },
+                    "Story ring size": {
+                        "enabled": true
                     }
                 }
             },
