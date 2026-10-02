@@ -38,7 +38,7 @@
                 "package": "ipnossoft.rma.free",
                 "search_term": "BetterSleep",
                 "stable": [
-                    "26.15"
+                    "26.17"
                 ],
                 "beta": [],
                 "strip": true,
@@ -71,7 +71,7 @@
                 "package": "photo.editor.photoeditor.photoeditorpro",
                 "search_term": "Photo Editor Pro",
                 "stable": [
-                    "1.791.265"
+                    "1.802.266"
                 ],
                 "beta": [],
                 "strip": true,
@@ -126,7 +126,7 @@
                 "package": "com.risesci.nyx",
                 "search_term": "RISE Sleep Tracker",
                 "stable": [
-                    "Android V1.78.47"
+                    "Android V1.78.49"
                 ],
                 "beta": [],
                 "strip": true,
@@ -148,7 +148,7 @@
                 "package": "com.dubox.drive",
                 "search_term": "TeraBox",
                 "stable": [
-                    "4.26.0"
+                    "4.26.5"
                 ],
                 "beta": [],
                 "strip": true,
@@ -159,7 +159,7 @@
                 "package": "com.darinsoft.vimo",
                 "search_term": "VLLO",
                 "stable": [
-                    "13.7.4"
+                    "13.9.0"
                 ],
                 "beta": [],
                 "strip": true,
