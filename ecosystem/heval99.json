@@ -1,17 +1,6 @@
 {
     "heval99": {
         "apps": {
-            "anydesk": {
-                "package": "com.anydesk.anydeskandroid",
-                "search_term": "AnyDesk",
-                "stable": [
-                    "9.0.0"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "aqua-mail": {
                 "package": "org.kman.AquaMail",
                 "search_term": "Aqua Mail",
@@ -193,6 +182,17 @@
                     "x86_64": "1222",
                     "x86": "1222"
                 },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "zedge": {
+                "package": "net.zedge.android",
+                "search_term": "Zedge",
+                "stable": [
+                    "9.38.3"
+                ],
+                "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}

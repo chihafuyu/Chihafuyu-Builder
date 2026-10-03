@@ -4,11 +4,6 @@ name: 📧 Heval99 Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_anydesk:
-        description: 'Patch anydesk'
-        required: true
-        type: boolean
-        default: false
       app_aqua_mail:
         description: 'Patch aqua-mail'
         required: true
@@ -71,6 +66,11 @@ name: 📧 Heval99 Ecosystem Patcher
         default: false
       app_youcut:
         description: 'Patch youcut'
+        required: true
+        type: boolean
+        default: false
+      app_zedge:
+        description: 'Patch zedge'
         required: true
         type: boolean
         default: false
@@ -140,7 +140,6 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APP_ANYDESK: ${{ inputs.app_anydesk }}
       APP_AQUA_MAIL: ${{ inputs.app_aqua_mail }}
       APP_BOX_BOX: ${{ inputs.app_box_box }}
       APP_EASYNOTES: ${{ inputs.app_easynotes }}
@@ -154,14 +153,12 @@ jobs:
       APP_UNIFIED_REMOTE: ${{ inputs.app_unified_remote }}
       APP_WEATHER_UNDERGROUND: ${{ inputs.app_weather_underground }}
       APP_YOUCUT: ${{ inputs.app_youcut }}
+      APP_ZEDGE: ${{ inputs.app_zedge }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_ANYDESK" == "true" ]]; then
-            LIST="$LIST,anydesk"
-          fi
           if [[ "$APP_AQUA_MAIL" == "true" ]]; then
             LIST="$LIST,aqua-mail"
           fi
@@ -200,6 +197,9 @@ jobs:
           fi
           if [[ "$APP_YOUCUT" == "true" ]]; then
             LIST="$LIST,youcut"
+          fi
+          if [[ "$APP_ZEDGE" == "true" ]]; then
+            LIST="$LIST,zedge"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

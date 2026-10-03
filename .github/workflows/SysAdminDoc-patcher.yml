@@ -4,11 +4,6 @@ name: 🛠️ SysAdminDoc Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_tiktok_global:
-        description: 'Patch HushFeed'
-        required: true
-        type: boolean
-        default: false
       app_facebook:
         description: 'Patch HushFacebook'
         required: true
@@ -24,8 +19,18 @@ name: 🛠️ SysAdminDoc Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_telegram_web:
+        description: 'Patch HushTelegram'
+        required: true
+        type: boolean
+        default: false
       app_threads:
         description: 'Patch HushThreads'
+        required: true
+        type: boolean
+        default: false
+      app_tiktok_global:
+        description: 'Patch HushFeed'
         required: true
         type: boolean
         default: false
@@ -90,29 +95,6 @@ name: 🛠️ SysAdminDoc Ecosystem Patcher
         default: false
 
 jobs:
-  patch-tiktok-global:
-    if: inputs.app_tiktok_global == true
-    permissions:
-      contents: write
-    uses: ./.github/workflows/core-engine.yml
-    secrets: inherit
-    with:
-      ecosystem: "SysAdminDoc"
-      apps: "tiktok-global"
-      architecture: ${{ inputs.architecture }}
-      version_selection: ${{ inputs.version_selection }}
-      custom_version: ${{ inputs.custom_version }}
-      download_source: ${{ inputs.download_source }}
-      continue_on_error: ${{ inputs.continue_on_error }}
-      cli_track: ${{ inputs.cli_track }}
-      custom_cli_version: ${{ inputs.custom_cli_version }}
-      patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/HushFeed"
-      custom_patch_filename: "hushfeed-custom.mpp"
-      upload_github_release: ${{ inputs.upload_github_release }}
-      send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "hushfeed"
-
   patch-facebook:
     if: inputs.app_facebook == true
     permissions:
@@ -182,6 +164,29 @@ jobs:
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: "hushmessenger"
 
+  patch-telegram-web:
+    if: inputs.app_telegram_web == true
+    permissions:
+      contents: write
+    uses: ./.github/workflows/core-engine.yml
+    secrets: inherit
+    with:
+      ecosystem: "SysAdminDoc"
+      apps: "telegram-web"
+      architecture: ${{ inputs.architecture }}
+      version_selection: ${{ inputs.version_selection }}
+      custom_version: ${{ inputs.custom_version }}
+      download_source: ${{ inputs.download_source }}
+      continue_on_error: ${{ inputs.continue_on_error }}
+      cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
+      patches_track: ${{ inputs.patches_track }}
+      repo_url: "SysAdminDoc/HushTelegram"
+      custom_patch_filename: "hushtelegram-custom.mpp"
+      upload_github_release: ${{ inputs.upload_github_release }}
+      send_to_telegram: ${{ inputs.send_to_telegram }}
+      release_tag_prefix: "hushtelegram"
+
   patch-threads:
     if: inputs.app_threads == true
     permissions:
@@ -204,3 +209,26 @@ jobs:
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: "hushthreads"
+
+  patch-tiktok-global:
+    if: inputs.app_tiktok_global == true
+    permissions:
+      contents: write
+    uses: ./.github/workflows/core-engine.yml
+    secrets: inherit
+    with:
+      ecosystem: "SysAdminDoc"
+      apps: "tiktok-global"
+      architecture: ${{ inputs.architecture }}
+      version_selection: ${{ inputs.version_selection }}
+      custom_version: ${{ inputs.custom_version }}
+      download_source: ${{ inputs.download_source }}
+      continue_on_error: ${{ inputs.continue_on_error }}
+      cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
+      patches_track: ${{ inputs.patches_track }}
+      repo_url: "SysAdminDoc/HushFeed"
+      custom_patch_filename: "hushfeed-custom.mpp"
+      upload_github_release: ${{ inputs.upload_github_release }}
+      send_to_telegram: ${{ inputs.send_to_telegram }}
+      release_tag_prefix: "hushfeed"
