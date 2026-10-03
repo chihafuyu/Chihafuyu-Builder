@@ -21,6 +21,9 @@ from core.utils import (
     update_options_json
 )
 
+# Set max runtime to 5.5 hours to avoid GitHub Actions 6-hour force kill
+MAX_RUNTIME_SECONDS = 19800
+
 
 def load_config(ecosystem_name: str) -> Dict[str, Any]:
     """Loads ecosystem configuration from the specific JSON file."""
@@ -53,7 +56,6 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
 
     req_source = args.download_source.lower()
     if req_source in AVAILABLE_SCRAPERS:
-        # Context manager ensures resources are closed immediately after scraping
         with AVAILABLE_SCRAPERS[req_source]() as scraper_instance:
             path = scraper_instance.scrape(ctx)
             if path:
@@ -73,6 +75,7 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
 
     print(f"[FATAL] Exhausted sources or specific source failed for {ctx.pkg}.")
     return None
+
 
 def write_changelog(args: Any, apps_patched: list, workspace: str, clean_ver: str) -> None:
     """Writes the patched apps changelog to a markdown file."""
@@ -243,7 +246,8 @@ def process_single_app(
 
 
 def run_patcher(args: Any) -> None:
-    """Main execution function handling the patching loop."""
+    """Main execution function handling the patching loop with graceful timeout."""
+    start_time = time.monotonic()
     eco_config = load_config(args.ecosystem)
 
     workspace = f"./{_safe_filename(args.ecosystem)}"
@@ -264,6 +268,11 @@ def run_patcher(args: Any) -> None:
     custom_vers = _parse_custom_versions(args.custom_version)
 
     for app_name in [a.strip() for a in app_list]:
+        if time.monotonic() - start_time > MAX_RUNTIME_SECONDS:
+            print("\n[WARN] ⏱️ Maximum runtime limit (5.5 hours) reached!")
+            print("[WARN] Stopping gracefuly to preserve generated artifacts...")
+            break
+
         if app_name in eco_apps:
             c_ver = custom_vers.get(app_name) or custom_vers.get("_global", "")
             process_single_app(app_name, args, eco_apps[app_name], c_ver, state)

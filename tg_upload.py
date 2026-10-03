@@ -3,6 +3,7 @@
 import asyncio
 import os
 from pathlib import Path
+from typing import Union
 
 from pyrogram import Client
 from pyrogram.errors import FloodWait, RPCError
@@ -30,65 +31,94 @@ def get_documents() -> list:
     if len(caption) > 1024:
         caption = caption[:1020] + "..."
 
+    # Attach the caption to the last document
     documents[-1].caption = caption
     return documents
 
 
-async def upload_files() -> None:
-    """Upload documents to Telegram channel."""
-    api_id = os.environ.get("API_ID")
-    api_hash = os.environ.get("API_HASH")
-    session_string = os.environ.get("SESSION_STRING")
+def _get_client_kwargs() -> dict:
+    """Constructs initialization arguments for the Pyrogram Client."""
     bot_token = os.environ.get("BOT_TOKEN")
-    chat_env = os.environ.get("CHAT_ID", "")
+    session_string = os.environ.get("SESSION_STRING")
 
-    if chat_env.lstrip('-').isdigit():
-        target_chat = int(chat_env)
-    else:
-        target_chat = chat_env
-
-    documents = get_documents()
-    print("Uploading to Telegram...", flush=True)
-
-    client_kwargs = {
+    kwargs = {
         "name": "bot" if bot_token else "userbot",
-        "api_id": api_id,
-        "api_hash": api_hash,
+        "api_id": os.environ.get("API_ID"),
+        "api_hash": os.environ.get("API_HASH"),
         "max_concurrent_transmissions": 1,
     }
 
     if bot_token:
-        client_kwargs["bot_token"] = bot_token
+        kwargs["bot_token"] = bot_token
     elif session_string:
-        client_kwargs["session_string"] = session_string
+        kwargs["session_string"] = session_string
     else:
         raise ValueError("Either BOT_TOKEN or SESSION_STRING is required")
 
-    async with Client(**client_kwargs) as app:
-        if isinstance(target_chat, str) and target_chat.startswith("http"):
-            print("Resolving private invite link...", flush=True)
-            try:
-                chat = await app.get_chat(target_chat)
-                target_chat = chat.id
-            except RPCError as err:
-                print(f"Failed to resolve invite link: {err}", flush=True)
+    return kwargs
 
+
+async def _resolve_target_chat(app: Client) -> Union[int, str]:
+    """Resolves target chat ID, converting invite links if necessary."""
+    chat_env = os.environ.get("CHAT_ID", "")
+    target_chat = int(chat_env) if chat_env.lstrip('-').isdigit() else chat_env
+
+    if isinstance(target_chat, str) and target_chat.startswith("http"):
+        print("Resolving private invite link...", flush=True)
+        try:
+            chat = await app.get_chat(target_chat)
+            target_chat = chat.id
+        except RPCError as err:
+            print(f"Failed to resolve invite link: {err}", flush=True)
+
+    return target_chat
+
+
+async def _send_chunk(
+    app: Client, target_chat: Union[int, str], chunk: list, chunk_idx: int
+) -> None:
+    """Uploads a single chunk of documents with retry logic."""
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            if len(chunk) == 1:
+                await app.send_document(
+                    chat_id=target_chat,
+                    document=chunk[0].media,
+                    caption=chunk[0].caption
+                )
+            else:
+                await app.send_media_group(chat_id=target_chat, media=chunk)
+
+            print(f"Uploaded chunk {chunk_idx}...", flush=True)
+            await asyncio.sleep(3)
+            break
+        except FloodWait as exc:
+            print(f"[{attempt + 1}] Flood wait for {exc.value} seconds.", flush=True)
+            await asyncio.sleep(exc.value + 2)
+        except (OSError, TimeoutError, RPCError) as exc:
+            print(f"[{attempt + 1}] API error: {exc}. Retrying in 10s...", flush=True)
+            await asyncio.sleep(10)
+    else:
+        print(f"[FATAL] Failed to upload chunk {chunk_idx}.", flush=True)
+
+
+async def upload_files() -> None:
+    """Upload documents to Telegram channel with chunking to avoid limits."""
+    documents = get_documents()
+    print(f"Preparing {len(documents)} file(s) for Telegram...", flush=True)
+
+    async with Client(**_get_client_kwargs()) as app:
+        target_chat = await _resolve_target_chat(app)
         print(f"Sending media to: {target_chat}", flush=True)
 
-        max_retries = 5
-        for attempt in range(max_retries):
-            try:
-                await app.send_media_group(chat_id=target_chat, media=documents)
-                print("Upload complete!", flush=True)
-                return
-            except FloodWait as exc:
-                print(f"[{attempt + 1}] Flood wait for {exc.value} seconds.", flush=True)
-                await asyncio.sleep(exc.value + 2)
-            except (OSError, TimeoutError, RPCError) as exc:
-                print(f"[{attempt + 1}] Net/API error: {exc}. Retrying in 10s...", flush=True)
-                await asyncio.sleep(10)
+        chunk_size = 10
+        for i in range(0, len(documents), chunk_size):
+            chunk = documents[i:i + chunk_size]
+            chunk_idx = (i // chunk_size) + 1
+            await _send_chunk(app, target_chat, chunk, chunk_idx)
 
-        print(f"[FATAL] Failed to upload after {max_retries} attempts.", flush=True)
+        print("Upload complete!", flush=True)
 
 
 if __name__ == "__main__":
