@@ -30,7 +30,7 @@
                         "enabled": true
                     },
                     "Local files from a server": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "Theme colors": {
                         "enabled": false,
