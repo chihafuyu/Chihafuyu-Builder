@@ -3,12 +3,13 @@ Core utility functions.
 Handles network streaming, file extraction, WAF detection, hash checking, and option injections.
 """
 
+from __future__ import annotations
 import hashlib
 import json
 import os
 import shutil
 import tempfile
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import urlparse
 import zipfile
 
@@ -212,7 +213,7 @@ def _extract_xapk(file_path: str, zip_obj: zipfile.ZipFile, namelist: list) -> s
     return file_path
 
 
-def process_downloaded_file(file_path: str) -> Optional[str]:
+def process_downloaded_file(file_path: str) -> str | None:
     """Processes downloaded files, handling pure APKs and wrappers."""
     try:
         if not zipfile.is_zipfile(file_path):
@@ -262,7 +263,7 @@ def _search_and_update(obj: Any, patch_name: str, override_data: dict) -> bool:
 
 
 def update_options_json(
-    filepath: str, overrides: dict, exclusive_patches: Optional[list] = None
+    filepath: str, overrides: dict, exclusive_patches: list | None = None
 ) -> None:
     """Injects custom options and handles exclusive patch restrictions into the JSON file."""
     try:

@@ -76,22 +76,22 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "subway-surfers": {
-                "package": "com.kiloo.subwaysurf",
-                "search_term": "Subway Surfers",
+            "solar-smash": {
+                "package": "com.paradyme.solarsmash",
+                "search_term": "Solar Smash",
                 "stable": [
-                    "3.69.2"
+                    "2.7.5"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "toolbox-for-minecraft-pe": {
-                "package": "io.mrarm.mctoolbox",
-                "search_term": "Toolbox for Minecraft PE",
+            "subway-surfers": {
+                "package": "com.kiloo.subwaysurf",
+                "search_term": "Subway Surfers",
                 "stable": [
-                    "5.4.58"
+                    "3.69.2"
                 ],
                 "beta": [],
                 "strip": true,

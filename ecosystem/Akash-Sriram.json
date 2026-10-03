@@ -5,11 +5,11 @@
                 "package": "com.google.android.apps.photos",
                 "search_term": "Google Photos",
                 "stable": [
-                    "7.93.0.982110057"
+                    "7.95.0.989626323"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "52416788"
+                    "universal": "52483863"
                 },
                 "strip": true,
                 "force_bundle": false,

@@ -1,10 +1,11 @@
 """Tier 1 Scraper: APKMirror utilizing FlareSolverr Microservice to Bypass WAF."""
 
+from __future__ import annotations
 import random
 import re
 import time
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import quote_plus, urljoin
 
 from bs4 import BeautifulSoup
@@ -34,7 +35,7 @@ class _DummyResponse:
         if self.status_code >= 400:
             raise requests.exceptions.HTTPError(f"Error: {self.status_code}")
 
-    def __enter__(self) -> "_DummyResponse":
+    def __enter__(self) -> _DummyResponse:
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
@@ -136,7 +137,7 @@ class ApkmirrorScraper(BaseScraper):
         """Cleans up the FlareSolverr session to prevent memory leaks."""
         self._session.close()
 
-    def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
+    def _safe_get(self, ctx: Context, url: str) -> Any | None:
         """Fetches page source ensuring FlareSolverr correctly resolves WAF challenges."""
         ctx.limiter.wait()
         time.sleep(random.uniform(2.5, 4.5))
@@ -155,7 +156,7 @@ class ApkmirrorScraper(BaseScraper):
     @staticmethod
     def _is_valid_release_link(
         link: Any, base_ver: str, exc_kws: list[str], inc_kws: list[str]
-    ) -> Optional[str]:
+    ) -> str | None:
         href = link.get("href", "")
         if not href or EDITION_SLUG_REGEX.search(href):
             return None
@@ -212,7 +213,7 @@ class ApkmirrorScraper(BaseScraper):
             short_term
         ]))
 
-    def _find_release(self, ctx: Context) -> Optional[str]:
+    def _find_release(self, ctx: Context) -> str | None:
         base_ver = (
             ctx.target_ver.split("-")[0]
             if "-" in ctx.target_ver and ctx.target_ver[:1].isdigit()
@@ -279,7 +280,7 @@ class ApkmirrorScraper(BaseScraper):
         return btns[0]
 
     @staticmethod
-    def _get_final_download_link(d_soup: BeautifulSoup) -> Optional[Any]:
+    def _get_final_download_link(d_soup: BeautifulSoup) -> Any | None:
         dl_btn = d_soup.find("a", id="download-link")
         if dl_btn and dl_btn.has_attr("href"):
             return dl_btn
@@ -292,7 +293,7 @@ class ApkmirrorScraper(BaseScraper):
 
     def _process_variant_page(
         self, ctx: Context, var_url: str, is_bundle: bool
-    ) -> Optional[str]:
+    ) -> str | None:
         v_resp = self._safe_get(ctx, var_url)
         if not v_resp:
             print("[WARN] APKMirror variant page failed.")
@@ -370,7 +371,7 @@ class ApkmirrorScraper(BaseScraper):
 
     def _extract_row(
         self, ctx: Context, row: Any, opts: dict
-    ) -> Optional[str]:
+    ) -> str | None:
         text = row.text.lower()
         pass_idx = opts.get("pass_idx", 1)
         force_b = opts.get("force_b", False)
@@ -398,7 +399,7 @@ class ApkmirrorScraper(BaseScraper):
 
     def _find_variant_in_rows(
         self, ctx: Context, rows: list[Any], ver_code: str, force_b: bool
-    ) -> Optional[str]:
+    ) -> str | None:
         for pass_idx in (1, 2, 3, 4):
             opts = {"ver_code": ver_code, "pass_idx": pass_idx, "force_b": force_b}
             for row in rows:
@@ -417,7 +418,7 @@ class ApkmirrorScraper(BaseScraper):
 
     def _download_variant(
         self, ctx: Context, rel_url: str, ver_code: str, force_b: bool
-    ) -> Optional[str]:
+    ) -> str | None:
         resp = self._safe_get(ctx, rel_url)
         if not resp:
             print("[WARN] APKMirror release page failed.")
@@ -450,7 +451,7 @@ class ApkmirrorScraper(BaseScraper):
         print("[WARN] Release table and fallback download button both missing.")
         return None
 
-    def scrape(self, ctx: Context) -> Optional[str]:
+    def scrape(self, ctx: Context) -> str | None:
         """Executes the scraping process from APKMirror."""
         print(f"[TIER 1] APKMirror: v{ctx.target_ver}")
         ver_code = ctx.app_data.get("version_codes", {}).get(ctx.arch)

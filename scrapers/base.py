@@ -3,8 +3,9 @@ Abstract Base Class module for all APK Scraper tiers.
 Enforces a strict interface for dynamic discovery and execution.
 """
 
+from __future__ import annotations
 import abc
-from typing import Optional, Any
+from typing import Any
 from core.context import Context
 
 
@@ -24,7 +25,7 @@ class BaseScraper(abc.ABC):
         """
 
     @abc.abstractmethod
-    def scrape(self, ctx: Context) -> Optional[str]:
+    def scrape(self, ctx: Context) -> str | None:
         """
         Executes the scraping logic for the specific tier.
         """
@@ -35,7 +36,7 @@ class BaseScraper(abc.ABC):
         Should be overridden by subclasses if needed.
         """
 
-    def __enter__(self) -> "BaseScraper":
+    def __enter__(self) -> BaseScraper:
         """Enters the runtime context related to this object."""
         return self
 

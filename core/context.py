@@ -3,6 +3,7 @@ Core context structures and state management for the APK Patcher.
 Provides shared execution state for all scraper tiers.
 """
 
+from __future__ import annotations
 import os
 import time
 from dataclasses import dataclass

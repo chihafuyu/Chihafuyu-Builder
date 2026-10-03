@@ -1,6 +1,6 @@
 """Tier 8 Scraper: Direct URL."""
 
-from typing import Optional
+from __future__ import annotations
 import requests
 
 from core.context import Context
@@ -16,7 +16,7 @@ class DirectScraper(BaseScraper):
         """Returns the tier identifier."""
         return "direct"
 
-    def scrape(self, ctx: Context) -> Optional[str]:
+    def scrape(self, ctx: Context) -> str | None:
         """Executes the scraping process from a Direct URL."""
         tmpl = ctx.app_data.get("direct_url")
         if not tmpl:

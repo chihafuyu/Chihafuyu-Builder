@@ -34,13 +34,13 @@ name: 👑 Legendsciber Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_subway_surfers:
-        description: 'Patch subway-surfers'
+      app_solar_smash:
+        description: 'Patch solar-smash'
         required: true
         type: boolean
         default: false
-      app_toolbox_for_minecraft_pe:
-        description: 'Patch toolbox-for-minecraft-pe'
+      app_subway_surfers:
+        description: 'Patch subway-surfers'
         required: true
         type: boolean
         default: false
@@ -116,8 +116,8 @@ jobs:
       APP_HUNGRY_SHARK: ${{ inputs.app_hungry_shark_evolution }}
       APP_RED_BALL_4: ${{ inputs.app_red_ball_4 }}
       APP_SMASH_HIT: ${{ inputs.app_smash_hit }}
+      APP_SOLAR_SMASH: ${{ inputs.app_solar_smash }}
       APP_SUBWAY_SURFERS: ${{ inputs.app_subway_surfers }}
-      APP_TOOLBOX: ${{ inputs.app_toolbox_for_minecraft_pe }}
     steps:
       - id: build-list
         run: |
@@ -141,11 +141,11 @@ jobs:
           if [[ "$APP_SMASH_HIT" == "true" ]]; then
             LIST="$LIST,smash-hit"
           fi
+          if [[ "$APP_SOLAR_SMASH" == "true" ]]; then
+            LIST="$LIST,solar-smash"
+          fi
           if [[ "$APP_SUBWAY_SURFERS" == "true" ]]; then
             LIST="$LIST,subway-surfers"
-          fi
-          if [[ "$APP_TOOLBOX" == "true" ]]; then
-            LIST="$LIST,toolbox-for-minecraft-pe"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

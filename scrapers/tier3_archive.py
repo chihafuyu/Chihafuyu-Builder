@@ -1,7 +1,7 @@
 """Tier 6 Scraper: Archive.org."""
 
+from __future__ import annotations
 import os
-from typing import Optional
 from bs4 import BeautifulSoup
 import requests
 
@@ -20,7 +20,7 @@ class ArchiveScraper(BaseScraper):
 
     def _find_link(
         self, ctx: Context, soup: BeautifulSoup, base_url: str
-    ) -> Optional[str]:
+    ) -> str | None:
         valid = [ctx.arch.lower(), "universal", "noarch", "all"]
         link1 = next(
             (
@@ -49,7 +49,7 @@ class ArchiveScraper(BaseScraper):
             None,
         )
 
-    def scrape(self, ctx: Context) -> Optional[str]:
+    def scrape(self, ctx: Context) -> str | None:
         """Executes the scraping process from Archive.org."""
         arch_id = ctx.app_data.get("archive_id")
         if not arch_id:

@@ -3,7 +3,7 @@ Tier 7 Scraper: GitHub Releases.
 Directly targets attached assets in GitHub release tags.
 """
 
-from typing import Optional
+from __future__ import annotations
 import requests
 
 from core.context import Context
@@ -19,7 +19,7 @@ class GithubScraper(BaseScraper):
         """Returns the tier identifier."""
         return "github"
 
-    def scrape(self, ctx: Context) -> Optional[str]:
+    def scrape(self, ctx: Context) -> str | None:
         """Scrapes the APK directly from GitHub Releases."""
         gh_repo = ctx.app_data.get("github_repo")
         gh_asset = ctx.app_data.get("github_asset")

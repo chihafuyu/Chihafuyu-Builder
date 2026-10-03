@@ -2,6 +2,7 @@
 Generates a Telegram session string securely using Kurigram (Pyrogram fork).
 """
 
+from __future__ import annotations
 import asyncio
 import sys
 

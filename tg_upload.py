@@ -1,9 +1,9 @@
 """Telegram uploader script using Kurigram (Pyrogram fork)."""
 
+from __future__ import annotations
 import asyncio
 import os
 from pathlib import Path
-from typing import Union
 
 from pyrogram import Client
 from pyrogram.errors import FloodWait, RPCError
@@ -58,7 +58,7 @@ def _get_client_kwargs() -> dict:
     return kwargs
 
 
-async def _resolve_target_chat(app: Client) -> Union[int, str]:
+async def _resolve_target_chat(app: Client) -> int | str:
     """Resolves target chat ID, converting invite links if necessary."""
     chat_env = os.environ.get("CHAT_ID", "")
     target_chat = int(chat_env) if chat_env.lstrip('-').isdigit() else chat_env
@@ -75,7 +75,7 @@ async def _resolve_target_chat(app: Client) -> Union[int, str]:
 
 
 async def _send_chunk(
-    app: Client, target_chat: Union[int, str], chunk: list, chunk_idx: int
+    app: Client, target_chat: int | str, chunk: list, chunk_idx: int
 ) -> None:
     """Uploads a single chunk of documents with retry logic."""
     max_retries = 5

@@ -3,22 +3,22 @@ Automated APK Downloader and Patcher using the CLI.
 Modular architecture: Main Execution Entrypoint.
 """
 
+from __future__ import annotations
 import argparse
 import json
 import os
 import subprocess
 import sys
 import time
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 from scrapers import AVAILABLE_SCRAPERS
-
 from core.context import Context, RateLimiter
 from core.utils import (
     _safe_filename,
-    get_scraper,
     process_downloaded_file,
-    update_options_json
+    update_options_json,
+    get_scraper
 )
 
 # Set max runtime to 5.5 hours to avoid GitHub Actions 6-hour force kill
@@ -46,7 +46,7 @@ def load_config(ecosystem_name: str) -> Dict[str, Any]:
     return data[ecosystem_name]
 
 
-def download_apk(ctx: Context, args: Any) -> Optional[str]:
+def download_apk(ctx: Context, args: Any) -> str | None:
     """Downloads target APK through fallback sources or primary scraper."""
     if ctx.target_ver.lower() == "any":
         print("[ERROR] Version defined as 'Any'. Skipping.")

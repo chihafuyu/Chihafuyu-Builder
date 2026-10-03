@@ -3,6 +3,7 @@ Dynamic module loader for scraper tiers.
 Automatically detects and registers any BaseScraper implementations.
 """
 
+from __future__ import annotations
 import importlib
 import inspect
 import pkgutil

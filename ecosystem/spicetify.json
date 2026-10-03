@@ -18,16 +18,16 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Hide Home and Browse ads": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "Hide player ad cards": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "Hide Premium tab": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "Pin shortcuts on Home": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "Local files from a server": {
                         "enabled": false

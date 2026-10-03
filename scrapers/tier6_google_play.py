@@ -1,12 +1,12 @@
 """Tier 9 Scraper: Google Play via Apkeep."""
 
+from __future__ import annotations
 import base64
 import glob
 import os
 import shutil
 import subprocess
 import tempfile
-from typing import Optional
 
 from core.context import Context
 from core.utils import _safe_filename
@@ -21,7 +21,7 @@ class GooglePlayScraper(BaseScraper):
         """Returns the tier identifier."""
         return "google_play"
 
-    def _find_and_copy_apk(self, ctx: Context, tmp_dir: str, dl_dir: str) -> Optional[str]:
+    def _find_and_copy_apk(self, ctx: Context, tmp_dir: str, dl_dir: str) -> str | None:
         """Finds the downloaded file or packed split APK directory."""
         for ext in ("*.xapk", "*.apkm", "*.apks", "*.zip"):
             found = glob.glob(os.path.join(tmp_dir, ext))
@@ -60,7 +60,7 @@ class GooglePlayScraper(BaseScraper):
         return None
 
     def _prepare_cmd(
-        self, ctx: Context, tmp: str, email: str, aas_token: str, props_b64: Optional[str]
+        self, ctx: Context, tmp: str, email: str, aas_token: str, props_b64: str | None
     ) -> list:
         """Builds the apkeep command adhering strictly to official CLI specs."""
         cmd = [
@@ -85,8 +85,8 @@ class GooglePlayScraper(BaseScraper):
         return cmd
 
     def _execute_apkeep(
-        self, ctx: Context, dl_dir: str, email: str, aas_token: str, props_b64: Optional[str]
-    ) -> Optional[str]:
+        self, ctx: Context, dl_dir: str, email: str, aas_token: str, props_b64: str | None
+    ) -> str | None:
         """Handles the temporary directory generation and subprocess execution."""
         with tempfile.TemporaryDirectory(prefix="apkeep-play-") as tmp:
             try:
@@ -109,7 +109,7 @@ class GooglePlayScraper(BaseScraper):
 
             return copied_file
 
-    def scrape(self, ctx: Context) -> Optional[str]:
+    def scrape(self, ctx: Context) -> str | None:
         """Executes the scraping process via Google Play and Apkeep."""
         print(f"[TIER 9] Secure Google Play: v{ctx.target_ver}")
 

@@ -1,6 +1,6 @@
 """Tier 0 Scraper: HuggingFace Datasets."""
 
-from typing import Optional
+from __future__ import annotations
 import requests
 
 from core.context import Context
@@ -16,7 +16,7 @@ class HuggingfaceScraper(BaseScraper):
         """Returns the tier identifier."""
         return "huggingface"
 
-    def scrape(self, ctx: Context) -> Optional[str]:
+    def scrape(self, ctx: Context) -> str | None:
         """Executes the scraping process from HuggingFace."""
         hf_user = ctx.app_data.get("hf_user", "chihafuyu")
         hf_repo = ctx.app_data.get(

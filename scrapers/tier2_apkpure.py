@@ -1,11 +1,11 @@
 """Tier 2 Scraper: APKPure."""
 
+from __future__ import annotations
 import glob
 import os
 import shutil
 import subprocess
 import tempfile
-from typing import Optional
 
 from core.context import Context
 from core.utils import _safe_filename
@@ -20,7 +20,7 @@ class ApkpureScraper(BaseScraper):
         """Returns the tier identifier."""
         return "apkpure"
 
-    def scrape(self, ctx: Context) -> Optional[str]:
+    def scrape(self, ctx: Context) -> str | None:
         """Executes the scraping process via apkeep."""
         print(f"[TIER 2] APKPure: v{ctx.target_ver}")
         dl_dir = os.path.join(ctx.out_dir, ctx.pkg)
