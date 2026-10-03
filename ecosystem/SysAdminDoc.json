@@ -5,10 +5,10 @@
                 "package": "com.facebook.katana",
                 "search_term": "Facebook",
                 "stable": [
-                    "580.0.0.51.74"
+                    "581.0.0.45.58"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "475019344"
+                    "arm64-v8a": "475215365"
                 },
                 "force_bundle": true,
                 "strip": true,
@@ -70,6 +70,9 @@
                     },
                     "View stories anonymously": {
                         "enabled": true
+                    },
+                    "Use the system font": {
+                        "enabled": false
                     }
                 }
             },
@@ -180,6 +183,12 @@
                 "options_override": {
                     "Change app name": {
                         "enabled": false
+                    },
+                    "Disable video autoplay": {
+                        "enabled": true
+                    },
+                    "Block background-return feed refresh": {
+                        "enabled": true
                     }
                 }
             },
