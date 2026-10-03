@@ -4,7 +4,7 @@ Enforces a strict interface for dynamic discovery and execution.
 """
 
 import abc
-from typing import Optional
+from typing import Optional, Any
 from core.context import Context
 
 
@@ -14,9 +14,9 @@ class BaseScraper(abc.ABC):
     Any new downloader tier must inherit from this class.
     """
 
-    @property
+    @classmethod
     @abc.abstractmethod
-    def tier_name(self) -> str:
+    def tier_name(cls) -> str:
         """
         Defines the string identifier for the scraper.
         Returns:
@@ -27,12 +27,18 @@ class BaseScraper(abc.ABC):
     def scrape(self, ctx: Context) -> Optional[str]:
         """
         Executes the scraping logic for the specific tier.
-
-        Args:
-            ctx (Context): The shared execution context holding app data,
-                           the scraper instance, and rate limiters.
-
-        Returns:
-            Optional[str]: The absolute path to the downloaded file,
-                           or None if the download failed/was not found.
         """
+
+    def close(self) -> None:
+        """
+        Cleans up any allocated resources (e.g., proxy sessions).
+        Should be overridden by subclasses if needed.
+        """
+
+    def __enter__(self) -> "BaseScraper":
+        """Enters the runtime context related to this object."""
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Exits the runtime context and cleans up resources."""
+        self.close()

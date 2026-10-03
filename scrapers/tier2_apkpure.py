@@ -15,8 +15,8 @@ from .base import BaseScraper
 class ApkpureScraper(BaseScraper):
     """Downloads APK from APKPure via apkeep."""
 
-    @property
-    def tier_name(self) -> str:
+    @classmethod
+    def tier_name(cls) -> str:
         """Returns the tier identifier."""
         return "apkpure"
 

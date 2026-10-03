@@ -4,10 +4,12 @@ Automatically detects and registers any BaseScraper implementations.
 """
 
 import importlib
-import pkgutil
 import inspect
+import pkgutil
 from typing import Dict, Type
+
 from .base import BaseScraper
+
 
 def load_all_scrapers() -> Dict[str, Type[BaseScraper]]:
     """
@@ -27,9 +29,8 @@ def load_all_scrapers() -> Dict[str, Type[BaseScraper]]:
             # Ensure it inherits from BaseScraper but is NOT the BaseScraper itself
             if issubclass(obj, BaseScraper) and obj is not BaseScraper:
                 try:
-                    # Instantiate to grab the tier_name property
-                    instance = obj()
-                    registry[instance.tier_name] = obj
+                    # Safely read class method without instantiating the class
+                    registry[obj.tier_name()] = obj
                 except TypeError:
                     # Skips classes that fail to implement abstract methods
                     continue

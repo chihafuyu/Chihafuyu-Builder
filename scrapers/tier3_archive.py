@@ -13,8 +13,8 @@ from .base import BaseScraper
 class ArchiveScraper(BaseScraper):
     """Scrapes APKs from Archive.org."""
 
-    @property
-    def tier_name(self) -> str:
+    @classmethod
+    def tier_name(cls) -> str:
         """Returns the tier identifier."""
         return "archive"
 

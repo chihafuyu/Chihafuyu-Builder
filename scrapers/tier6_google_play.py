@@ -16,8 +16,8 @@ from .base import BaseScraper
 class GooglePlayScraper(BaseScraper):
     """Downloads APK from Play Store securely using GitHub Secrets."""
 
-    @property
-    def tier_name(self) -> str:
+    @classmethod
+    def tier_name(cls) -> str:
         """Returns the tier identifier."""
         return "google_play"
 

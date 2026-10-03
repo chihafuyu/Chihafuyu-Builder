@@ -14,8 +14,8 @@ from .base import BaseScraper
 class GithubScraper(BaseScraper):
     """Scraper implementation for downloading APKs from GitHub Releases."""
 
-    @property
-    def tier_name(self) -> str:
+    @classmethod
+    def tier_name(cls) -> str:
         """Returns the tier identifier."""
         return "github"
 

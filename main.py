@@ -53,10 +53,11 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
 
     req_source = args.download_source.lower()
     if req_source in AVAILABLE_SCRAPERS:
-        scraper_instance = AVAILABLE_SCRAPERS[req_source]()
-        path = scraper_instance.scrape(ctx)
-        if path:
-            return process_downloaded_file(path)
+        # Context manager ensures resources are closed immediately after scraping
+        with AVAILABLE_SCRAPERS[req_source]() as scraper_instance:
+            path = scraper_instance.scrape(ctx)
+            if path:
+                return process_downloaded_file(path)
 
     fallback_order = [
         "direct", "github", "huggingface", "apkmirror",
@@ -65,14 +66,13 @@ def download_apk(ctx: Context, args: Any) -> Optional[str]:
 
     for src_name in fallback_order:
         if src_name in AVAILABLE_SCRAPERS and src_name != req_source:
-            scraper_instance = AVAILABLE_SCRAPERS[src_name]()
-            path = scraper_instance.scrape(ctx)
-            if path:
-                return process_downloaded_file(path)
+            with AVAILABLE_SCRAPERS[src_name]() as scraper_instance:
+                path = scraper_instance.scrape(ctx)
+                if path:
+                    return process_downloaded_file(path)
 
     print(f"[FATAL] Exhausted sources or specific source failed for {ctx.pkg}.")
     return None
-
 
 def write_changelog(args: Any, apps_patched: list, workspace: str, clean_ver: str) -> None:
     """Writes the patched apps changelog to a markdown file."""

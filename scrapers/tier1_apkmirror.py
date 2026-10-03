@@ -127,10 +127,14 @@ class ApkmirrorScraper(BaseScraper):
         super().__init__()
         self._session = _FlareSolverrSession()
 
-    @property
-    def tier_name(self) -> str:
+    @classmethod
+    def tier_name(cls) -> str:
         """Returns the tier identifier."""
         return "apkmirror"
+
+    def close(self) -> None:
+        """Cleans up the FlareSolverr session to prevent memory leaks."""
+        self._session.close()
 
     def _safe_get(self, ctx: Context, url: str) -> Optional[Any]:
         """Fetches page source ensuring FlareSolverr correctly resolves WAF challenges."""

@@ -11,8 +11,8 @@ from .base import BaseScraper
 class HuggingfaceScraper(BaseScraper):
     """Scrapes APKs directly from HuggingFace Vaults."""
 
-    @property
-    def tier_name(self) -> str:
+    @classmethod
+    def tier_name(cls) -> str:
         """Returns the tier identifier."""
         return "huggingface"
 
