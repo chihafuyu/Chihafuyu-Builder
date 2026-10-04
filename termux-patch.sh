@@ -25,10 +25,10 @@ TRACK_CHOICE=""
 APK_CHOICE=""
 TEMP_LOG_FILE=""
 
-# Clean up temporary files on exit or interrupt
+# Cleanup routine triggered on exit, interrupt, or error.
+# The .mpp file is intentionally retained to leverage smart caching on subsequent runs.
 cleanup() {
     local exit_code=$?
-    # File .mpp sengaja TIDAK DIHAPUS di sini agar bisa di-cache untuk proses selanjutnya
     if [[ -n "$TEMP_LOG_FILE" && -f "$TEMP_LOG_FILE" ]]; then
         rm -f "$TEMP_LOG_FILE"
     fi
@@ -42,7 +42,7 @@ check_dependencies() {
     command -v curl >/dev/null 2>&1 || missing+=("curl")
     command -v jq >/dev/null 2>&1 || missing+=("jq")
     
-    # Enforce Java 21 requirement
+    # Enforce Java 21 requirement for Morphe patching
     if ! java -version 2>&1 | grep -q 'version "21'; then
         missing+=("openjdk-21")
     fi
@@ -72,7 +72,7 @@ ensure_storage_access() {
     fi
 }
 
-# Parse YAML workflow to dynamically extract the target patch repository
+# Dynamically extracts the target repository and patch filename by parsing the YAML workflow
 fetch_yaml_config() {
     echo -e "${YELLOW}[INFO] Fetching patcher configuration for $ECO_CHOICE...${NC}"
     local yaml_url="${REPO_URL}/.github/workflows/${ECO_CHOICE}-patcher.yml"
@@ -80,7 +80,7 @@ fetch_yaml_config() {
     
     yaml_content=$(curl -sL --max-time 15 -A "$USER_AGENT" "$yaml_url")
     
-    # Extract config strings matching exact YAML keys using regex pattern
+    # Extract configuration variables using regex to match exact YAML keys
     TARGET_REPO=$(echo "$yaml_content" | sed -n 's/.*repo_url:[[:space:]]*"\(.*\)".*/\1/p' | head -n 1)
     TARGET_MPP=$(echo "$yaml_content" | sed -n 's/.*custom_patch_filename:[[:space:]]*"\(.*\)".*/\1/p' | head -n 1)
     
@@ -97,6 +97,7 @@ fetch_yaml_config() {
     echo -e "${CYAN}Target Patch File:${NC} $TARGET_MPP"
 }
 
+# Retrieves available ecosystems directly from the GitHub API directory contents
 select_ecosystem() {
     echo -e "${YELLOW}[INFO] Fetching ecosystem list from GitHub API...${NC}"
     
@@ -182,7 +183,7 @@ fetch_components() {
     
     local morphe_url="https://github.com/MorpheApp/morphe-cli/releases/latest/download/morphe-cli.jar"
     
-    # Smart Cache Logic for morphe.jar using '-z' and '-R'
+    # Smart Cache Logic: Uses curl '-z' and '-R' to download the JAR only if a newer version exists on the server
     if [[ -s "morphe.jar" ]]; then
         echo -e "${CYAN}Checking for morphe-cli updates...${NC}"
         curl -sL --max-time 300 -R -z "morphe.jar" -A "$USER_AGENT" "$morphe_url" -o morphe.jar
@@ -204,10 +205,10 @@ fetch_components() {
         fi
     fi
     
-    # Pisahkan nama file mpp lokal berdasarkan track agar komparasi waktu tidak tumpang tindih
+    # Segregate local .mpp filenames by track to prevent cache validation conflicts between stable and pre-release
     TEMP_PATCH="${TARGET_MPP%.mpp}-${TRACK_CHOICE// /-}.mpp"
     
-    # Smart Cache Logic for .mpp patch file
+    # Smart Cache Logic: Downloads the .mpp file only if the remote file modification time is newer
     if [[ -s "$TEMP_PATCH" ]]; then
         echo -e "${CYAN}Checking for $TEMP_PATCH updates...${NC}"
         curl -sL --max-time 60 -R -z "$TEMP_PATCH" -A "$USER_AGENT" "$patch_url" -o "$TEMP_PATCH"
