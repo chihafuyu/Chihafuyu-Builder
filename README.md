@@ -61,21 +61,27 @@ For the automated workflows to function, you MUST configure the following secret
 *   **`CHAT_ID`**: The Target Telegram channel or group ID (or private invite link).
 
 ### 5. Customize Ecosystems
-Edit the ecosystem-specific JSON configuration files (e.g., `arandomhooman.json`, `byehi98.json`) to add, remove, or modify the applications you want to track. You can define target architectures, specific search terms, and inject custom patch options effortlessly.
+Edit the ecosystem-specific JSON configuration files in the `ecosystem/` folder (e.g., `arandomhooman.json`, `byehi98.json`) to add, remove, or modify the applications you want to track for GitHub Actions.
+
+**For Termux Local Builds:** If your ecosystem uses complex matrices (like `Piko` or `SysAdminDoc`), place the split JSON files inside the `ecosystem-termux/` folder and update `ecosystem-termux/repo_map.json` to route them correctly. The Termux script will automatically parse this map to generate its interactive menu.
 
 ### 6. Local Build (Termux / Android)
 
-If you prefer to patch locally directly on your Android device without relying on GitHub Actions limits, use this Termux method.
+If you prefer to patch locally directly on your Android device without relying on GitHub Actions limits, use this Termux method. Our Termux builder is fully production-ready, featuring dynamic matrix routing, anti-cache corruption, and an API rate limit bypass mechanism!
 
+#### Setup & Run
 Open the **Termux** app, install the required dependencies, and run the automated script below:
 
 ```bash
 apt update && apt full-upgrade -y && apt install curl -y && bash <(curl -sL https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main/termux-patch.sh)
 ```
 
-> [!WARNING]
-> _Still in testing phase!_
->
+#### Bypass GitHub API Rate Limits (Optional but Recommended)
+GitHub limits anonymous API requests to 60/hour. To unlock 5,000 requests/hour, generate a Classic Personal Access Token (no scopes needed) from your GitHub Developer Settings, then run this command in Termux once to save it permanently:
+
+```bash
+echo 'export GITHUB_TOKEN="your_ghp_token_here"' >> ~/.bashrc && source ~/.bashrc
+```
 
 ## 🙏 Credits & Acknowledgements
 This project uses methods and tools from the following developers:
