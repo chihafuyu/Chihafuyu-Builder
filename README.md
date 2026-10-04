@@ -10,13 +10,13 @@
 **Chihafuyu Builder** utilizes GitHub Actions to provide a fully automated environment for fetching APKs from various sources and patching them using a compatible `CLI`. Built with modularity at its core, this repository serves as a template. You can easily fork or use it to build your own cloud-based APK factory for any patch ecosystem—without writing a single line of Python.
 
 ## ✨ Features
-- 🤖 **Automated & Parallelized Workflow:** Trigger the patching process directly from GitHub Actions with optimized matrix concurrency scoping to prevent CI bottlenecks.
-- 🎛️ **Granular Dispatch Controls:** Choose to patch specific apps or run the entire ecosystem, and optionally dispatch the output to GitHub Releases or a Telegram Channel.
-- 📥 **Multi-Tier Smart Downloader:** Retrieves APKs using an aggressive fallback mechanism (`Google Play Store`, `HuggingFace`, `Archive.org`, `APKMirror`, `APKPure`, and direct `GitHub Releases`). Supercharged with a **local FlareSolverr Docker microservice** to seamlessly `bypass Cloudflare WAF and Turnstile natively` within GitHub Actions!
+- 🤖 **Automated and Parallelized Workflow:** Trigger the patching process directly from GitHub Actions with optimized matrix concurrency scoping to prevent CI bottlenecks.
+- 🎛️ **Granular Dispatch Controls:** Choose to patch specific apps or run the entire ecosystem, and optionally dispatch the output to GitHub Releases or a Telegram channel.
+- 📥 **Multi-Tier Smart Downloader:** Retrieves APKs using an aggressive fallback mechanism (`Google Play Store`, `HuggingFace`, `Archive.org`, `APKMirror`, `APKPure`, and direct `GitHub Releases`). Supercharged with a **local FlareSolverr Docker microservice** to seamlessly bypass Cloudflare WAF and Turnstile natively within GitHub Actions!
 - 📦 **Split/Bundle Support:** Natively bypasses base-APK limitations to pull specific XAPK/APKM bundles when required by patches (e.g., Google Apps). Includes dynamic segment matching for bulletproof version accuracy.
-- ⚙️ **Dynamic Options Injection:** Automatically generates and modifies the `options.json` file on-the-fly to apply custom patch preferences and locale stripping.
+- ⚙️ **Dynamic Options Injection:** Automatically generates and modifies the `options.json` file on the fly to apply custom patch preferences and locale stripping.
 - 📁 **Local Patch Support:** Allows the use of custom patch bundles directly from your repository.
-- 🚀 **Seamless Distribution:** Automatically signs and uploads the finished APKs directly to GitHub Releases and your private Telegram channels using Session Strings.
+- 🚀 **Seamless Distribution:** Automatically signs and uploads the finished APKs directly to GitHub Releases and your private Telegram channels using session strings.
 
 ## 🚀 How to Use This Template
 
@@ -26,39 +26,39 @@ Want to build your own automated patcher? Follow these steps:
 Click the green **Use this template** button at the top of this repository to create your own copy.
 
 ### 2. Generate Your Custom Keystore
-To sign your patched APKs, you will need a cryptographic Keystore. We have included an interactive bash script to make this painless on Linux/macOS or WSL:
+To sign your patched APKs, you will need a cryptographic keystore. We have included an interactive Bash script to make this painless on Linux/macOS or WSL:
 1. Open your terminal in the repository folder.
 2. Grant execution permissions: `chmod +x generate_keystore.sh`
 3. Run the script: `./generate_keystore.sh`
-4. Follow the interactive prompts to set your Alias, Password, and Distinguished Name (DNAME).
-5. The script will generate a high-security Keystore (`.keystore`) and automatically output a Base64 text file (`custom_keystore_base64.txt`) without newline wraps.
+4. Follow the interactive prompts to set your alias, password, and distinguished name (DNAME).
+5. The script will generate a high-security keystore (`.keystore`) and automatically output a Base64 text file (`custom_keystore_base64.txt`) without line breaks.
 
 ### 3. Generate Telegram Session String (Optional)
-If you want the workflow to automatically upload patched APKs to Telegram, you need a Pyrogram session string to bypass the 50MB bot upload limit. We have provided a secure script for this:
+If you want the workflow to automatically upload patched APKs to Telegram, you need a Pyrogram session string to bypass the 50 MB bot upload limit. We have provided a secure script for this:
 1. Ensure you have Python 3.14.x (or at least 3.12+) installed.
 2. Open your terminal in the repository folder and install the required library: `pip install pyrogram`
 3. Run the script: `python generate_session.py`
 4. Enter your `API_ID` and `API_HASH` (obtainable from my.telegram.org) when prompted.
 5. Follow the Telegram login steps in the terminal.
-6. The script will output your Session String. Copy it immediately.
+6. The script will output your session string. Copy it immediately.
 
 ### 4. Set Up GitHub Secrets
 For the automated workflows to function, you MUST configure the following secrets in your repository (`Settings > Secrets and variables > Actions`):
 
 *   **`GEMINI_API_KEY`**: Your Google Gemini API key to run the automated pull request code reviewer.
 *   **`KEYSTORE_BASE64`**: Paste the entire contents of the `custom_keystore_base64.txt` generated in Step 2.
-*   **`KEYSTORE_ALIAS`**: The alias you chose during Keystore generation.
-*   **`KEYSTORE_PASSWORD`**: The password you set during Keystore generation.
+*   **`KEYSTORE_ALIAS`**: The alias you chose during keystore generation.
+*   **`KEYSTORE_PASSWORD`**: The password you set during keystore generation.
 *   **`KEYSTORE_SIGNER_NAME`**: The specific signer name for the CLI.
 *   **`PLAY_EMAIL`**: Your Google Play account email for secure APK fetching.
 *   **`PLAY_AAS_TOKEN`**: Your Google Play AAS token for authentication.
-*   **`DEVICE_PROPERTIES_B64`**: Base64 encoded device properties file for Play Store emulation.
+*   **`DEVICE_PROPERTIES_B64`**: Base64-encoded device properties file for Play Store emulation.
 *   **`VT_API_KEY`**: VirusTotal API key for security scanning bypass/verification.
 *   **`HA_API_KEY`**: HybridAnalysis API key for advanced security checks.
 *   **`MD_API_KEY`**: MetaDefender API key for comprehensive malware scanning.
 *   **`API_ID`** & **`API_HASH`**: Your Telegram API credentials (obtainable from my.telegram.org).
 *   **`SESSION_STRING`**: The string generated in Step 3.
-*   **`CHAT_ID`**: The Target Telegram channel or group ID (or private invite link).
+*   **`CHAT_ID`**: The target Telegram channel or group ID (or private invite link).
 
 ### 5. Customize Ecosystems
 Edit the ecosystem-specific JSON configuration files in the `ecosystem/` folder (e.g., `arandomhooman.json`, `byehi98.json`) to add, remove, or modify the applications you want to track for GitHub Actions.
@@ -67,7 +67,7 @@ Edit the ecosystem-specific JSON configuration files in the `ecosystem/` folder 
 
 ### 6. Local Build (Termux / Android)
 
-If you prefer to patch locally directly on your Android device without relying on GitHub Actions limits, use this Termux method. Our Termux builder is fully production-ready, featuring dynamic matrix routing, anti-cache corruption, and an API rate limit bypass mechanism!
+If you prefer to patch directly on your Android device without relying on GitHub Actions limits, use this Termux method. Our Termux builder is fully production-ready, featuring dynamic matrix routing, anti-cache corruption, and an API rate-limit bypass mechanism!
 
 #### Setup & Run
 Open the **Termux** app, install the required dependencies, and run the automated script below:
@@ -76,25 +76,40 @@ Open the **Termux** app, install the required dependencies, and run the automate
 apt update && apt full-upgrade -y && apt install curl -y && bash <(curl -sL https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main/termux-patch.sh)
 ```
 
+#### Create a Quick Shortcut (Recommended)
+To avoid copy-pasting that long command every time, create a custom alias. Run this command once to set `chihafuyu` as your quick-start command:
+
+```bash
+echo 'alias chihafuyu="bash <(curl -sL https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main/termux-patch.sh)"' >> ~/.bashrc
+```
+
+Then reload the settings by typing the following and pressing Enter:
+
+```bash
+source ~/.bashrc
+```
+
+_Now, you just need to type `chihafuyu` and press Enter in Termux whenever you want to patch an app!_
+
 #### Bypass GitHub API Rate Limits (Optional but Recommended)
-GitHub limits anonymous API requests to 60/hour. To unlock 5,000 requests/hour, generate a Classic Personal Access Token (no scopes needed) from your GitHub Developer Settings, then run this command in Termux once to save it permanently:
+GitHub limits anonymous API requests to 60 per hour. To unlock 5,000 requests per hour, generate a classic personal access token (no scopes needed) from your GitHub Developer Settings, then run this command in Termux once to save it permanently:
 
 ```bash
 echo 'export GITHUB_TOKEN="your_ghp_token_here"' >> ~/.bashrc && source ~/.bashrc
 ```
 
-## 🙏 Credits & Acknowledgements
+## 🙏 Credits & Acknowledgments
 This project uses methods and tools from the following developers:
 - [**Morphe**](https://github.com/MorpheApp) - Patching CLI and base ecosystem. Licensed under GPLv3.
-- [**crimera**](https://github.com/crimera) - `APKMirror` bypass technique (Header Spoofing & Referer Injection). Licensed under GPLv3.
+- [**crimera**](https://github.com/crimera) - `APKMirror` bypass technique (header spoofing and Referer injection). Licensed under GPLv3.
 - [**j-hc**](https://github.com/j-hc) - `Uptodown` and `Archive` downloader logic. Licensed under GPLv3.
-- [**rushiranpise**](https://github.com/rushiranpise) - Advanced WAF/Turnstile detection, Bing Fallback, and scraping logic (`APKMirror` regex & `Uptodown` validation) from `helper-for-morphe`. Licensed under GPLv3.
+- [**rushiranpise**](https://github.com/rushiranpise) - Advanced WAF/Turnstile detection, Bing fallback, and scraping logic (`APKMirror` regex and `Uptodown` validation) from `helper-for-morphe`. Licensed under GPLv3.
 - [**apkeep**](https://github.com/EFForg/apkeep) - `APKPure` fallback download mechanism. Licensed under MIT.
 - [**NagramX**](https://github.com/risin42/NagramX) - Original inspiration and base logic for automating `Telegram` uploads via GitHub Actions. Licensed under GPLv3.
-- [**Morphe Community Patches**](https://morphe-patches.software/) - Community patches, featuring a bunch of apps. Copyright Morphe (copyrighted and not licensed under open source terms).
+- [**Morphe Community Patches**](https://morphe-patches.software/) - Community patches, featuring a variety of apps. Copyright Morphe (copyrighted and not licensed under open-source terms).
 
 ## 📚 Frequently Asked Questions (FAQ)
-**Got questions or running into errors?** Check out our [FAQ Page](FAQ.md) first to see the full list of supported apps and troubleshooting steps!
+**Got questions or running into errors?** Check out our [FAQ page](FAQ.md) first to see the full list of supported apps and troubleshooting steps!
 
 ## 📄 License
 Distributed under the **MIT License**
