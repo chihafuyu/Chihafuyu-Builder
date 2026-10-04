@@ -6,19 +6,18 @@ Automatically detects and registers any BaseScraper implementations.
 import importlib
 import inspect
 import pkgutil
-from typing import dict, type
 
 from .base import BaseScraper
 
 
-def load_all_scrapers() -> Dict[str, Type[BaseScraper]]:
+def load_all_scrapers() -> dict[str, type[BaseScraper]]:
     """
     Discovers all scraper classes in the current package directory.
 
     Returns:
-        Dict[str, Type[BaseScraper]]: A registry mapping tier names to their classes.
+        dict[str, type[BaseScraper]]: A registry mapping tier names to their classes.
     """
-    registry: Dict[str, Type[BaseScraper]] = {}
+    registry: dict[str, type[BaseScraper]] = {}
 
     # Iterate through all files in the scrapers/ directory
     for _, module_name, _ in pkgutil.iter_modules(__path__):
