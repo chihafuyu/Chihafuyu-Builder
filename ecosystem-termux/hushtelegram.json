@@ -1,0 +1,24 @@
+{
+    "hushtelegram": {
+        "apps": {
+            "telegram-web": {
+                "package": "org.telegram.messenger.web",
+                "search_term": "Telegram Web",
+                "stable": [
+                    "12.10.6"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "71129",
+                    "arm64-v8a": "71129",
+                    "armeabi-v7a": "71129",
+                    "x86_64": "71129",
+                    "x86": "71129"
+                },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

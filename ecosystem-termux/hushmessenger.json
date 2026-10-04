@@ -1,0 +1,24 @@
+{
+    "hushmessenger": {
+        "apps": {
+            "messenger": {
+                "package": "com.facebook.orca",
+                "search_term": "Messenger",
+                "stable": [
+                    "580.0.0.49.91"
+                ],
+                "version_codes": {
+                    "arm64-v8a": "346013440"
+                },
+                "force_bundle": false,
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Material You theme": {
+                        "enabled": true
+                    }
+                }
+            }
+        }
+    }
+}

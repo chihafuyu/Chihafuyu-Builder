@@ -1,0 +1,24 @@
+{
+    "piko-newx": {
+        "apps": {
+            "newx-twitter": {
+                "package": "com.twitter.android",
+                "search_term": "X",
+                "stable": [
+                    "12.30.0-prod.01"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "12L+",
+                    "arm64-v8a": "12L+",
+                    "armeabi-v7a": "12L+",
+                    "x86_64": "12L+",
+                    "x86": "12L+"
+                },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

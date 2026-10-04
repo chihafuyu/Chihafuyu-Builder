@@ -1,0 +1,121 @@
+{
+    "ajstrick81": {
+        "repo_url": "ajstrick81/morphe-androidtv-patches"
+    },
+    "Akash-Sriram": {
+        "repo_url": "Akash-Sriram/morphe-google-photos"
+    },
+    "andrewliang25": {
+        "repo_url": "andrewliang25/morphe-patches"
+    },
+    "anxyis": {
+        "repo_url": "anxyis/anxy-patches"
+    },
+    "arandomhooman": {
+        "repo_url": "arandomhooman/hoomans-morphe-patches"
+    },
+    "BholeyKaBhakt": {
+        "repo_url": "BholeyKaBhakt/android-patches-xtra"
+    },
+    "browzomje": {
+        "repo_url": "browzomje/browzomje-patches"
+    },
+    "byehi98": {
+        "repo_url": "byehi98/okish-morphe-patches"
+    },
+    "De-Vanced": {
+        "repo_url": "RookieEnough/De-Vanced"
+    },
+    "dh6k": {
+        "repo_url": "dh6k/morphe-patches"
+    },
+    "heval99": {
+        "repo_url": "heval99/Heval-Morphe-Patches"
+    },
+    "hoo-dles": {
+        "repo_url": "hoo-dles/morphe-patches"
+    },
+    "hushfacebook": {
+        "repo_url": "SysAdminDoc/HushFacebook",
+        "config_path": "ecosystem-termux/hushfacebook.json"
+    },
+    "hushfeed": {
+        "repo_url": "SysAdminDoc/HushFeed",
+        "config_path": "ecosystem-termux/hushfeed.json"
+    },
+    "hushgram": {
+        "repo_url": "SysAdminDoc/HushGram",
+        "config_path": "ecosystem-termux/hushgram.json"
+    },
+    "hushmessenger": {
+        "repo_url": "SysAdminDoc/HushMessenger",
+        "config_path": "ecosystem-termux/hushmessenger.json"
+    },
+    "hushtelegram": {
+        "repo_url": "SysAdminDoc/HushTelegram",
+        "config_path": "ecosystem-termux/hushtelegram.json"
+    },
+    "hushthreads": {
+        "repo_url": "SysAdminDoc/HushThreads",
+        "config_path": "ecosystem-termux/hushthreads.json"
+    },
+    "hxreborn": {
+        "repo_url": "hxreborn/morphe-patches"
+    },
+    "icysymmetra": {
+        "repo_url": "icysymmetra/tiktok-patches-for-morphe"
+    },
+    "jasonwu1994": {
+        "repo_url": "jasonwu1994/Gboard-patches"
+    },
+    "kiraio-moe": {
+        "repo_url": "kiraio-moe/Lain-Patches"
+    },
+    "kuchingneko28": {
+        "repo_url": "kuchingneko28/ipusnas-patches"
+    },
+    "kveld9": {
+        "repo_url": "kveld9/kveld-morphe-patches"
+    },
+    "legendsciber": {
+        "repo_url": "legendsciber/morphe-patches"
+    },
+    "MiguelNinja19": {
+        "repo_url": "MiguelNinja19/miguel-morphe-patches"
+    },
+    "morphe": {
+        "repo_url": "MorpheApp/morphe-patches"
+    },
+    "PathxmOp": {
+        "repo_url": "PrathxmOp/Prathxm-Patches"
+    },
+    "piko": {
+        "repo_url": "crimera/piko",
+        "config_path": "ecosystem-termux/piko.json"
+    },
+    "piko-newx": {
+        "repo_url": "crimera/piko-newx",
+        "config_path": "ecosystem-termux/piko-newx.json"
+    },
+    "plyrs1": {
+        "repo_url": "Plyrs1/morphe-patches"
+    },
+    "rabilrbl": {
+        "repo_url": "rabilrbl/fluffy-patches"
+    },
+    "Riky": {
+        "repo_url": "riky-dev/morphe-patches"
+    },
+    "rushiranpise": {
+        "repo_url": "rushiranpise/morphe-patches"
+    },
+    "satanmerde": {
+        "repo_url": "SatanMerde/D-moniakPatches"
+    },
+    "spicetify": {
+        "repo_url": "spicetify/morphe-patches"
+    },
+    "zeldrisho": {
+        "repo_url": "zeldrisho/morphe-patches"
+    }
+}

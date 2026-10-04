@@ -1,0 +1,31 @@
+{
+    "hushthreads": {
+        "apps": {
+            "threads": {
+                "package": "com.instagram.barcelona",
+                "search_term": "Threads",
+                "stable": [
+                    "449.0.0.54.82"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "arm64-v8a": "511908382"
+                },
+                "strip": true,
+                "force_bundle": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Change app name": {
+                        "enabled": false
+                    },
+                    "Disable video autoplay": {
+                        "enabled": true
+                    },
+                    "Block background-return feed refresh": {
+                        "enabled": true
+                    }
+                }
+            }
+        }
+    }
+}

@@ -10,16 +10,16 @@ NC='\033[0m'
 
 TERMUX_PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 TERMUX_HOME="${HOME:-/data/data/com.termux/files/home}"
-USER_AGENT="ChihafuyuBuilder/1.3 (Termux; Android)"
+USER_AGENT="ChihafuyuBuilder/2.0 (Termux; Android)"
 WORK_DIR="$TERMUX_PREFIX/var/chihafuyu-workspace"
+BASE_DIR="$TERMUX_HOME/storage/downloads/Chihafuyu"
+MORPHE_JAR="$BASE_DIR/morphe.jar"
 REPO_URL="https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main"
-API_URL="https://api.github.com/repos/chihafuyu/Chihafuyu-Builder"
 
 TEMP_PATCH=""
 ECO_CHOICE=""
 TARGET_REPO=""
-TARGET_JSON=""
-TARGET_MPP=""
+TARGET_JSON_PATH=""
 ECO_DIR=""
 TRACK_CHOICE=""
 APK_CHOICE=""
@@ -72,48 +72,25 @@ ensure_storage_access() {
     fi
 }
 
-# Dynamically extracts the target repository and patch filename by parsing the YAML workflow
-fetch_yaml_config() {
-    echo -e "${YELLOW}[INFO] Fetching patcher configuration for $ECO_CHOICE...${NC}"
-    local yaml_url="${REPO_URL}/.github/workflows/${ECO_CHOICE}-patcher.yml"
-    local yaml_content
-    
-    yaml_content=$(curl -sL --max-time 15 -A "$USER_AGENT" "$yaml_url")
-    
-    # Extract configuration variables using regex to match exact YAML keys
-    TARGET_REPO=$(echo "$yaml_content" | sed -n 's/.*repo_url:[[:space:]]*"\(.*\)".*/\1/p' | head -n 1)
-    TARGET_MPP=$(echo "$yaml_content" | sed -n 's/.*custom_patch_filename:[[:space:]]*"\(.*\)".*/\1/p' | head -n 1)
-    
-    if [[ -z "$TARGET_REPO" ]]; then
-        echo -e "${RED}[WARN] Could not parse repo_url from YAML. Using fallback.${NC}" >&2
-        TARGET_REPO="chihafuyu/morphe-patches"
-    fi
-    
-    if [[ -z "$TARGET_MPP" ]]; then
-        TARGET_MPP="${ECO_CHOICE}-custom.mpp"
-    fi
-    
-    echo -e "${CYAN}Target Repo:${NC} $TARGET_REPO"
-    echo -e "${CYAN}Target Patch File:${NC} $TARGET_MPP"
-}
-
-# Retrieves available ecosystems directly from the GitHub API directory contents
+# Generates the ecosystem menu directly from repo_map.json keys
 select_ecosystem() {
-    echo -e "${YELLOW}[INFO] Fetching ecosystem list from GitHub API...${NC}"
+    echo -e "${YELLOW}[INFO] Fetching ecosystem map from repository...${NC}"
     
-    local api_response
-    api_response=$(curl -s --max-time 15 -A "$USER_AGENT" "$API_URL/contents/ecosystem")
+    local map_url="${REPO_URL}/ecosystem-termux/repo_map.json"
+    local map_data
     
-    if ! echo "$api_response" | jq -e 'type == "array"' >/dev/null; then
-        echo -e "${RED}[ERROR] Failed to fetch ecosystem list. GitHub API rate limit?${NC}" >&2
+    map_data=$(curl -sL --max-time 15 -A "$USER_AGENT" "$map_url")
+    
+    if ! echo "$map_data" | jq -e 'type == "object"' >/dev/null 2>&1; then
+        echo -e "${RED}[ERROR] Failed to fetch or parse repo_map.json.${NC}" >&2
         exit 1
     fi
     
     local eco_list=()
-    mapfile -t eco_list < <(echo "$api_response" | jq -r '.[].name' | grep '\.json$' | sed 's/\.json$//')
+    mapfile -t eco_list < <(echo "$map_data" | jq -r 'keys[]')
     
     if [[ ${#eco_list[@]} -eq 0 ]]; then
-        echo -e "${RED}[ERROR] No ecosystems found.${NC}" >&2
+        echo -e "${RED}[ERROR] No ecosystems found in repo_map.json.${NC}" >&2
         exit 1
     fi
     
@@ -132,10 +109,22 @@ select_ecosystem() {
             ECO_CHOICE="$choice"
             echo -e "${GREEN}Selected ecosystem: $ECO_CHOICE${NC}"
             
-            TARGET_JSON="${ECO_CHOICE}.json"
-            fetch_yaml_config
+            # Dynamically extract repository URL and custom JSON path configuration
+            TARGET_REPO=$(echo "$map_data" | jq -r --arg eco "$ECO_CHOICE" '.[$eco].repo_url // empty')
+            TARGET_JSON_PATH=$(echo "$map_data" | jq -r --arg eco "$ECO_CHOICE" '.[$eco].config_path // empty')
             
-            ECO_DIR="$TERMUX_HOME/storage/downloads/Chihafuyu-$ECO_CHOICE"
+            if [[ -z "$TARGET_REPO" ]]; then
+                TARGET_REPO="chihafuyu/morphe-patches"
+            fi
+            
+            # Fallback to default ecosystem directory if specific config_path is omitted
+            if [[ -z "$TARGET_JSON_PATH" ]]; then
+                TARGET_JSON_PATH="ecosystem/${ECO_CHOICE}.json"
+            fi
+            
+            echo -e "${CYAN}Target Repo:${NC} $TARGET_REPO"
+            
+            ECO_DIR="$BASE_DIR/$ECO_CHOICE"
             mkdir -p "$ECO_DIR"
             break
         else
@@ -147,12 +136,12 @@ select_ecosystem() {
 
 show_supported_apps() {
     echo -e "\n${YELLOW}[INFO] Fetching supported apps for $ECO_CHOICE...${NC}"
-    local json_url="${REPO_URL}/ecosystem/${TARGET_JSON}"
+    local json_url="${REPO_URL}/${TARGET_JSON_PATH}"
     
     echo -e "${CYAN}=== Supported Applications ===${NC}"
     
     if ! curl -sL --max-time 15 -f "$json_url" | jq -r '.[].apps | to_entries[] | " - \(.value.search_term) (v\(.value.stable[0] // "Any"))"'; then
-        echo -e "${RED}[WARN] Could not fetch configuration for $ECO_CHOICE.${NC}" >&2
+        echo -e "${RED}[WARN] Could not fetch configuration from $TARGET_JSON_PATH.${NC}" >&2
     fi
     echo -e "${CYAN}==============================${NC}"
 }
@@ -183,38 +172,47 @@ fetch_components() {
     
     local morphe_url="https://github.com/MorpheApp/morphe-cli/releases/latest/download/morphe-cli.jar"
     
-    # Smart Cache Logic: Uses curl '-z' and '-R' to download the JAR only if a newer version exists on the server
-    if [[ -s "morphe.jar" ]]; then
+    # Smart Cache Logic: Evaluates remote file modification time against the local JAR
+    if [[ -s "$MORPHE_JAR" ]]; then
         echo -e "${CYAN}Checking for morphe-cli updates...${NC}"
-        curl -sL --max-time 300 -R -z "morphe.jar" -A "$USER_AGENT" "$morphe_url" -o morphe.jar
+        curl -sLf --max-time 300 -R -z "$MORPHE_JAR" -A "$USER_AGENT" "$morphe_url" -o "$MORPHE_JAR"
     else
         echo -e "${CYAN}Downloading morphe-cli...${NC}"
-        curl -sL --max-time 300 -R -A "$USER_AGENT" "$morphe_url" -o morphe.jar
+        curl -sLf --max-time 300 -R -A "$USER_AGENT" "$morphe_url" -o "$MORPHE_JAR"
     fi
 
+    # Prepare API cURL command as an array to handle potential spaces in the token safely
+    local api_curl_cmd=(curl -sLf --max-time 15 -A "$USER_AGENT")
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+        echo -e "${GREEN}[INFO] GitHub Token detected. Using authenticated API requests.${NC}"
+        api_curl_cmd+=("-H" "Authorization: Bearer $GITHUB_TOKEN")
+    fi
+
+    # Auto-detects the .mpp file URL securely via GitHub API
     local patch_url=""
     if [[ "$TRACK_CHOICE" == "Stable" ]]; then
-        patch_url="https://github.com/${TARGET_REPO}/releases/latest/download/${TARGET_MPP}"
+        patch_url=$("${api_curl_cmd[@]}" "https://api.github.com/repos/${TARGET_REPO}/releases/latest" | \
+            jq -r '.assets[]? | select(.name | endswith(".mpp")) | .browser_download_url' | tail -n 1)
     else
-        patch_url=$(curl -s --max-time 15 -A "$USER_AGENT" "https://api.github.com/repos/${TARGET_REPO}/releases" | \
-            jq -r --arg MPP "$TARGET_MPP" 'map(select(.prerelease == true)) | .[0].assets[]? | select(.name == $MPP) | .browser_download_url')
-        
-        if [[ -z "$patch_url" || "$patch_url" == "null" ]]; then
-            echo -e "${RED}[ERROR] No Pre-release version found for $ECO_CHOICE in $TARGET_REPO.${NC}" >&2
-            exit 1
-        fi
+        patch_url=$("${api_curl_cmd[@]}" "https://api.github.com/repos/${TARGET_REPO}/releases" | \
+            jq -r 'map(select(.prerelease == true)) | .[0].assets[]? | select(.name | endswith(".mpp")) | .browser_download_url' | tail -n 1)
     fi
     
-    # Segregate local .mpp filenames by track to prevent cache validation conflicts between stable and pre-release
-    TEMP_PATCH="${TARGET_MPP%.mpp}-${TRACK_CHOICE// /-}.mpp"
+    if [[ -z "$patch_url" || "$patch_url" == "null" ]]; then
+        echo -e "${RED}[ERROR] No .mpp file found for $ECO_CHOICE in $TARGET_REPO ($TRACK_CHOICE). API rate limit exceeded?${NC}" >&2
+        exit 1
+    fi
+    
+    # Segregate local .mpp filenames purely by Ecosystem and Track (forces overwrite of older versions)
+    TEMP_PATCH="${ECO_CHOICE}-${TRACK_CHOICE// /-}.mpp"
     
     # Smart Cache Logic: Downloads the .mpp file only if the remote file modification time is newer
     if [[ -s "$TEMP_PATCH" ]]; then
-        echo -e "${CYAN}Checking for $TEMP_PATCH updates...${NC}"
-        curl -sL --max-time 60 -R -z "$TEMP_PATCH" -A "$USER_AGENT" "$patch_url" -o "$TEMP_PATCH"
+        echo -e "${CYAN}Checking for ecosystem patch updates...${NC}"
+        curl -sLf --max-time 60 -R -z "$TEMP_PATCH" -A "$USER_AGENT" "$patch_url" -o "$TEMP_PATCH"
     else
-        echo -e "${CYAN}Downloading $TEMP_PATCH...${NC}"
-        curl -sL --max-time 60 -R -A "$USER_AGENT" "$patch_url" -o "$TEMP_PATCH"
+        echo -e "${CYAN}Downloading ecosystem patches...${NC}"
+        curl -sLf --max-time 60 -R -A "$USER_AGENT" "$patch_url" -o "$TEMP_PATCH"
     fi
 }
 
@@ -269,7 +267,7 @@ execute_patch() {
 
     echo -e "\n${YELLOW}[INFO] Starting the patching process... (Do not close Termux!)${NC}"
 
-    if java -jar morphe.jar patch -b "$TEMP_PATCH" -a "$APK_CHOICE" -o "$final_apk" 2>&1 | tee "$TEMP_LOG_FILE"; then
+    if java -jar "$MORPHE_JAR" patch -b "$TEMP_PATCH" -a "$APK_CHOICE" -o "$final_apk" 2>&1 | tee "$TEMP_LOG_FILE"; then
         echo -e "\n${CYAN}=========================================${NC}"
         echo -e "${GREEN} SUCCESS! PATCHING COMPLETED             ${NC}"
         echo -e "${CYAN}=========================================${NC}"
