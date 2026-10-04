@@ -3,7 +3,6 @@ Tier 7 Scraper: GitHub Releases.
 Directly targets attached assets in GitHub release tags.
 """
 
-from __future__ import annotations
 import requests
 
 from core.context import Context

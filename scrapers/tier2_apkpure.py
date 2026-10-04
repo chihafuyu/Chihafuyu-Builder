@@ -1,6 +1,5 @@
 """Tier 2 Scraper: APKPure."""
 
-from __future__ import annotations
 import glob
 import os
 import shutil

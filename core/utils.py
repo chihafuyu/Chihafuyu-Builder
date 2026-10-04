@@ -3,7 +3,6 @@ Core utility functions.
 Handles network streaming, file extraction, WAF detection, hash checking, and option injections.
 """
 
-from __future__ import annotations
 import hashlib
 import json
 import os

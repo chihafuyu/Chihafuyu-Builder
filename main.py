@@ -3,14 +3,13 @@ Automated APK Downloader and Patcher using the CLI.
 Modular architecture: Main Execution Entrypoint.
 """
 
-from __future__ import annotations
 import argparse
 import json
 import os
 import subprocess
 import sys
 import time
-from typing import Dict, Any
+from typing import Any
 
 from scrapers import AVAILABLE_SCRAPERS
 from core.context import Context, RateLimiter
@@ -25,7 +24,7 @@ from core.utils import (
 MAX_RUNTIME_SECONDS = 19800
 
 
-def load_config(ecosystem_name: str) -> Dict[str, Any]:
+def load_config(ecosystem_name: str) -> dict[str, Any]:
     """Loads ecosystem configuration from the specific JSON file."""
     config_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),

@@ -1,6 +1,5 @@
 """Tier 8 Scraper: Direct URL."""
 
-from __future__ import annotations
 import requests
 
 from core.context import Context

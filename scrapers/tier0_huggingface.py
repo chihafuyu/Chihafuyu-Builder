@@ -1,6 +1,5 @@
 """Tier 0 Scraper: HuggingFace Datasets."""
 
-from __future__ import annotations
 import requests
 
 from core.context import Context

@@ -10,9 +10,10 @@ NC='\033[0m'
 
 TERMUX_PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 TERMUX_HOME="${HOME:-/data/data/com.termux/files/home}"
-USER_AGENT="ChihafuyuBuilder/1.1 (Termux; Android)"
+USER_AGENT="ChihafuyuBuilder/1.3 (Termux; Android)"
 WORK_DIR="$TERMUX_PREFIX/var/chihafuyu-workspace"
 REPO_URL="https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main"
+API_URL="https://api.github.com/repos/chihafuyu/Chihafuyu-Builder"
 
 TEMP_PATCH=""
 ECO_CHOICE=""
@@ -22,12 +23,14 @@ TARGET_MPP=""
 ECO_DIR=""
 TRACK_CHOICE=""
 APK_CHOICE=""
+TEMP_LOG_FILE=""
 
 # Clean up temporary files on exit or interrupt
 cleanup() {
     local exit_code=$?
-    if [[ -n "$TEMP_PATCH" && -f "$TEMP_PATCH" ]]; then
-        rm -f "$TEMP_PATCH"
+    # File .mpp sengaja TIDAK DIHAPUS di sini agar bisa di-cache untuk proses selanjutnya
+    if [[ -n "$TEMP_LOG_FILE" && -f "$TEMP_LOG_FILE" ]]; then
+        rm -f "$TEMP_LOG_FILE"
     fi
     exit "$exit_code"
 }
@@ -36,7 +39,6 @@ trap cleanup EXIT INT TERM ERR
 
 check_dependencies() {
     local missing=()
-
     command -v curl >/dev/null 2>&1 || missing+=("curl")
     command -v jq >/dev/null 2>&1 || missing+=("jq")
     
@@ -70,66 +72,67 @@ ensure_storage_access() {
     fi
 }
 
-set_eco_data() {
-    TARGET_MPP="${ECO_CHOICE}-custom.mpp"
-    TEMP_PATCH="$TARGET_MPP"
-
-    case "$ECO_CHOICE" in
-        "ajstrick81")    TARGET_REPO="ajstrick81/morphe-androidtv-patches"; TARGET_JSON="ajstrick81.json" ;;
-        "Akash-Sriram")  TARGET_REPO="Akash-Sriram/morphe-google-photos"; TARGET_JSON="Akash-Sriram.json" ;;
-        "andrewliang25") TARGET_REPO="andrewliang25/morphe-patches"; TARGET_JSON="andrewliang25.json" ;;
-        "anxyis")        TARGET_REPO="anxyis/anxy-patches"; TARGET_JSON="anxyis.json" ;;
-        "arandomhooman") TARGET_REPO="arandomhooman/hoomans-morphe-patches"; TARGET_JSON="arandomhooman.json" ;;
-        "BholeyKaBhakt") TARGET_REPO="BholeyKaBhakt/android-patches-xtra"; TARGET_JSON="BholeyKaBhakt.json" ;;
-        "browzomje")     TARGET_REPO="browzomje/browzomje-patches"; TARGET_JSON="browzomje.json" ;;
-        "byehi98")       TARGET_REPO="byehi98/okish-morphe-patches"; TARGET_JSON="byehi98.json" ;;
-        "De-Vanced")     TARGET_REPO="RookieEnough/De-Vanced"; TARGET_JSON="De-Vanced.json" ;;
-        "dh6k")          TARGET_REPO="dh6k/morphe-patches"; TARGET_JSON="dh6k.json" ;;
-        "heval99")       TARGET_REPO="heval99/Heval-Morphe-Patches"; TARGET_JSON="heval99.json" ;;
-        "hoo-dles")      TARGET_REPO="hoo-dles/morphe-patches"; TARGET_JSON="hoo-dles.json" ;;
-        "hushfacebook")  TARGET_REPO="SysAdminDoc/hushfacebook"; TARGET_JSON="hushfacebook.json" ;;
-        "hushfeed")      TARGET_REPO="SysAdminDoc/hushfeed"; TARGET_JSON="hushfeed.json" ;;
-        "hxreborn")      TARGET_REPO="hxreborn/morphe-patches"; TARGET_JSON="hxreborn.json" ;;
-        "icysymmetra")   TARGET_REPO="icysymmetra/tiktok-patches-for-morphe"; TARGET_JSON="icysymmetra.json" ;;
-        "jasonwu1994")   TARGET_REPO="jasonwu1994/Gboard-patches"; TARGET_JSON="jasonwu1994.json" ;;
-        "kiraio-moe")    TARGET_REPO="kiraio-moe/Lain-Patches"; TARGET_JSON="kiraio-moe.json" ;;
-        "kuchingneko28") TARGET_REPO="kuchingneko28/ipusnas-patches"; TARGET_JSON="kuchingneko28.json" ;;
-        "kveld9")        TARGET_REPO="kveld9/kveld-morphe-patches"; TARGET_JSON="kveld9.json" ;;
-        "legendsciber")  TARGET_REPO="legendsciber/morphe-patches"; TARGET_JSON="legendsciber.json" ;;
-        "MiguelNinja19") TARGET_REPO="MiguelNinja19/miguel-morphe-patches"; TARGET_JSON="MiguelNinja19.json" ;;
-        "morphe")        TARGET_REPO="MorpheApp/morphe-patches"; TARGET_JSON="morphe.json" ;;
-        "PathxmOp")      TARGET_REPO="PrathxmOp/Prathxm-Patches"; TARGET_JSON="PathxmOp.json" ;;
-        "piko")          TARGET_REPO="crimera/piko"; TARGET_JSON="piko.json" ;;
-        "rabilrbl")      TARGET_REPO="rabilrbl/fluffy-patches"; TARGET_JSON="rabilrbl.json" ;;
-        "Riky")          TARGET_REPO="riky-dev/morphe-patches"; TARGET_JSON="Riky.json" ;;
-        "rushiranpise")  TARGET_REPO="rushiranpise/morphe-patches"; TARGET_JSON="rushiranpise.json" ;;
-        "satanmerde")    TARGET_REPO="SatanMerde/D-moniakPatches"; TARGET_JSON="satanmerde.json" ;;
-        "zeldrisho")     TARGET_REPO="zeldrisho/morphe-patches"; TARGET_JSON="zeldrisho.json" ;;
-    esac
+# Parse YAML workflow to dynamically extract the target patch repository
+fetch_yaml_config() {
+    echo -e "${YELLOW}[INFO] Fetching patcher configuration for $ECO_CHOICE...${NC}"
+    local yaml_url="${REPO_URL}/.github/workflows/${ECO_CHOICE}-patcher.yml"
+    local yaml_content
+    
+    yaml_content=$(curl -sL --max-time 15 -A "$USER_AGENT" "$yaml_url")
+    
+    # Extract config strings matching exact YAML keys using regex pattern
+    TARGET_REPO=$(echo "$yaml_content" | sed -n 's/.*repo_url:[[:space:]]*"\(.*\)".*/\1/p' | head -n 1)
+    TARGET_MPP=$(echo "$yaml_content" | sed -n 's/.*custom_patch_filename:[[:space:]]*"\(.*\)".*/\1/p' | head -n 1)
+    
+    if [[ -z "$TARGET_REPO" ]]; then
+        echo -e "${RED}[WARN] Could not parse repo_url from YAML. Using fallback.${NC}" >&2
+        TARGET_REPO="chihafuyu/morphe-patches"
+    fi
+    
+    if [[ -z "$TARGET_MPP" ]]; then
+        TARGET_MPP="${ECO_CHOICE}-custom.mpp"
+    fi
+    
+    echo -e "${CYAN}Target Repo:${NC} $TARGET_REPO"
+    echo -e "${CYAN}Target Patch File:${NC} $TARGET_MPP"
 }
 
 select_ecosystem() {
-    echo -e "${WHITE}Select Ecosystem Patches:${NC}"
-    local ecosystems=(
-        "ajstrick81" "Akash-Sriram" "andrewliang25" "anxyis" "arandomhooman" "BholeyKaBhakt"
-        "browzomje" "byehi98" "De-Vanced" "dh6k" "heval99" "hoo-dles" "hushfacebook"
-        "hushfeed" "hxreborn" "icysymmetra" "jasonwu1994" "kiraio-moe" "kuchingneko28"
-        "kveld9" "legendsciber" "MiguelNinja19" "morphe" "PathxmOp" "piko" "rabilrbl"
-        "Riky" "rushiranpise" "satanmerde" "zeldrisho" "Exit"
-    )
+    echo -e "${YELLOW}[INFO] Fetching ecosystem list from GitHub API...${NC}"
     
+    local api_response
+    api_response=$(curl -s --max-time 15 -A "$USER_AGENT" "$API_URL/contents/ecosystem")
+    
+    if ! echo "$api_response" | jq -e 'type == "array"' >/dev/null; then
+        echo -e "${RED}[ERROR] Failed to fetch ecosystem list. GitHub API rate limit?${NC}" >&2
+        exit 1
+    fi
+    
+    local eco_list=()
+    mapfile -t eco_list < <(echo "$api_response" | jq -r '.[].name' | grep '\.json$' | sed 's/\.json$//')
+    
+    if [[ ${#eco_list[@]} -eq 0 ]]; then
+        echo -e "${RED}[ERROR] No ecosystems found.${NC}" >&2
+        exit 1
+    fi
+    
+    eco_list+=("Exit")
+    
+    echo -e "\n${WHITE}Select Ecosystem Patches:${NC}"
     COLUMNS=20
     local PS3_BAK="${PS3:-}"
     PS3="Enter your choice: "
     
-    select choice in "${ecosystems[@]}"; do
+    select choice in "${eco_list[@]}"; do
         if [[ "$choice" == "Exit" ]]; then
             echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
             exit 0
         elif [[ -n "$choice" ]]; then
             ECO_CHOICE="$choice"
             echo -e "${GREEN}Selected ecosystem: $ECO_CHOICE${NC}"
-            set_eco_data
+            
+            TARGET_JSON="${ECO_CHOICE}.json"
+            fetch_yaml_config
             
             ECO_DIR="$TERMUX_HOME/storage/downloads/Chihafuyu-$ECO_CHOICE"
             mkdir -p "$ECO_DIR"
@@ -147,8 +150,7 @@ show_supported_apps() {
     
     echo -e "${CYAN}=== Supported Applications ===${NC}"
     
-    # Pipe curl directly to jq to avoid creating temporary files
-    if ! curl -sL -f "$json_url" | jq -r '.[].apps | to_entries[] | " - \(.value.search_term) (v\(.value.stable[0] // "Any"))"'; then
+    if ! curl -sL --max-time 15 -f "$json_url" | jq -r '.[].apps | to_entries[] | " - \(.value.search_term) (v\(.value.stable[0] // "Any"))"'; then
         echo -e "${RED}[WARN] Could not fetch configuration for $ECO_CHOICE.${NC}" >&2
     fi
     echo -e "${CYAN}==============================${NC}"
@@ -176,26 +178,43 @@ select_track() {
 }
 
 fetch_components() {
-    echo -e "\n${YELLOW}[INFO] Checking core components & downloading patches...${NC}"
+    echo -e "\n${YELLOW}[INFO] Checking core components & synchronizing files...${NC}"
     
-    if [[ ! -f "morphe.jar" ]]; then
-        curl -sL -A "$USER_AGENT" "https://github.com/MorpheApp/morphe-cli/releases/latest/download/morphe-cli.jar" -o morphe.jar
+    local morphe_url="https://github.com/MorpheApp/morphe-cli/releases/latest/download/morphe-cli.jar"
+    
+    # Smart Cache Logic for morphe.jar using '-z' and '-R'
+    if [[ -s "morphe.jar" ]]; then
+        echo -e "${CYAN}Checking for morphe-cli updates...${NC}"
+        curl -sL --max-time 300 -R -z "morphe.jar" -A "$USER_AGENT" "$morphe_url" -o morphe.jar
+    else
+        echo -e "${CYAN}Downloading morphe-cli...${NC}"
+        curl -sL --max-time 300 -R -A "$USER_AGENT" "$morphe_url" -o morphe.jar
     fi
 
     local patch_url=""
     if [[ "$TRACK_CHOICE" == "Stable" ]]; then
         patch_url="https://github.com/${TARGET_REPO}/releases/latest/download/${TARGET_MPP}"
     else
-        patch_url=$(curl -s -A "$USER_AGENT" "https://api.github.com/repos/${TARGET_REPO}/releases" | \
+        patch_url=$(curl -s --max-time 15 -A "$USER_AGENT" "https://api.github.com/repos/${TARGET_REPO}/releases" | \
             jq -r --arg MPP "$TARGET_MPP" 'map(select(.prerelease == true)) | .[0].assets[]? | select(.name == $MPP) | .browser_download_url')
         
         if [[ -z "$patch_url" || "$patch_url" == "null" ]]; then
-            echo -e "${RED}[ERROR] No Pre-release version found for $ECO_CHOICE.${NC}" >&2
+            echo -e "${RED}[ERROR] No Pre-release version found for $ECO_CHOICE in $TARGET_REPO.${NC}" >&2
             exit 1
         fi
     fi
     
-    curl -sL -A "$USER_AGENT" "$patch_url" -o "$TEMP_PATCH"
+    # Pisahkan nama file mpp lokal berdasarkan track agar komparasi waktu tidak tumpang tindih
+    TEMP_PATCH="${TARGET_MPP%.mpp}-${TRACK_CHOICE// /-}.mpp"
+    
+    # Smart Cache Logic for .mpp patch file
+    if [[ -s "$TEMP_PATCH" ]]; then
+        echo -e "${CYAN}Checking for $TEMP_PATCH updates...${NC}"
+        curl -sL --max-time 60 -R -z "$TEMP_PATCH" -A "$USER_AGENT" "$patch_url" -o "$TEMP_PATCH"
+    else
+        echo -e "${CYAN}Downloading $TEMP_PATCH...${NC}"
+        curl -sL --max-time 60 -R -A "$USER_AGENT" "$patch_url" -o "$TEMP_PATCH"
+    fi
 }
 
 wait_for_apk() {
@@ -211,7 +230,6 @@ wait_for_apk() {
 select_apk() {
     echo -e "\n${WHITE}Scanning $ECO_DIR for APKs...${NC}"
     
-    # Ensure glob expansion evaluates gracefully if no files exist
     shopt -s nullglob
     local apk_files=("$ECO_DIR/"*.apk "$ECO_DIR/"*.apkm "$ECO_DIR/"*.xapk)
     shopt -u nullglob
@@ -246,14 +264,11 @@ execute_patch() {
     base_name=$(basename "$APK_CHOICE")
     
     local final_apk="$ECO_DIR/Patched-${base_name%.*}.apk"
-    local log_file
-    
-    # Separated declaration and assignment to avoid masking command substitution errors (SC2155)
-    log_file="$WORK_DIR/patch_log_$(date +%s).txt"
+    TEMP_LOG_FILE="$WORK_DIR/patch_log_$(date +%s).txt"
 
     echo -e "\n${YELLOW}[INFO] Starting the patching process... (Do not close Termux!)${NC}"
 
-    if java -jar morphe.jar patch -b "$TEMP_PATCH" -a "$APK_CHOICE" -o "$final_apk" 2>&1 | tee "$log_file"; then
+    if java -jar morphe.jar patch -b "$TEMP_PATCH" -a "$APK_CHOICE" -o "$final_apk" 2>&1 | tee "$TEMP_LOG_FILE"; then
         echo -e "\n${CYAN}=========================================${NC}"
         echo -e "${GREEN} SUCCESS! PATCHING COMPLETED             ${NC}"
         echo -e "${CYAN}=========================================${NC}"
@@ -262,13 +277,13 @@ execute_patch() {
         read -r -n 1 -p "$(echo -e "\n${WHITE}Do you want to export the debug log to the ecosystem folder? (y/n)${NC} ")" export_log
         echo ""
         if [[ "$export_log" =~ ^[Yy]$ ]]; then
-            cp "$log_file" "$ECO_DIR/"
-            echo -e "${GREEN}Log saved to: $ECO_DIR/$(basename "$log_file")${NC}"
+            cp "$TEMP_LOG_FILE" "$ECO_DIR/"
+            echo -e "${GREEN}Log saved to: $ECO_DIR/$(basename "$TEMP_LOG_FILE")${NC}"
         fi
     else
         echo -e "\n${RED}[ERROR] Patching failed!${NC}" >&2
-        cp "$log_file" "$ECO_DIR/"
-        echo -e "${YELLOW}Check the error log here: $ECO_DIR/$(basename "$log_file")${NC}"
+        cp "$TEMP_LOG_FILE" "$ECO_DIR/"
+        echo -e "${YELLOW}Check the error log here: $ECO_DIR/$(basename "$TEMP_LOG_FILE")${NC}"
         exit 1
     fi
 }

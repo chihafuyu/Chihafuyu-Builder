@@ -1,6 +1,5 @@
 """Tier 1 Scraper: APKMirror utilizing FlareSolverr Microservice to Bypass WAF."""
 
-from __future__ import annotations
 import random
 import re
 import time

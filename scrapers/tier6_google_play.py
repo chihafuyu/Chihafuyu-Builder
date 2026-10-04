@@ -1,6 +1,5 @@
 """Tier 9 Scraper: Google Play via Apkeep."""
 
-from __future__ import annotations
 import base64
 import glob
 import os

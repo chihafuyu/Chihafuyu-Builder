@@ -3,7 +3,6 @@ Abstract Base Class module for all APK Scraper tiers.
 Enforces a strict interface for dynamic discovery and execution.
 """
 
-from __future__ import annotations
 import abc
 from typing import Any
 from core.context import Context

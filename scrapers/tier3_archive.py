@@ -1,6 +1,5 @@
 """Tier 6 Scraper: Archive.org."""
 
-from __future__ import annotations
 import os
 from bs4 import BeautifulSoup
 import requests
