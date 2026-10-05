@@ -60,7 +60,7 @@
                 "package": "com.streetwriters.notesnook",
                 "search_term": "Notesnook",
                 "stable": [
-                    "3.4.12"
+                    "3.4.13"
                 ],
                 "beta": [],
                 "strip": true,
@@ -82,7 +82,7 @@
                 "package": "com.spocky.projengmenu",
                 "search_term": "Projectivy Launcher",
                 "stable": [
-                    "4.70"
+                    "4.71"
                 ],
                 "beta": [],
                 "strip": true,
@@ -93,7 +93,7 @@
                 "package": "ch.protonmail.android",
                 "search_term": "Proton Mail",
                 "stable": [
-                    "7.11.8"
+                    "7.11.9"
                 ],
                 "beta": [],
                 "strip": true,
@@ -104,7 +104,7 @@
                 "package": "com.mchutov.Quranify",
                 "search_term": "Quranify",
                 "stable": [
-                    "2.2.8"
+                    "2.2.9"
                 ],
                 "beta": [],
                 "strip": true,
@@ -126,7 +126,7 @@
                 "package": "com.risesci.nyx",
                 "search_term": "RISE Sleep Tracker",
                 "stable": [
-                    "Android V1.78.49"
+                    "Android V1.78.51"
                 ],
                 "beta": [],
                 "strip": true,
