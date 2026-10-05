@@ -51,6 +51,10 @@
         "repo_url": "SysAdminDoc/HushMessenger",
         "config_path": "ecosystem-termux/hushmessenger.json"
     },
+    "hushpinterest": {
+        "repo_url": "SysAdminDoc/HushPinterest",
+        "config_path": "ecosystem-termux/hushpinterest.json"
+    },
     "hushtelegram": {
         "repo_url": "SysAdminDoc/HushTelegram",
         "config_path": "ecosystem-termux/hushtelegram.json"

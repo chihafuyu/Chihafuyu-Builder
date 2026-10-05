@@ -4,16 +4,11 @@ name: 🎨 Browzomje Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_pinterest:
-        description: 'Patch pinterest'
-        required: true
-        type: boolean
-        default: true
       app_easy_sudoku:
         description: 'Patch easy-sudoku'
         required: true
         type: boolean
-        default: false
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -80,16 +75,12 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
-      APP_PINTEREST: ${{ inputs.app_pinterest }}
       APP_EASY_SUDOKU: ${{ inputs.app_easy_sudoku }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
-          if [[ "$APP_PINTEREST" == "true" ]]; then
-            LIST="$LIST,pinterest"
-          fi
           if [[ "$APP_EASY_SUDOKU" == "true" ]]; then
             LIST="$LIST,easy-sudoku"
           fi

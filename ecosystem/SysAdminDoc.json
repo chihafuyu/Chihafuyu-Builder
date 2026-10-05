@@ -167,6 +167,21 @@
                     }
                 }
             },
+			"pinterest": {
+                "package": "com.pinterest",
+                "search_term": "Pinterest",
+                "stable": [
+                    "14.38.0"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "14388010"
+                },
+                "strip": true,
+                "force_bundle": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "telegram-web": {
                 "package": "org.telegram.messenger.web",
                 "search_term": "Telegram Web",

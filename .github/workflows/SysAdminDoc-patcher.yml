@@ -8,7 +8,7 @@ name: 🛠️ SysAdminDoc Ecosystem Patcher
         description: 'Patch HushFacebook'
         required: true
         type: boolean
-        default: false
+        default: true
       app_instagram:
         description: 'Patch HushGram'
         required: true
@@ -18,7 +18,12 @@ name: 🛠️ SysAdminDoc Ecosystem Patcher
         description: 'Patch HushMessenger'
         required: true
         type: boolean
-        default: false
+        default: true
+      app_pinterest:
+        description: 'Patch HushPinterest'
+        required: true
+        type: boolean
+        default: true
       app_telegram_web:
         description: 'Patch HushTelegram'
         required: true
@@ -28,7 +33,7 @@ name: 🛠️ SysAdminDoc Ecosystem Patcher
         description: 'Patch HushThreads'
         required: true
         type: boolean
-        default: false
+        default: true
       app_tiktok_global:
         description: 'Patch HushFeed'
         required: true
@@ -164,6 +169,28 @@ jobs:
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: "hushmessenger"
 
+  patch-pinterest:
+    if: inputs.app_pinterest == true
+    permissions:
+      contents: write
+    uses: ./.github/workflows/core-engine.yml
+    secrets: inherit
+    with:
+      ecosystem: "SysAdminDoc"
+      apps: "pinterest"
+      architecture: ${{ inputs.architecture }}
+      version_selection: ${{ inputs.version_selection }}
+      custom_version: ${{ inputs.custom_version }}
+      download_source: ${{ inputs.download_source }}
+      continue_on_error: ${{ inputs.continue_on_error }}
+      cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
+      patches_track: ${{ inputs.patches_track }}
+      repo_url: "SysAdminDoc/HushPinterest"
+      custom_patch_filename: "hushpinterest-custom.mpp"
+      upload_github_release: ${{ inputs.upload_github_release }}
+      send_to_telegram: ${{ inputs.send_to_telegram }}
+      release_tag_prefix: "hushpinterest"
   patch-telegram-web:
     if: inputs.app_telegram_web == true
     permissions:
