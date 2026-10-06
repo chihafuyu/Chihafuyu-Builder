@@ -14,6 +14,9 @@
     "arandomhooman": {
         "repo_url": "arandomhooman/hoomans-morphe-patches"
     },
+    "bearinmindcat": {
+        "repo_url": "bearinmindcat/bearinmindcat-patches"
+    },
     "BholeyKaBhakt": {
         "repo_url": "BholeyKaBhakt/android-patches-xtra"
     },
@@ -118,6 +121,9 @@
     },
     "spicetify": {
         "repo_url": "spicetify/morphe-patches"
+    },
+    "Wagg13Patch": {
+        "repo_url": "WaggBR/Wagg13Patch_Morphe"
     },
     "zeldrisho": {
         "repo_url": "zeldrisho/morphe-patches"

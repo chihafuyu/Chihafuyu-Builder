@@ -23,6 +23,9 @@
                     },
                     "Block background-return feed refresh": {
                         "enabled": true
+                    },
+                    "Pure black dark mode": {
+                        "enabled": true
                     }
                 }
             }

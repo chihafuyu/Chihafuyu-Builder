@@ -71,6 +71,21 @@
                     "View stories anonymously": {
                         "enabled": true
                     },
+                    "Allow screenshots": {
+                        "enabled": true
+                    },
+                    "Block screenshot detection": {
+                        "enabled": true
+                    },
+                    "Hold back analytics uploads": {
+                        "enabled": true
+                    },
+                    "Turn off haptics": {
+                        "enabled": true
+                    },
+                    "Turn off screen transitions": {
+                        "enabled": true
+                    },
                     "Use the system font": {
                         "enabled": false
                     }
@@ -153,10 +168,10 @@
                 "package": "com.facebook.orca",
                 "search_term": "Messenger",
                 "stable": [
-                    "580.0.0.49.91"
+                    "581.0.0.49.91"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "346013440"
+                    "arm64-v8a": "346213580"
                 },
                 "force_bundle": false,
                 "strip": true,
@@ -167,7 +182,7 @@
                     }
                 }
             },
-			"pinterest": {
+            "pinterest": {
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
                 "stable": [
@@ -180,7 +195,53 @@
                 "strip": true,
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Disable update nag": {
+                        "enabled": true
+                    },
+                    "Download pins": {
+                        "enabled": true
+                    },
+                    "Filter pin menu": {
+                        "enabled": true
+                    },
+                    "Hide AI-labeled pins": {
+                        "enabled": true
+                    },
+                    "Hide comments": {
+                        "enabled": true
+                    },
+                    "Hide header buttons": {
+                        "enabled": true
+                    },
+                    "Hide navigation buttons": {
+                        "enabled": true
+                    },
+                    "Hide save toasts": {
+                        "enabled": true
+                    },
+                    "Hide search history": {
+                        "enabled": true
+                    },
+                    "Hide shopping and product pins": {
+                        "enabled": true
+                    },
+                    "No screenshot share menu": {
+                        "enabled": true
+                    },
+                    "Open links in your browser": {
+                        "enabled": true
+                    },
+                    "Original-quality images": {
+                        "enabled": true
+                    },
+                    "Quiet email reminders": {
+                        "enabled": true
+                    },
+                    "System share sheet": {
+                        "enabled": true
+                    }
+                }
             },
             "telegram-web": {
                 "package": "org.telegram.messenger.web",
@@ -221,6 +282,9 @@
                         "enabled": true
                     },
                     "Block background-return feed refresh": {
+                        "enabled": true
+                    },
+                    "Pure black dark mode": {
                         "enabled": true
                     }
                 }

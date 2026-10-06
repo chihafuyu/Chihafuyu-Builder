@@ -1,0 +1,18 @@
+{
+    "bearinmindcat": {
+        "apps": {
+            "google-maps": {
+                "package": "com.google.android.apps.maps",
+                "search_term": "Google Maps",
+                "stable": [
+                    "26.36.04.973607363"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_bundle": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

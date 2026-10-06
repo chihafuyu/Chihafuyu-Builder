@@ -12,8 +12,55 @@
                     "universal": "14388010"
                 },
                 "strip": true,
+                "force_bundle": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Disable update nag": {
+                        "enabled": true
+                    },
+                    "Download pins": {
+                        "enabled": true
+                    },
+                    "Filter pin menu": {
+                        "enabled": true
+                    },
+                    "Hide AI-labeled pins": {
+                        "enabled": true
+                    },
+                    "Hide comments": {
+                        "enabled": true
+                    },
+                    "Hide header buttons": {
+                        "enabled": true
+                    },
+                    "Hide navigation buttons": {
+                        "enabled": true
+                    },
+                    "Hide save toasts": {
+                        "enabled": true
+                    },
+                    "Hide search history": {
+                        "enabled": true
+                    },
+                    "Hide shopping and product pins": {
+                        "enabled": true
+                    },
+                    "No screenshot share menu": {
+                        "enabled": true
+                    },
+                    "Open links in your browser": {
+                        "enabled": true
+                    },
+                    "Original-quality images": {
+                        "enabled": true
+                    },
+                    "Quiet email reminders": {
+                        "enabled": true
+                    },
+                    "System share sheet": {
+                        "enabled": true
+                    }
+                }
             }
         }
     }

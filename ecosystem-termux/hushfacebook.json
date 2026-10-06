@@ -71,6 +71,21 @@
                     "View stories anonymously": {
                         "enabled": true
                     },
+                    "Allow screenshots": {
+                        "enabled": true
+                    },
+                    "Block screenshot detection": {
+                        "enabled": true
+                    },
+                    "Hold back analytics uploads": {
+                        "enabled": true
+                    },
+                    "Turn off haptics": {
+                        "enabled": true
+                    },
+                    "Turn off screen transitions": {
+                        "enabled": true
+                    },
                     "Use the system font": {
                         "enabled": false
                     }

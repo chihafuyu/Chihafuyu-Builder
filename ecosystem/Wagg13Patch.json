@@ -1,0 +1,54 @@
+{
+    "Wagg13Patch": {
+        "apps": {
+            "bisbi": {
+                "package": "com.nouxi.bisbi",
+                "search_term": "Bisbi",
+                "stable": [
+                    "1.0.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "buzzcast": {
+                "package": "com.guochao.faceshow",
+                "search_term": "BuzzCast",
+                "stable": [
+                    "3.2.90"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "native-camera": {
+                "package": "com.rawcam.app",
+                "search_term": "Native Camera",
+                "stable": [
+                    "1.4.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "tinder": {
+                "package": "com.tinder",
+                "search_term": "Tinder",
+                "stable": [
+                    "17.37.3"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "arm64-v8a": "17370393"
+                },
+                "force_bundle": true,
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}
