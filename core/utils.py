@@ -25,6 +25,9 @@ DEFAULT_VT_MALICIOUS_THRESHOLD = 3
 HA_THREAT_THRESHOLD = 50
 # MetaDefender "scan_all_result_i": 1 = Infected/Known, 8 = Skipped Infected.
 MD_INFECTED_CODES = frozenset({1, 8})
+# MetaDefender engines that must agree before rejecting an APK.
+# Loose default (2) filters lone false positives on legit Google APKs.
+DEFAULT_MD_INFECTED_THRESHOLD = 2
 
 
 def get_scraper() -> requests.Session:
@@ -135,6 +138,9 @@ def _check_hybrid_analysis(file_hash: str) -> bool | None:
 def _check_metadefender(file_hash: str) -> bool | None:
     """Checks hash against MetaDefender Cloud.
 
+    Uses an engine-count threshold so a lone false positive on legitimate
+    APKs (common for Google apps) does not trigger a rejection.
+
     Returns True if clean, False if flagged as malicious, None if not analyzed.
     """
     md_key = os.environ.get("MD_API_KEY", "")
@@ -146,11 +152,32 @@ def _check_metadefender(file_hash: str) -> bool | None:
         if resp.status_code == 200:
             scan_res = resp.json().get("scan_results", {})
             verdict = int(scan_res.get("scan_all_result_i") or 0)
-            if verdict in MD_INFECTED_CODES:
-                print(f"[ERROR] MetaDefender Flagged: verdict code {verdict}.")
+
+            details = scan_res.get("scan_details", {})
+            infected_engines = sum(
+                1 for engine in details.values()
+                if isinstance(engine, dict) and engine.get("threat_found")
+            )
+            threshold = max(
+                1, _env_int("MD_INFECTED_THRESHOLD", DEFAULT_MD_INFECTED_THRESHOLD)
+            )
+
+            if verdict in MD_INFECTED_CODES and infected_engines >= threshold:
+                print(
+                    f"[ERROR] MetaDefender Flagged: "
+                    f"verdict={verdict}, engines={infected_engines} (>= {threshold})"
+                )
                 return False
-            if verdict:
-                print(f"[WARN] MetaDefender verdict code {verdict} (not a confirmed infection).")
+            if verdict in MD_INFECTED_CODES:
+                print(
+                    f"[WARN] MetaDefender low-confidence: "
+                    f"verdict={verdict}, engines={infected_engines} (< {threshold})"
+                )
+            elif verdict:
+                print(
+                    f"[WARN] MetaDefender verdict code {verdict} "
+                    f"(not a confirmed infection)."
+                )
             else:
                 print("[INFO] MetaDefender verification passed: File is clean.")
             return True
