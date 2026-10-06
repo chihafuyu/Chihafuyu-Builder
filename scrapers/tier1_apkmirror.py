@@ -65,14 +65,21 @@ class _FlareSolverrSession:
             return self.session.get(*args, **kwargs)
 
         url = args[0] if args else kwargs.get("url")
-        timeout = kwargs.get("timeout", 45)
-        if isinstance(timeout, tuple):
-            timeout = timeout[0]
+        if not url:
+            return _DummyResponse(status_code=400, text="", url="")
+
+        raw_timeout = kwargs.get("timeout") or 45
+        if isinstance(raw_timeout, (tuple, list)):
+            raw_timeout = raw_timeout[0] if raw_timeout else 45
+        try:
+            timeout = float(raw_timeout)
+        except (TypeError, ValueError):
+            timeout = 45.0
 
         payload = {
             "cmd": "request.get",
             "url": url,
-            "maxTimeout": int(timeout * 1000)
+            "maxTimeout": int(timeout * 1000),
         }
         if self.proxy_session_id:
             payload["session"] = self.proxy_session_id
@@ -90,7 +97,7 @@ class _FlareSolverrSession:
                     self.session.cookies.set(
                         cookie["name"],
                         cookie["value"],
-                        domain=cookie.get("domain") or None
+                        domain=cookie.get("domain") or None,
                     )
 
                 if "userAgent" in solution:
@@ -374,7 +381,7 @@ class ApkmirrorScraper(BaseScraper):
         text = row.text.lower()
         pass_idx = opts.get("pass_idx", 1)
         force_b = opts.get("force_b", False)
-        ver_code = str(opts.get("ver_code", "")).lower()
+        ver_code = str(opts.get("ver_code") or "").lower()
 
         is_bundle = self._is_bundle_row(row)
 

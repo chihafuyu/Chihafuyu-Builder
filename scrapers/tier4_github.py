@@ -18,33 +18,44 @@ class GithubScraper(BaseScraper):
         """Returns the tier identifier."""
         return "github"
 
+    @staticmethod
+    def _candidate_tags(version: str) -> list[str]:
+        """Returns plausible tag variants, dropping duplicates."""
+        tags = [f"v{version}", version]
+        return list(dict.fromkeys(tags))
+
     def scrape(self, ctx: Context) -> str | None:
         """Scrapes the APK directly from GitHub Releases."""
         gh_repo = ctx.app_data.get("github_repo")
         gh_asset = ctx.app_data.get("github_asset")
-
         if not gh_repo or not gh_asset:
             return None
 
         print(f"[TIER 7] GitHub Releases: v{ctx.target_ver}")
 
-        # Fallback list for tag naming conventions
-        tags_to_try = [f"v{ctx.target_ver}", ctx.target_ver]
-
-        for tag in tags_to_try:
+        for tag in self._candidate_tags(ctx.target_ver):
             ctx.limiter.wait()
-            dl_link = f"https://github.com/{gh_repo}/releases/download/{tag}/{gh_asset}"
+            dl_link = (
+                f"https://github.com/{gh_repo}/releases/download/"
+                f"{tag}/{gh_asset}"
+            )
             out_path = ctx.get_out_path(".apk")
 
             try:
-                # Use HEAD request to check availability efficiently
-                response = ctx.scraper.head(dl_link, timeout=10, allow_redirects=True)
-                if response.status_code == 200:
-                    print("[INFO] Downloading from GitHub...")
-                    if download_file_stream(ctx.scraper, dl_link, out_path):
-                        return out_path
+                head = ctx.scraper.head(
+                    dl_link, timeout=10, allow_redirects=True
+                )
             except requests.exceptions.RequestException as err:
-                print(f"[WARN] Connection error while checking tag {tag}: {err}")
+                print(f"[WARN] GitHub probe failed for {tag}: {err}")
                 continue
+
+            # GitHub may return 403/405 to anonymous HEAD requests even
+            # when the asset is downloadable, so allow GET to proceed.
+            if head.status_code not in (200, 403, 405):
+                continue
+
+            print("[INFO] Downloading from GitHub...")
+            if download_file_stream(ctx.scraper, dl_link, out_path):
+                return out_path
 
         return None

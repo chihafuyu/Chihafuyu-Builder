@@ -3,10 +3,12 @@ Core utility functions.
 Handles network streaming, file extraction, WAF detection, hash checking, and option injections.
 """
 
+import glob
 import hashlib
 import json
 import os
 import shutil
+import subprocess
 import tempfile
 import zipfile
 from typing import Any
@@ -28,6 +30,53 @@ MD_INFECTED_CODES = frozenset({1, 8})
 # MetaDefender engines that must agree before rejecting an APK.
 # Loose default (2) filters lone false positives on legit Google APKs.
 DEFAULT_MD_INFECTED_THRESHOLD = 2
+# Env vars matching these markers are stripped before spawning untrusted subprocesses.
+SENSITIVE_ENV_MARKERS = (
+    "TOKEN", "SECRET", "PASSWORD", "API_KEY", "API_HASH", "SESSION",
+    "EMAIL", "KEYSTORE", "DEVICE_PROPERTIES",
+)
+
+
+def _sandboxed_env() -> dict[str, str]:
+    """Returns a copy of the environment stripped of credentials.
+
+    Used when spawning third-party tooling (apkeep, patch bundles) that
+    must never see CI secrets.
+    """
+    return {
+        key: val for key, val in os.environ.items()
+        if not any(marker in key.upper() for marker in SENSITIVE_ENV_MARKERS)
+    }
+
+
+def run_apkeep(cmd: list[str], tag: str = "apkeep") -> subprocess.CompletedProcess | None:
+    """Runs an apkeep invocation under a credential-free env with a hard timeout.
+
+    Returns the completed process on success, or None on timeout, spawn
+    failure, or non-zero exit. The stderr tail is logged automatically on
+    a non-zero exit so callers do not repeat the boilerplate.
+    """
+    try:
+        res = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=SUBPROCESS_TIMEOUT_SECONDS,
+            env=_sandboxed_env(),
+        )
+    except subprocess.TimeoutExpired:
+        print(f"[WARN] {tag} timed out after {SUBPROCESS_TIMEOUT_SECONDS}s.")
+        return None
+    except OSError as err:
+        print(f"[WARN] {tag} execution failed: {err}")
+        return None
+
+    if res.returncode != 0:
+        err_tail = (res.stderr or res.stdout or "").strip()[-500:]
+        print(f"[WARN] {tag} exited {res.returncode}: {err_tail}")
+        return None
+    return res
 
 
 def get_scraper() -> requests.Session:
@@ -49,6 +98,24 @@ def _safe_filename(name: str, fallback: str = "artifact") -> str:
     if not cleaned or cleaned in {".", ".."} or any(c in cleaned for c in ('/', '\\', '\x00')):
         return fallback
     return cleaned
+
+
+def copy_first_match(
+    tmp_dir: str, dest_dir: str, patterns: tuple[str, ...]
+) -> str | None:
+    """Copies the first file matching any glob pattern from tmp_dir to dest_dir.
+
+    Patterns are tried in order, then sorted for deterministic selection.
+    """
+    for pattern in patterns:
+        matches = sorted(glob.glob(os.path.join(tmp_dir, pattern)))
+        if matches:
+            dst = os.path.join(
+                dest_dir, _safe_filename(os.path.basename(matches[0]))
+            )
+            shutil.copy2(matches[0], dst)
+            return dst
+    return None
 
 
 def _env_int(name: str, default: int) -> int:

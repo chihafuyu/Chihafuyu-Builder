@@ -1,5 +1,7 @@
 """Tier 8 Scraper: Direct URL."""
 
+from urllib.parse import quote
+
 import requests
 
 from core.context import Context
@@ -23,20 +25,23 @@ class DirectScraper(BaseScraper):
 
         print(f"[TIER 8] Direct URL: v{ctx.target_ver}")
         dl_link = (
-            tmpl.replace("[VERSI]", ctx.target_ver)
-            .replace("[ARCH]", ctx.arch)
+            tmpl.replace("[VERSI]", quote(ctx.target_ver, safe=""))
+            .replace("[ARCH]", quote(ctx.arch, safe=""))
         )
         out_path = ctx.get_out_path(".apk")
 
         ctx.limiter.wait()
         try:
             res = ctx.scraper.head(dl_link, timeout=10, allow_redirects=True)
-            if res.status_code == 200:
-                print("[INFO] Downloading from Direct URL...")
-                if download_file_stream(ctx.scraper, dl_link, out_path):
-                    return out_path
-        except requests.exceptions.RequestException:
-            pass
+        except requests.exceptions.RequestException as err:
+            print(f"[WARN] Direct link probe failed: {err}")
+            return None
 
-        print(f"[WARN] Direct link not reachable: {dl_link}")
+        if res.status_code != 200:
+            print(f"[WARN] Direct link returned HTTP {res.status_code}: {dl_link}")
+            return None
+
+        print("[INFO] Downloading from Direct URL...")
+        if download_file_stream(ctx.scraper, dl_link, out_path):
+            return out_path
         return None

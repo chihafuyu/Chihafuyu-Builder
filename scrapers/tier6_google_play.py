@@ -1,15 +1,17 @@
 """Tier 9 Scraper: Google Play via Apkeep."""
 
 import base64
-import glob
+import binascii
 import os
 import shutil
-import subprocess
 import tempfile
 
 from core.context import Context
-from core.utils import _safe_filename
+from core.utils import _safe_filename, copy_first_match, run_apkeep
 from .base import BaseScraper
+
+
+BUNDLE_EXTENSIONS = ("*.xapk", "*.apkm", "*.apks", "*.zip")
 
 
 class GooglePlayScraper(BaseScraper):
@@ -20,19 +22,24 @@ class GooglePlayScraper(BaseScraper):
         """Returns the tier identifier."""
         return "google_play"
 
-    def _find_and_copy_apk(self, ctx: Context, tmp_dir: str, dl_dir: str) -> str | None:
-        """Finds the downloaded file or packed split APK directory."""
-        for ext in ("*.xapk", "*.apkm", "*.apks", "*.zip"):
-            found = glob.glob(os.path.join(tmp_dir, ext))
-            if found:
-                dst = os.path.join(dl_dir, _safe_filename(os.path.basename(found[0])))
-                shutil.copy2(found[0], dst)
-                return dst
+    def _find_and_copy_apk(
+        self, ctx: Context, tmp_dir: str, dl_dir: str
+    ) -> str | None:
+        """Finds the downloaded file or packs split APK directory into .apks."""
+        direct = copy_first_match(tmp_dir, dl_dir, BUNDLE_EXTENSIONS)
+        if direct:
+            return direct
 
-        apk_files = glob.glob(os.path.join(tmp_dir, "*.apk"))
+        apk_files = sorted(
+            os.path.join(tmp_dir, f)
+            for f in os.listdir(tmp_dir)
+            if f.endswith(".apk")
+        )
         if apk_files:
             if len(apk_files) == 1:
-                dst = os.path.join(dl_dir, _safe_filename(os.path.basename(apk_files[0])))
+                dst = os.path.join(
+                    dl_dir, _safe_filename(os.path.basename(apk_files[0]))
+                )
                 shutil.copy2(apk_files[0], dst)
                 return dst
 
@@ -47,7 +54,7 @@ class GooglePlayScraper(BaseScraper):
             os.replace(f"{base_name}.zip", dst)
             return dst
 
-        for item in os.listdir(tmp_dir):
+        for item in sorted(os.listdir(tmp_dir)):
             item_path = os.path.join(tmp_dir, item)
             if os.path.isdir(item_path):
                 base_name = os.path.join(dl_dir, _safe_filename(item))
@@ -58,54 +65,72 @@ class GooglePlayScraper(BaseScraper):
 
         return None
 
+    @staticmethod
+    def _decode_properties(props_b64: str) -> bytes | None:
+        """Strictly decodes the device.properties blob, returning None on bad input."""
+        try:
+            return base64.b64decode(props_b64, validate=True)
+        except (binascii.Error, ValueError) as err:
+            print(f"[WARN] Invalid DEVICE_PROPERTIES_B64: {err}")
+            return None
+
     def _prepare_cmd(
-        self, ctx: Context, tmp: str, email: str, aas_token: str, props_b64: str | None
-    ) -> list:
+        self,
+        ctx: Context,
+        tmp: str,
+        email: str,
+        aas_token: str,
+        props_b64: str | None,
+    ) -> list[str] | None:
         """Builds the apkeep command adhering strictly to official CLI specs."""
         cmd = [
             "apkeep",
             "-a", ctx.pkg,
             "-d", "google-play",
             "-e", email,
-            "-t", aas_token
+            "-t", aas_token,
         ]
 
         options = ["split_apk=true"]
 
         if props_b64:
+            decoded = self._decode_properties(props_b64)
+            if decoded is None:
+                return None
             props_path = os.path.join(tmp, "device.properties")
             with open(props_path, "wb") as f_obj:
-                f_obj.write(base64.b64decode(props_b64))
-            options.extend(["device=default", f"device_properties_file={props_path}"])
+                f_obj.write(decoded)
+            options.extend(
+                ["device=default", f"device_properties_file={props_path}"]
+            )
 
         cmd.extend(["-o", ",".join(options)])
-        # OUTPATH must always be placed at the very end of the command arguments
+        # OUTPATH must always be placed at the very end of the command arguments.
         cmd.append(tmp)
         return cmd
 
     def _execute_apkeep(
-        self, ctx: Context, dl_dir: str, email: str, aas_token: str, props_b64: str | None
+        self,
+        ctx: Context,
+        dl_dir: str,
+        email: str,
+        aas_token: str,
+        props_b64: str | None,
     ) -> str | None:
         """Handles the temporary directory generation and subprocess execution."""
         with tempfile.TemporaryDirectory(prefix="apkeep-play-") as tmp:
-            try:
-                cmd = self._prepare_cmd(ctx, tmp, email, aas_token, props_b64)
-                res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+            cmd = self._prepare_cmd(ctx, tmp, email, aas_token, props_b64)
+            if cmd is None:
+                return None
 
-                if res.returncode != 0:
-                    print(f"[WARN] Apkeep Play Store failed: {res.stderr.strip()}")
-                    return None
-
-            except OSError as err:
-                print(f"[ERROR] apkeep execution failed: {err}")
+            res = run_apkeep(cmd, tag="Apkeep Play Store")
+            if res is None:
                 return None
 
             copied_file = self._find_and_copy_apk(ctx, tmp, dl_dir)
-
             if not copied_file:
-                err_log = res.stderr.strip() or res.stdout.strip()
-                print(f"[WARN] Apkeep skipped silently. Log: {err_log}")
-
+                err_log = (res.stderr or res.stdout or "").strip()[-500:]
+                print(f"[WARN] Apkeep produced no output. Log: {err_log}")
             return copied_file
 
     def scrape(self, ctx: Context) -> str | None:
