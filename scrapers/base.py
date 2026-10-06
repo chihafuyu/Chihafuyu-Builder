@@ -5,40 +5,29 @@ Enforces a strict interface for dynamic discovery and execution.
 
 import abc
 from typing import Any
+
 from core.context import Context
 
 
 class BaseScraper(abc.ABC):
-    """
-    Blueprint for all scraper modules.
-    Any new downloader tier must inherit from this class.
-    """
+    """Blueprint for all scraper modules."""
 
     @classmethod
     @abc.abstractmethod
     def tier_name(cls) -> str:
-        """
-        Defines the string identifier for the scraper.
-        Returns:
-            str: The name of the scraper (e.g., 'github', 'apkmirror').
-        """
+        """String identifier for this scraper (e.g. 'github', 'apkmirror')."""
+        raise NotImplementedError
 
     @abc.abstractmethod
     def scrape(self, ctx: Context) -> str | None:
-        """
-        Executes the scraping logic for the specific tier.
-        """
+        """Executes the scraping logic for the specific tier."""
+        raise NotImplementedError
 
     def close(self) -> None:
-        """
-        Cleans up any allocated resources (e.g., proxy sessions).
-        Should be overridden by subclasses if needed.
-        """
+        """Optional cleanup hook for subclasses (e.g. closing proxy sessions)."""
 
     def __enter__(self) -> BaseScraper:
-        """Enters the runtime context related to this object."""
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        """Exits the runtime context and cleans up resources."""
         self.close()

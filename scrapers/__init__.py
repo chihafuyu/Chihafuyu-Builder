@@ -11,30 +11,21 @@ from .base import BaseScraper
 
 
 def load_all_scrapers() -> dict[str, type[BaseScraper]]:
-    """
-    Discovers all scraper classes in the current package directory.
-
-    Returns:
-        dict[str, type[BaseScraper]]: A registry mapping tier names to their classes.
-    """
+    """Discovers all scraper classes in the current package directory."""
     registry: dict[str, type[BaseScraper]] = {}
 
-    # Iterate through all files in the scrapers/ directory
     for _, module_name, _ in pkgutil.iter_modules(__path__):
         module = importlib.import_module(f"{__name__}.{module_name}")
-
-        # Inspect all classes inside the loaded module
         for _, obj in inspect.getmembers(module, inspect.isclass):
-            # Ensure it inherits from BaseScraper but is NOT the BaseScraper itself
             if issubclass(obj, BaseScraper) and obj is not BaseScraper:
                 try:
-                    # Safely read class method without instantiating the class
                     registry[obj.tier_name()] = obj
                 except TypeError:
-                    # Skips classes that fail to implement abstract methods
+                    # Skip classes that fail to implement abstract methods.
                     continue
 
     return registry
 
-# Instantiated registry ready to be imported by the main script
+
+# Instantiated registry ready to be imported by the main script.
 AVAILABLE_SCRAPERS = load_all_scrapers()

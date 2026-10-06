@@ -7,6 +7,7 @@ import os
 import time
 from dataclasses import dataclass
 from typing import Any
+
 from core.utils import _safe_filename
 
 
@@ -18,20 +19,20 @@ class RateLimiter:
         self.last_req = 0.0
 
     def wait(self) -> None:
-        """Waits if the time since the last request is less than the delay."""
         now = time.monotonic()
-        if now - self.last_req < self.delay:
-            time.sleep(self.delay - (now - self.last_req))
+        elapsed = now - self.last_req
+        if elapsed < self.delay:
+            time.sleep(self.delay - elapsed)
         self.last_req = time.monotonic()
 
     def reset(self) -> None:
-        """Resets the internal timer."""
         self.last_req = 0.0
 
 
 @dataclass
 class Context:
-    """Holds common variables for the scraping process across all tiers."""
+    """Holds shared state for the scraping pipeline across all tiers."""
+
     scraper: Any
     app_data: dict
     target_ver: str
@@ -41,11 +42,13 @@ class Context:
 
     @property
     def pkg(self) -> str:
-        """Returns the package name from app_data."""
         return self.app_data["package"]
 
+    @property
+    def pkg_dir(self) -> str:
+        return os.path.join(self.out_dir, _safe_filename(self.pkg))
+
     def get_out_path(self, ext: str) -> str:
-        """Returns the safe output path for the downloaded file."""
         pkg_str = _safe_filename(self.pkg)
         ver_str = _safe_filename(self.target_ver)
         return os.path.join(self.out_dir, f"{pkg_str}_{ver_str}{ext}")

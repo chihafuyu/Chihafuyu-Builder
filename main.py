@@ -6,30 +6,49 @@ Modular architecture: Main Execution Entrypoint.
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
+import threading
 import time
 from typing import Any
 
 from scrapers import AVAILABLE_SCRAPERS
 from core.context import Context, RateLimiter
 from core.utils import (
+    SUBPROCESS_TIMEOUT_SECONDS,
     _safe_filename,
     process_downloaded_file,
     update_options_json,
-    get_scraper
+    get_scraper,
 )
 
-# Set max runtime to 5.5 hours to avoid GitHub Actions 6-hour force kill
+# 5.5h budget so the job stops before GitHub Actions 6h hard-kill.
 MAX_RUNTIME_SECONDS = 19800
+ECOSYSTEM_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
+# Untrusted JVM patch bundles must never see CI credentials.
+SENSITIVE_ENV_MARKERS = (
+    "TOKEN", "SECRET", "PASSWORD", "API_KEY", "API_HASH", "SESSION",
+    "EMAIL", "KEYSTORE", "DEVICE_PROPERTIES",
+)
+
+
+def _sandboxed_env() -> dict[str, str]:
+    """Returns a copy of the environment stripped of credentials."""
+    return {
+        key: val for key, val in os.environ.items()
+        if not any(marker in key.upper() for marker in SENSITIVE_ENV_MARKERS)
+    }
 
 
 def load_config(ecosystem_name: str) -> dict[str, Any]:
     """Loads ecosystem configuration from the specific JSON file."""
+    if not ECOSYSTEM_NAME_RE.fullmatch(ecosystem_name):
+        sys.exit(f"[FATAL] Invalid ecosystem name: {ecosystem_name!r}")
     config_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         "ecosystem",
-        f"{ecosystem_name}.json"
+        f"{ecosystem_name}.json",
     )
     if not os.path.isfile(config_path):
         sys.exit(f"[FATAL] '{config_path}' not found.")
@@ -46,12 +65,12 @@ def load_config(ecosystem_name: str) -> dict[str, Any]:
 
 
 def download_apk(ctx: Context, args: Any) -> str | None:
-    """Downloads target APK through fallback sources or primary scraper."""
-    if ctx.target_ver.lower() == "any":
-        print("[ERROR] Version defined as 'Any'. Skipping.")
+    """Downloads target APK via fallback sources or primary scraper."""
+    if not ctx.target_ver or ctx.target_ver.lower() == "any":
+        print(f"[ERROR] No concrete version defined ({ctx.target_ver!r}). Skipping.")
         return None
 
-    os.makedirs(os.path.join(ctx.out_dir, ctx.pkg), exist_ok=True)
+    os.makedirs(ctx.pkg_dir, exist_ok=True)
 
     req_source = args.download_source.lower()
     if req_source in AVAILABLE_SCRAPERS:
@@ -62,7 +81,7 @@ def download_apk(ctx: Context, args: Any) -> str | None:
 
     fallback_order = [
         "direct", "github", "huggingface", "apkmirror",
-        "archive", "apkpure", "google_play"
+        "archive", "apkpure", "google_play",
     ]
 
     for src_name in fallback_order:
@@ -76,7 +95,9 @@ def download_apk(ctx: Context, args: Any) -> str | None:
     return None
 
 
-def write_changelog(args: Any, apps_patched: list, workspace: str, clean_ver: str) -> None:
+def write_changelog(
+    args: Any, apps_patched: list, workspace: str, clean_ver: str
+) -> None:
     """Writes the patched apps changelog to a markdown file."""
     log_path = os.path.join(workspace, "changelog.md")
     cli_version = args.cli_version if args.cli_version else "Unknown"
@@ -89,61 +110,92 @@ def write_changelog(args: Any, apps_patched: list, workspace: str, clean_ver: st
             f_obj.write("> **Patched using pre-release tools. Use with caution.**\n\n")
 
         f_obj.write("Generated using:\n")
-        f_obj.write(f"- Patches version **v{clean_ver}** from `{args.ecosystem}`. ")
+        f_obj.write(
+            f"- Patches version **v{clean_ver}** from `{args.ecosystem}`. "
+        )
         f_obj.write(f"Source: [Repository](https://github.com/{repo})\n")
-        f_obj.write(f"- CLI version **v{cli_version.lstrip('v')}** from `morphe-desktop`. ")
-        f_obj.write("Source: [Repository](https://github.com/MorpheApp/morphe-desktop)\n\n")
+        f_obj.write(
+            f"- CLI version **v{cli_version.lstrip('v')}** from `morphe-desktop`. "
+        )
+        f_obj.write(
+            "Source: [Repository](https://github.com/MorpheApp/morphe-desktop)\n\n"
+        )
 
         f_obj.write("### Apps:\n")
         for app in apps_patched:
-            b_str = f" (Build: {app['build']})" if app.get('build') else ""
-            line = f"- **{app['name']}** (v{app['version']}{b_str} - `{app['arch']}`)\n"
+            b_str = f" (Build: {app['build']})" if app.get("build") else ""
+            line = (
+                f"- **{app['name']}** "
+                f"(v{app['version']}{b_str} - `{app['arch']}`)\n"
+            )
             f_obj.write(line)
         f_obj.write("\n---\n### ⚠️ microG Required\n")
-        f_obj.write(f"For Google Apps, install [microG-RE]({args.microg_url}).\n")
+        f_obj.write(
+            f"For Google Apps, install [microG-RE]({args.microg_url}).\n"
+        )
 
 
 def _parse_custom_versions(ver_str: str) -> dict:
     """Parses custom version arguments into a dictionary."""
     if not ver_str:
         return {}
-    if '=' in ver_str:
-        return {p.split('=', 1)[0].strip(): p.split('=', 1)[1].strip() for p in ver_str.split(',')}
-    return {"_global": ver_str.strip()}
+    if "=" not in ver_str:
+        return {"_global": ver_str.strip()}
+    versions = {}
+    for pair in ver_str.split(","):
+        key, sep, val = (part.strip() for part in pair.partition("="))
+        if sep and key and val:
+            versions[key] = val
+        elif pair.strip():
+            print(
+                f"[WARN] Ignoring malformed custom version entry: {pair.strip()!r}"
+            )
+    return versions
 
 
-def _get_patched_apk_path(app: str, ver: str, arch: str, args: Any, state: dict) -> str:
+def _get_patched_apk_path(
+    app: str, ver: str, arch: str, args: Any, state: dict
+) -> str:
     """Constructs the output path for the patched APK."""
     s_app = _safe_filename(app)
     s_eco = _safe_filename(args.ecosystem)
     s_ver = _safe_filename(ver)
     s_arc = _safe_filename(arch)
-    s_cln = _safe_filename(state['clean_ver'])
+    s_cln = _safe_filename(state["clean_ver"])
     f_name = f"{s_app}_{s_eco}_patched_{s_ver}-{s_arc}_patches_{s_cln}.apk"
     return os.path.join(state["out_dir"], f_name)
 
 
-def build_patch_command(args: Any, app_data: dict, paths: tuple, target_arch: str) -> list:
+def build_patch_command(
+    args: Any, app_data: dict, paths: tuple, target_arch: str
+) -> list[str]:
     """Builds the CLI shell command including exclusive patch parameters."""
     cmd = [
-        "java", "-Xmx4G", "-jar", args.cli, "patch", "--patches", args.patches,
-        "--options-file", paths[1], "--out", paths[2], "--bytecode-mode", "FULL"
+        "java", "-Xmx4G", "-jar", args.cli, "patch",
+        "--patches", args.patches,
+        "--options-file", paths[1],
+        "--out", paths[2],
+        "--bytecode-mode", "FULL",
     ]
     if args.is_prerelease.lower() == "true" or args.version_selection.lower() in (
-            "beta", "pre-release", "latest", "experimental", "custom"):
+        "beta", "pre-release", "latest", "experimental", "custom",
+    ):
         cmd.append("--force")
 
     strip_flag = app_data.get("strip")
-    if strip_flag and target_arch.lower() not in ["universal", "noarch"]:
+    if strip_flag and target_arch.lower() not in ("universal", "noarch"):
         cmd.extend(["--striplibs", target_arch])
 
     if args.continue_on_error.lower() == "true":
         cmd.append("--continue-on-error")
 
     if args.keystore and args.ks_alias and args.ks_pass:
-        cmd.extend(["--keystore", args.keystore, "--keystore-entry-alias", args.ks_alias,
-                    "--keystore-password", args.ks_pass, "--keystore-entry-password",
-                    args.ks_pass])
+        cmd.extend([
+            "--keystore", args.keystore,
+            "--keystore-entry-alias", args.ks_alias,
+            "--keystore-password", args.ks_pass,
+            "--keystore-entry-password", args.ks_pass,
+        ])
         if args.signer:
             cmd.extend(["--signer", args.signer])
 
@@ -158,48 +210,100 @@ def build_patch_command(args: Any, app_data: dict, paths: tuple, target_arch: st
     return cmd
 
 
-def execute_patch_cli(patch_cmd: list) -> tuple:
-    """Executes the patch command and streams output."""
+def execute_patch_cli(patch_cmd: list[str]) -> tuple[int, bool]:
+    """Executes the patch CLI under a credential-free env with a hard timeout."""
     zero_patches = False
     try:
-        with subprocess.Popen(patch_cmd, stdout=subprocess.PIPE,
-                              stderr=subprocess.STDOUT, text=True) as proc:
-            if proc.stdout:
+        with subprocess.Popen(
+            patch_cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            env=_sandboxed_env(),
+        ) as proc:
+
+            def _stream_output() -> None:
+                nonlocal zero_patches
+                if proc.stdout is None:
+                    return
                 for line in proc.stdout:
-                    print(line, end='')
+                    print(line, end="")
                     if "Applying 0 patches" in line:
                         zero_patches = True
-            proc.wait()
+
+            reader = threading.Thread(target=_stream_output, daemon=True)
+            reader.start()
+
+            try:
+                proc.wait(timeout=SUBPROCESS_TIMEOUT_SECONDS)
+            except subprocess.TimeoutExpired:
+                print(
+                    f"[ERROR] Patch CLI timed out after "
+                    f"{SUBPROCESS_TIMEOUT_SECONDS}s. Killing."
+                )
+                proc.kill()
+                proc.wait()
+                reader.join(timeout=5)
+                return 124, zero_patches
+
+            reader.join(timeout=5)
             return proc.returncode, zero_patches
     except OSError as err:
         print(f"[ERROR] Failed to execute patch CLI: {err}")
         return 127, zero_patches
 
 
-def _generate_options_json(app_name: str, args: Any, app_data: dict, workspace: str) -> str:
+def _generate_options_json(
+    app_name: str, args: Any, app_data: dict, workspace: str
+) -> str:
     """Generates options.json file required for patching."""
     json_file = os.path.join(workspace, f"{_safe_filename(app_name)}-options.json")
-    cmd = ["java", "-jar", args.cli, "options-create", "--patches", args.patches,
-           "--out", json_file, "--filter-package-name", app_data["package"]]
-    res = subprocess.run(cmd, capture_output=True, text=True, check=False)
-    if res.returncode != 0:
-        err_out = (res.stderr or res.stdout or '').strip()[-500:]
+    cmd = [
+        "java", "-jar", args.cli, "options-create",
+        "--patches", args.patches,
+        "--out", json_file,
+        "--filter-package-name", app_data["package"],
+    ]
+    res: subprocess.CompletedProcess | None = None
+    try:
+        res = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=SUBPROCESS_TIMEOUT_SECONDS,
+            env=_sandboxed_env(),
+        )
+    except subprocess.TimeoutExpired:
+        print(
+            f"[WARN] CLI options-create timed out after {SUBPROCESS_TIMEOUT_SECONDS}s."
+        )
+    except OSError as err:
+        print(f"[WARN] CLI options-create failed to start: {err}")
+
+    if res is not None and res.returncode != 0:
+        err_out = (res.stderr or res.stdout or "").strip()[-500:]
         print(f"[WARN] CLI options-create failed (exit {res.returncode}): {err_out}")
+
     exc_list = app_data.get("exclusive_patches", [])
     if exc_list or app_data.get("options_override"):
         if exc_list:
             print(f"[INFO] Forcing strict exclusive options mapping for {app_name}...")
         update_options_json(
-            json_file, app_data.get("options_override", {}), exclusive_patches=exc_list
+            json_file,
+            app_data.get("options_override", {}),
+            exclusive_patches=exc_list,
         )
     return json_file
 
 
 def _resolve_target_version(app_data: dict, args: Any, custom_ver: str) -> str:
-    """Resolves target version safely avoiding index errors from empty fallback lists."""
+    """Resolves target version safely avoiding index errors from empty fallbacks."""
     t_ver = custom_ver if custom_ver else (app_data.get("stable") or [""])[0]
 
-    if args.version_selection.lower() in ["beta", "pre-release", "latest", "experimental"]:
+    if args.version_selection.lower() in (
+        "beta", "pre-release", "latest", "experimental",
+    ):
         beta_list = app_data.get("beta") or []
         if beta_list:
             t_ver = beta_list[0]
@@ -218,7 +322,14 @@ def process_single_app(
     arch = app_data.get("force_arch", args.arch)
     print(f"\n--- {app_name} ({app_data['package']}) ---")
 
-    ctx = Context(get_scraper(), app_data, t_ver, arch, state["in_dir"], RateLimiter(delay=3.0))
+    ctx = Context(
+        get_scraper(),
+        app_data,
+        t_ver,
+        arch,
+        state["in_dir"],
+        RateLimiter(delay=3.0),
+    )
     apk_path = download_apk(ctx, args)
     if not apk_path:
         return
@@ -233,11 +344,13 @@ def process_single_app(
     if ret_code == 0 and not zero_patches:
         print(f"\n[INFO] SUCCESS: {app_name}")
         state["success"].append({
-            "name": app_name, "version": t_ver,
-            "build": app_data.get("version_codes", {}).get(arch), "arch": arch
+            "name": app_name,
+            "version": t_ver,
+            "build": app_data.get("version_codes", {}).get(arch),
+            "arch": arch,
         })
     else:
-        msg = 'DMCA Trap' if zero_patches else f'Exit code {ret_code}'
+        msg = "DMCA Trap" if zero_patches else f"Exit code {ret_code}"
         print(f"\n[ERROR] FAILED: {app_name}. Reason: {msg}")
         if os.path.exists(out_apk):
             os.remove(out_apk)
@@ -251,9 +364,11 @@ def run_patcher(args: Any) -> None:
 
     workspace = f"./{_safe_filename(args.ecosystem)}"
     state = {
-        "in_dir": f"{workspace}/Input", "out_dir": f"{workspace}/Output", "workspace": workspace,
-        "clean_ver": args.patches_version.lstrip('v') if args.patches_version else "unknown",
-        "success": []
+        "in_dir": f"{workspace}/Input",
+        "out_dir": f"{workspace}/Output",
+        "workspace": workspace,
+        "clean_ver": args.patches_version.lstrip("v") if args.patches_version else "unknown",
+        "success": [],
     }
     os.makedirs(state["in_dir"], exist_ok=True)
     os.makedirs(state["out_dir"], exist_ok=True)
@@ -263,13 +378,15 @@ def run_patcher(args: Any) -> None:
     if not isinstance(eco_apps, dict):
         sys.exit(f"[FATAL] '{args.ecosystem}' has no valid 'apps' config.")
 
-    app_list = list(eco_apps.keys()) if args.apps.lower() == "all" else args.apps.split(',')
+    app_list = (
+        list(eco_apps.keys()) if args.apps.lower() == "all" else args.apps.split(",")
+    )
     custom_vers = _parse_custom_versions(args.custom_version)
 
-    for app_name in [a.strip() for a in app_list]:
+    for app_name in (a.strip() for a in app_list):
         if time.monotonic() - start_time > MAX_RUNTIME_SECONDS:
             print("\n[WARN] ⏱️ Maximum runtime limit (5.5 hours) reached!")
-            print("[WARN] Stopping gracefuly to preserve generated artifacts...")
+            print("[WARN] Stopping gracefully to preserve generated artifacts...")
             break
 
         if app_name in eco_apps:
@@ -289,10 +406,14 @@ def parse_arguments() -> Any:
     parser.add_argument("--version-selection", required=True)
     parser.add_argument("--custom-version", default="")
     parser.add_argument("--download-source", default="default")
-    parser.add_argument("--continue-on-error", choices=("true", "false"), default="false")
+    parser.add_argument(
+        "--continue-on-error", choices=("true", "false"), default="false"
+    )
     parser.add_argument("--hf-user", default="chihafuyu")
-    parser.add_argument("--microg-url",
-                        default="https://github.com/MorpheApp/MicroG-RE/releases/latest")
+    parser.add_argument(
+        "--microg-url",
+        default="https://github.com/MorpheApp/MicroG-RE/releases/latest",
+    )
     parser.add_argument("--cli", required=True)
     parser.add_argument("--cli-version", default="")
     parser.add_argument("--patches", required=True)
