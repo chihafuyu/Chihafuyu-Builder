@@ -114,9 +114,11 @@ def main():
     if not all([repo, pr_num, gh_token, gemini_api_key]):
         print(
             "Missing required environment variables "
-            "(REPO, PR_NUMBER, GITHUB_TOKEN, or GEMINI_API_KEY).", flush=True
+            "(REPO, PR_NUMBER, GITHUB_TOKEN, or GEMINI_API_KEY). "
+            "This can happen if the PR was closed before the review ran.",
+            flush=True
         )
-        sys.exit(1)
+        sys.exit(0)
 
     safe_diff = fetch_pr_diff(repo, pr_num, gh_token)
     review = analyze_code(safe_diff, api_key=gemini_api_key)
