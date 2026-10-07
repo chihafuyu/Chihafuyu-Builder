@@ -8,7 +8,7 @@ import re
 import sys
 import time
 from google import genai
-from google.genai import types, errors
+from google.genai import errors
 import httpx
 import requests
 
@@ -56,7 +56,7 @@ def analyze_code(safe_diff: str, api_key: str) -> str:
         f'<pr_diff>\n{safe_diff}\n{closing_tag}'
     )
 
-    client = genai.Client(api_key=api_key, http_options={'timeout': 60.0})
+    client = genai.Client(api_key=api_key, http_options={'timeout': 180.0})
     max_retries = 3
 
     for attempt in range(max_retries):
@@ -65,14 +65,11 @@ def analyze_code(safe_diff: str, api_key: str) -> str:
             print(msg, flush=True)
 
             response = client.models.generate_content(
-                model='gemini-flash-latest',
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    automatic_function_calling=None
-                )
+                model='gemini-3.8-flash',
+                contents=prompt
             )
             return response.text
-        except (errors.APIError, httpx.RequestError, ConnectionError, TimeoutError) as err:
+        except Exception as err:
             print(f"Gemini API error: {err}", flush=True)
             if attempt < max_retries - 1:
                 sleep_time = (2 ** attempt) * 5
