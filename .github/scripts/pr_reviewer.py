@@ -56,6 +56,7 @@ def analyze_code(safe_diff: str, api_key: str) -> str:
         f'<pr_diff>\n{safe_diff}\n{closing_tag}'
     )
 
+    # Timeout 180 seconds to avoid timeouts on long diffs
     client = genai.Client(api_key=api_key, http_options={'timeout': 180.0})
     max_retries = 3
 
@@ -69,7 +70,7 @@ def analyze_code(safe_diff: str, api_key: str) -> str:
                 contents=prompt
             )
             return response.text
-        except Exception as err:
+        except (errors.APIError, httpx.RequestError, ConnectionError, TimeoutError) as err:
             print(f"Gemini API error: {err}", flush=True)
             if attempt < max_retries - 1:
                 sleep_time = (2 ** attempt) * 5
