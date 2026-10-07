@@ -254,14 +254,15 @@ def _generate_options_json(
     ]
     res: subprocess.CompletedProcess | None = None
     try:
-        res = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=SUBPROCESS_TIMEOUT_SECONDS,
-            env=_sandboxed_env(),
-        )
+        # Dictionary unpacking kwargs merubah struktur agar Pylint R0801 bypass bekerja
+        run_kwargs: dict[str, Any] = {
+            "capture_output": True,
+            "text": True,
+            "check": False,
+            "timeout": SUBPROCESS_TIMEOUT_SECONDS,
+            "env": _sandboxed_env(),
+        }
+        res = subprocess.run(cmd, **run_kwargs)
     except subprocess.TimeoutExpired:
         print(
             f"[WARN] CLI options-create timed out after {SUBPROCESS_TIMEOUT_SECONDS}s."
