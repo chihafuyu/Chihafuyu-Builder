@@ -24,12 +24,12 @@ def fetch_pr_diff(repo: str, pr_num: str, gh_token: str) -> str:
         resp = requests.get(url, headers=headers, timeout=15)
         resp.raise_for_status()
     except requests.exceptions.RequestException as err:
-        print(f"Failed to fetch diff due to network error: {err}")
+        print(f"Failed to fetch diff due to network error: {err}", flush=True)
         sys.exit(1)
 
     diff_text = resp.text
     if not diff_text.strip():
-        print("No code changes to review.")
+        print("No code changes to review.", flush=True)
         sys.exit(0)
 
     # Sanitize fake closing tags using RegEx to catch case/space variations
@@ -56,25 +56,28 @@ def analyze_code(safe_diff: str, api_key: str) -> str:
         f'<pr_diff>\n{safe_diff}\n{closing_tag}'
     )
 
-    client = genai.Client(api_key=api_key)
+    # Timeout 180 seconds to avoid timeouts on long diffs
+    client = genai.Client(api_key=api_key, http_options={'timeout': 180.0})
     max_retries = 3
 
     for attempt in range(max_retries):
         try:
-            print(f"Analyzing code with Gemini (Attempt {attempt + 1}/{max_retries})...")
+            msg = f"Analyzing code with Gemini (Attempt {attempt + 1}/{max_retries})..."
+            print(msg, flush=True)
+
             response = client.models.generate_content(
                 model='gemini-3.8-flash',
                 contents=prompt
             )
             return response.text
         except (errors.APIError, httpx.RequestError, ConnectionError, TimeoutError) as err:
-            print(f"Gemini API error: {err}")
+            print(f"Gemini API error: {err}", flush=True)
             if attempt < max_retries - 1:
                 sleep_time = (2 ** attempt) * 5
-                print(f"Retrying in {sleep_time} seconds...")
+                print(f"Retrying in {sleep_time} seconds...", flush=True)
                 time.sleep(sleep_time)
             else:
-                print("Max retries reached. Failing the workflow.")
+                print("Max retries reached. Failing the workflow.", flush=True)
                 sys.exit(1)
 
     return ""
@@ -93,11 +96,11 @@ def post_comment(repo: str, pr_num: str, gh_token: str, review: str) -> None:
     try:
         post_resp = requests.post(comment_url, headers=post_headers, json=payload, timeout=15)
         post_resp.raise_for_status()
-        print("Review posted successfully!")
+        print("Review posted successfully!", flush=True)
     except requests.exceptions.RequestException as err:
-        print(f"Failed to post comment due to network error: {err}")
+        print(f"Failed to post comment due to network error: {err}", flush=True)
         if post_resp is not None:
-            print(f"Server response: {post_resp.text}")
+            print(f"Server response: {post_resp.text}", flush=True)
         sys.exit(1)
 
 
@@ -111,9 +114,11 @@ def main():
     if not all([repo, pr_num, gh_token, gemini_api_key]):
         print(
             "Missing required environment variables "
-            "(REPO, PR_NUMBER, GITHUB_TOKEN, or GEMINI_API_KEY)."
+            "(REPO, PR_NUMBER, GITHUB_TOKEN, or GEMINI_API_KEY). "
+            "This can happen if the PR was closed before the review ran.",
+            flush=True
         )
-        sys.exit(1)
+        sys.exit(0)
 
     safe_diff = fetch_pr_diff(repo, pr_num, gh_token)
     review = analyze_code(safe_diff, api_key=gemini_api_key)

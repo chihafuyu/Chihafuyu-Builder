@@ -27,6 +27,12 @@
                     "Hide AI-labeled pins": {
                         "enabled": true
                     },
+                    "Hide ads": {
+                        "enabled": true
+                    },
+                    "Hide advertising ID": {
+                        "enabled": true
+                    },
                     "Hide comments": {
                         "enabled": true
                     },
@@ -45,6 +51,9 @@
                     "Hide shopping and product pins": {
                         "enabled": true
                     },
+                    "Hide topic suggestions": {
+                        "enabled": true
+                    },
                     "No screenshot share menu": {
                         "enabled": true
                     },
@@ -55,6 +64,9 @@
                         "enabled": true
                     },
                     "Quiet email reminders": {
+                        "enabled": true
+                    },
+                    "Spoof signature for Google sign-in": {
                         "enabled": true
                     },
                     "System share sheet": {

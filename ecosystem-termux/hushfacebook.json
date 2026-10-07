@@ -14,70 +14,82 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Download any video": {
-                        "enabled": true
-                    },
-                    "Hide Reels in the feed": {
-                        "enabled": true
-                    },
-                    "Block background-return feed refresh": {
-                        "enabled": true
-                    },
-                    "Hide Stories tray": {
-                        "enabled": true
-                    },
                     "AMOLED black theme": {
-                        "enabled": true
-                    },
-                    "Material You theme": {
-                        "enabled": true
-                    },
-                    "Clean up Reels": {
-                        "enabled": true
-                    },
-                    "Stop Story auto-advance": {
-                        "enabled": true
-                    },
-                    "Default comment order": {
-                        "enabled": true
-                    },
-                    "Tag suggestions only after @": {
-                        "enabled": true
-                    },
-                    "Use the phone's emoji": {
-                        "enabled": true
-                    },
-                    "Default playback quality": {
-                        "enabled": true
-                    },
-                    "Tap to play": {
-                        "enabled": true
-                    },
-                    "Hide the Reels tab": {
-                        "enabled": true
-                    },
-                    "Open on a chosen tab": {
-                        "enabled": true
-                    },
-                    "Turn off double tap to like": {
-                        "enabled": true
-                    },
-                    "Hold a reel for 2x": {
-                        "enabled": true
-                    },
-                    "Don't send reel watch history": {
-                        "enabled": true
-                    },
-                    "View stories anonymously": {
                         "enabled": true
                     },
                     "Allow screenshots": {
                         "enabled": true
                     },
+                    "Block background-return feed refresh": {
+                        "enabled": true
+                    },
                     "Block screenshot detection": {
                         "enabled": true
                     },
+                    "Clean up Reels": {
+                        "enabled": true
+                    },
+                    "Default comment order": {
+                        "enabled": true
+                    },
+                    "Default playback quality": {
+                        "enabled": true
+                    },
+                    "Disable Play Store updates": {
+                        "enabled": true
+                    },
+                    "Don't send reel watch history": {
+                        "enabled": true
+                    },
+                    "Download any video": {
+                        "enabled": true
+                    },
+                    "Hide Meta upsells": {
+                        "enabled": true
+                    },
+                    "Hide Reels in the feed": {
+                        "enabled": true
+                    },
+                    "Hide Stories tray": {
+                        "enabled": true
+                    },
+                    "Hide read receipts": {
+                        "enabled": true
+                    },
+                    "Hide the Reels tab": {
+                        "enabled": true
+                    },
+                    "Hide typing indicator": {
+                        "enabled": true
+                    },
+                    "Hold a reel for 2x": {
+                        "enabled": true
+                    },
                     "Hold back analytics uploads": {
+                        "enabled": true
+                    },
+                    "Material You theme": {
+                        "enabled": true
+                    },
+                    "Open on a chosen tab": {
+                        "enabled": true
+                    },
+                    "Picture-in-picture": {
+                        "enabled": true
+                    },
+                    "Stop Story auto-advance": {
+                        "enabled": true
+                    },
+                    "Tag suggestions only after @": {
+                        "enabled": true
+                    },
+                    "Tap to play": {
+                        "enabled": true
+                    },
+                    "Turn off HDR brightness": {
+                        "enabled": false
+                    },
+                    "Turn off double tap to like": {
                         "enabled": true
                     },
                     "Turn off haptics": {
@@ -86,8 +98,14 @@
                     "Turn off screen transitions": {
                         "enabled": true
                     },
+                    "Use the phone's emoji": {
+                        "enabled": true
+                    },
                     "Use the system font": {
                         "enabled": false
+                    },
+                    "View stories anonymously": {
+                        "enabled": true
                     }
                 }
             }
