@@ -81,6 +81,24 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "moon-reader": {
+                "package": "com.flyersoft.moonreader",
+                "search_term": "Moon+ Reader",
+                "stable": [
+                    "10.7"
+                ],
+                "beta": [],
+                "strip": true,
+                "version_codes": {
+                    "universal": "1007000",
+                    "arm64-v8a": "1007000",
+                    "armeabi-v7a": "1007000",
+                    "x86_64": "1007000",
+                    "x86": "1007000"
+                },
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "osmand": {
                 "package": "net.osmand",
                 "search_term": "OsmAnd",
@@ -182,17 +200,6 @@
                     "x86_64": "1222",
                     "x86": "1222"
                 },
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "zedge": {
-                "package": "net.zedge.android",
-                "search_term": "Zedge",
-                "stable": [
-                    "9.38.3"
-                ],
-                "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}

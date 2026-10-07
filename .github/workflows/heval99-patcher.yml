@@ -34,6 +34,11 @@ name: 📧 Heval99 Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_moon_reader:
+        description: 'Patch moon-reader'
+        required: true
+        type: boolean
+        default: false
       app_osmand:
         description: 'Patch osmand'
         required: true
@@ -66,11 +71,6 @@ name: 📧 Heval99 Ecosystem Patcher
         default: false
       app_youcut:
         description: 'Patch youcut'
-        required: true
-        type: boolean
-        default: false
-      app_zedge:
-        description: 'Patch zedge'
         required: true
         type: boolean
         default: false
@@ -146,6 +146,7 @@ jobs:
       APP_FAIREMAIL: ${{ inputs.app_fairemail }}
       APP_IPTV: ${{ inputs.app_iptv }}
       APP_JETAUDIO: ${{ inputs.app_jetaudio }}
+      APP_MOON_READER: ${{ inputs.app_moon_reader }}
       APP_OSMAND: ${{ inputs.app_osmand }}
       APP_PI_MUSIC_PLAYER: ${{ inputs.app_pi_music_player }}
       APP_TASKER: ${{ inputs.app_tasker }}
@@ -153,7 +154,6 @@ jobs:
       APP_UNIFIED_REMOTE: ${{ inputs.app_unified_remote }}
       APP_WEATHER_UNDERGROUND: ${{ inputs.app_weather_underground }}
       APP_YOUCUT: ${{ inputs.app_youcut }}
-      APP_ZEDGE: ${{ inputs.app_zedge }}
     steps:
       - id: build-list
         run: |
@@ -177,6 +177,9 @@ jobs:
           if [[ "$APP_JETAUDIO" == "true" ]]; then
             LIST="$LIST,jetaudio"
           fi
+          if [[ "$APP_MOON_READER" == "true" ]]; then
+            LIST="$LIST,moon-reader"
+          fi
           if [[ "$APP_OSMAND" == "true" ]]; then
             LIST="$LIST,osmand"
           fi
@@ -197,9 +200,6 @@ jobs:
           fi
           if [[ "$APP_YOUCUT" == "true" ]]; then
             LIST="$LIST,youcut"
-          fi
-          if [[ "$APP_ZEDGE" == "true" ]]; then
-            LIST="$LIST,zedge"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
