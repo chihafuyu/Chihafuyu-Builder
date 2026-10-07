@@ -21,24 +21,12 @@ from core.utils import (
     process_downloaded_file,
     update_options_json,
     get_scraper,
+    _sandboxed_env,
 )
 
 # 5.5h budget so the job stops before GitHub Actions 6h hard-kill.
 MAX_RUNTIME_SECONDS = 19800
 ECOSYSTEM_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
-# Untrusted JVM patch bundles must never see CI credentials.
-SENSITIVE_ENV_MARKERS = (
-    "TOKEN", "SECRET", "PASSWORD", "API_KEY", "API_HASH", "SESSION",
-    "EMAIL", "KEYSTORE", "DEVICE_PROPERTIES",
-)
-
-
-def _sandboxed_env() -> dict[str, str]:
-    """Returns a copy of the environment stripped of credentials."""
-    return {
-        key: val for key, val in os.environ.items()
-        if not any(marker in key.upper() for marker in SENSITIVE_ENV_MARKERS)
-    }
 
 
 def load_config(ecosystem_name: str) -> dict[str, Any]:
