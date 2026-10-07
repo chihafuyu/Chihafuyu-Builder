@@ -199,7 +199,7 @@
                     "universal": "14388010"
                 },
                 "strip": true,
-                "force_bundle": true,
+                "force_bundle": false,
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Disable update nag": {
