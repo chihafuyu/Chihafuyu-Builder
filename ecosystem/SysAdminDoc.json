@@ -14,70 +14,82 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Download any video": {
-                        "enabled": true
-                    },
-                    "Hide Reels in the feed": {
-                        "enabled": true
-                    },
-                    "Block background-return feed refresh": {
-                        "enabled": true
-                    },
-                    "Hide Stories tray": {
-                        "enabled": true
-                    },
                     "AMOLED black theme": {
-                        "enabled": true
-                    },
-                    "Material You theme": {
-                        "enabled": true
-                    },
-                    "Clean up Reels": {
-                        "enabled": true
-                    },
-                    "Stop Story auto-advance": {
-                        "enabled": true
-                    },
-                    "Default comment order": {
-                        "enabled": true
-                    },
-                    "Tag suggestions only after @": {
-                        "enabled": true
-                    },
-                    "Use the phone's emoji": {
-                        "enabled": true
-                    },
-                    "Default playback quality": {
-                        "enabled": true
-                    },
-                    "Tap to play": {
-                        "enabled": true
-                    },
-                    "Hide the Reels tab": {
-                        "enabled": true
-                    },
-                    "Open on a chosen tab": {
-                        "enabled": true
-                    },
-                    "Turn off double tap to like": {
-                        "enabled": true
-                    },
-                    "Hold a reel for 2x": {
-                        "enabled": true
-                    },
-                    "Don't send reel watch history": {
-                        "enabled": true
-                    },
-                    "View stories anonymously": {
                         "enabled": true
                     },
                     "Allow screenshots": {
                         "enabled": true
                     },
+                    "Block background-return feed refresh": {
+                        "enabled": true
+                    },
                     "Block screenshot detection": {
                         "enabled": true
                     },
+                    "Clean up Reels": {
+                        "enabled": true
+                    },
+                    "Default comment order": {
+                        "enabled": true
+                    },
+                    "Default playback quality": {
+                        "enabled": true
+                    },
+                    "Disable Play Store updates": {
+                        "enabled": true
+                    },
+                    "Don't send reel watch history": {
+                        "enabled": true
+                    },
+                    "Download any video": {
+                        "enabled": true
+                    },
+                    "Hide Meta upsells": {
+                        "enabled": true
+                    },
+                    "Hide Reels in the feed": {
+                        "enabled": true
+                    },
+                    "Hide Stories tray": {
+                        "enabled": true
+                    },
+                    "Hide read receipts": {
+                        "enabled": true
+                    },
+                    "Hide the Reels tab": {
+                        "enabled": true
+                    },
+                    "Hide typing indicator": {
+                        "enabled": true
+                    },
+                    "Hold a reel for 2x": {
+                        "enabled": true
+                    },
                     "Hold back analytics uploads": {
+                        "enabled": true
+                    },
+                    "Material You theme": {
+                        "enabled": true
+                    },
+                    "Open on a chosen tab": {
+                        "enabled": true
+                    },
+                    "Picture-in-picture": {
+                        "enabled": true
+                    },
+                    "Stop Story auto-advance": {
+                        "enabled": true
+                    },
+                    "Tag suggestions only after @": {
+                        "enabled": true
+                    },
+                    "Tap to play": {
+                        "enabled": true
+                    },
+                    "Turn off HDR brightness": {
+                        "enabled": false
+                    },
+                    "Turn off double tap to like": {
                         "enabled": true
                     },
                     "Turn off haptics": {
@@ -86,8 +98,14 @@
                     "Turn off screen transitions": {
                         "enabled": true
                     },
+                    "Use the phone's emoji": {
+                        "enabled": true
+                    },
                     "Use the system font": {
                         "enabled": false
+                    },
+                    "View stories anonymously": {
+                        "enabled": true
                     }
                 }
             },
@@ -105,43 +123,34 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
+                    "Clean up Reels": {
+                        "enabled": true
+                    },
+                    "Default playback quality": {
+                        "enabled": true
+                    },
+                    "Don't send reel watch history": {
+                        "enabled": true
+                    },
                     "Download any video": {
                         "enabled": true
                     },
                     "Hide Reels in the feed": {
                         "enabled": true
                     },
-                    "Default playback quality": {
-                        "enabled": true
-                    },
-                    "Tap to play": {
-                        "enabled": true
-                    },
-                    "Clean up Reels": {
-                        "enabled": true
-                    },
-                    "Turn off double tap to like": {
-                        "enabled": true
-                    },
-                    "Hide the Reels tab": {
-                        "enabled": true
-                    },
-                    "Don't send reel watch history": {
-                        "enabled": true
-                    },
-                    "Stop Story auto-advance": {
-                        "enabled": true
-                    },
-                    "View stories anonymously": {
+                    "Hide group buttons on the share sheet": {
                         "enabled": true
                     },
                     "Hide the Explore grid": {
                         "enabled": true
                     },
-                    "Start Home on Following": {
+                    "Hide the Reels tab": {
                         "enabled": true
                     },
-                    "Remove the empty space at the bottom": {
+                    "Hide the Repost button": {
+                        "enabled": true
+                    },
+                    "Keep the reel speed": {
                         "enabled": true
                     },
                     "Open developer options": {
@@ -150,16 +159,25 @@
                     "Pure black dark mode": {
                         "enabled": true
                     },
-                    "Keep the reel speed": {
+                    "Remove the empty space at the bottom": {
                         "enabled": true
                     },
-                    "Hide the Repost button": {
+                    "Start Home on Following": {
                         "enabled": true
                     },
-                    "Hide group buttons on the share sheet": {
+                    "Stop Story auto-advance": {
                         "enabled": true
                     },
                     "Story ring size": {
+                        "enabled": true
+                    },
+                    "Tap to play": {
+                        "enabled": true
+                    },
+                    "Turn off double tap to like": {
+                        "enabled": true
+                    },
+                    "View stories anonymously": {
                         "enabled": true
                     }
                 }
@@ -208,6 +226,12 @@
                     "Hide AI-labeled pins": {
                         "enabled": true
                     },
+                    "Hide ads": {
+                        "enabled": true
+                    },
+                    "Hide advertising ID": {
+                        "enabled": true
+                    },
                     "Hide comments": {
                         "enabled": true
                     },
@@ -226,6 +250,9 @@
                     "Hide shopping and product pins": {
                         "enabled": true
                     },
+                    "Hide topic suggestions": {
+                        "enabled": true
+                    },
                     "No screenshot share menu": {
                         "enabled": true
                     },
@@ -236,6 +263,9 @@
                         "enabled": true
                     },
                     "Quiet email reminders": {
+                        "enabled": true
+                    },
+                    "Spoof signature for Google sign-in": {
                         "enabled": true
                     },
                     "System share sheet": {
@@ -251,11 +281,11 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "71129",
                     "arm64-v8a": "71129",
                     "armeabi-v7a": "71129",
-                    "x86_64": "71129",
-                    "x86": "71129"
+                    "universal": "71129",
+                    "x86": "71129",
+                    "x86_64": "71129"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -275,13 +305,13 @@
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
+                    "Block background-return feed refresh": {
+                        "enabled": true
+                    },
                     "Change app name": {
                         "enabled": false
                     },
                     "Disable video autoplay": {
-                        "enabled": true
-                    },
-                    "Block background-return feed refresh": {
                         "enabled": true
                     },
                     "Pure black dark mode": {
@@ -293,31 +323,13 @@
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok",
                 "stable": [
-                    "47.1.3"
+                    "47.1.4"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Hide the risk control CAPTCHA": {
-                        "enabled": true
-                    },
-                    "Allow screenshots and Circle to Search": {
-                        "enabled": true
-                    },
-                    "Show author region": {
-                        "enabled": true
-                    },
-                    "Keep playing in the background": {
-                        "enabled": true
-                    },
-                    "Block author button": {
-                        "enabled": true
-                    },
-                    "Subtitle tools": {
-                        "enabled": true
-                    },
-                    "Confirm feed interactions": {
+                    "AMOLED dark theme": {
                         "enabled": true
                     },
                     "Advanced downloads": {
@@ -326,49 +338,25 @@
                     "Allow Duet and Stitch": {
                         "enabled": true
                     },
-                    "Mute feed videos": {
-                        "enabled": true
-                    },
-                    "Double-tap controls": {
-                        "enabled": true
-                    },
-                    "Long-press controls": {
-                        "enabled": true
-                    },
-                    "Swipe-left controls": {
-                        "enabled": true
-                    },
-                    "Ghost mode": {
+                    "Allow screenshots and Circle to Search": {
                         "enabled": true
                     },
                     "Automatic video advance": {
                         "enabled": true
                     },
-                    "Not interested button": {
+                    "Block P2P video relay": {
                         "enabled": true
                     },
-                    "Playback quality": {
+                    "Block author button": {
                         "enabled": true
                     },
-                    "Hide search suggestions": {
+                    "Block contact list access": {
                         "enabled": true
                     },
-                    "Hide already seen videos": {
+                    "Block installed app scanning": {
                         "enabled": true
                     },
-                    "Skip content warnings": {
-                        "enabled": true
-                    },
-                    "Share sheet tools": {
-                        "enabled": true
-                    },
-                    "Use system font": {
-                        "enabled": true
-                    },
-                    "Fit the video to the screen": {
-                        "enabled": true
-                    },
-                    "Hide video overlays": {
+                    "Camera and microphone indicator": {
                         "enabled": true
                     },
                     "Change app name": {
@@ -380,112 +368,157 @@
                     "Comment tools": {
                         "enabled": true
                     },
-                    "Hide comment popup ads": {
-                        "enabled": true
-                    },
-                    "Feature Gate Recorder": {
-                        "enabled": true
-                    },
-                    "Foldable split comment view": {
-                        "enabled": true
-                    },
-                    "Keep a streak going": {
-                        "enabled": true
-                    },
-                    "Expand activity list": {
-                        "enabled": true
-                    },
-                    "Hide inbox stories": {
-                        "enabled": true
-                    },
-                    "Hide suggested accounts": {
-                        "enabled": true
-                    },
-                    "Hide inbox items": {
-                        "enabled": true
-                    },
-                    "Notification controls": {
-                        "enabled": true
-                    },
-                    "Drop the animated image cache": {
-                        "enabled": true
-                    },
-                    "Skip update checks": {
-                        "enabled": true
-                    },
-                    "Skip the splash ad": {
-                        "enabled": true
-                    },
-                    "Limit background traffic": {
-                        "enabled": true
-                    },
-                    "Remove creation tools": {
-                        "enabled": true
-                    },
-                    "Remove LIVE extras": {
-                        "enabled": true
-                    },
-                    "Block P2P video relay": {
-                        "enabled": true
-                    },
-                    "Remove unused language packs": {
-                        "enabled": true
-                    },
-                    "Remove content credential and card scanner assets": {
-                        "enabled": true
-                    },
-                    "Keep the screen's refresh rate": {
-                        "enabled": true
-                    },
-                    "Diagnostic tools": {
-                        "enabled": true
-                    },
-                    "Hide the launcher shortcuts": {
-                        "enabled": true
-                    },
-                    "Region spoof": {
-                        "enabled": true
-                    },
-                    "Disable telemetry": {
-                        "enabled": true
-                    },
-                    "AMOLED dark theme": {
-                        "enabled": true
-                    },
-                    "Hide Play Store update offer": {
-                        "enabled": true
-                    },
-                    "Enable voice comments": {
-                        "enabled": true
-                    },
-                    "Stop on-device AI profiling": {
-                        "enabled": true
-                    },
-                    "In-app browser privacy guard": {
-                        "enabled": true
-                    },
-                    "Camera and microphone indicator": {
-                        "enabled": true
-                    },
-                    "Block contact list access": {
+                    "Confirm feed interactions": {
                         "enabled": true
                     },
                     "Device privacy guard": {
                         "enabled": true
                     },
-                    "Block installed app scanning": {
+                    "Diagnostic tools": {
+                        "enabled": true
+                    },
+                    "Disable telemetry": {
+                        "enabled": true
+                    },
+                    "Double-tap controls": {
+                        "enabled": true
+                    },
+                    "Drop the animated image cache": {
+                        "enabled": true
+                    },
+                    "Enable voice comments": {
+                        "enabled": true
+                    },
+                    "Expand activity list": {
+                        "enabled": true
+                    },
+                    "Feature Gate Recorder": {
+                        "enabled": true
+                    },
+                    "Feed text sizes": {
+                        "enabled": false
+                    },
+                    "Fit the video to the screen": {
+                        "enabled": true
+                    },
+                    "Foldable split comment view": {
+                        "enabled": true
+                    },
+                    "Ghost mode": {
+                        "enabled": true
+                    },
+                    "Hide Play Store update offer": {
+                        "enabled": true
+                    },
+                    "Hide already seen videos": {
+                        "enabled": true
+                    },
+                    "Hide comment popup ads": {
+                        "enabled": true
+                    },
+                    "Hide inbox items": {
+                        "enabled": true
+                    },
+                    "Hide inbox stories": {
+                        "enabled": true
+                    },
+                    "Hide search suggestions": {
+                        "enabled": true
+                    },
+                    "Hide suggested accounts": {
+                        "enabled": true
+                    },
+                    "Hide the launcher shortcuts": {
+                        "enabled": true
+                    },
+                    "Hide the risk control CAPTCHA": {
+                        "enabled": true
+                    },
+                    "Hide video overlays": {
+                        "enabled": true
+                    },
+                    "In-app browser privacy guard": {
+                        "enabled": true
+                    },
+                    "Keep a streak going": {
+                        "enabled": true
+                    },
+                    "Keep playing in the background": {
+                        "enabled": true
+                    },
+                    "Keep the screen's refresh rate": {
+                        "enabled": true
+                    },
+                    "Limit background traffic": {
                         "enabled": true
                     },
                     "Location access governor": {
                         "enabled": true
                     },
+                    "Long-press controls": {
+                        "enabled": true
+                    },
+                    "Look like the store app": {
+                        "enabled": true
+                    },
+                    "Mute feed videos": {
+                        "enabled": true
+                    },
                     "Network request report": {
+                        "enabled": true
+                    },
+                    "Not interested button": {
+                        "enabled": true
+                    },
+                    "Playback quality": {
+                        "enabled": true
+                    },
+                    "Region spoof": {
+                        "enabled": true
+                    },
+                    "Remove LIVE extras": {
+                        "enabled": true
+                    },
+                    "Remove content credential and card scanner assets": {
+                        "enabled": true
+                    },
+                    "Remove creation tools": {
+                        "enabled": true
+                    },
+                    "Remove unused language packs": {
                         "enabled": true
                     },
                     "Resource and battery governor": {
                         "enabled": true
                     },
-                    "Look like the store app": {
+                    "Share sheet tools": {
+                        "enabled": true
+                    },
+                    "Show author region": {
+                        "enabled": true
+                    },
+                    "Skip content warnings": {
+                        "enabled": true
+                    },
+                    "Skip the splash ad": {
+                        "enabled": true
+                    },
+                    "Skip update checks": {
+                        "enabled": true
+                    },
+                    "Stop on-device AI profiling": {
+                        "enabled": true
+                    },
+                    "Stop saving search history": {
+                        "enabled": true
+                    },
+                    "Subtitle tools": {
+                        "enabled": true
+                    },
+                    "Swipe-left controls": {
+                        "enabled": true
+                    },
+                    "Use system font": {
                         "enabled": true
                     }
                 }
