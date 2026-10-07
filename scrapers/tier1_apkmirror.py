@@ -349,6 +349,9 @@ class ApkmirrorScraper(BaseScraper):
 
     @staticmethod
     def _is_arch_match(text: str, target_arch: str, pass_idx: int) -> bool:
+        text = text.lower()
+        target_arch = target_arch.lower()
+
         if target_arch in text or "universal" in text or "noarch" in text:
             return True
 
