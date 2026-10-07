@@ -35,16 +35,10 @@
                     "Default playback quality": {
                         "enabled": true
                     },
-                    "Disable Play Store updates": {
-                        "enabled": true
-                    },
                     "Don't send reel watch history": {
                         "enabled": true
                     },
                     "Download any video": {
-                        "enabled": true
-                    },
-                    "Hide Meta upsells": {
                         "enabled": true
                     },
                     "Hide Reels in the feed": {
@@ -53,13 +47,7 @@
                     "Hide Stories tray": {
                         "enabled": true
                     },
-                    "Hide read receipts": {
-                        "enabled": true
-                    },
                     "Hide the Reels tab": {
-                        "enabled": true
-                    },
-                    "Hide typing indicator": {
                         "enabled": true
                     },
                     "Hold a reel for 2x": {
