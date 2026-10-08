@@ -26,6 +26,9 @@
                     "Block screenshot detection": {
                         "enabled": true
                     },
+                    "Change version code": {
+                        "enabled": true
+                    },
                     "Clean up Reels": {
                         "enabled": true
                     },
@@ -35,16 +38,19 @@
                     "Default playback quality": {
                         "enabled": true
                     },
-                    "Don't send reel watch history": {
+                    "Download any video": {
                         "enabled": true
                     },
-                    "Download any video": {
+                    "Hide Meta AI comment summaries": {
                         "enabled": true
                     },
                     "Hide Reels in the feed": {
                         "enabled": true
                     },
                     "Hide Stories tray": {
+                        "enabled": true
+                    },
+                    "Hide seen posts": {
                         "enabled": true
                     },
                     "Hide the Reels tab": {

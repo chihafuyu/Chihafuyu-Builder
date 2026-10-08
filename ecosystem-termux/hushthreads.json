@@ -15,16 +15,28 @@
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
+                    "Block background-return feed refresh": {
+                        "enabled": true
+                    },
                     "Change app name": {
                         "enabled": false
+                    },
+                    "Change version code": {
+                        "enabled": true
+                    },
+                    "Disable screenshot detection": {
+                        "enabled": true
                     },
                     "Disable video autoplay": {
                         "enabled": true
                     },
-                    "Block background-return feed refresh": {
+                    "Max image quality": {
                         "enabled": true
                     },
                     "Pure black dark mode": {
+                        "enabled": true
+                    },
+                    "Remove share targets": {
                         "enabled": true
                     }
                 }

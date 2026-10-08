@@ -26,6 +26,9 @@
                     "Block screenshot detection": {
                         "enabled": true
                     },
+                    "Change version code": {
+                        "enabled": true
+                    },
                     "Clean up Reels": {
                         "enabled": true
                     },
@@ -35,16 +38,19 @@
                     "Default playback quality": {
                         "enabled": true
                     },
-                    "Don't send reel watch history": {
+                    "Download any video": {
                         "enabled": true
                     },
-                    "Download any video": {
+                    "Hide Meta AI comment summaries": {
                         "enabled": true
                     },
                     "Hide Reels in the feed": {
                         "enabled": true
                     },
                     "Hide Stories tray": {
+                        "enabled": true
+                    },
+                    "Hide seen posts": {
                         "enabled": true
                     },
                     "Hide the Reels tab": {
@@ -123,10 +129,13 @@
                     "Download any video": {
                         "enabled": true
                     },
-                    "Hide group buttons on the share sheet": {
+                    "Emoji style": {
                         "enabled": true
                     },
                     "Hide Reels in the feed": {
+                        "enabled": true
+                    },
+                    "Hide group buttons on the share sheet": {
                         "enabled": true
                     },
                     "Hide the Explore grid": {
@@ -138,6 +147,9 @@
                     "Hide the Repost button": {
                         "enabled": true
                     },
+                    "Loop a story": {
+                        "enabled": true
+                    },
                     "Open developer options": {
                         "enabled": true
                     },
@@ -145,6 +157,15 @@
                         "enabled": true
                     },
                     "Remove the empty space at the bottom": {
+                        "enabled": true
+                    },
+                    "See who a story mentions": {
+                        "enabled": true
+                    },
+                    "Show a post's exact time": {
+                        "enabled": true
+                    },
+                    "Show a story's exact time": {
                         "enabled": true
                     },
                     "Start Home on Following": {
@@ -157,6 +178,9 @@
                         "enabled": true
                     },
                     "Turn off double tap to like": {
+                        "enabled": true
+                    },
+                    "View DM photos and videos anonymously": {
                         "enabled": true
                     },
                     "View stories anonymously": {
@@ -293,10 +317,22 @@
                     "Change app name": {
                         "enabled": false
                     },
+                    "Change version code": {
+                        "enabled": true
+                    },
+                    "Disable screenshot detection": {
+                        "enabled": true
+                    },
                     "Disable video autoplay": {
                         "enabled": true
                     },
+                    "Max image quality": {
+                        "enabled": true
+                    },
                     "Pure black dark mode": {
+                        "enabled": true
+                    },
+                    "Remove share targets": {
                         "enabled": true
                     }
                 }
@@ -351,6 +387,9 @@
                         "enabled": true
                     },
                     "Confirm feed interactions": {
+                        "enabled": true
+                    },
+                    "Custom launcher icon": {
                         "enabled": true
                     },
                     "Device privacy guard": {
@@ -479,6 +518,9 @@
                     "Show author region": {
                         "enabled": true
                     },
+                    "Show engagement rate": {
+                        "enabled": true
+                    },
                     "Skip content warnings": {
                         "enabled": true
                     },
@@ -489,6 +531,9 @@
                         "enabled": true
                     },
                     "Stop on-device AI profiling": {
+                        "enabled": true
+                    },
+                    "Stop recording watch history": {
                         "enabled": true
                     },
                     "Stop saving search history": {

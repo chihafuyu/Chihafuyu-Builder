@@ -27,10 +27,13 @@
                     "Download any video": {
                         "enabled": true
                     },
-                    "Hide group buttons on the share sheet": {
+                    "Emoji style": {
                         "enabled": true
                     },
                     "Hide Reels in the feed": {
+                        "enabled": true
+                    },
+                    "Hide group buttons on the share sheet": {
                         "enabled": true
                     },
                     "Hide the Explore grid": {
@@ -51,6 +54,15 @@
                     "Remove the empty space at the bottom": {
                         "enabled": true
                     },
+                    "See who a story mentions": {
+                        "enabled": true
+                    },
+                    "Show a post's exact time": {
+                        "enabled": true
+                    },
+                    "Show a story's exact time": {
+                        "enabled": true
+                    },
                     "Start Home on Following": {
                         "enabled": true
                     },
@@ -61,6 +73,9 @@
                         "enabled": true
                     },
                     "Turn off double tap to like": {
+                        "enabled": true
+                    },
+                    "View DM photos and videos anonymously": {
                         "enabled": true
                     },
                     "View stories anonymously": {
