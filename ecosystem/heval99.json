@@ -16,7 +16,7 @@
                 "package": "club.boxbox.android",
                 "search_term": "Box Box",
                 "stable": [
-                    "5.4.15"
+                    "5.4.16"
                 ],
                 "beta": [],
                 "strip": true,
@@ -34,7 +34,7 @@
                 "package": "eu.faircode.email",
                 "search_term": "FairEmail",
                 "stable": [
-                    "1.2337"
+                    "1.2338"
                 ],
                 "beta": [],
                 "strip": true,
@@ -107,16 +107,16 @@
                 "package": "net.osmand",
                 "search_term": "OsmAnd",
                 "stable": [
-                    "5.4.5"
+                    "5.4.9"
                 ],
                 "beta": [],
                 "strip": true,
                 "version_codes": {
-                    "universal": "5405",
-                    "arm64-v8a": "5405",
-                    "armeabi-v7a": "5405",
-                    "x86_64": "5405",
-                    "x86": "5405"
+                    "universal": "5409",
+                    "arm64-v8a": "5409",
+                    "armeabi-v7a": "5409",
+                    "x86_64": "5409",
+                    "x86": "5409"
                 },
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -147,16 +147,16 @@
                 "package": "com.textra",
                 "search_term": "Textra",
                 "stable": [
-                    "4.85"
+                    "4.87"
                 ],
                 "beta": [],
                 "strip": true,
                 "version_codes": {
-                    "universal": "48561",
-                    "arm64-v8a": "48561",
-                    "armeabi-v7a": "48561",
-                    "x86_64": "48561",
-                    "x86": "48561"
+                    "universal": "48761",
+                    "arm64-v8a": "48761",
+                    "armeabi-v7a": "48761",
+                    "x86_64": "48761",
+                    "x86": "48761"
                 },
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -194,15 +194,15 @@
                 "package": "com.camerasideas.trimmer",
                 "search_term": "YouCut",
                 "stable": [
-                    "1.716.1222"
+                    "1.721.1224"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "1222",
-                    "arm64-v8a": "1222",
-                    "armeabi-v7a": "1222",
-                    "x86_64": "1222",
-                    "x86": "1222"
+                    "universal": "1224",
+                    "arm64-v8a": "1224",
+                    "armeabi-v7a": "1224",
+                    "x86_64": "12224",
+                    "x86": "1224"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
