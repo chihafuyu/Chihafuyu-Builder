@@ -14,8 +14,8 @@ name: 🔥 Hxreborn Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_alpinequest:
-        description: 'Patch alpinequest'
+      app_audiolab:
+        description: 'Patch audiolab'
         required: true
         type: boolean
         default: false
@@ -147,7 +147,7 @@ jobs:
     env:
       APP_1WEATHER: ${{ inputs.app_1weather }}
       APP_ALL_IN_ONE_CALCULATOR: ${{ inputs.app_all_in_one_calculator }}
-      APP_ALPINEQUEST: ${{ inputs.app_alpinequest }}
+      APP_AUDIOLAB: ${{ inputs.app_audiolab }}
       APP_BETTERSLEEP: ${{ inputs.app_bettersleep }}
       APP_CX_FILE_EXPLORER: ${{ inputs.app_cx_file_explorer }}
       APP_MUSIXMATCH: ${{ inputs.app_musixmatch }}
@@ -171,8 +171,8 @@ jobs:
           if [[ "$APP_ALL_IN_ONE_CALCULATOR" == "true" ]]; then
             LIST="$LIST,all-in-one-calculator"
           fi
-          if [[ "$APP_ALPINEQUEST" == "true" ]]; then
-            LIST="$LIST,alpinequest"
+          if [[ "$APP_AUDIOLAB" == "true" ]]; then
+            LIST="$LIST,audiolab"
           fi
           if [[ "$APP_BETTERSLEEP" == "true" ]]; then
             LIST="$LIST,bettersleep"

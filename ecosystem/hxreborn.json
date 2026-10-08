@@ -23,14 +23,21 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "alpinequest": {
-                "package": "psyberia.alpinequest.free",
-                "search_term": "AlpineQuest",
+            "audiolab": {
+                "package": "com.hitrolab.audioeditor",
+                "search_term": "AudioLab",
                 "stable": [
-                    "2.4.0e"
+                    "1.3.33"
                 ],
                 "beta": [],
                 "strip": true,
+                "version_codes": {
+                    "universal": "5163",
+                    "arm64-v8a": "5163",
+                    "armeabi-v7a": "5163",
+                    "x86_64": "5163",
+                    "x86": "5163"
+                },
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },

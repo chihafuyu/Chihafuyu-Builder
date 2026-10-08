@@ -52,16 +52,21 @@ name: ⚙️ Core Patcher Engine
         required: true
         type: string
 
+permissions:
+  contents: write
+
 jobs:
   execute:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    # Serialize Telegram uploads globally (Pyrogram session is shared).
+    # Non-Telegram runs use a per-ecosystem/tag prefix key.
     concurrency:
       group: >-
-        ${{ inputs.send_to_telegram == true && 'telegram-session-lock'
-        || format('{0}-{1}-{2}', github.run_id, inputs.ecosystem,
-        inputs.release_tag_prefix) }}
+        ${{ inputs.send_to_telegram == true
+            && 'telegram-session-lock'
+            || format('build-{0}-{1}', inputs.ecosystem,
+                      inputs.release_tag_prefix) }}
       cancel-in-progress: false
 
     steps:
@@ -75,14 +80,32 @@ jobs:
           java-version: '21'
 
       - name: Initialize Python Environment
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.14'
+          cache: 'pip'
+          cache-dependency-path: requirements.txt
 
       - name: Start FlareSolverr Microservice
         run: |
-          docker run -d --name=flaresolverr -p 127.0.0.1:8191:8191 \
-            -e LOG_LEVEL=info ghcr.io/flaresolverr/flaresolverr:latest
+          set -euo pipefail
+
+          IMAGE="ghcr.io/flaresolverr/flaresolverr:latest"
+          docker pull "$IMAGE"
+
+          # Log the digest so the exact image used in this run is
+          # recorded in the CI log, even though the tag is mutable.
+          DIGEST="$(
+            docker inspect \
+              --format='{{index .RepoDigests 0}}' "$IMAGE"
+          )"
+          echo "Resolved ${IMAGE} -> ${DIGEST}"
+
+          docker run -d --name=flaresolverr \
+            -p 127.0.0.1:8191:8191 \
+            -e LOG_LEVEL=info \
+            "$IMAGE"
+
           echo "Waiting for FlareSolverr to initialize..."
           timeout 30 bash -c '
             while ! curl -sf http://localhost:8191/ > /dev/null; do
@@ -97,10 +120,11 @@ jobs:
         run: |
           set -euo pipefail
 
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install \
+            --disable-pip-version-check \
+            -r requirements.txt
 
-          APKEEP_VERSION='1.0.0'
+          APKEEP_VERSION='1.1.0'
           APKEEP_ASSET='apkeep-x86_64-unknown-linux-gnu'
           DL_BASE="https://github.com/EFForg/apkeep/releases/download"
           APKEEP_URL="${DL_BASE}/${APKEEP_VERSION}/${APKEEP_ASSET}"
@@ -127,19 +151,24 @@ jobs:
       - name: Fetch Environment Artifacts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_CLI_TRACK: ${{ inputs.cli_track }}
+          INPUT_CUSTOM_CLI_VERSION: ${{ inputs.custom_cli_version }}
+          INPUT_PATCHES_TRACK: ${{ inputs.patches_track }}
+          INPUT_REPO_URL: ${{ inputs.repo_url }}
+          INPUT_CUSTOM_PATCH_FILENAME: ${{ inputs.custom_patch_filename }}
         run: |
           set -euo pipefail
 
           # Fetch CLI
-          if [[ "${{ inputs.cli_track }}" == "Custom" ]]; then
-            CLI_TAG="${{ inputs.custom_cli_version }}"
+          if [[ "$INPUT_CLI_TRACK" == "Custom" ]]; then
+            CLI_TAG="$INPUT_CUSTOM_CLI_VERSION"
             if [[ -z "$CLI_TAG" ]]; then
               echo "::error::Custom CLI version input is empty!"
               exit 1
             fi
             gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop \
               --pattern "morphe-desktop-*-all.jar"
-          elif [[ "${{ inputs.cli_track }}" == "Pre-release" ]]; then
+          elif [[ "$INPUT_CLI_TRACK" == "Pre-release" ]]; then
             JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
             JQ_FLTR="${JQ_FLTR} | .[].tag_name"
             CLI_TAG="$(gh api repos/MorpheApp/morphe-desktop/releases \
@@ -169,26 +198,24 @@ jobs:
           fi
 
           # Fetch Patches
-          REPO_URL="${{ inputs.repo_url }}"
-          TARGET_URL="https://github.com/$REPO_URL"
+          TARGET_URL="https://github.com/$INPUT_REPO_URL"
           echo "TARGET_REPO_URL=$TARGET_URL" >> "$GITHUB_ENV"
 
-          if [[ "${{ inputs.patches_track }}" == "Custom Local" ]]; then
-            test -f "Custom-Patches/${{ inputs.custom_patch_filename }}"
-            cp -- "Custom-Patches/${{ inputs.custom_patch_filename }}" \
-              patches.mpp
+          if [[ "$INPUT_PATCHES_TRACK" == "Custom Local" ]]; then
+            test -f "Custom-Patches/$INPUT_CUSTOM_PATCH_FILENAME"
+            cp -- "Custom-Patches/$INPUT_CUSTOM_PATCH_FILENAME" patches.mpp
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
 
-          elif [[ "${{ inputs.patches_track }}" == "Pre-release" ]]; then
+          elif [[ "$INPUT_PATCHES_TRACK" == "Pre-release" ]]; then
             JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
             JQ_FLTR="${JQ_FLTR} | .[].tag_name"
-            PATCH_TAG="$(gh api "repos/$REPO_URL/releases" \
+            PATCH_TAG="$(gh api "repos/$INPUT_REPO_URL/releases" \
               --paginate | jq -r -s "$JQ_FLTR" | sort -V | tail -n 1)"
             if [[ -z "$PATCH_TAG" ]]; then
-              echo "::error::No patches pre-release found in $REPO_URL"
+              echo "::error::No patches pre-release found in $INPUT_REPO_URL"
               exit 1
             fi
-            gh release download "$PATCH_TAG" -R "$REPO_URL" \
+            gh release download "$PATCH_TAG" -R "$INPUT_REPO_URL" \
               --pattern "*.mpp"
             mapfile -t MPPS < <(find . -maxdepth 1 -type f \
               -name '*.mpp' -print | sort -V)
@@ -204,13 +231,13 @@ jobs:
             echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
 
           else
-            PATCH_TAG="$(gh api "repos/$REPO_URL/releases/latest" \
+            PATCH_TAG="$(gh api "repos/$INPUT_REPO_URL/releases/latest" \
               | jq -r '.tag_name // empty')"
             if [[ -z "$PATCH_TAG" ]]; then
-              echo "::error::No stable patches release found in $REPO_URL"
+              echo "::error::No stable patches release found in $INPUT_REPO_URL"
               exit 1
             fi
-            gh release download "$PATCH_TAG" -R "$REPO_URL" \
+            gh release download "$PATCH_TAG" -R "$INPUT_REPO_URL" \
               --pattern "*.mpp"
             mapfile -t MPPS < <(find . -maxdepth 1 -type f \
               -name '*.mpp' -print | sort -V)
@@ -227,26 +254,29 @@ jobs:
           fi
 
       - name: Decode Custom Keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
           set -euo pipefail
-          if [[ -z "${{ secrets.KEYSTORE_BASE64 }}" ]]; then
+          if [[ -z "$KEYSTORE_B64" ]]; then
             echo "::error::KEYSTORE_BASE64 secret is missing"
             exit 1
           fi
-          printf '%s' "${{ secrets.KEYSTORE_BASE64 }}" \
-            | base64 --decode > custom.keystore
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > custom.keystore
           chmod 0600 custom.keystore
 
       - name: Evaluate Pre-release Flag
+        env:
+          INPUT_CLI_TRACK: ${{ inputs.cli_track }}
+          INPUT_PATCHES_TRACK: ${{ inputs.patches_track }}
+          INPUT_VERSION_SELECTION: ${{ inputs.version_selection }}
         run: |
-          CLI_TRACK="${{ inputs.cli_track }}"
-          PATCH_TRACK="${{ inputs.patches_track }}"
-          VER_SEL="${{ inputs.version_selection }}"
+          set -euo pipefail
 
-          if [[ "$CLI_TRACK" == "Pre-release" || \
-                "$PATCH_TRACK" == "Pre-release" || \
-                "$PATCH_TRACK" == "Custom Local" || \
-                "$VER_SEL" == "Beta" ]]; then
+          if [[ "$INPUT_CLI_TRACK" == "Pre-release" || \
+                "$INPUT_PATCHES_TRACK" == "Pre-release" || \
+                "$INPUT_PATCHES_TRACK" == "Custom Local" || \
+                "$INPUT_VERSION_SELECTION" == "Beta" ]]; then
             echo "IS_PRERELEASE=true" >> "$GITHUB_ENV"
           else
             echo "IS_PRERELEASE=false" >> "$GITHUB_ENV"
@@ -264,37 +294,44 @@ jobs:
           PLAY_EMAIL: ${{ secrets.PLAY_EMAIL }}
           PLAY_AAS_TOKEN: ${{ secrets.PLAY_AAS_TOKEN }}
           DEVICE_PROPERTIES_B64: ${{ secrets.DEVICE_PROPERTIES_B64 }}
+          INPUT_ECOSYSTEM: ${{ inputs.ecosystem }}
+          INPUT_APPS: ${{ inputs.apps }}
+          INPUT_ARCH: ${{ inputs.architecture }}
+          INPUT_VERSION_SELECTION: ${{ inputs.version_selection }}
+          INPUT_CUSTOM_VERSION: ${{ inputs.custom_version }}
+          INPUT_DOWNLOAD_SOURCE: ${{ inputs.download_source }}
+          INPUT_CONTINUE_ON_ERROR: ${{ inputs.continue_on_error }}
+          INPUT_CLI_TRACK: ${{ inputs.cli_track }}
+          INPUT_CUSTOM_CLI_VERSION: ${{ inputs.custom_cli_version }}
         run: |
           set -euo pipefail
 
           # Fetch real CLI version using GitHub CLI to avoid rate limits
-          if [[ "${{ inputs.cli_track }}" == "Stable" ]]; then
+          if [[ "$INPUT_CLI_TRACK" == "Stable" ]]; then
             R="repos/MorpheApp/morphe-desktop/releases/latest"
-            REAL_CLI_TAG="$(gh api "$R" \
-              | jq -r '.tag_name // empty')"
-          elif [[ "${{ inputs.cli_track }}" == "Pre-release" ]]; then
+            REAL_CLI_TAG="$(gh api "$R" | jq -r '.tag_name // empty')"
+          elif [[ "$INPUT_CLI_TRACK" == "Pre-release" ]]; then
             R="repos/MorpheApp/morphe-desktop/releases"
             JQ_F='map(select(.prerelease == true))'
             JQ_F="${JQ_F} | .[0].tag_name // empty"
-            REAL_CLI_TAG="$(gh api "$R" \
-              | jq -r "$JQ_F")"
+            REAL_CLI_TAG="$(gh api "$R" | jq -r "$JQ_F")"
           else
-            REAL_CLI_TAG="${{ inputs.custom_cli_version }}"
+            REAL_CLI_TAG="$INPUT_CUSTOM_CLI_VERSION"
           fi
 
           # Fallback if GitHub API fails or tag is empty
           if [[ -z "$REAL_CLI_TAG" || "$REAL_CLI_TAG" == "null" ]]; then
-            REAL_CLI_TAG="${{ inputs.cli_track }}"
+            REAL_CLI_TAG="$INPUT_CLI_TRACK"
           fi
 
           python -u main.py \
-            --ecosystem "${{ inputs.ecosystem }}" \
-            --apps "${{ inputs.apps }}" \
-            --arch "${{ inputs.architecture }}" \
-            --version-selection "${{ inputs.version_selection }}" \
-            --custom-version "${{ inputs.custom_version }}" \
-            --download-source "${{ inputs.download_source }}" \
-            --continue-on-error "${{ inputs.continue_on_error }}" \
+            --ecosystem "$INPUT_ECOSYSTEM" \
+            --apps "$INPUT_APPS" \
+            --arch "$INPUT_ARCH" \
+            --version-selection "$INPUT_VERSION_SELECTION" \
+            --custom-version "$INPUT_CUSTOM_VERSION" \
+            --download-source "$INPUT_DOWNLOAD_SOURCE" \
+            --continue-on-error "$INPUT_CONTINUE_ON_ERROR" \
             --cli "morphe.jar" \
             --cli-version "$REAL_CLI_TAG" \
             --patches "patches.mpp" \
@@ -304,16 +341,18 @@ jobs:
             --ks-alias "$KEYSTORE_ALIAS" \
             --ks-pass "$KEYSTORE_PASSWORD" \
             --signer "$KEYSTORE_SIGNER_NAME" \
-            --is-prerelease "${{ env.IS_PRERELEASE }}"
+            --is-prerelease "$IS_PRERELEASE"
 
       - name: Validate Release Outputs
+        env:
+          INPUT_ECOSYSTEM: ${{ inputs.ecosystem }}
         run: |
           set -euo pipefail
-          test -s "./${{ inputs.ecosystem }}/changelog.md" || {
+          test -s "./$INPUT_ECOSYSTEM/changelog.md" || {
             echo "::error::Missing or empty changelog.md"
             exit 1
           }
-          compgen -G "./${{ inputs.ecosystem }}/Output/*.apk" > /dev/null || {
+          compgen -G "./$INPUT_ECOSYSTEM/Output/*.apk" > /dev/null || {
             echo "::error::No APK output was produced"
             exit 1
           }
@@ -342,5 +381,7 @@ jobs:
           ECOSYSTEM: ${{ inputs.ecosystem }}
         run: |
           set -euo pipefail
-          python -m pip install kurigram tgcrypto
+          python -m pip install \
+            --disable-pip-version-check \
+            "kurigram~=2.2" "TgrCrypto~=1.1"
           python tg_upload.py
