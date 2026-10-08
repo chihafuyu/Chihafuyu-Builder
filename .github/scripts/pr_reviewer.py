@@ -58,7 +58,7 @@ def analyze_code(safe_diff: str, api_key: str) -> str:
 
     # Break down long URL strings to comply with Pylint line-too-long limits
     base_url = "https://generativelanguage.googleapis.com/v1beta/models"
-    url = f"{base_url}/gemini-1.5-flash:generateContent?key={api_key}"
+    url = f"{base_url}/gemini-3.8-flash:generateContent?key={api_key}"
 
     headers = {'Content-Type': 'application/json'}
     payload = {

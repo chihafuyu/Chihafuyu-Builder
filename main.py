@@ -18,10 +18,11 @@ from core.context import Context, RateLimiter
 from core.utils import (
     SUBPROCESS_TIMEOUT_SECONDS,
     _safe_filename,
-    process_downloaded_file,
-    update_options_json,
-    get_scraper,
     _sandboxed_env,
+    get_scraper,
+    process_downloaded_file,
+    run_java_tool,
+    update_options_json,
 )
 
 # 5.5h budget so the job stops before GitHub Actions 6h hard-kill.
@@ -66,6 +67,7 @@ def download_apk(ctx: Context, args: Any) -> str | None:
             path = scraper_instance.scrape(ctx)
             if path:
                 return process_downloaded_file(path)
+        print(f"[INFO] Primary source '{req_source}' returned nothing; falling back.")
 
     fallback_order = [
         "direct", "github", "huggingface", "apkmirror",
@@ -98,9 +100,12 @@ def write_changelog(
             f_obj.write("> **Patched using pre-release tools. Use with caution.**\n\n")
 
         f_obj.write("Generated using:\n")
-        f_obj.write(
-            f"- Patches version **v{clean_ver}** from `{args.ecosystem}`. "
-        )
+        if clean_ver and clean_ver != "unknown":
+            f_obj.write(
+                f"- Patches version **v{clean_ver}** from `{args.ecosystem}`. "
+            )
+        else:
+            f_obj.write(f"- Patches from `{args.ecosystem}`. ")
         f_obj.write(f"Source: [Repository](https://github.com/{repo})\n")
         f_obj.write(
             f"- CLI version **v{cli_version.lstrip('v')}** from `morphe-desktop`. "
@@ -157,7 +162,12 @@ def _get_patched_apk_path(
 def build_patch_command(
     args: Any, app_data: dict, paths: tuple, target_arch: str
 ) -> list[str]:
-    """Builds the CLI shell command including exclusive patch parameters."""
+    """Builds the CLI shell command including exclusive patch parameters.
+
+    Note: keystore credentials are passed as CLI flags because the upstream
+    CLI does not expose an environment-based alternative. This means they
+    are briefly visible via /proc on shared runners. Do not log this list.
+    """
     cmd = [
         "java", "-Xmx4G", "-jar", args.cli, "patch",
         "--patches", args.patches,
@@ -243,8 +253,12 @@ def execute_patch_cli(patch_cmd: list[str]) -> tuple[int, bool]:
 
 def _generate_options_json(
     app_name: str, args: Any, app_data: dict, workspace: str
-) -> str:
-    """Generates options.json file required for patching."""
+) -> str | None:
+    """Generates options.json required for patching.
+
+    Returns the file path on success, or None when options-create failed
+    to produce a usable file. Callers must handle the None case.
+    """
     json_file = os.path.join(workspace, f"{_safe_filename(app_name)}-options.json")
     cmd = [
         "java", "-jar", args.cli, "options-create",
@@ -252,25 +266,15 @@ def _generate_options_json(
         "--out", json_file,
         "--filter-package-name", app_data["package"],
     ]
-    res: subprocess.CompletedProcess | None = None
-    try:
-        run_opts: dict[str, Any] = {
-            "capture_output": True,
-            "text": True,
-            "timeout": SUBPROCESS_TIMEOUT_SECONDS,
-            "env": _sandboxed_env(),
-        }
-        res = subprocess.run(cmd, check=False, **run_opts)
-    except subprocess.TimeoutExpired:
-        print(
-            f"[WARN] CLI options-create timed out after {SUBPROCESS_TIMEOUT_SECONDS}s."
-        )
-    except OSError as err:
-        print(f"[WARN] CLI options-create failed to start: {err}")
+    res = run_java_tool(cmd, tag=f"options-create ({app_name})")
 
     if res is not None and res.returncode != 0:
         err_out = (res.stderr or res.stdout or "").strip()[-500:]
         print(f"[WARN] CLI options-create failed (exit {res.returncode}): {err_out}")
+
+    if not os.path.isfile(json_file):
+        print(f"[ERROR] options.json was not produced at {json_file}.")
+        return None
 
     exc_list = app_data.get("exclusive_patches", [])
     if exc_list or app_data.get("options_override"):
@@ -322,6 +326,9 @@ def process_single_app(
         return
 
     json_file = _generate_options_json(app_name, args, app_data, state["workspace"])
+    if not json_file:
+        return
+
     out_apk = _get_patched_apk_path(app_name, t_ver, arch, args, state)
 
     print("[INFO] Patching via CLI...")
@@ -354,7 +361,9 @@ def run_patcher(args: Any) -> None:
         "in_dir": f"{workspace}/Input",
         "out_dir": f"{workspace}/Output",
         "workspace": workspace,
-        "clean_ver": args.patches_version.lstrip("v") if args.patches_version else "unknown",
+        "clean_ver": (
+            args.patches_version.lstrip("v") if args.patches_version else "unknown"
+        ),
         "success": [],
     }
     os.makedirs(state["in_dir"], exist_ok=True)

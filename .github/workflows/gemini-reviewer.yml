@@ -2,22 +2,22 @@
 name: ✨ Gemini PR Reviewer
 
 "on":
-  workflow_run:
-    workflows: ["PR Trigger"]
-    types: [completed]
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+    paths-ignore:
+      - '*.md'
+      - 'LICENSE'
+      - '.gitignore'
 
 permissions:
   contents: read
   pull-requests: write
   issues: write
-  actions: read
 
 jobs:
   review:
     runs-on: ubuntu-latest
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'pull_request'
+    if: github.event.pull_request.draft == false
     timeout-minutes: 10
     steps:
       - name: Checkout Repository
@@ -28,15 +28,15 @@ jobs:
         with:
           python-version: '3.14'
 
-      - name: Install Google Generative AI
+      - name: Install Dependencies
         run: |
           set -euo pipefail
-          pip install google-genai requests httpx
+          python -m pip install --disable-pip-version-check requests
 
       - name: Run Gemini Code Review
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
         run: python .github/scripts/pr_reviewer.py
