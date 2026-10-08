@@ -95,7 +95,10 @@ jobs:
 
           # Log the digest so the exact image used in this run is
           # recorded in the CI log, even though the tag is mutable.
-          DIGEST="$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE")"
+          DIGEST="$(
+            docker inspect \
+              --format='{{index .RepoDigests 0}}' "$IMAGE"
+          )"
           echo "Resolved ${IMAGE} -> ${DIGEST}"
 
           docker run -d --name=flaresolverr \
