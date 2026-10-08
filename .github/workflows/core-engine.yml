@@ -87,12 +87,25 @@ jobs:
           cache-dependency-path: requirements.txt
 
       - name: Start FlareSolverr Microservice
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          FS_VERSION="$(
+            gh api repos/FlareSolverr/FlareSolverr/releases/latest \
+              --jq '.tag_name'
+          )"
+          if [[ -z "$FS_VERSION" ]]; then
+            echo "::error::Failed to resolve FlareSolverr version"
+            exit 1
+          fi
+          echo "Resolved FlareSolverr ${FS_VERSION}"
+
           docker run -d --name=flaresolverr \
             -p 127.0.0.1:8191:8191 \
             -e LOG_LEVEL=info \
-            ghcr.io/flaresolverr/flaresolverr:v3.3.21
+            "ghcr.io/flaresolverr/flaresolverr:${FS_VERSION}"
+
           echo "Waiting for FlareSolverr to initialize..."
           timeout 30 bash -c '
             while ! curl -sf http://localhost:8191/ > /dev/null; do
@@ -112,7 +125,7 @@ jobs:
             --no-cache-dir \
             -r requirements.txt
 
-          APKEEP_VERSION='1.0.0'
+          APKEEP_VERSION='1.1.0'
           APKEEP_ASSET='apkeep-x86_64-unknown-linux-gnu'
           DL_BASE="https://github.com/EFForg/apkeep/releases/download"
           APKEEP_URL="${DL_BASE}/${APKEEP_VERSION}/${APKEEP_ASSET}"

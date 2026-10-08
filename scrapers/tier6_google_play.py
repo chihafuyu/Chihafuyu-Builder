@@ -12,6 +12,9 @@ from .base import BaseScraper
 
 
 BUNDLE_EXTENSIONS = ("*.xapk", "*.apkm", "*.apks", "*.zip")
+# AUTH tokens issued by dispenser services (e.g. Aurora Store) start
+# with this prefix. AAS tokens obtained via the OAuth flow do not.
+AUTH_TOKEN_PREFIX = "ya29."
 
 
 class GooglePlayScraper(BaseScraper):
@@ -74,22 +77,30 @@ class GooglePlayScraper(BaseScraper):
             print(f"[WARN] Invalid DEVICE_PROPERTIES_B64: {err}")
             return None
 
+    @staticmethod
+    def _build_auth_args(email: str, token: str) -> list[str]:
+        """Returns the correct apkeep auth flags for the given token type.
+
+        AUTH tokens (prefix `ya29.`) come from a token dispenser and
+        require `--auth-token`. AAS tokens obtained via the OAuth flow use
+        the `-t` short flag. `--accept-tos` is added in both cases so a
+        fresh account does not block the download on the ToS dialog.
+        """
+        if token.startswith(AUTH_TOKEN_PREFIX):
+            return ["-e", email, "--auth-token", token, "--accept-tos"]
+        return ["-e", email, "-t", token, "--accept-tos"]
+
     def _prepare_cmd(
         self,
         ctx: Context,
         tmp: str,
         email: str,
-        aas_token: str,
+        token: str,
         props_b64: str | None,
     ) -> list[str] | None:
-        """Builds the apkeep command adhering strictly to official CLI specs."""
-        cmd = [
-            "apkeep",
-            "-a", ctx.pkg,
-            "-d", "google-play",
-            "-e", email,
-            "-t", aas_token,
-        ]
+        """Builds the apkeep command adhering to the 1.1.0 CLI spec."""
+        cmd = ["apkeep", "-a", ctx.pkg, "-d", "google-play"]
+        cmd.extend(self._build_auth_args(email, token))
 
         options = ["split_apk=true"]
 
@@ -114,12 +125,12 @@ class GooglePlayScraper(BaseScraper):
         ctx: Context,
         dl_dir: str,
         email: str,
-        aas_token: str,
+        token: str,
         props_b64: str | None,
     ) -> str | None:
         """Handles the temporary directory generation and subprocess execution."""
         with tempfile.TemporaryDirectory(prefix="apkeep-play-") as tmp:
-            cmd = self._prepare_cmd(ctx, tmp, email, aas_token, props_b64)
+            cmd = self._prepare_cmd(ctx, tmp, email, token, props_b64)
             if cmd is None:
                 return None
 
@@ -138,14 +149,21 @@ class GooglePlayScraper(BaseScraper):
         print(f"[TIER 9] Secure Google Play: v{ctx.target_ver}")
 
         email = os.getenv("PLAY_EMAIL")
-        aas_token = os.getenv("PLAY_AAS_TOKEN")
+        token = os.getenv("PLAY_AAS_TOKEN")
         props_b64 = os.getenv("DEVICE_PROPERTIES_B64")
 
-        if not email or not aas_token:
+        if not email or not token:
             print("[WARN] Missing 'PLAY_EMAIL' or 'PLAY_AAS_TOKEN' in env.")
             return None
+
+        token_kind = (
+            "AUTH" if token.startswith(AUTH_TOKEN_PREFIX) else "AAS"
+        )
+        print(f"[INFO] Detected {token_kind} token.", flush=True)
 
         dl_dir = os.path.join(ctx.out_dir, ctx.pkg)
         os.makedirs(dl_dir, exist_ok=True)
 
-        return self._execute_apkeep(ctx, dl_dir, email, aas_token, props_b64)
+        return self._execute_apkeep(
+            ctx, dl_dir, email, token, props_b64
+        )
