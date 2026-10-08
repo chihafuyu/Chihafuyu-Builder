@@ -33,7 +33,7 @@ TAG_PATTERN = re.compile(r"<\s*/?\s*pr_diff\s*>", re.IGNORECASE)
 
 
 def _sanitize_diff(diff_text: str) -> str:
-    """Neutralizes tag-like sequences that could confuse the prompt delimiter."""
+    """Neutralizes tag-like sequences that could confuse the prompt."""
     return TAG_PATTERN.sub("[REDACTED_TAG]", diff_text)
 
 
@@ -88,13 +88,18 @@ def _build_prompt(safe_diff: str) -> str:
     )
 
 
-def _extract_review_text(data: dict) -> str:
-    """Pulls the reviewer text out of a Gemini generateContent response."""
-    candidates = data.get("candidates") or []
-    if not candidates:
+def _extract_review_text(data: object) -> str:
+    """Pulls the reviewer text out of a generateContent response."""
+    if not isinstance(data, dict):
         return ""
-    parts = candidates[0].get("content", {}).get("parts") or []
-    if not parts:
+    candidates = data.get("candidates") or []
+    if not candidates or not isinstance(candidates[0], dict):
+        return ""
+    content = candidates[0].get("content") or {}
+    if not isinstance(content, dict):
+        return ""
+    parts = content.get("parts") or []
+    if not parts or not isinstance(parts[0], dict):
         return ""
     return parts[0].get("text", "")
 
@@ -133,11 +138,19 @@ def _parse_retry_delay(response: requests.Response) -> int | None:
 
 
 def _call_gemini(model: str, prompt: str, api_key: str) -> requests.Response:
-    """Sends a single generateContent request for the given model."""
-    url = f"{GEMINI_BASE_URL}/{model}:generateContent?key={api_key}"
+    """Sends a single generateContent request for the given model.
+
+    The API key travels in the x-goog-api-key header rather than the
+    query string so that HTTP client exceptions, which routinely embed
+    the full URL in their message, cannot leak it into CI logs.
+    """
+    url = f"{GEMINI_BASE_URL}/{model}:generateContent"
     return requests.post(
         url,
-        headers={"Content-Type": "application/json"},
+        headers={
+            "Content-Type": "application/json",
+            "x-goog-api-key": api_key,
+        },
         json={"contents": [{"parts": [{"text": prompt}]}]},
         timeout=60,
     )
@@ -148,9 +161,14 @@ def _analyze_with_model(
 ) -> tuple[str, bool]:
     """Attempts to review the diff using a single model.
 
-    Returns (review_text, should_try_next_model). When the model is
-    unavailable or quota-exhausted for the long haul, the second
-    element is True so the caller can advance to the next candidate.
+    Returns (review_text, model_responded):
+
+    - ("<review>", True) when the model produced a usable review.
+    - ("", True) when the model responded but returned empty content,
+      typically because of a safety filter. Advancing to the next model
+      is still worthwhile.
+    - ("", False) when the model was unreachable, quota-exhausted for
+      the long haul, or errored past the retry budget.
     """
     for attempt in range(1, MAX_RETRIES + 1):
         print(
@@ -165,7 +183,7 @@ def _analyze_with_model(
                     f"  [{model}] Not found; trying next model.",
                     flush=True,
                 )
-                return "", True
+                return "", False
 
             if resp.status_code == 429:
                 delay = _parse_retry_delay(resp)
@@ -175,7 +193,7 @@ def _analyze_with_model(
                         f"(retry in ~{delay}s); skipping to next model.",
                         flush=True,
                     )
-                    return "", True
+                    return "", False
                 wait = delay if delay is not None else 15
                 print(
                     f"  [{model}] Rate limited; retrying in {wait}s.",
@@ -187,13 +205,13 @@ def _analyze_with_model(
             resp.raise_for_status()
             text = _extract_review_text(resp.json())
             if text:
-                return text, False
+                return text, True
             print(
                 f"  [{model}] Empty response: "
                 f"{_truncate(str(resp.json()))}",
                 flush=True,
             )
-            return "No review generated.", False
+            return "", True
 
         except requests.exceptions.RequestException as err:
             print(f"  [{model}] Request failed: {err}", flush=True)
@@ -209,25 +227,36 @@ def _analyze_with_model(
                 time.sleep(backoff)
 
     print(f"  [{model}] Exhausted retries; trying next model.", flush=True)
-    return "", True
+    return "", False
 
 
 def analyze_code(safe_diff: str, api_key: str) -> str:
     """Sends the diff to Gemini, falling back across model candidates.
 
-    Tries each model in GEMINI_MODEL_CANDIDATES in order. A 404 or a
-    long-duration 429 advances to the next model; short rate limits and
-    transient errors are retried within the current model.
+    Tries each model in GEMINI_MODEL_CANDIDATES in order. A 404, a
+    long-duration 429, or an unrecoverable error advances to the next
+    model. An empty response from any model also advances, so a safety
+    filter on one model does not prevent another model from returning a
+    usable review.
     """
     prompt = _build_prompt(safe_diff)
+    any_responded = False
 
     for model in GEMINI_MODEL_CANDIDATES:
         print(f"Trying Gemini model: {model}", flush=True)
-        text, should_advance = _analyze_with_model(model, prompt, api_key)
+        text, responded = _analyze_with_model(model, prompt, api_key)
         if text:
             return text
-        if not should_advance:
-            return "No review generated."
+        if responded:
+            any_responded = True
+
+    if any_responded:
+        print(
+            "Every candidate model returned empty content "
+            "(likely a safety filter).",
+            flush=True,
+        )
+        return "No review generated."
 
     print(
         "All candidate models failed (quota or availability). "

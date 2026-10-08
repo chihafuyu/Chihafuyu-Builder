@@ -63,7 +63,7 @@ jobs:
     # Non-Telegram runs use a per-ecosystem/tag prefix key.
     concurrency:
       group: >-
-        ${{ inputs.send_to_telegram
+        ${{ inputs.send_to_telegram == true
             && 'telegram-session-lock'
             || format('build-{0}-{1}', inputs.ecosystem,
                       inputs.release_tag_prefix) }}
