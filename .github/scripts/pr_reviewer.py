@@ -33,6 +33,10 @@ MAX_RETRIES = 3
 RETRY_DELAY_SKIP_SECONDS = 60
 # 503 responses mean transient overload; wait before retrying.
 UNAVAILABLE_RETRY_SECONDS = 30
+# HTTP status codes that indicate a permanent client-side error.
+# Retrying these wastes workflow minutes because the request will
+# never succeed without a code or configuration change.
+NON_RETRYABLE_STATUS = frozenset({400, 401, 403, 405, 422})
 TAG_PATTERN = re.compile(r"<\s*/?\s*pr_diff\s*>", re.IGNORECASE)
 
 
@@ -108,6 +112,24 @@ def _extract_review_text(data: object) -> str:
     return parts[0].get("text", "")
 
 
+def _parse_json(model: str, resp: requests.Response) -> object | None:
+    """Parses the JSON body, returning None on decode errors.
+
+    requests >= 2.27 raises a JSONDecodeError that also inherits from
+    RequestException, but older releases raise json.JSONDecodeError
+    which only inherits from ValueError. Catching both here keeps the
+    caller immune to either behavior.
+    """
+    try:
+        return resp.json()
+    except ValueError as err:
+        print(
+            f"  [{model}] Malformed JSON response: {err}",
+            flush=True,
+        )
+        return None
+
+
 def _parse_retry_delay(response: requests.Response) -> int | None:
     """Extracts RetryInfo.retryDelay in seconds from a 429 response.
 
@@ -160,11 +182,11 @@ def _call_gemini(model: str, prompt: str, api_key: str) -> requests.Response:
     )
 
 
-def _handle_503(model: str, attempt: int) -> tuple[str, bool]:
-    """Handles a transient 503 for the current attempt.
+def _handle_503(model: str, attempt: int) -> str:
+    """Handles a transient 503 response.
 
-    Sleeps and signals the caller to retry when attempts remain;
-    otherwise signals the caller to advance to the next model.
+    Returns "retry" when another attempt is worth trying, or "advance"
+    when the retry budget is exhausted.
     """
     if attempt < MAX_RETRIES:
         print(
@@ -173,21 +195,20 @@ def _handle_503(model: str, attempt: int) -> tuple[str, bool]:
             flush=True,
         )
         time.sleep(UNAVAILABLE_RETRY_SECONDS)
-        return "", True
+        return "retry"
     print(
         f"  [{model}] Service unavailable after "
         f"{MAX_RETRIES} attempts; trying next model.",
         flush=True,
     )
-    return "", False
+    return "advance"
 
 
-def _handle_429(model: str, resp: requests.Response) -> tuple[str, bool, bool]:
+def _handle_429(model: str, resp: requests.Response) -> str:
     """Handles a 429 response.
 
-    Returns (text, should_retry_same_model, should_advance).
-    - Long retry hint: advance to the next model.
-    - Short retry hint: sleep and retry the same model.
+    Returns "retry" for short rate limits (sleep already applied) or
+    "advance" for long quota-exhaustion hints.
     """
     delay = _parse_retry_delay(resp)
     if delay is not None and delay > RETRY_DELAY_SKIP_SECONDS:
@@ -196,14 +217,63 @@ def _handle_429(model: str, resp: requests.Response) -> tuple[str, bool, bool]:
             f"(retry in ~{delay}s); skipping to next model.",
             flush=True,
         )
-        return "", False, True
+        return "advance"
     wait = delay if delay is not None else 15
     print(
         f"  [{model}] Rate limited; retrying in {wait}s.",
         flush=True,
     )
     time.sleep(wait)
-    return "", True, False
+    return "retry"
+
+
+def _classify_status(
+    model: str, resp: requests.Response, attempt: int
+) -> str:
+    """Classifies a response status into a follow-up action.
+
+    Returns:
+    - "ok" to parse the body as usual.
+    - "retry" to repeat the same model (any required sleep is done).
+    - "advance" to move on to the next model candidate.
+    """
+    if resp.status_code == 404:
+        print(f"  [{model}] Not found; trying next model.", flush=True)
+        return "advance"
+    if resp.status_code == 503:
+        return _handle_503(model, attempt)
+    if resp.status_code == 429:
+        return _handle_429(model, resp)
+    return "ok"
+
+
+def _handle_request_error(
+    model: str,
+    err: requests.exceptions.RequestException,
+    attempt: int,
+) -> str:
+    """Processes a RequestException into a follow-up action.
+
+    Returns "retry" when a retry is worthwhile, "advance" for
+    permanent client errors, or "stop" when the retry budget is gone.
+    """
+    resp = getattr(err, "response", None)
+    if resp is not None:
+        print(f"  [{model}] Body: {_truncate(resp.text)}", flush=True)
+        if resp.status_code in NON_RETRYABLE_STATUS:
+            print(
+                f"  [{model}] HTTP {resp.status_code} is not "
+                f"retryable; trying next model.",
+                flush=True,
+            )
+            return "advance"
+
+    if attempt < MAX_RETRIES:
+        backoff = (2 ** (attempt - 1)) * 5
+        print(f"  [{model}] Retrying in {backoff}s...", flush=True)
+        time.sleep(backoff)
+        return "retry"
+    return "stop"
 
 
 def _analyze_with_model(
@@ -227,50 +297,33 @@ def _analyze_with_model(
         )
         try:
             resp = _call_gemini(model, prompt, api_key)
-
-            if resp.status_code == 404:
-                print(
-                    f"  [{model}] Not found; trying next model.",
-                    flush=True,
-                )
+            action = _classify_status(model, resp, attempt)
+            if action == "advance":
                 return "", False
-
-            if resp.status_code == 503:
-                _, should_retry = _handle_503(model, attempt)
-                if should_retry:
-                    continue
-                return "", False
-
-            if resp.status_code == 429:
-                _, retry_same, advance = _handle_429(model, resp)
-                if retry_same:
-                    continue
-                if advance:
-                    return "", False
+            if action == "retry":
+                continue
 
             resp.raise_for_status()
-            text = _extract_review_text(resp.json())
+            body = _parse_json(model, resp)
+            if body is None:
+                return "", False
+
+            text = _extract_review_text(body)
             if text:
                 return text, True
             print(
-                f"  [{model}] Empty response: "
-                f"{_truncate(str(resp.json()))}",
+                f"  [{model}] Empty response: {_truncate(str(body))}",
                 flush=True,
             )
             return "", True
 
         except requests.exceptions.RequestException as err:
             print(f"  [{model}] Request failed: {err}", flush=True)
-            if getattr(err, "response", None) is not None:
-                print(
-                    f"  [{model}] Body: "
-                    f"{_truncate(err.response.text)}",
-                    flush=True,
-                )
-            if attempt < MAX_RETRIES:
-                backoff = (2 ** (attempt - 1)) * 5
-                print(f"  [{model}] Retrying in {backoff}s...", flush=True)
-                time.sleep(backoff)
+            action = _handle_request_error(model, err, attempt)
+            if action == "retry":
+                continue
+            if action == "advance":
+                return "", False
 
     print(f"  [{model}] Exhausted retries; trying next model.", flush=True)
     return "", False
