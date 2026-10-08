@@ -49,15 +49,17 @@ def _sandboxed_env() -> dict[str, str]:
     }
 
 
-def run_apkeep(cmd: list[str], tag: str = "apkeep") -> subprocess.CompletedProcess | None:
-    """Runs an apkeep invocation under a credential-free env with a hard timeout.
+def run_java_tool(
+    cmd: list[str], tag: str
+) -> subprocess.CompletedProcess | None:
+    """Runs a Java CLI tool under a credential-free env with a hard timeout.
 
-    Returns the completed process on success, or None on timeout, spawn
-    failure, or non-zero exit. The stderr tail is logged automatically on
-    a non-zero exit so callers do not repeat the boilerplate.
+    Returns the completed process on success, or None on timeout or spawn
+    failure. Callers remain responsible for inspecting the return code
+    and any log output.
     """
     try:
-        res = subprocess.run(
+        return subprocess.run(
             cmd,
             capture_output=True,
             text=True,
@@ -70,6 +72,17 @@ def run_apkeep(cmd: list[str], tag: str = "apkeep") -> subprocess.CompletedProce
         return None
     except OSError as err:
         print(f"[WARN] {tag} execution failed: {err}")
+        return None
+
+
+def run_apkeep(
+    cmd: list[str], tag: str = "apkeep"
+) -> subprocess.CompletedProcess | None:
+    """Runs an apkeep invocation and returns None on timeout, spawn failure,
+    or non-zero exit. The stderr tail is logged automatically on failure.
+    """
+    res = run_java_tool(cmd, tag)
+    if res is None:
         return None
 
     if res.returncode != 0:
