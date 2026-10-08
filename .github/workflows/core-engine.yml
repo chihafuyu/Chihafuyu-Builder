@@ -87,24 +87,21 @@ jobs:
           cache-dependency-path: requirements.txt
 
       - name: Start FlareSolverr Microservice
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          FS_VERSION="$(
-            gh api repos/FlareSolverr/FlareSolverr/releases/latest \
-              --jq '.tag_name'
-          )"
-          if [[ -z "$FS_VERSION" ]]; then
-            echo "::error::Failed to resolve FlareSolverr version"
-            exit 1
-          fi
-          echo "Resolved FlareSolverr ${FS_VERSION}"
+
+          IMAGE="ghcr.io/flaresolverr/flaresolverr:latest"
+          docker pull "$IMAGE"
+
+          # Log the digest so the exact image used in this run is
+          # recorded in the CI log, even though the tag is mutable.
+          DIGEST="$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE")"
+          echo "Resolved ${IMAGE} -> ${DIGEST}"
 
           docker run -d --name=flaresolverr \
             -p 127.0.0.1:8191:8191 \
             -e LOG_LEVEL=info \
-            "ghcr.io/flaresolverr/flaresolverr:${FS_VERSION}"
+            "$IMAGE"
 
           echo "Waiting for FlareSolverr to initialize..."
           timeout 30 bash -c '
