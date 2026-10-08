@@ -12,15 +12,17 @@ import time
 import requests
 
 
-# Preferred models in order of fallback. If a model is unavailable (404)
-# or has exhausted its quota (429 with a long retry hint), the next one
-# in the list is attempted.
+# Preferred models in order of fallback. Free tier quota is tracked per
+# model, so entries from different generations each draw from their own
+# daily pool. A 404 or a long-duration 429 advances to the next entry.
 GEMINI_MODEL_CANDIDATES = (
-    "gemini-3.8-flash",       # best quality, ~20 requests/day free
-    "gemini-2.5-flash",       # ~250/day free
-    "gemini-2.0-flash",       # ~200/day free
-    "gemini-2.0-flash-lite",  # ~1500/day free
-    "gemini-flash-latest",    # rolling alias
+    "gemini-3.8-flash",          # best quality
+    "gemini-3.7-flash",          # previous generation, separate pool
+    "gemini-3.6-flash",          # separate pool
+    "gemini-3.5-flash",          # separate pool
+    "gemini-flash-lite-latest",  # rolling lite alias, larger quota
+    "gemini-3.5-flash-lite",     # explicit lite fallback
+    "gemini-flash-latest",       # rolling alias, last resort
 )
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
 DIFF_CHAR_LIMIT = 50000
@@ -29,6 +31,8 @@ MAX_RETRIES = 3
 # If the API tells us to wait longer than this for a 429, skip the
 # current model entirely instead of burning retries on it.
 RETRY_DELAY_SKIP_SECONDS = 60
+# 503 responses mean transient overload; wait before retrying.
+UNAVAILABLE_RETRY_SECONDS = 30
 TAG_PATTERN = re.compile(r"<\s*/?\s*pr_diff\s*>", re.IGNORECASE)
 
 
@@ -156,6 +160,52 @@ def _call_gemini(model: str, prompt: str, api_key: str) -> requests.Response:
     )
 
 
+def _handle_503(model: str, attempt: int) -> tuple[str, bool]:
+    """Handles a transient 503 for the current attempt.
+
+    Sleeps and signals the caller to retry when attempts remain;
+    otherwise signals the caller to advance to the next model.
+    """
+    if attempt < MAX_RETRIES:
+        print(
+            f"  [{model}] Service unavailable; "
+            f"retrying in {UNAVAILABLE_RETRY_SECONDS}s.",
+            flush=True,
+        )
+        time.sleep(UNAVAILABLE_RETRY_SECONDS)
+        return "", True
+    print(
+        f"  [{model}] Service unavailable after "
+        f"{MAX_RETRIES} attempts; trying next model.",
+        flush=True,
+    )
+    return "", False
+
+
+def _handle_429(model: str, resp: requests.Response) -> tuple[str, bool, bool]:
+    """Handles a 429 response.
+
+    Returns (text, should_retry_same_model, should_advance).
+    - Long retry hint: advance to the next model.
+    - Short retry hint: sleep and retry the same model.
+    """
+    delay = _parse_retry_delay(resp)
+    if delay is not None and delay > RETRY_DELAY_SKIP_SECONDS:
+        print(
+            f"  [{model}] Quota exhausted "
+            f"(retry in ~{delay}s); skipping to next model.",
+            flush=True,
+        )
+        return "", False, True
+    wait = delay if delay is not None else 15
+    print(
+        f"  [{model}] Rate limited; retrying in {wait}s.",
+        flush=True,
+    )
+    time.sleep(wait)
+    return "", True, False
+
+
 def _analyze_with_model(
     model: str, prompt: str, api_key: str
 ) -> tuple[str, bool]:
@@ -185,22 +235,18 @@ def _analyze_with_model(
                 )
                 return "", False
 
+            if resp.status_code == 503:
+                _, should_retry = _handle_503(model, attempt)
+                if should_retry:
+                    continue
+                return "", False
+
             if resp.status_code == 429:
-                delay = _parse_retry_delay(resp)
-                if delay is not None and delay > RETRY_DELAY_SKIP_SECONDS:
-                    print(
-                        f"  [{model}] Quota exhausted "
-                        f"(retry in ~{delay}s); skipping to next model.",
-                        flush=True,
-                    )
+                _, retry_same, advance = _handle_429(model, resp)
+                if retry_same:
+                    continue
+                if advance:
                     return "", False
-                wait = delay if delay is not None else 15
-                print(
-                    f"  [{model}] Rate limited; retrying in {wait}s.",
-                    flush=True,
-                )
-                time.sleep(wait)
-                continue
 
             resp.raise_for_status()
             text = _extract_review_text(resp.json())
@@ -238,6 +284,10 @@ def analyze_code(safe_diff: str, api_key: str) -> str:
     model. An empty response from any model also advances, so a safety
     filter on one model does not prevent another model from returning a
     usable review.
+
+    Returns an empty string when every candidate is quota-exhausted or
+    unavailable, so the caller can skip the comment without failing
+    the workflow.
     """
     prompt = _build_prompt(safe_diff)
     any_responded = False
@@ -259,11 +309,11 @@ def analyze_code(safe_diff: str, api_key: str) -> str:
         return "No review generated."
 
     print(
-        "All candidate models failed (quota or availability). "
-        "Failing the workflow.",
+        "All candidate models are quota-exhausted or unavailable. "
+        "Skipping the review comment so the PR is not blocked.",
         flush=True,
     )
-    sys.exit(1)
+    return ""
 
 
 def post_comment(
@@ -321,6 +371,9 @@ def main() -> None:
 
     safe_diff = fetch_pr_diff(repo, pr_num, gh_token)
     review = analyze_code(safe_diff, api_key=gemini_api_key)
+    if not review:
+        print("No review to post. Exiting cleanly.", flush=True)
+        return
     post_comment(repo, pr_num, gh_token, review)
 
 
