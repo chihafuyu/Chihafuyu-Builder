@@ -18,13 +18,28 @@ from .base import BaseScraper
 EDITION_SLUG_REGEX = re.compile(
     r"\b(amazon|fire-tablet|fire-tv|androidtv|wear|go-edition|"
     r"lite|enterprise|kids|headunit|auto)\b",
-    re.IGNORECASE
+    re.IGNORECASE,
 )
+
+# Maximum attempts for a single FlareSolverr fetch before giving up.
+FETCH_ATTEMPTS = 3
+# Per-attempt timeout when handing the request to FlareSolverr.
+FETCH_TIMEOUT_SECONDS = 45
+# URL prefix used to shorten log lines that would otherwise be very long.
+URL_LOG_WIDTH = 90
+
+
+def _short_url(url: str) -> str:
+    """Truncates a URL for log output while keeping the scheme and host visible."""
+    if len(url) <= URL_LOG_WIDTH:
+        return url
+    return url[: URL_LOG_WIDTH - 3] + "..."
 
 
 @dataclass
 class _DummyResponse:
     """Mock requests.Response object for FlareSolverr HTML returns."""
+
     status_code: int
     text: str
     url: str
@@ -32,7 +47,9 @@ class _DummyResponse:
     def raise_for_status(self) -> None:
         """Raises stored HTTP error, if one occurred."""
         if self.status_code >= 400:
-            raise requests.exceptions.HTTPError(f"Error: {self.status_code}")
+            raise requests.exceptions.HTTPError(
+                f"Error: {self.status_code}"
+            )
 
     def __enter__(self) -> _DummyResponse:
         return self
@@ -42,7 +59,7 @@ class _DummyResponse:
 
 
 class _FlareSolverrSession:
-    """Routes HTML requests through FlareSolverr and binary streams through native requests."""
+    """Routes HTML via FlareSolverr and binary streams via native requests."""
 
     def __init__(self) -> None:
         self.proxy_url = "http://localhost:8191/v1"
@@ -50,10 +67,12 @@ class _FlareSolverrSession:
         self.proxy_session_id = self._create_session()
 
     def _create_session(self) -> str:
-        """Initializes a persistent browser session in FlareSolverr to improve speed."""
+        """Initializes a persistent browser session in FlareSolverr."""
         try:
             res = requests.post(
-                self.proxy_url, json={"cmd": "sessions.create"}, timeout=15
+                self.proxy_url,
+                json={"cmd": "sessions.create"},
+                timeout=15,
             )
             return res.json().get("session", "")
         except (requests.exceptions.RequestException, ValueError):
@@ -68,13 +87,13 @@ class _FlareSolverrSession:
         if not url:
             return _DummyResponse(status_code=400, text="", url="")
 
-        raw_timeout = kwargs.get("timeout") or 45
+        raw_timeout = kwargs.get("timeout") or FETCH_TIMEOUT_SECONDS
         if isinstance(raw_timeout, (tuple, list)):
-            raw_timeout = raw_timeout[0] if raw_timeout else 45
+            raw_timeout = raw_timeout[0] if raw_timeout else FETCH_TIMEOUT_SECONDS
         try:
             timeout = float(raw_timeout)
         except (TypeError, ValueError):
-            timeout = 45.0
+            timeout = float(FETCH_TIMEOUT_SECONDS)
 
         payload = {
             "cmd": "request.get",
@@ -85,7 +104,11 @@ class _FlareSolverrSession:
             payload["session"] = self.proxy_session_id
 
         try:
-            res = requests.post(self.proxy_url, json=payload, timeout=timeout + 15)
+            res = requests.post(
+                self.proxy_url,
+                json=payload,
+                timeout=timeout + 15,
+            )
             data = res.json()
 
             if data.get("status") == "ok":
@@ -101,26 +124,36 @@ class _FlareSolverrSession:
                     )
 
                 if "userAgent" in solution:
-                    self.session.headers.update({"User-Agent": solution["userAgent"]})
+                    self.session.headers.update(
+                        {"User-Agent": solution["userAgent"]}
+                    )
 
-                return _DummyResponse(status_code=200, text=html, url=solved_url)
+                return _DummyResponse(
+                    status_code=200, text=html, url=solved_url
+                )
 
             err_msg = data.get("message", "Unknown FlareSolverr error")
-            print(f"[WARN] FlareSolverr returned error status: {err_msg}")
+            print(
+                f"[WARN] FlareSolverr returned error status: {err_msg}",
+                flush=True,
+            )
             return _DummyResponse(status_code=403, text="", url=url)
 
         except (requests.exceptions.RequestException, ValueError) as err:
-            print(f"[WARN] FlareSolverr connection failed: {err}")
+            print(f"[WARN] FlareSolverr connection failed: {err}", flush=True)
             return _DummyResponse(status_code=500, text="", url=url)
 
     def close(self) -> None:
-        """Destroys proxy session and closes the underlying native requests session."""
+        """Destroys proxy session and closes the native requests session."""
         if self.proxy_session_id:
             try:
                 requests.post(
                     self.proxy_url,
-                    json={"cmd": "sessions.destroy", "session": self.proxy_session_id},
-                    timeout=10
+                    json={
+                        "cmd": "sessions.destroy",
+                        "session": self.proxy_session_id,
+                    },
+                    timeout=10,
                 )
             except (requests.exceptions.RequestException, ValueError):
                 pass
@@ -128,7 +161,7 @@ class _FlareSolverrSession:
 
 
 class ApkmirrorScraper(BaseScraper):
-    """Scrapes APKs from APKMirror handling WAF via local FlareSolverr instance."""
+    """Scrapes APKs from APKMirror handling WAF via local FlareSolverr."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -144,18 +177,45 @@ class ApkmirrorScraper(BaseScraper):
         self._session.close()
 
     def _safe_get(self, ctx: Context, url: str) -> Any | None:
-        """Fetches page source ensuring FlareSolverr correctly resolves WAF challenges."""
+        """Fetches page source ensuring FlareSolverr resolves WAF challenges.
+
+        Logs each attempt with elapsed seconds so long-running Cloudflare
+        challenges are visible in CI instead of appearing as a hang.
+        """
         ctx.limiter.wait()
         time.sleep(random.uniform(2.5, 4.5))
 
-        for attempt in range(3):
-            resp = self._session.get(url, timeout=45)
+        for attempt in range(1, FETCH_ATTEMPTS + 1):
+            print(
+                f"[INFO] Fetch attempt {attempt}/{FETCH_ATTEMPTS}: "
+                f"{_short_url(url)}",
+                flush=True,
+            )
+            start = time.monotonic()
+            resp = self._session.get(url, timeout=FETCH_TIMEOUT_SECONDS)
+            elapsed = time.monotonic() - start
 
             if resp.status_code == 200 and "apkmirror.com" in str(resp.url):
+                print(
+                    f"[INFO] Fetch succeeded in {elapsed:.1f}s.",
+                    flush=True,
+                )
                 return resp
 
-            print(f"[WARN] FlareSolverr WAF resolution failed (attempt {attempt + 1}/3)...")
-            time.sleep(random.uniform(5.0, 10.0))
+            print(
+                f"[WARN] FlareSolverr WAF resolution failed "
+                f"(attempt {attempt}/{FETCH_ATTEMPTS}, "
+                f"{elapsed:.1f}s, status={resp.status_code}).",
+                flush=True,
+            )
+
+            if attempt < FETCH_ATTEMPTS:
+                delay = random.uniform(5.0, 10.0)
+                print(
+                    f"[INFO] Retrying in {delay:.1f}s...",
+                    flush=True,
+                )
+                time.sleep(delay)
 
         return None
 
@@ -174,9 +234,12 @@ class ApkmirrorScraper(BaseScraper):
 
         is_smart_match = False
         if not (has_ver_text or has_ver_href):
-            # Dynamic segment matching: enforces strict versioning but forgives standard suffixes
             base_parts = base_ver.split(".")
-            pattern = r"\b" + r"-".join(map(re.escape, base_parts)) + r"(?:-[a-zA-Z0-9]+)*\b"
+            pattern = (
+                r"\b"
+                + r"-".join(map(re.escape, base_parts))
+                + r"(?:-[a-zA-Z0-9]+)*\b"
+            )
             if re.search(pattern, href, re.IGNORECASE):
                 is_smart_match = True
 
@@ -194,20 +257,32 @@ class ApkmirrorScraper(BaseScraper):
     @staticmethod
     def _get_filter_kws(ctx: Context) -> tuple[list[str], list[str]]:
         exc_kws = ["secondary"] + [
-            k.lower() for k in ctx.app_data.get("apkm_exclude", []) if k.strip()
+            k.lower()
+            for k in ctx.app_data.get("apkm_exclude", [])
+            if k.strip()
         ]
-        inc_kws = [k.lower() for k in ctx.app_data.get("apkm_include", []) if k.strip()]
+        inc_kws = [
+            k.lower()
+            for k in ctx.app_data.get("apkm_include", [])
+            if k.strip()
+        ]
         return exc_kws, inc_kws
 
     @staticmethod
     def _get_search_queries(ctx: Context, base_ver: str) -> list[str]:
         search_term = ctx.app_data.get("search_term", ctx.pkg)
 
-        short_term = search_term.replace(" Browser", "").replace(" App", "").strip()
+        short_term = (
+            search_term.replace(" Browser", "")
+            .replace(" App", "")
+            .strip()
+        )
         if "." in short_term and " " not in short_term:
             parts = short_term.split(".")
             if len(parts) >= 2:
-                short_term = parts[-1] if len(parts[-1]) > 3 else parts[-2]
+                short_term = (
+                    parts[-1] if len(parts[-1]) > 3 else parts[-2]
+                )
 
         short_term = short_term.split("-")[0].strip()
 
@@ -216,7 +291,7 @@ class ApkmirrorScraper(BaseScraper):
             search_term,
             f"{search_term} {base_ver}",
             f"{short_term} {base_ver}",
-            short_term
+            short_term,
         ]))
 
     def _find_release(self, ctx: Context) -> str | None:
@@ -228,38 +303,66 @@ class ApkmirrorScraper(BaseScraper):
 
         queries = self._get_search_queries(ctx, base_ver)
         exc_kws, inc_kws = self._get_filter_kws(ctx)
+        total = len(queries)
 
-        for query in queries:
-            url = f"https://www.apkmirror.com/?post_type=app_release&s={quote_plus(query)}"
+        for idx, query in enumerate(queries, start=1):
+            print(
+                f"[INFO] Search query {idx}/{total}: {query!r}",
+                flush=True,
+            )
+            url = (
+                "https://www.apkmirror.com/"
+                f"?post_type=app_release&s={quote_plus(query)}"
+            )
             resp = self._safe_get(ctx, url)
 
             if not resp:
                 continue
 
-            if "?post_type=app_release" not in resp.url and "-release/" in resp.url:
-                print("[INFO] Auto-redirected to release page.")
+            if (
+                "?post_type=app_release" not in resp.url
+                and "-release/" in resp.url
+            ):
+                print("[INFO] Auto-redirected to release page.", flush=True)
                 return str(resp.url)
 
             soup = BeautifulSoup(resp.text, "html.parser")
             for link in soup.find_all("a", class_="fontBlack"):
-                valid_url = self._is_valid_release_link(link, base_ver, exc_kws, inc_kws)
+                valid_url = self._is_valid_release_link(
+                    link, base_ver, exc_kws, inc_kws
+                )
                 if valid_url:
+                    print(
+                        f"[INFO] Matched release: {_short_url(valid_url)}",
+                        flush=True,
+                    )
                     return valid_url
 
         return None
 
     @staticmethod
     def _log_expected_sha256(soup: BeautifulSoup) -> None:
-        modal = soup.select_one("#safeDownload .modal-body, .safeDownload .modal-body")
+        modal = soup.select_one(
+            "#safeDownload .modal-body, .safeDownload .modal-body"
+        )
         if not modal:
             return
         block_text = modal.text
-        if "APK file hashes" in block_text and "APK certificate fingerprints" in block_text:
+        if (
+            "APK file hashes" in block_text
+            and "APK certificate fingerprints" in block_text
+        ):
             file_section = block_text.split("APK file hashes")[1]
-            file_section = file_section.split("APK certificate fingerprints")[0]
+            file_section = file_section.split(
+                "APK certificate fingerprints"
+            )[0]
             hash_match = re.search(r"[0-9a-fA-F]{64}", file_section)
             if hash_match:
-                print(f"[INFO] Expected SHA-256 extracted: {hash_match.group(0)}")
+                print(
+                    f"[INFO] Expected SHA-256 extracted: "
+                    f"{hash_match.group(0)}",
+                    flush=True,
+                )
 
     @staticmethod
     def _get_download_buttons(soup: BeautifulSoup) -> list[Any]:
@@ -281,7 +384,9 @@ class ApkmirrorScraper(BaseScraper):
     def _pick_variant_button(btns: list[Any], is_bundle: bool) -> Any:
         for btn in btns:
             has_force = "forcebaseapk" in btn["href"].lower()
-            if (is_bundle and not has_force) or (not is_bundle and has_force):
+            if (is_bundle and not has_force) or (
+                not is_bundle and has_force
+            ):
                 return btn
         return btns[0]
 
@@ -292,17 +397,25 @@ class ApkmirrorScraper(BaseScraper):
             return dl_btn
 
         return d_soup.find(
-            lambda tag: tag.name == "a" and tag.has_attr("href") and (
-                "download.php" in tag["href"] or "/download/?key=" in tag["href"]
+            lambda tag: tag.name == "a"
+            and tag.has_attr("href")
+            and (
+                "download.php" in tag["href"]
+                or "/download/?key=" in tag["href"]
             )
         )
 
     def _process_variant_page(
         self, ctx: Context, var_url: str, is_bundle: bool
     ) -> str | None:
+        """Resolves and downloads from a variant page, logging each phase."""
+        print(
+            f"[INFO] Loading variant page: {_short_url(var_url)}",
+            flush=True,
+        )
         v_resp = self._safe_get(ctx, var_url)
         if not v_resp:
-            print("[WARN] APKMirror variant page failed.")
+            print("[WARN] APKMirror variant page failed.", flush=True)
             time.sleep(random.uniform(4.0, 7.0))
             return None
 
@@ -310,7 +423,10 @@ class ApkmirrorScraper(BaseScraper):
 
         btns = self._get_download_buttons(v_soup)
         if not btns:
-            print("[WARN] Download button not found on variant page.")
+            print(
+                "[WARN] Download button not found on variant page.",
+                flush=True,
+            )
             return None
 
         btn = self._pick_variant_button(btns, is_bundle)
@@ -318,32 +434,57 @@ class ApkmirrorScraper(BaseScraper):
         if not is_bundle:
             self._log_expected_sha256(v_soup)
 
-        p_type = 'APKM Bundle' if is_bundle else 'Raw APK'
-        print(f"[INFO] Preparing to extract: {p_type}")
+        p_type = "APKM Bundle" if is_bundle else "Raw APK"
+        print(f"[INFO] Preparing to extract: {p_type}", flush=True)
 
         dl_page = urljoin("https://www.apkmirror.com", btn["href"])
+        print(
+            f"[INFO] Resolving download page: {_short_url(dl_page)}",
+            flush=True,
+        )
         d_resp = self._safe_get(ctx, dl_page)
 
         if not d_resp:
-            print("[WARN] APKMirror download page failed.")
+            print("[WARN] APKMirror download page failed.", flush=True)
             return None
 
-        dl_btn = self._get_final_download_link(BeautifulSoup(d_resp.text, "html.parser"))
+        print("[INFO] Extracting final download link...", flush=True)
+        dl_btn = self._get_final_download_link(
+            BeautifulSoup(d_resp.text, "html.parser")
+        )
 
         out_path = None
         if dl_btn and dl_btn.has_attr("href"):
             out_path = ctx.get_out_path(".apkm" if is_bundle else ".apk")
-            print(f"[INFO] Downloading {p_type} from APKMirror...")
+            print(
+                f"[INFO] Downloading {p_type} from APKMirror...",
+                flush=True,
+            )
             time.sleep(random.uniform(3.0, 5.0))
+            start = time.monotonic()
             if not download_file_stream(
                 self._session,
                 urljoin("https://www.apkmirror.com", dl_btn["href"]),
                 out_path,
-                dl_page
+                dl_page,
             ):
+                print(
+                    f"[WARN] APKMirror download failed after "
+                    f"{time.monotonic() - start:.1f}s.",
+                    flush=True,
+                )
                 out_path = None
+            else:
+                print(
+                    f"[INFO] APKMirror download completed in "
+                    f"{time.monotonic() - start:.1f}s.",
+                    flush=True,
+                )
         else:
-            print("[WARN] Final download link not found on APKMirror.")
+            print(
+                "[WARN] Final download link not found on APKMirror.",
+                flush=True,
+            )
 
         return out_path
 
@@ -355,12 +496,16 @@ class ApkmirrorScraper(BaseScraper):
         if target_arch in text or "universal" in text or "noarch" in text:
             return True
 
-        arch_list = ("arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi")
+        arch_list = (
+            "arm64-v8a", "armeabi-v7a", "x86", "x86_64", "armeabi",
+        )
         if not any(a in text for a in arch_list):
             return True
 
         is_multi_arm = "arm64-v8a" in text and "armeabi-v7a" in text
-        if is_multi_arm and target_arch in ("arm64-v8a", "armeabi-v7a", "universal"):
+        if is_multi_arm and target_arch in (
+            "arm64-v8a", "armeabi-v7a", "universal",
+        ):
             return True
 
         if pass_idx >= 3 and target_arch == "universal" and (
@@ -372,7 +517,9 @@ class ApkmirrorScraper(BaseScraper):
 
     @staticmethod
     def _is_bundle_row(row: Any) -> bool:
-        badges = row.find_all("span", class_=re.compile(r"badge", re.IGNORECASE))
+        badges = row.find_all(
+            "span", class_=re.compile(r"badge", re.IGNORECASE)
+        )
         for badge in badges:
             if "BUNDLE" in badge.text.upper() or "APKM" in badge.text.upper():
                 return True
@@ -394,8 +541,12 @@ class ApkmirrorScraper(BaseScraper):
         if pass_idx in (3, 4) and not is_mismatch:
             return None
 
-        invalid_ver = pass_idx in (1, 3) and ver_code and ver_code not in text
-        if invalid_ver or not self._is_arch_match(text, ctx.arch.lower(), pass_idx):
+        invalid_ver = (
+            pass_idx in (1, 3) and ver_code and ver_code not in text
+        )
+        if invalid_ver or not self._is_arch_match(
+            text, ctx.arch.lower(), pass_idx
+        ):
             return None
 
         link = row.find("a", class_="accent_color")
@@ -403,14 +554,29 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         return self._process_variant_page(
-            ctx, urljoin("https://www.apkmirror.com", link["href"]), is_bundle
+            ctx,
+            urljoin("https://www.apkmirror.com", link["href"]),
+            is_bundle,
         )
 
     def _find_variant_in_rows(
-        self, ctx: Context, rows: list[Any], ver_code: str, force_b: bool
+        self,
+        ctx: Context,
+        rows: list[Any],
+        ver_code: str,
+        force_b: bool,
     ) -> str | None:
         for pass_idx in (1, 2, 3, 4):
-            opts = {"ver_code": ver_code, "pass_idx": pass_idx, "force_b": force_b}
+            print(
+                f"[INFO] Variant pass {pass_idx}/4 "
+                f"(bundle={force_b}).",
+                flush=True,
+            )
+            opts = {
+                "ver_code": ver_code,
+                "pass_idx": pass_idx,
+                "force_b": force_b,
+            }
             for row in rows:
                 link = row.find("a", class_="accent_color")
                 if not link:
@@ -428,16 +594,28 @@ class ApkmirrorScraper(BaseScraper):
     def _download_variant(
         self, ctx: Context, rel_url: str, ver_code: str, force_b: bool
     ) -> str | None:
+        print(
+            f"[INFO] Loading release page: {_short_url(rel_url)}",
+            flush=True,
+        )
         resp = self._safe_get(ctx, rel_url)
         if not resp:
-            print("[WARN] APKMirror release page failed.")
+            print("[WARN] APKMirror release page failed.", flush=True)
             return None
 
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        v_table = soup.find("div", class_=re.compile(r"variants-table", re.IGNORECASE))
-        rows = v_table.find_all("div", class_="table-row") if v_table else soup.find_all(
-            "div", class_="table-row"
+        v_table = soup.find(
+            "div", class_=re.compile(r"variants-table", re.IGNORECASE)
+        )
+        rows = (
+            v_table.find_all("div", class_="table-row")
+            if v_table
+            else soup.find_all("div", class_="table-row")
+        )
+        print(
+            f"[INFO] Parsed {len(rows)} variant row(s) from release table.",
+            flush=True,
         )
 
         if rows:
@@ -445,7 +623,10 @@ class ApkmirrorScraper(BaseScraper):
             if out:
                 return out
 
-            print("[WARN] No matching variants found in release table.")
+            print(
+                "[WARN] No matching variants found in release table.",
+                flush=True,
+            )
             return None
 
         dl_btn = soup.find(
@@ -455,23 +636,31 @@ class ApkmirrorScraper(BaseScraper):
         )
 
         if dl_btn:
-            return self._process_variant_page(ctx, rel_url, "bundle" in dl_btn.text.lower())
+            return self._process_variant_page(
+                ctx, rel_url, "bundle" in dl_btn.text.lower()
+            )
 
-        print("[WARN] Release table and fallback download button both missing.")
+        print(
+            "[WARN] Release table and fallback download button both missing.",
+            flush=True,
+        )
         return None
 
     def scrape(self, ctx: Context) -> str | None:
         """Executes the scraping process from APKMirror."""
-        print(f"[TIER 1] APKMirror: v{ctx.target_ver}")
+        print(f"[TIER 1] APKMirror: v{ctx.target_ver}", flush=True)
         ver_code = ctx.app_data.get("version_codes", {}).get(ctx.arch)
         try:
             rel_url = self._find_release(ctx)
             if not rel_url:
-                print("[WARN] Release not found.")
+                print("[WARN] Release not found.", flush=True)
                 return None
             return self._download_variant(
-                ctx, rel_url, ver_code, ctx.app_data.get("force_bundle", False)
+                ctx,
+                rel_url,
+                ver_code,
+                ctx.app_data.get("force_bundle", False),
             )
         except Exception as err:  # pylint: disable=broad-except
-            print(f"[ERROR] Tier 1 failed: {err}")
+            print(f"[ERROR] Tier 1 failed: {err}", flush=True)
         return None
