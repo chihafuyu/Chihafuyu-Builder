@@ -122,7 +122,6 @@ jobs:
 
           python -m pip install \
             --disable-pip-version-check \
-            --no-cache-dir \
             -r requirements.txt
 
           APKEEP_VERSION='1.1.0'
@@ -384,6 +383,5 @@ jobs:
           set -euo pipefail
           python -m pip install \
             --disable-pip-version-check \
-            --no-cache-dir \
             "kurigram~=2.2" "TgrCrypto~=1.1"
           python tg_upload.py
