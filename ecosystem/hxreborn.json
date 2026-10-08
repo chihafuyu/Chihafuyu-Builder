@@ -56,6 +56,24 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "musixmatch": {
+                "package": "com.musixmatch.android.lyrify",
+                "search_term": "Musixmatch",
+                "stable": [
+                    "8.4.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "version_codes": {
+                    "universal": "2026061901",
+                    "arm64-v8a": "2026061901",
+                    "armeabi-v7a": "2026061901",
+                    "x86_64": "2026061901",
+                    "x86": "2026061901"
+                },
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "notesnook": {
                 "package": "com.streetwriters.notesnook",
                 "search_term": "Notesnook",
@@ -72,17 +90,6 @@
                 "search_term": "Photo Editor Pro",
                 "stable": [
                     "1.802.266"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "projectivy-launcher": {
-                "package": "com.spocky.projengmenu",
-                "search_term": "Projectivy Launcher",
-                "stable": [
-                    "4.71"
                 ],
                 "beta": [],
                 "strip": true,

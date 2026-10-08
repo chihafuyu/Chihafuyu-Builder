@@ -101,20 +101,20 @@
                 "package": "com.instagram.android",
                 "search_term": "Instagram",
                 "stable": [
-                    "449.0.0.52.84"
+                    "450.0.0.50.77"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "385511871"
+                    "arm64-v8a": "385611438"
                 },
                 "force_bundle": true,
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Clean up Reels": {
+                    "Change version code": {
                         "enabled": true
                     },
-                    "Default playback quality": {
+                    "Clean up Reels": {
                         "enabled": true
                     },
                     "Don't send reel watch history": {
@@ -123,10 +123,10 @@
                     "Download any video": {
                         "enabled": true
                     },
-                    "Hide Reels in the feed": {
+                    "Hide group buttons on the share sheet": {
                         "enabled": true
                     },
-                    "Hide group buttons on the share sheet": {
+                    "Hide Reels in the feed": {
                         "enabled": true
                     },
                     "Hide the Explore grid": {
@@ -136,9 +136,6 @@
                         "enabled": true
                     },
                     "Hide the Repost button": {
-                        "enabled": true
-                    },
-                    "Keep the reel speed": {
                         "enabled": true
                     },
                     "Open developer options": {
@@ -154,9 +151,6 @@
                         "enabled": true
                     },
                     "Stop Story auto-advance": {
-                        "enabled": true
-                    },
-                    "Story ring size": {
                         "enabled": true
                     },
                     "Tap to play": {
