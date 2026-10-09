@@ -16,6 +16,9 @@
                 "options_override": {
                     "Material You theme": {
                         "enabled": true
+                    },
+                    "Spoof package version": {
+                        "enabled": true
                     }
                 }
             }
