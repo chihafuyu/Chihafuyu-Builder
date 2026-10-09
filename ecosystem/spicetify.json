@@ -23,14 +23,17 @@
                     "Hide player ad cards": {
                         "enabled": false
                     },
-                    "Hide Premium tab": {
-                        "enabled": false
+                    "Spicetify extensions": {
+                        "enabled": true
                     },
                     "Pin shortcuts on Home": {
                         "enabled": false
                     },
                     "Local files from a server": {
                         "enabled": false
+                    },
+                    "Hide Premium tab": {
+                        "enabled": true
                     },
                     "Theme colors": {
                         "enabled": false,
