@@ -57,7 +57,7 @@ permissions:
 
 jobs:
   execute:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 350
     # Serialize Telegram uploads globally (Pyrogram session is shared).
     # Non-Telegram runs use a per-ecosystem/tag prefix key.
