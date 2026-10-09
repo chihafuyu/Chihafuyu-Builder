@@ -97,6 +97,17 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "temple-run-2": {
+                "package": "com.imangi.templerun2",
+                "search_term": "Temple Run 2",
+                "stable": [
+                    "1.136.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }

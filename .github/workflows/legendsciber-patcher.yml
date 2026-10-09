@@ -44,6 +44,11 @@ name: 👑 Legendsciber Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_temple_run_2:
+        description: 'Patch temple-run-2'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -118,6 +123,7 @@ jobs:
       APP_SMASH_HIT: ${{ inputs.app_smash_hit }}
       APP_SOLAR_SMASH: ${{ inputs.app_solar_smash }}
       APP_SUBWAY_SURFERS: ${{ inputs.app_subway_surfers }}
+      APP_TEMPLE_RUN_2: ${{ inputs.app_temple_run_2 }}
     steps:
       - id: build-list
         run: |
@@ -146,6 +152,9 @@ jobs:
           fi
           if [[ "$APP_SUBWAY_SURFERS" == "true" ]]; then
             LIST="$LIST,subway-surfers"
+          fi
+          if [[ "$APP_TEMPLE_RUN_2" == "true" ]]; then
+            LIST="$LIST,temple-run-2"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
