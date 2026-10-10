@@ -21,11 +21,8 @@ EDITION_SLUG_REGEX = re.compile(
     re.IGNORECASE,
 )
 
-# Maximum attempts for a single FlareSolverr fetch before giving up.
 FETCH_ATTEMPTS = 3
-# Per-attempt timeout when handing the request to FlareSolverr.
 FETCH_TIMEOUT_SECONDS = 45
-# URL prefix used to shorten log lines that would otherwise be very long.
 URL_LOG_WIDTH = 90
 
 
@@ -175,6 +172,15 @@ class ApkmirrorScraper(BaseScraper):
     def close(self) -> None:
         """Cleans up the FlareSolverr session to prevent memory leaks."""
         self._session.close()
+
+    @staticmethod
+    def _extract_version_codes(text: str) -> list[str]:
+        """Extracts candidate version codes (6+ digit numbers) from text.
+
+        APKMirror variant rows embed the version code as a standalone
+        numeric token, e.g. 'arm64-v8a 475417104 nodpi BUNDLE'.
+        """
+        return list(dict.fromkeys(re.findall(r"\b\d{6,}\b", text)))
 
     def _safe_get(self, ctx: Context, url: str) -> Any | None:
         """Fetches page source ensuring FlareSolverr resolves WAF challenges.
@@ -525,33 +531,76 @@ class ApkmirrorScraper(BaseScraper):
                 return True
         return "bundle" in row.text.lower()
 
+    @staticmethod
+    def _row_matches(
+        ctx: Context,
+        text: str,
+        opts: dict,
+        is_bundle: bool,
+        ver_code: str,
+    ) -> bool:
+        """Returns True when the row satisfies pass, arch, and version filters."""
+        pass_idx = opts.get("pass_idx", 1)
+        force_b = opts.get("force_b", False)
+        is_mismatch = not is_bundle if force_b else is_bundle
+
+        if pass_idx in (1, 2) and is_mismatch:
+            return False
+        if pass_idx in (3, 4) and not is_mismatch:
+            return False
+        if pass_idx in (1, 3) and ver_code and ver_code not in text:
+            return False
+        return ApkmirrorScraper._is_arch_match(
+            text, ctx.arch.lower(), pass_idx
+        )
+
+    @staticmethod
+    def _log_variant_codes(
+        ctx: Context, row: Any, ver_code: str, is_bundle: bool
+    ) -> None:
+        """Logs expected vs detected version codes for the matched row."""
+        row_text = row.get_text(" ", strip=True)
+        detected_codes = ApkmirrorScraper._extract_version_codes(row_text)
+        expected = ver_code or "<not specified>"
+
+        if ver_code and ver_code in row_text.lower():
+            status = "MATCH"
+        elif ver_code:
+            status = "MISMATCH"
+        else:
+            status = "candidate"
+
+        print(
+            f"[INFO] Variant {status}: "
+            f"expected_code={expected} "
+            f"detected_codes={detected_codes or ['?']} "
+            f"arch={ctx.arch} bundle={is_bundle}",
+            flush=True,
+        )
+
+        if status == "MISMATCH":
+            print(
+                f"[WARN] Row detected codes {detected_codes} do NOT "
+                f"contain expected {ver_code}. The APK may not match "
+                f"your JSON version code exactly.",
+                flush=True,
+            )
+
     def _extract_row(
         self, ctx: Context, row: Any, opts: dict
     ) -> str | None:
         text = row.text.lower()
-        pass_idx = opts.get("pass_idx", 1)
-        force_b = opts.get("force_b", False)
         ver_code = str(opts.get("ver_code") or "").lower()
-
         is_bundle = self._is_bundle_row(row)
 
-        is_mismatch = not is_bundle if force_b else is_bundle
-        if pass_idx in (1, 2) and is_mismatch:
-            return None
-        if pass_idx in (3, 4) and not is_mismatch:
-            return None
-
-        invalid_ver = (
-            pass_idx in (1, 3) and ver_code and ver_code not in text
-        )
-        if invalid_ver or not self._is_arch_match(
-            text, ctx.arch.lower(), pass_idx
-        ):
+        if not self._row_matches(ctx, text, opts, is_bundle, ver_code):
             return None
 
         link = row.find("a", class_="accent_color")
         if not link:
             return None
+
+        self._log_variant_codes(ctx, row, ver_code, is_bundle)
 
         return self._process_variant_page(
             ctx,
@@ -588,6 +637,12 @@ class ApkmirrorScraper(BaseScraper):
 
                 out = self._extract_row(ctx, row, opts)
                 if out:
+                    if ver_code:
+                        print(
+                            f"[INFO] Download complete for version "
+                            f"code {ver_code}.",
+                            flush=True,
+                        )
                     return out
         return None
 
@@ -650,6 +705,9 @@ class ApkmirrorScraper(BaseScraper):
         """Executes the scraping process from APKMirror."""
         print(f"[TIER 1] APKMirror: v{ctx.target_ver}", flush=True)
         ver_code = ctx.app_data.get("version_codes", {}).get(ctx.arch)
+
+        self._log_target_info(ctx, ver_code)
+
         try:
             rel_url = self._find_release(ctx)
             if not rel_url:
@@ -664,3 +722,22 @@ class ApkmirrorScraper(BaseScraper):
         except Exception as err:  # pylint: disable=broad-except
             print(f"[ERROR] Tier 1 failed: {err}", flush=True)
         return None
+
+    @staticmethod
+    def _log_target_info(ctx: Context, ver_code: str | None) -> None:
+        """Logs the target package, version, arch, and expected version code."""
+        print(f"[INFO] Target package: {ctx.pkg}", flush=True)
+        print(f"[INFO] Target version: {ctx.target_ver}", flush=True)
+        print(f"[INFO] Target arch: {ctx.arch}", flush=True)
+        print(
+            f"[INFO] Expected version code (from JSON): "
+            f"{ver_code or '<missing>'}",
+            flush=True,
+        )
+
+        if not ver_code:
+            print(
+                "[WARN] No version code found in app_data.version_codes "
+                f"for arch '{ctx.arch}'. Cannot verify exact build.",
+                flush=True,
+            )
