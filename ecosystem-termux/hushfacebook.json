@@ -5,10 +5,10 @@
                 "package": "com.facebook.katana",
                 "search_term": "Facebook",
                 "stable": [
-                    "581.0.0.45.58"
+                    "582.0.0.50.54"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "475215365"
+                    "arm64-v8a": "475417104"
                 },
                 "force_bundle": true,
                 "strip": true,
