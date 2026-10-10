@@ -30,7 +30,7 @@
                 "package": "com.google.android.youtube",
                 "search_term": "YouTube",
                 "stable": [
-                    "21.16.256"
+                    "21.20.405"
                 ],
                 "beta": [
                     "21.40.161"
@@ -62,10 +62,10 @@
                     "9.15.51"
                 ],
                 "beta": [
-                    "9.26.56"
+                    "9.40.51"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "92656240"
+                    "arm64-v8a": "94051240"
                 },
                 "strip": true,
                 "force_bundle": false,
