@@ -19,7 +19,6 @@
                     "5.4.16"
                 ],
                 "beta": [],
-                "strip": true,
                 "version_codes": {
                     "universal": "12L+",
                     "arm64-v8a": "12L+",
@@ -27,6 +26,7 @@
                     "x86_64": "12L+",
                     "x86": "12L+"
                 },
+                "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
@@ -59,7 +59,6 @@
                     "13.1.2"
                 ],
                 "beta": [],
-                "strip": true,
                 "version_codes": {
                     "universal": "261320",
                     "arm64-v8a": "261320",
@@ -67,6 +66,25 @@
                     "x86_64": "261320",
                     "x86": "261320"
                 },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "librera": {
+                "package": "com.foobnix.pdf.reader",
+                "search_term": "Librera",
+                "stable": [
+                    "9.4.20"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "7175",
+                    "arm64-v8a": "7175",
+                    "armeabi-v7a": "7175",
+                    "x86_64": "7175",
+                    "x86": "7175"
+                },
+                "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
@@ -77,7 +95,6 @@
                     "10.7"
                 ],
                 "beta": [],
-                "strip": true,
                 "version_codes": {
                     "universal": "1007000",
                     "arm64-v8a": "1007000",
@@ -85,6 +102,7 @@
                     "x86_64": "1007000",
                     "x86": "1007000"
                 },
+                "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
@@ -95,11 +113,11 @@
                     "5.4.3.19019"
                 ],
                 "beta": [],
-                "strip": true,
-                "force_bundle": true,
                 "version_codes": {
                     "arm64-v8a": "19019"
                 },
+                "strip": true,
+                "force_bundle": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
@@ -110,7 +128,6 @@
                     "5.4.9"
                 ],
                 "beta": [],
-                "strip": true,
                 "version_codes": {
                     "universal": "5409",
                     "arm64-v8a": "5409",
@@ -118,6 +135,7 @@
                     "x86_64": "5409",
                     "x86": "5409"
                 },
+                "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
@@ -150,7 +168,6 @@
                     "4.87"
                 ],
                 "beta": [],
-                "strip": true,
                 "version_codes": {
                     "universal": "48761",
                     "arm64-v8a": "48761",
@@ -158,6 +175,7 @@
                     "x86_64": "48761",
                     "x86": "48761"
                 },
+                "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
@@ -168,7 +186,6 @@
                     "3.25.1"
                 ],
                 "beta": [],
-                "strip": true,
                 "version_codes": {
                     "universal": "325001",
                     "arm64-v8a": "325001",
@@ -176,6 +193,7 @@
                     "x86_64": "325001",
                     "x86": "325001"
                 },
+                "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
@@ -186,24 +204,6 @@
                     "6.20.1"
                 ],
                 "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "youcut": {
-                "package": "com.camerasideas.trimmer",
-                "search_term": "YouCut",
-                "stable": [
-                    "1.721.1224"
-                ],
-                "beta": [],
-                "version_codes": {
-                    "universal": "1224",
-                    "arm64-v8a": "1224",
-                    "armeabi-v7a": "1224",
-                    "x86_64": "12224",
-                    "x86": "1224"
-                },
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}

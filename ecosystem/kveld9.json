@@ -114,7 +114,7 @@
                         "enabled": true
                     },
                     "Disable HDR Video Playback": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "Disable Post-Download Share Dialog": {
                         "enabled": true
@@ -137,6 +137,9 @@
                     "Enable Live Search": {
                         "enabled": true
                     },
+                    "Feed Bloat & Distraction Blocker": {
+                        "enabled": true
+                    },
                     "Feed Interface Declutter": {
                         "enabled": true
                     },
@@ -150,12 +153,12 @@
                         "enabled": true
                     },
                     "Hide Promotional Content": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "Language Pack Purger": {
                         "enabled": true,
                         "options": {
-                            "locales": "en, id, in"
+                            "locales": "en, id, in, ru"
                         }
                     },
                     "Live Stream 3D Gift Optimizer": {
@@ -186,7 +189,7 @@
                         "enabled": true
                     },
                     "System Font": {
-                        "enabled": true
+                        "enabled": false
                     },
                     "TikTok Privacy Permissions Stripper": {
                         "enabled": true

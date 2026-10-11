@@ -1,0 +1,20 @@
+{
+    "aidan": {
+        "apps": {
+            "adobe-scan": {
+                "package": "com.adobe.scan.android",
+                "search_term": "Adobe Scan",
+                "stable": [
+                    "26.09.25"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "arm64-v8a": "263063472"
+                },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

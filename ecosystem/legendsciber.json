@@ -1,6 +1,17 @@
 {
     "legendsciber": {
         "apps": {
+            "age-of-war-2": {
+                "package": "com.maxgames.aow2",
+                "search_term": "Age of War 2",
+                "stable": [
+                    "2026.1.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "dan-the-man": {
                 "package": "com.halfbrick.dantheman",
                 "search_term": "Dan The Man",

@@ -213,11 +213,11 @@
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
                 "stable": [
-                    "14.38.0"
+                    "14.39.0"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "14388010"
+                    "universal": "14398020"
                 },
                 "strip": true,
                 "force_bundle": false,
@@ -286,15 +286,15 @@
                 "package": "org.telegram.messenger.web",
                 "search_term": "Telegram Web",
                 "stable": [
-                    "12.10.6"
+                    "13.0.1"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "71129",
-                    "armeabi-v7a": "71129",
-                    "universal": "71129",
-                    "x86": "71129",
-                    "x86_64": "71129"
+                    "arm64-v8a": "71679",
+                    "armeabi-v7a": "71679",
+                    "universal": "71679",
+                    "x86": "71679",
+                    "x86_64": "71679"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -304,11 +304,11 @@
                 "package": "com.instagram.barcelona",
                 "search_term": "Threads",
                 "stable": [
-                    "449.0.0.54.82"
+                    "450.0.0.51.78"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "511908382"
+                    "arm64-v8a": "512008342"
                 },
                 "strip": true,
                 "force_bundle": true,

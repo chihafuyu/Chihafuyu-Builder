@@ -1,0 +1,21 @@
+{
+    "venusisjaded": {
+        "apps": {
+            "discord": {
+                "package": "com.discord",
+                "search_term": "Discord",
+                "stable": [
+                    "348.10 - Stable"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "348010"
+                },
+                "strip": true,
+                "force_bundle": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}
