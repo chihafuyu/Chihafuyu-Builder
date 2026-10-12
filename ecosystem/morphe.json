@@ -58,10 +58,10 @@
                     "9.20.53"
                 ],
                 "beta": [
-                    "9.40.51"
+                    "9.41.52"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "94051240"
+                    "arm64-v8a": "94152240"
                 },
                 "strip": true,
                 "force_bundle": false,
