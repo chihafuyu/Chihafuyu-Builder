@@ -9,6 +9,11 @@ name: 🎨 Browzomje Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_pinterest:
+        description: 'Patch pinterest'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -76,6 +81,7 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_EASY_SUDOKU: ${{ inputs.app_easy_sudoku }}
+      APP_PINTEREST: ${{ inputs.app_pinterest }}
     steps:
       - id: build-list
         run: |
@@ -83,6 +89,9 @@ jobs:
           LIST=""
           if [[ "$APP_EASY_SUDOKU" == "true" ]]; then
             LIST="$LIST,easy-sudoku"
+          fi
+          if [[ "$APP_PINTEREST" == "true" ]]; then
+            LIST="$LIST,pinterest"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

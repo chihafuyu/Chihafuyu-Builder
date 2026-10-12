@@ -4,8 +4,18 @@ name: 🐻 Bearinmindcat Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
+      app_alltrails:
+        description: 'Patch alltrails'
+        required: true
+        type: boolean
+        default: true
       app_google_maps:
-        description: 'Patch Google Maps'
+        description: 'Patch google-maps'
+        required: true
+        type: boolean
+        default: true
+      app_waze:
+        description: 'Patch waze'
         required: true
         type: boolean
         default: true
@@ -75,14 +85,22 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
+      APP_ALLTRAILS: ${{ inputs.app_alltrails }}
       APP_GOOGLE_MAPS: ${{ inputs.app_google_maps }}
+      APP_WAZE: ${{ inputs.app_waze }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
+          if [[ "$APP_ALLTRAILS" == "true" ]]; then
+            LIST="$LIST,alltrails"
+          fi
           if [[ "$APP_GOOGLE_MAPS" == "true" ]]; then
             LIST="$LIST,google-maps"
+          fi
+          if [[ "$APP_WAZE" == "true" ]]; then
+            LIST="$LIST,waze"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

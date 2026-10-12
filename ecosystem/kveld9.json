@@ -137,9 +137,6 @@
                     "Enable Live Search": {
                         "enabled": true
                     },
-                    "Feed Bloat & Distraction Blocker": {
-                        "enabled": true
-                    },
                     "Feed Interface Declutter": {
                         "enabled": true
                     },
@@ -151,9 +148,6 @@
                     },
                     "Hide Inbox Story & Status Tray": {
                         "enabled": true
-                    },
-                    "Hide Promotional Content": {
-                        "enabled": false
                     },
                     "Language Pack Purger": {
                         "enabled": true,

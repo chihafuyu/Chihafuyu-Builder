@@ -1,6 +1,17 @@
 {
     "bearinmindcat": {
         "apps": {
+            "alltrails": {
+                "package": "com.alltrails.alltrails",
+                "search_term": "AllTrails",
+                "stable": [
+                    "26.3.20"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "google-maps": {
                 "package": "com.google.android.apps.maps",
                 "search_term": "Google Maps",
@@ -10,6 +21,17 @@
                 "beta": [],
                 "strip": true,
                 "force_bundle": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "waze": {
+                "package": "com.waze",
+                "search_term": "Waze",
+                "stable": [
+                    "5.24.5.0"
+                ],
+                "beta": [],
+                "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             }

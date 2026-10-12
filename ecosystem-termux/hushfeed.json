@@ -23,6 +23,9 @@
                     "Allow screenshots and Circle to Search": {
                         "enabled": true
                     },
+                    "App lock": {
+                        "enabled": true
+                    },
                     "Automatic video advance": {
                         "enabled": true
                     },
@@ -65,6 +68,12 @@
                     "Disable telemetry": {
                         "enabled": true
                     },
+                    "Disable the long press quick share": {
+                        "enabled": true
+                    },
+                    "Disable the long press repost": {
+                        "enabled": true
+                    },
                     "Double-tap controls": {
                         "enabled": true
                     },
@@ -78,6 +87,9 @@
                         "enabled": true
                     },
                     "Feature Gate Recorder": {
+                        "enabled": true
+                    },
+                    "Feed tab navigation": {
                         "enabled": true
                     },
                     "Feed text sizes": {
@@ -101,10 +113,25 @@
                     "Hide comment popup ads": {
                         "enabled": true
                     },
+                    "Hide feed LIVE button": {
+                        "enabled": true
+                    },
+                    "Hide feed follow button": {
+                        "enabled": true
+                    },
+                    "Hide feed save button": {
+                        "enabled": true
+                    },
+                    "Hide floating promotions": {
+                        "enabled": true
+                    },
                     "Hide inbox items": {
                         "enabled": true
                     },
                     "Hide inbox stories": {
+                        "enabled": true
+                    },
+                    "Hide profile shortcuts": {
                         "enabled": true
                     },
                     "Hide search suggestions": {
@@ -186,6 +213,9 @@
                         "enabled": true
                     },
                     "Skip content warnings": {
+                        "enabled": true
+                    },
+                    "Skip first-launch setup": {
                         "enabled": true
                     },
                     "Skip the splash ad": {

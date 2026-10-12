@@ -17,7 +17,11 @@
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "NewX: Share post as image": {
+                        "enabled": true
+                    }
+                }
             }
         }
     }

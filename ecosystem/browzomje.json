@@ -19,7 +19,11 @@
                     "14.39.0"
                 ],
                 "beta": [],
+                "version_codes": {
+                    "universal": "14398020"
+                },
                 "strip": true,
+                "force_bundle": false,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             }

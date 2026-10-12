@@ -192,10 +192,10 @@
                 "package": "com.facebook.orca",
                 "search_term": "Messenger",
                 "stable": [
-                    "581.0.0.49.91"
+                    "582.0.0.61.92"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "346213580"
+                    "arm64-v8a": "346415772"
                 },
                 "force_bundle": false,
                 "strip": true,
