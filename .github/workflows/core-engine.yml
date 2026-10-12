@@ -357,6 +357,21 @@ jobs:
             exit 1
           }
 
+          # Auxiliary exports (options / logs) are non-fatal but reported.
+          APK_COUNT=$(find "./$INPUT_ECOSYSTEM/Output" -maxdepth 1 \
+            -type f -name '*.apk' | wc -l)
+          JSON_COUNT=$(find "./$INPUT_ECOSYSTEM/Output" -maxdepth 1 \
+            -type f -name '*.json' | wc -l)
+          LOG_COUNT=$(find "./$INPUT_ECOSYSTEM/Output" -maxdepth 1 \
+            -type f -name '*.txt' | wc -l)
+
+          printf '[INFO] Export summary: %s APK, %s JSON, %s TXT\n' \
+            "$APK_COUNT" "$JSON_COUNT" "$LOG_COUNT"
+
+          if [[ "$JSON_COUNT" -eq 0 && "$LOG_COUNT" -eq 0 ]]; then
+            echo "::warning::No options.json or log exports were generated."
+          fi
+
       - name: Publish to GitHub Releases
         if: inputs.upload_github_release
         uses: softprops/action-gh-release@v3.0.3
@@ -366,7 +381,10 @@ jobs:
             Patched Apps - ${{ inputs.release_tag_prefix }}
             (${{ github.run_id }})
           body_path: ./${{ inputs.ecosystem }}/changelog.md
-          files: ./${{ inputs.ecosystem }}/Output/*.apk
+          files: |
+            ./${{ inputs.ecosystem }}/Output/*.apk
+            ./${{ inputs.ecosystem }}/Output/*.json
+            ./${{ inputs.ecosystem }}/Output/*.txt
           prerelease: ${{ env.IS_PRERELEASE == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -7,10 +7,12 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import threading
 import time
+from contextlib import ExitStack
 from typing import Any
 
 from scrapers import AVAILABLE_SCRAPERS
@@ -166,17 +168,26 @@ def _parse_custom_versions(ver_str: str) -> dict:
     return versions
 
 
-def _get_patched_apk_path(
-    app: str, ver: str, arch: str, args: Any, state: dict
+def _get_output_path(
+    app_info: tuple[str, str, str],
+    args: Any,
+    state: dict,
+    kind: str,
 ) -> str:
-    """Constructs the output path for the patched APK."""
-    s_app = _safe_filename(app)
-    s_eco = _safe_filename(args.ecosystem)
-    s_ver = _safe_filename(ver)
-    s_arc = _safe_filename(arch)
-    s_cln = _safe_filename(state["clean_ver"])
-    f_name = f"{s_app}_{s_eco}_patched_{s_ver}-{s_arc}_patches_{s_cln}.apk"
-    return os.path.join(state["out_dir"], f_name)
+    """Constructs output paths for APK, options, or log files."""
+    app, ver, arch = app_info
+    stem = (
+        f"{_safe_filename(app)}_{_safe_filename(args.ecosystem)}_"
+        f"{_safe_filename(ver)}-{_safe_filename(arch)}_"
+        f"patches_{_safe_filename(state['clean_ver'])}"
+    )
+    if kind == "apk":
+        return os.path.join(state["out_dir"], f"{stem}_patched.apk")
+    if kind == "options":
+        return os.path.join(state["out_dir"], f"{stem}_options.json")
+    if kind == "log":
+        return os.path.join(state["out_dir"], f"{stem}_log.txt")
+    raise ValueError(f"Unknown output kind: {kind}")
 
 
 def build_patch_command(
@@ -228,47 +239,66 @@ def build_patch_command(
     return cmd
 
 
-def execute_patch_cli(patch_cmd: list[str]) -> tuple[int, bool]:
-    """Executes the patch CLI under a credential-free env with a hard timeout."""
+def execute_patch_cli(
+    patch_cmd: list[str], log_path: str | None = None
+) -> tuple[int, bool]:
+    """Executes the patch CLI under a credential-free env with a hard timeout.
+
+    When log_path is provided, the combined stdout/stderr stream is written
+    to that file so it can be exported alongside the patched APK.
+    """
     zero_patches = False
-    try:
-        with subprocess.Popen(
-            patch_cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            env=_sandboxed_env(),
-        ) as proc:
 
-            def _stream_output() -> None:
-                nonlocal zero_patches
-                if proc.stdout is None:
-                    return
-                for line in proc.stdout:
-                    print(line, end="")
-                    if "Applying 0 patches" in line:
-                        zero_patches = True
-
-            reader = threading.Thread(target=_stream_output, daemon=True)
-            reader.start()
-
+    with ExitStack() as stack:
+        log_handle = None
+        if log_path:
             try:
-                proc.wait(timeout=SUBPROCESS_TIMEOUT_SECONDS)
-            except subprocess.TimeoutExpired:
-                print(
-                    f"[ERROR] Patch CLI timed out after "
-                    f"{SUBPROCESS_TIMEOUT_SECONDS}s. Killing."
+                log_handle = stack.enter_context(
+                    open(log_path, "w", encoding="utf-8")
                 )
-                proc.kill()
-                proc.wait()
-                reader.join(timeout=5)
-                return 124, zero_patches
+            except OSError as err:
+                print(f"[WARN] Could not open patch log {log_path}: {err}")
 
-            reader.join(timeout=5)
-            return proc.returncode, zero_patches
-    except OSError as err:
-        print(f"[ERROR] Failed to execute patch CLI: {err}")
-        return 127, zero_patches
+        try:
+            with subprocess.Popen(
+                patch_cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                env=_sandboxed_env(),
+            ) as proc:
+
+                def _stream_output() -> None:
+                    nonlocal zero_patches
+                    if proc.stdout is None:
+                        return
+                    for line in proc.stdout:
+                        print(line, end="")
+                        if log_handle is not None:
+                            log_handle.write(line)
+                        if "Applying 0 patches" in line:
+                            zero_patches = True
+
+                reader = threading.Thread(target=_stream_output, daemon=True)
+                reader.start()
+
+                try:
+                    proc.wait(timeout=SUBPROCESS_TIMEOUT_SECONDS)
+                except subprocess.TimeoutExpired:
+                    print(
+                        f"[ERROR] Patch CLI timed out after "
+                        f"{SUBPROCESS_TIMEOUT_SECONDS}s. Killing."
+                    )
+                    proc.kill()
+                    proc.wait()
+                    reader.join(timeout=5)
+                    return 124, zero_patches
+
+                reader.join(timeout=5)
+                return proc.returncode, zero_patches
+        except OSError as err:
+            print(f"[ERROR] Failed to execute patch CLI: {err}")
+            return 127, zero_patches
 
 
 def _generate_options_json(
@@ -325,13 +355,32 @@ def _resolve_target_version(app_data: dict, args: Any, custom_ver: str) -> str:
     return t_ver
 
 
-def process_single_app(
-    app_name: str, args: Any, app_data: dict, custom_ver: str, state: dict
-) -> None:
-    """Processes a single application for downloading and patching safely."""
-    t_ver = _resolve_target_version(app_data, args, custom_ver)
-    arch = app_data.get("force_arch", args.arch)
-    print(f"\n--- {app_name} ({app_data['package']}) ---")
+def _export_options_snapshot(json_file: str, out_opts: str) -> bool:
+    """Copies the generated options.json to the Output folder for release.
+
+    Returns True on success. Failure is non-fatal but logged.
+    """
+    try:
+        shutil.copy2(json_file, out_opts)
+        print(f"[INFO] Exported options snapshot: {os.path.basename(out_opts)}")
+        return True
+    except OSError as err:
+        print(f"[WARN] Could not export options.json to Output: {err}")
+        return False
+
+
+def _prepare_patch_inputs(
+    app_info: tuple[str, str, str],
+    args: Any,
+    app_data: dict,
+    state: dict,
+) -> dict | None:
+    """Downloads APK, generates options, and returns a bundle of paths.
+
+    The returned dict has keys: apk, options, out_apk, out_opts, out_log.
+    Returns None if download or options generation failed.
+    """
+    app_name, t_ver, arch = app_info
 
     ctx = Context(
         get_scraper(),
@@ -343,17 +392,45 @@ def process_single_app(
     )
     apk_path = download_apk(ctx, args)
     if not apk_path:
-        return
+        return None
 
     json_file = _generate_options_json(app_name, args, app_data, state["workspace"])
     if not json_file:
+        return None
+
+    return {
+        "apk": apk_path,
+        "options": json_file,
+        "out_apk": _get_output_path(app_info, args, state, "apk"),
+        "out_opts": _get_output_path(app_info, args, state, "options"),
+        "out_log": _get_output_path(app_info, args, state, "log"),
+    }
+
+
+def process_single_app(
+    app_name: str, args: Any, app_data: dict, custom_ver: str, state: dict
+) -> None:
+    """Processes a single application for downloading and patching safely."""
+    t_ver = _resolve_target_version(app_data, args, custom_ver)
+    arch = app_data.get("force_arch", args.arch)
+    print(f"\n--- {app_name} ({app_data['package']}) ---")
+
+    app_info = (app_name, t_ver, arch)
+    bundle = _prepare_patch_inputs(app_info, args, app_data, state)
+    if bundle is None:
         return
 
-    out_apk = _get_patched_apk_path(app_name, t_ver, arch, args, state)
+    # Preserve the exact options used for this patch, even if patching fails.
+    _export_options_snapshot(bundle["options"], bundle["out_opts"])
 
     print("[INFO] Patching via CLI...")
-    cmd = build_patch_command(args, app_data, (apk_path, json_file, out_apk), arch)
-    ret_code, zero_patches = execute_patch_cli(cmd)
+    cmd = build_patch_command(
+        args,
+        app_data,
+        (bundle["apk"], bundle["options"], bundle["out_apk"]),
+        arch,
+    )
+    ret_code, zero_patches = execute_patch_cli(cmd, log_path=bundle["out_log"])
 
     if ret_code == 0 and not zero_patches:
         print(f"\n[INFO] SUCCESS: {app_name}")
@@ -366,51 +443,67 @@ def process_single_app(
     else:
         msg = "DMCA Trap" if zero_patches else f"Exit code {ret_code}"
         print(f"\n[ERROR] FAILED: {app_name}. Reason: {msg}")
-        if os.path.exists(out_apk):
-            os.remove(out_apk)
+        if os.path.exists(bundle["out_apk"]):
+            os.remove(bundle["out_apk"])
     time.sleep(5)
+
+
+def _process_app_loop(args: Any, state: dict) -> None:
+    """Iterates over the app list, dispatching each to process_single_app."""
+    for app_name in state["app_list"]:
+        if time.monotonic() - state["start_time"] > MAX_RUNTIME_SECONDS:
+            print("\n[WARN] ⏱️ Maximum runtime limit (5.5 hours) reached!")
+            print("[WARN] Stopping gracefully to preserve generated artifacts...")
+            break
+
+        if app_name not in state["eco_apps"]:
+            continue
+
+        c_ver = (
+            state["custom_vers"].get(app_name)
+            or state["custom_vers"].get("_global", "")
+        )
+        process_single_app(app_name, args, state["eco_apps"][app_name], c_ver, state)
 
 
 def run_patcher(args: Any) -> None:
     """Main execution function handling the patching loop with graceful timeout."""
-    start_time = time.monotonic()
-    eco_config = load_config(args.ecosystem)
-
     workspace = f"./{_safe_filename(args.ecosystem)}"
-    state = {
-        "in_dir": f"{workspace}/Input",
-        "out_dir": f"{workspace}/Output",
-        "workspace": workspace,
-        "clean_ver": (
-            args.patches_version.lstrip("v") if args.patches_version else "unknown"
-        ),
-        "success": [],
-    }
-    os.makedirs(state["in_dir"], exist_ok=True)
-    os.makedirs(state["out_dir"], exist_ok=True)
+    in_dir = f"{workspace}/Input"
+    out_dir = f"{workspace}/Output"
+    clean_ver = (
+        args.patches_version.lstrip("v") if args.patches_version else "unknown"
+    )
+    os.makedirs(in_dir, exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
 
     print(f"=== INITIALIZING WORKSPACE: {args.ecosystem.upper()} ===")
+    eco_config = load_config(args.ecosystem)
     eco_apps = eco_config.get("apps")
     if not isinstance(eco_apps, dict):
         sys.exit(f"[FATAL] '{args.ecosystem}' has no valid 'apps' config.")
 
     app_list = (
-        list(eco_apps.keys()) if args.apps.lower() == "all" else args.apps.split(",")
+        list(eco_apps.keys())
+        if args.apps.lower() == "all"
+        else [a.strip() for a in args.apps.split(",") if a.strip()]
     )
-    custom_vers = _parse_custom_versions(args.custom_version)
+    state = {
+        "in_dir": in_dir,
+        "out_dir": out_dir,
+        "workspace": workspace,
+        "clean_ver": clean_ver,
+        "success": [],
+        "eco_apps": eco_apps,
+        "app_list": app_list,
+        "custom_vers": _parse_custom_versions(args.custom_version),
+        "start_time": time.monotonic(),
+    }
 
-    for app_name in (a.strip() for a in app_list):
-        if time.monotonic() - start_time > MAX_RUNTIME_SECONDS:
-            print("\n[WARN] ⏱️ Maximum runtime limit (5.5 hours) reached!")
-            print("[WARN] Stopping gracefully to preserve generated artifacts...")
-            break
-
-        if app_name in eco_apps:
-            c_ver = custom_vers.get(app_name) or custom_vers.get("_global", "")
-            process_single_app(app_name, args, eco_apps[app_name], c_ver, state)
+    _process_app_loop(args, state)
 
     if state["success"]:
-        write_changelog(args, state["success"], workspace, state["clean_ver"])
+        write_changelog(args, state["success"], workspace, clean_ver)
 
 
 def parse_arguments() -> Any:
