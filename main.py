@@ -85,13 +85,33 @@ def download_apk(ctx: Context, args: Any) -> str | None:
     return None
 
 
+def _normalize_repo_url(repo: str) -> str:
+    """Normalizes a repo identifier into a fully-qualified GitHub URL.
+
+    Accepts any of:
+      - "owner/repo"
+      - "github.com/owner/repo"
+      - "https://github.com/owner/repo"
+
+    Trailing slashes are stripped. Returns an empty string when input is empty.
+    """
+    repo = (repo or "").strip().rstrip("/")
+    if not repo:
+        return ""
+    if repo.startswith(("https://", "http://")):
+        return repo
+    if repo.startswith("github.com/"):
+        return f"https://{repo}"
+    return f"https://github.com/{repo}"
+
+
 def write_changelog(
     args: Any, apps_patched: list, workspace: str, clean_ver: str
 ) -> None:
     """Writes the patched apps changelog to a markdown file."""
     log_path = os.path.join(workspace, "changelog.md")
     cli_version = args.cli_version if args.cli_version else "Unknown"
-    repo = args.repo_url
+    repo_url = _normalize_repo_url(args.repo_url)
 
     with open(log_path, "w", encoding="utf-8") as f_obj:
         f_obj.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
@@ -106,7 +126,7 @@ def write_changelog(
             )
         else:
             f_obj.write(f"- Patches from `{args.ecosystem}`. ")
-        f_obj.write(f"Source: [Repository](https://github.com/{repo})\n")
+        f_obj.write(f"Source: [Repository]({repo_url})\n")
         f_obj.write(
             f"- CLI version **v{cli_version.lstrip('v')}** from `morphe-desktop`. "
         )
