@@ -168,26 +168,25 @@ def _parse_custom_versions(ver_str: str) -> dict:
     return versions
 
 
-def _get_output_path(
+def _get_apk_output_path(
     app_info: tuple[str, str, str],
     args: Any,
     state: dict,
-    kind: str,
 ) -> str:
-    """Constructs output paths for APK, options, or log files."""
+    """Constructs the release path for the patched APK."""
     app, ver, arch = app_info
     stem = (
         f"{_safe_filename(app)}_{_safe_filename(args.ecosystem)}_"
         f"{_safe_filename(ver)}-{_safe_filename(arch)}_"
         f"patches_{_safe_filename(state['clean_ver'])}"
     )
-    if kind == "apk":
-        return os.path.join(state["out_dir"], f"{stem}_patched.apk")
-    if kind == "options":
-        return os.path.join(state["out_dir"], f"{stem}_options.json")
-    if kind == "log":
-        return os.path.join(state["out_dir"], f"{stem}_log.txt")
-    raise ValueError(f"Unknown output kind: {kind}")
+    return os.path.join(state["out_dir"], f"{stem}_patched.apk")
+
+
+def _get_staging_path(app_name: str, state: dict, ext: str) -> str:
+    """Staging path for per-app log/options before ecosystem aggregation."""
+    safe = _safe_filename(app_name)
+    return os.path.join(state["staging_dir"], f"{safe}.{ext}")
 
 
 def build_patch_command(
@@ -245,7 +244,7 @@ def execute_patch_cli(
     """Executes the patch CLI under a credential-free env with a hard timeout.
 
     When log_path is provided, the combined stdout/stderr stream is written
-    to that file so it can be exported alongside the patched APK.
+    to that file so it can be aggregated and exported alongside the release.
     """
     zero_patches = False
 
@@ -356,16 +355,16 @@ def _resolve_target_version(app_data: dict, args: Any, custom_ver: str) -> str:
 
 
 def _export_options_snapshot(json_file: str, out_opts: str) -> bool:
-    """Copies the generated options.json to the Output folder for release.
+    """Copies the generated options.json to the staging folder.
 
     Returns True on success. Failure is non-fatal but logged.
     """
     try:
         shutil.copy2(json_file, out_opts)
-        print(f"[INFO] Exported options snapshot: {os.path.basename(out_opts)}")
+        print(f"[INFO] Staged options snapshot: {os.path.basename(out_opts)}")
         return True
     except OSError as err:
-        print(f"[WARN] Could not export options.json to Output: {err}")
+        print(f"[WARN] Could not stage options.json: {err}")
         return False
 
 
@@ -377,7 +376,7 @@ def _prepare_patch_inputs(
 ) -> dict | None:
     """Downloads APK, generates options, and returns a bundle of paths.
 
-    The returned dict has keys: apk, options, out_apk, out_opts, out_log.
+    The returned dict has keys: apk, options, out_apk.
     Returns None if download or options generation failed.
     """
     app_name, t_ver, arch = app_info
@@ -401,9 +400,7 @@ def _prepare_patch_inputs(
     return {
         "apk": apk_path,
         "options": json_file,
-        "out_apk": _get_output_path(app_info, args, state, "apk"),
-        "out_opts": _get_output_path(app_info, args, state, "options"),
-        "out_log": _get_output_path(app_info, args, state, "log"),
+        "out_apk": _get_apk_output_path(app_info, args, state),
     }
 
 
@@ -420,8 +417,10 @@ def process_single_app(
     if bundle is None:
         return
 
-    # Preserve the exact options used for this patch, even if patching fails.
-    _export_options_snapshot(bundle["options"], bundle["out_opts"])
+    # Stage the exact options used for this patch, even if patching fails.
+    _export_options_snapshot(
+        bundle["options"], _get_staging_path(app_name, state, "options")
+    )
 
     print("[INFO] Patching via CLI...")
     cmd = build_patch_command(
@@ -430,9 +429,18 @@ def process_single_app(
         (bundle["apk"], bundle["options"], bundle["out_apk"]),
         arch,
     )
-    ret_code, zero_patches = execute_patch_cli(cmd, log_path=bundle["out_log"])
+    ret_code, zero_patches = execute_patch_cli(
+        cmd, log_path=_get_staging_path(app_name, state, "log")
+    )
 
-    if ret_code == 0 and not zero_patches:
+    success = ret_code == 0 and not zero_patches
+    status = (
+        "success" if success
+        else "DMCA Trap" if zero_patches
+        else f"Exit code {ret_code}"
+    )
+
+    if success:
         print(f"\n[INFO] SUCCESS: {app_name}")
         state["success"].append({
             "name": app_name,
@@ -441,11 +449,78 @@ def process_single_app(
             "arch": arch,
         })
     else:
-        msg = "DMCA Trap" if zero_patches else f"Exit code {ret_code}"
-        print(f"\n[ERROR] FAILED: {app_name}. Reason: {msg}")
+        print(f"\n[ERROR] FAILED: {app_name}. Reason: {status}")
         if os.path.exists(bundle["out_apk"]):
             os.remove(bundle["out_apk"])
+
+    state["attempted"].append({
+        "name": app_name,
+        "package": app_data["package"],
+        "version": t_ver,
+        "arch": arch,
+        "status": status,
+    })
     time.sleep(5)
+
+
+def _build_log_block(entry: dict, state: dict) -> str:
+    """Builds a single delimited log block for one app."""
+    tmp_log = _get_staging_path(entry["name"], state, "log")
+    header = (
+        "=" * 60 + "\n"
+        f"App: {entry['name']} ({entry['package']})\n"
+        f"Version: {entry['version']} | Arch: {entry['arch']}\n"
+        f"Status: {entry['status']}\n"
+        + "=" * 60 + "\n\n"
+    )
+    if os.path.isfile(tmp_log):
+        with open(tmp_log, "r", encoding="utf-8") as f_obj:
+            body = f_obj.read()
+    else:
+        body = "(no log captured)\n"
+    return header + body
+
+
+def _read_staged_options(app_name: str, state: dict) -> Any:
+    """Reads a staged options.json for one app, or returns an error marker."""
+    tmp_opts = _get_staging_path(app_name, state, "options")
+    if not os.path.isfile(tmp_opts):
+        return {"_error": "no options captured"}
+    try:
+        with open(tmp_opts, "r", encoding="utf-8") as f_obj:
+            return json.load(f_obj)
+    except (OSError, json.JSONDecodeError) as err:
+        return {"_error": str(err)}
+
+
+def _aggregate_exports(args: Any, state: dict) -> None:
+    """Merges per-app logs and options into single ecosystem-wide files.
+
+    Produces:
+      {out_dir}/{ecosystem}_log.txt
+      {out_dir}/{ecosystem}_options.json
+    """
+    if not state["attempted"]:
+        return
+
+    eco = _safe_filename(args.ecosystem)
+    out_dir = state["out_dir"]
+
+    log_blocks = [_build_log_block(e, state) for e in state["attempted"]]
+    agg_log = os.path.join(out_dir, f"{eco}_log.txt")
+    with open(agg_log, "w", encoding="utf-8") as f_obj:
+        f_obj.write("\n".join(log_blocks))
+
+    merged = {
+        e["name"]: _read_staged_options(e["name"], state)
+        for e in state["attempted"]
+    }
+    agg_opts = os.path.join(out_dir, f"{eco}_options.json")
+    with open(agg_opts, "w", encoding="utf-8") as f_obj:
+        json.dump(merged, f_obj, indent=2, ensure_ascii=False)
+
+    print(f"[INFO] Aggregated exports: {os.path.basename(agg_log)}")
+    print(f"[INFO] Aggregated exports: {os.path.basename(agg_opts)}")
 
 
 def _process_app_loop(args: Any, state: dict) -> None:
@@ -471,11 +546,12 @@ def run_patcher(args: Any) -> None:
     workspace = f"./{_safe_filename(args.ecosystem)}"
     in_dir = f"{workspace}/Input"
     out_dir = f"{workspace}/Output"
+    staging_dir = f"{workspace}/Staging"
     clean_ver = (
         args.patches_version.lstrip("v") if args.patches_version else "unknown"
     )
-    os.makedirs(in_dir, exist_ok=True)
-    os.makedirs(out_dir, exist_ok=True)
+    for d in (in_dir, out_dir, staging_dir):
+        os.makedirs(d, exist_ok=True)
 
     print(f"=== INITIALIZING WORKSPACE: {args.ecosystem.upper()} ===")
     eco_config = load_config(args.ecosystem)
@@ -491,9 +567,11 @@ def run_patcher(args: Any) -> None:
     state = {
         "in_dir": in_dir,
         "out_dir": out_dir,
+        "staging_dir": staging_dir,
         "workspace": workspace,
         "clean_ver": clean_ver,
         "success": [],
+        "attempted": [],
         "eco_apps": eco_apps,
         "app_list": app_list,
         "custom_vers": _parse_custom_versions(args.custom_version),
@@ -501,6 +579,8 @@ def run_patcher(args: Any) -> None:
     }
 
     _process_app_loop(args, state)
+
+    _aggregate_exports(args, state)
 
     if state["success"]:
         write_changelog(args, state["success"], workspace, clean_ver)
