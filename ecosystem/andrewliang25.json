@@ -16,7 +16,7 @@
                 "package": "jp.naver.line.android",
                 "search_term": "LINE",
                 "stable": [
-                    "26.14.0"
+                    "26.15.1"
                 ],
                 "beta": [],
                 "strip": true,
