@@ -184,6 +184,15 @@ select_track() {
         elif [[ -n "$choice" ]]; then
             TRACK_CHOICE="$choice"
             echo -e "${GREEN}Selected track: $TRACK_CHOICE${NC}"
+
+            if [[ "$TRACK_CHOICE" == "Pre-release" ]]; then
+                echo -e "\n${YELLOW}⚠️  WARNING: Pre-release track selected.${NC}"
+                echo -e "${YELLOW}    Pre-release patches are experimental and may contain bugs,${NC}"
+                echo -e "${YELLOW}    unfinished features, or cause the patched app to crash.${NC}"
+                echo -e "${YELLOW}    Use at your own risk.${NC}"
+                echo -e "${CYAN}    The patcher will run with --force to allow version${NC}"
+                echo -e "${CYAN}    mismatches between the APK and the patch bundle.${NC}\n"
+            fi
             break
         else
             echo -e "${RED}Invalid selection.${NC}" >&2
@@ -334,9 +343,23 @@ execute_patch() {
     local final_apk="$ECO_DIR/Patched-${base_name%.*}.apk"
     TEMP_LOG_FILE="$WORK_DIR/patch_log_$(date +%s).txt"
 
-    echo -e "\n${YELLOW}[INFO] Starting the patching process... (Do not close Termux!)${NC}"
+    # Build the java command; append --force for Pre-release track.
+    local java_cmd=(
+        java -jar "$MORPHE_JAR" patch
+        -b "$TEMP_PATCH"
+        -a "$APK_CHOICE"
+        -o "$final_apk"
+    )
+    if [[ "$TRACK_CHOICE" == "Pre-release" ]]; then
+        java_cmd+=("--force")
+    fi
 
-    if java -jar "$MORPHE_JAR" patch -b "$TEMP_PATCH" -a "$APK_CHOICE" -o "$final_apk" 2>&1 | tee "$TEMP_LOG_FILE"; then
+    echo -e "\n${YELLOW}[INFO] Starting the patching process... (Do not close Termux!)${NC}"
+    if [[ "$TRACK_CHOICE" == "Pre-release" ]]; then
+        echo -e "${CYAN}[INFO] Pre-release track: running with --force.${NC}"
+    fi
+
+    if "${java_cmd[@]}" 2>&1 | tee "$TEMP_LOG_FILE"; then
         echo -e "\n${CYAN}=========================================${NC}"
         echo -e "${GREEN} SUCCESS! PATCHING COMPLETED             ${NC}"
         echo -e "${CYAN}=========================================${NC}"
