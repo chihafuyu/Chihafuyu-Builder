@@ -55,7 +55,7 @@ To auto-upload patched APKs to Telegram (bypassing the 50 MB bot upload limit), 
    ```bash
    python generate_session.py
    ```
-4. Enter your `API_ID` and `API_HASH` (available at [my.telegram.org](https://my.telegram.org)).
+4. Enter your `API_ID` and `API_HASH` (available at `https://my.telegram.org/`).
 5. Follow the Telegram login steps in the terminal.
 6. Copy the session string immediately.
 
