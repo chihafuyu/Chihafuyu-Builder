@@ -33,15 +33,18 @@ ECO_DIR=""          # local folder where the user drops the input APK
 TRACK_CHOICE=""     # "Stable" or "Pre-release"
 APK_CHOICE=""       # absolute path to the chosen APK/bundle
 TEMP_LOG_FILE=""    # scratch log path used by cleanup()
+WAKELOCK_HELD=0     # 1 when termux-wake-lock has been acquired
 
 # ─────────────────────────────────────────────────────────────────
 # Cleanup & signal handling
 # Runs exactly once on shell exit. Signal handlers convert INT/TERM
 # into conventional exit codes so this handler is not invoked twice.
+# Wakelock is always released here so a crash can't strand it.
 # ─────────────────────────────────────────────────────────────────
 cleanup() {
     local exit_code=$?
     trap - EXIT INT TERM
+    release_wakelock
     if [[ -n "$TEMP_LOG_FILE" && -f "$TEMP_LOG_FILE" ]]; then
         rm -f "$TEMP_LOG_FILE"
     fi
@@ -51,6 +54,43 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
+
+# ─────────────────────────────────────────────────────────────────
+# Wakelock helpers
+# termux-wake-lock holds a partial wakelock so Android won't freeze
+# or kill Termux while patching runs. It does NOT keep the screen on;
+# set Display → Screen timeout to "Never" manually if you need that.
+# ─────────────────────────────────────────────────────────────────
+
+# Acquires the Termux wakelock. Safe to call multiple times; no-op if
+# the lock is already held or the termux-wake-lock binary is missing.
+acquire_wakelock() {
+    if [[ $WAKELOCK_HELD -eq 1 ]]; then
+        return 0
+    fi
+    if ! command -v termux-wake-lock >/dev/null 2>&1; then
+        echo -e "${YELLOW}[WARN] termux-wake-lock not found.${NC}" >&2
+        echo -e "${YELLOW}       Install it with: pkg install termux-tools${NC}" >&2
+        echo -e "${YELLOW}       Patching will continue but Android may suspend Termux.${NC}" >&2
+        return 1
+    fi
+    if termux-wake-lock >/dev/null 2>&1; then
+        WAKELOCK_HELD=1
+        echo -e "${GREEN}[INFO] Wakelock acquired — Android will not suspend Termux.${NC}"
+    else
+        echo -e "${YELLOW}[WARN] termux-wake-lock returned non-zero. Continuing without it.${NC}" >&2
+    fi
+}
+
+# Releases the wakelock if we acquired one. Silently ignores errors so
+# cleanup() can call it unconditionally.
+release_wakelock() {
+    if [[ $WAKELOCK_HELD -ne 1 ]]; then
+        return 0
+    fi
+    termux-wake-unlock >/dev/null 2>&1 || true
+    WAKELOCK_HELD=0
+}
 
 # ─────────────────────────────────────────────────────────────────
 # Pre-flight checks
@@ -487,6 +527,14 @@ main() {
     fetch_components
     wait_for_apk
     select_apk
+
+    # Acquire wakelock just before the long-running patch, release in
+    # cleanup() so any exit path (success, failure, Ctrl+C) cleans up.
+    acquire_wakelock
+    echo -e "${CYAN}[TIP] Set Display → Screen timeout to 'Never' so the screen${NC}"
+    echo -e "${CYAN}      stays on while patching. The wakelock only keeps the${NC}"
+    echo -e "${CYAN}      CPU awake; the screen can still turn off on its own.${NC}\n"
+
     execute_patch
 }
 
