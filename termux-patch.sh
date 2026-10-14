@@ -36,6 +36,15 @@ TEMP_LOG_FILE=""    # scratch log path used by cleanup()
 WAKELOCK_HELD=0     # 1 when termux-wake-lock has been acquired
 
 # ─────────────────────────────────────────────────────────────────
+# Keystore state (resolved by load_keystore_config)
+# ─────────────────────────────────────────────────────────────────
+KEYSTORE_PATH=""          # empty means "use Morphe's auto-generated default"
+KEYSTORE_ALIAS="Morphe"
+KEYSTORE_STORE_PASS=""    # store password (default: empty)
+KEYSTORE_ENTRY_PASS="Morphe"
+KEYSTORE_SIGNER="Morphe"
+
+# ─────────────────────────────────────────────────────────────────
 # Cleanup & signal handling
 # Runs exactly once on shell exit. Signal handlers convert INT/TERM
 # into conventional exit codes so this handler is not invoked twice.
@@ -90,6 +99,177 @@ release_wakelock() {
     fi
     termux-wake-unlock >/dev/null 2>&1 || true
     WAKELOCK_HELD=0
+}
+
+# ─────────────────────────────────────────────────────────────────
+# Keystore helpers
+# Detects a user-supplied keystore in BASE_DIR and resolves the
+# credentials from (in order): env vars → keystore.txt → interactive
+# prompt → Morphe defaults. Morphe auto-detects the keystore format
+# (BKS / JKS / PKCS12) from file contents, so any of
+# .keystore / .jks / .bks / .p12 / .pfx works.
+#
+# keystore.txt format (all fields optional):
+#   path=/path/to/keystore.jks
+#   alias=myalias
+#   store_password=store-pass
+#   entry_password=entry-pass
+#   signer=MyApp
+#
+# Lines starting with # and blank lines are ignored.
+# ─────────────────────────────────────────────────────────────────
+
+# Resolves the config file path. KEYSTORE_CONFIG env var overrides the
+# default location under BASE_DIR.
+_keystore_config_path() {
+    printf '%s' "${KEYSTORE_CONFIG:-$BASE_DIR/keystore.txt}"
+}
+
+# Reads a single "key=value" line from a config file. Returns the value
+# verbatim (including any '=' in the value). Empty if key not present.
+_read_cfg_field() {
+    local file="$1"
+    local key="$2"
+    [[ -f "$file" ]] || return 0
+    grep -E "^${key}=" "$file" 2>/dev/null \
+        | head -n1 \
+        | cut -d= -f2-
+}
+
+# Warns when the config file is readable by group or other users.
+_check_keystore_file_perms() {
+    local file="$1"
+    [[ -f "$file" ]] || return 0
+    if [[ -n "$(find "$file" -perm /go+r 2>/dev/null)" ]]; then
+        echo -e "${YELLOW}[WARN] $file is readable by other apps.${NC}" >&2
+        echo -e "${YELLOW}       Run: chmod 600 $file${NC}" >&2
+    fi
+}
+
+# Reads the entry password without echoing to the terminal. Falls back
+# to the Morphe default ("Morphe") when the user presses Enter.
+_prompt_keystore_password() {
+    local input
+    read -r -s -p "$(echo -e "${WHITE}Enter keystore entry password (blank = 'Morphe'): ${NC}")" input
+    echo ""
+    printf '%s' "${input:-Morphe}"
+}
+
+# Auto-detects a keystore file in BASE_DIR. Returns the first match by
+# extension priority: .jks, .keystore, .bks, .p12, .pfx.
+_autodetect_keystore() {
+    local nullglob_was_set=0
+    if shopt -q nullglob; then
+        nullglob_was_set=1
+    fi
+    shopt -s nullglob
+
+    local candidates=(
+        "$BASE_DIR"/*.jks
+        "$BASE_DIR"/*.keystore
+        "$BASE_DIR"/*.bks
+        "$BASE_DIR"/*.p12
+        "$BASE_DIR"/*.pfx
+    )
+
+    if [[ $nullglob_was_set -eq 0 ]]; then
+        shopt -u nullglob
+    fi
+
+    if [[ ${#candidates[@]} -gt 0 ]]; then
+        printf '%s' "${candidates[0]}"
+    fi
+}
+
+# Resolves keystore path, credentials, and signer name from env vars,
+# keystore.txt, or interactive prompt. Populates the KEYSTORE_* globals.
+# Never fails: falls back to Morphe's auto-generated default keystore.
+load_keystore_config() {
+    local cfg
+    cfg=$(_keystore_config_path)
+
+    local cfg_path=""
+    local cfg_alias=""
+    local cfg_store_pass=""
+    local cfg_entry_pass=""
+    local cfg_signer=""
+
+    if [[ -f "$cfg" ]]; then
+        echo -e "${GREEN}[INFO] Reading keystore config: $cfg${NC}"
+        _check_keystore_file_perms "$cfg"
+        cfg_path=$(_read_cfg_field "$cfg" "path")
+        cfg_alias=$(_read_cfg_field "$cfg" "alias")
+        cfg_store_pass=$(_read_cfg_field "$cfg" "store_password")
+        cfg_entry_pass=$(_read_cfg_field "$cfg" "entry_password")
+        cfg_signer=$(_read_cfg_field "$cfg" "signer")
+    fi
+
+    # ── Resolve keystore path ──
+    # Priority: KEYSTORE_PATH env var → cfg.path → auto-detect in BASE_DIR.
+    if [[ -n "${KEYSTORE_PATH:-}" ]]; then
+        :
+    elif [[ -n "$cfg_path" ]]; then
+        KEYSTORE_PATH="$cfg_path"
+    else
+        KEYSTORE_PATH=$(_autodetect_keystore)
+    fi
+
+    # ── No keystore found: fall back to Morphe's default ──
+    if [[ -z "$KEYSTORE_PATH" ]]; then
+        echo -e "${CYAN}[INFO] No custom keystore found.${NC}"
+        echo -e "${CYAN}       Morphe will use its auto-generated default keystore.${NC}"
+        echo -e "${CYAN}       Drop a .jks/.bks/.p12/.keystore in $BASE_DIR${NC}"
+        echo -e "${CYAN}       or create $cfg with a 'path=' entry.${NC}"
+        return 0
+    fi
+
+    if [[ ! -f "$KEYSTORE_PATH" ]]; then
+        echo -e "${RED}[ERROR] Keystore not found: $KEYSTORE_PATH${NC}" >&2
+        echo -e "${YELLOW}        Falling back to Morphe's default keystore.${NC}" >&2
+        KEYSTORE_PATH=""
+        return 0
+    fi
+
+    echo -e "${GREEN}[INFO] Using custom keystore: $(basename "$KEYSTORE_PATH")${NC}"
+
+    # ── Resolve alias ──
+    # Priority: KEYSTORE_ALIAS env → cfg.alias → default.
+    if [[ -n "${KEYSTORE_ALIAS:-}" ]]; then
+        :  # already set from env
+    elif [[ -n "$cfg_alias" ]]; then
+        KEYSTORE_ALIAS="$cfg_alias"
+    fi
+
+    # ── Resolve signer ──
+    # Priority: KEYSTORE_SIGNER env → cfg.signer → default.
+    if [[ -n "${KEYSTORE_SIGNER:-}" ]]; then
+        :  # already set from env
+    elif [[ -n "$cfg_signer" ]]; then
+        KEYSTORE_SIGNER="$cfg_signer"
+    fi
+
+    # ── Resolve store password ──
+    # Priority: KEYSTORE_STORE_PASSWORD env → cfg.store_password → empty.
+    if [[ -n "${KEYSTORE_STORE_PASSWORD:-}" ]]; then
+        KEYSTORE_STORE_PASS="$KEYSTORE_STORE_PASSWORD"
+    elif [[ -n "$cfg_store_pass" ]]; then
+        KEYSTORE_STORE_PASS="$cfg_store_pass"
+    fi
+
+    # ── Resolve entry password ──
+    # Priority: KEYSTORE_PASSWORD env → cfg.entry_password → prompt.
+    if [[ -n "${KEYSTORE_PASSWORD:-}" ]]; then
+        KEYSTORE_ENTRY_PASS="$KEYSTORE_PASSWORD"
+        echo -e "${CYAN}[INFO] Entry password from \$KEYSTORE_PASSWORD env var.${NC}"
+    elif [[ -n "$cfg_entry_pass" ]]; then
+        KEYSTORE_ENTRY_PASS="$cfg_entry_pass"
+        echo -e "${CYAN}[INFO] Entry password loaded from $cfg.${NC}"
+    else
+        KEYSTORE_ENTRY_PASS=$(_prompt_keystore_password)
+    fi
+
+    echo -e "${CYAN}[INFO] Alias: $KEYSTORE_ALIAS | Signer: $KEYSTORE_SIGNER${NC}"
+    return 0
 }
 
 # ─────────────────────────────────────────────────────────────────
@@ -454,6 +634,11 @@ select_apk() {
 #   -o, --out            Output path for the patched APK
 #   --bytecode-mode      FULL / STRIP_SAFE / STRIP_FAST (default: STRIP_FAST)
 #   -f, --force          Skip APK version compatibility check
+#   --keystore           Path to user keystore (BKS/JKS/PKCS12)
+#   --keystore-password  Store password (default: empty)
+#   --keystore-entry-alias  Alias in the keystore (default: Morphe)
+#   --keystore-entry-password  Entry password (default: Morphe)
+#   --signer             Signer name embedded in the APK
 #   (positional)         Input APK, placed LAST
 #
 # Split bundles (.apkm / .xapk / .apks) are auto-merged by the CLI.
@@ -473,6 +658,18 @@ execute_patch() {
         --out "$final_apk"
         --bytecode-mode FULL
     )
+
+    # Attach custom keystore flags only when the user supplied one.
+    if [[ -n "$KEYSTORE_PATH" ]]; then
+        java_cmd+=(
+            --keystore "$KEYSTORE_PATH"
+            --keystore-password "$KEYSTORE_STORE_PASS"
+            --keystore-entry-alias "$KEYSTORE_ALIAS"
+            --keystore-entry-password "$KEYSTORE_ENTRY_PASS"
+            --signer "$KEYSTORE_SIGNER"
+        )
+    fi
+
     if [[ "$TRACK_CHOICE" == "Pre-release" ]]; then
         java_cmd+=("--force")
     fi
@@ -481,6 +678,9 @@ execute_patch() {
     echo -e "\n${YELLOW}[INFO] Starting the patching process... (Do not close Termux!)${NC}"
     if [[ "$TRACK_CHOICE" == "Pre-release" ]]; then
         echo -e "${CYAN}[INFO] Pre-release track: running with --force.${NC}"
+    fi
+    if [[ -n "$KEYSTORE_PATH" ]]; then
+        echo -e "${CYAN}[INFO] Signing with custom keystore: $(basename "$KEYSTORE_PATH")${NC}"
     fi
 
     # tee duplicates stdout/stderr to both the terminal and the temp log.
@@ -525,6 +725,7 @@ main() {
     show_supported_apps
     select_track
     fetch_components
+    load_keystore_config
     wait_for_apk
     select_apk
 
