@@ -66,6 +66,10 @@
         "repo_url": "SysAdminDoc/HushThreads",
         "config_path": "ecosystem-termux/hushthreads.json"
     },
+    "hushtumblr": {
+        "repo_url": "SysAdminDoc/HushTumblr",
+        "config_path": "ecosystem-termux/hushtumblr.json"
+    },
     "hxreborn": {
         "repo_url": "hxreborn/morphe-patches"
     },
