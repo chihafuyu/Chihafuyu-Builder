@@ -38,6 +38,9 @@
                     "Default playback quality": {
                         "enabled": true
                     },
+                    "Disable Play Store updates": {
+                        "enabled": true
+                    },
                     "Download any video": {
                         "enabled": true
                     },

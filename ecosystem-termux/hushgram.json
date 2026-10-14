@@ -45,6 +45,9 @@
                     "Hide the Repost button": {
                         "enabled": true
                     },
+                    "Install next to Instagram": {
+                        "enabled": false
+                    },
                     "Open developer options": {
                         "enabled": true
                     },

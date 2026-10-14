@@ -5,19 +5,32 @@
                 "package": "org.telegram.messenger.web",
                 "search_term": "Telegram Web",
                 "stable": [
-                    "13.0.1"
+                    "13.0.2"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "71679",
-                    "arm64-v8a": "71679",
-                    "armeabi-v7a": "71679",
-                    "x86_64": "71679",
-                    "x86": "71679"
+                    "universal": "71759",
+                    "arm64-v8a": "71759",
+                    "armeabi-v7a": "71759",
+                    "x86_64": "71759",
+                    "x86": "71759"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Black and white launch logo": {
+                        "enabled": true
+                    },
+                    "HushTelegram icon and name": {
+                        "enabled": false
+                    },
+                    "Use registered Maps API key": {
+                        "enabled": false
+                    },
+                    "Use registered Telegram API credentials": {
+                        "enabled": false
+                    }
+                }
             }
         }
     }

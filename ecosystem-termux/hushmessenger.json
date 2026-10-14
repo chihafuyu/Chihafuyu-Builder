@@ -14,6 +14,12 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
+                    "Clone install under another package name": {
+                        "enabled": false
+                    },
+                    "Custom new-message sound": {
+                        "enabled": false
+                    },
                     "Material You theme": {
                         "enabled": true
                     },

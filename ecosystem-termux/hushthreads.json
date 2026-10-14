@@ -5,11 +5,11 @@
                 "package": "com.instagram.barcelona",
                 "search_term": "Threads",
                 "stable": [
-                    "450.0.0.51.78"
+                    "451.0.0.51.80"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "512008342"
+                    "arm64-v8a": "512108444"
                 },
                 "strip": true,
                 "force_bundle": true,
@@ -38,6 +38,9 @@
                     },
                     "Remove share targets": {
                         "enabled": true
+                    },
+                    "Trust user-added certificates": {
+                        "enabled": false
                     }
                 }
             }

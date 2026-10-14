@@ -5,11 +5,11 @@
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
                 "stable": [
-                    "14.39.0"
+                    "14.40.0"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "14398020"
+                    "universal": "14408010"
                 },
                 "strip": true,
                 "force_bundle": false,

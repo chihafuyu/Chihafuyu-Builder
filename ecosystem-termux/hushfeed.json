@@ -203,6 +203,9 @@
                     "Resource and battery governor": {
                         "enabled": true
                     },
+                    "Run beside the store app": {
+                        "enabled": false
+                    },
                     "Share sheet tools": {
                         "enabled": true
                     },
@@ -239,8 +242,11 @@
                     "Swipe-left controls": {
                         "enabled": true
                     },
+                    "Trust user certificates": {
+                        "enabled": false
+                    },
                     "Use system font": {
-                        "enabled": true
+                        "enabled": false
                     }
                 }
             }

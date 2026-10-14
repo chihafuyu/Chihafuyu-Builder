@@ -38,6 +38,9 @@
                     "Default playback quality": {
                         "enabled": true
                     },
+                    "Disable Play Store updates": {
+                        "enabled": true
+                    },
                     "Download any video": {
                         "enabled": true
                     },
@@ -147,6 +150,9 @@
                     "Hide the Repost button": {
                         "enabled": true
                     },
+                    "Install next to Instagram": {
+                        "enabled": false
+                    },
                     "Loop a story": {
                         "enabled": true
                     },
@@ -201,6 +207,12 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
+                    "Clone install under another package name": {
+                        "enabled": false
+                    },
+                    "Custom new-message sound": {
+                        "enabled": false
+                    },
                     "Material You theme": {
                         "enabled": true
                     },
@@ -213,11 +225,11 @@
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
                 "stable": [
-                    "14.39.0"
+                    "14.40.0"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "14398020"
+                    "universal": "14408010"
                 },
                 "strip": true,
                 "force_bundle": false,
@@ -286,29 +298,42 @@
                 "package": "org.telegram.messenger.web",
                 "search_term": "Telegram Web",
                 "stable": [
-                    "13.0.1"
+                    "13.0.2"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "71679",
-                    "armeabi-v7a": "71679",
-                    "universal": "71679",
-                    "x86": "71679",
-                    "x86_64": "71679"
+                    "arm64-v8a": "71759",
+                    "armeabi-v7a": "71759",
+                    "universal": "71759",
+                    "x86": "71759",
+                    "x86_64": "71759"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Black and white launch logo": {
+                        "enabled": true
+                    },
+                    "HushTelegram icon and name": {
+                        "enabled": false
+                    },
+                    "Use registered Maps API key": {
+                        "enabled": false
+                    },
+                    "Use registered Telegram API credentials": {
+                        "enabled": false
+                    }
+                }
             },
             "threads": {
                 "package": "com.instagram.barcelona",
                 "search_term": "Threads",
                 "stable": [
-                    "450.0.0.51.78"
+                    "451.0.0.51.80"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "512008342"
+                    "arm64-v8a": "512108444"
                 },
                 "strip": true,
                 "force_bundle": true,
@@ -337,6 +362,9 @@
                     },
                     "Remove share targets": {
                         "enabled": true
+                    },
+                    "Trust user-added certificates": {
+                        "enabled": false
                     }
                 }
             },
@@ -515,6 +543,9 @@
                     "Resource and battery governor": {
                         "enabled": true
                     },
+                    "Run beside the store app": {
+                        "enabled": false
+                    },
                     "Share sheet tools": {
                         "enabled": true
                     },
@@ -525,6 +556,9 @@
                         "enabled": true
                     },
                     "Skip content warnings": {
+                        "enabled": true
+                    },
+                    "Skip first-launch setup": {
                         "enabled": true
                     },
                     "Skip the splash ad": {
@@ -548,8 +582,11 @@
                     "Swipe-left controls": {
                         "enabled": true
                     },
+                    "Trust user certificates": {
+                        "enabled": false
+                    },
                     "Use system font": {
-                        "enabled": true
+                        "enabled": false
                     }
                 }
             }

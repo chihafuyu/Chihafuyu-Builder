@@ -85,7 +85,7 @@
                 "package": "com.streetwriters.notesnook",
                 "search_term": "Notesnook",
                 "stable": [
-                    "3.4.13"
+                    "3.4.14"
                 ],
                 "beta": [],
                 "strip": true,
@@ -118,7 +118,7 @@
                 "package": "com.mchutov.Quranify",
                 "search_term": "Quranify",
                 "stable": [
-                    "2.2.9"
+                    "2.2.91"
                 ],
                 "beta": [],
                 "strip": true,
@@ -140,7 +140,7 @@
                 "package": "com.risesci.nyx",
                 "search_term": "RISE Sleep Tracker",
                 "stable": [
-                    "Android V1.78.51"
+                    "Android V1.78.52"
                 ],
                 "beta": [],
                 "strip": true,
