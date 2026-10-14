@@ -25,14 +25,14 @@ REPO_URL="https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main"
 # ─────────────────────────────────────────────────────────────────
 # Runtime state (populated during the interactive flow)
 # ─────────────────────────────────────────────────────────────────
-TEMP_PATCH=""      # filename of the .mpp bundle for this run
-ECO_CHOICE=""      # selected ecosystem key (e.g. "morphe", "piko")
-TARGET_REPO=""     # GitHub "owner/repo" hosting the patch releases
+TEMP_PATCH=""       # filename of the .mpp bundle for this run
+ECO_CHOICE=""       # selected ecosystem key (e.g. "morphe", "piko")
+TARGET_REPO=""      # GitHub "owner/repo" hosting the patch releases
 TARGET_JSON_PATH="" # path to the ecosystem app list inside the repo
-ECO_DIR=""         # local folder where the user drops the input APK
-TRACK_CHOICE=""    # "Stable" or "Pre-release"
-APK_CHOICE=""      # absolute path to the chosen APK/bundle
-TEMP_LOG_FILE=""   # scratch log path used by cleanup()
+ECO_DIR=""          # local folder where the user drops the input APK
+TRACK_CHOICE=""     # "Stable" or "Pre-release"
+APK_CHOICE=""       # absolute path to the chosen APK/bundle
+TEMP_LOG_FILE=""    # scratch log path used by cleanup()
 
 # ─────────────────────────────────────────────────────────────────
 # Cleanup & signal handling
@@ -407,10 +407,18 @@ select_apk() {
     PS3="$PS3_BAK"
 }
 
-# Runs the Morphe CLI on the chosen APK. The java command is built as
-# an array so we can conditionally add --force without string surgery.
-# Pre-release track enables --force to permit version mismatches; Stable
-# leaves it off for strict compatibility checking.
+# Runs the Morphe CLI patch subcommand on the chosen APK.
+#
+# Reference (Morphe Desktop docs, subcommand `patch`):
+#   -p, --patches        Paths to .mpp files (required)
+#   -o, --out            Output path for the patched APK
+#   --bytecode-mode      FULL / STRIP_SAFE / STRIP_FAST (default: STRIP_FAST)
+#   -f, --force          Skip APK version compatibility check
+#   (positional)         Input APK, placed LAST
+#
+# Split bundles (.apkm / .xapk / .apks) are auto-merged by the CLI.
+# Pre-release track adds --force so mismatched versions still attempt to
+# patch; Stable track relies on strict version matching.
 execute_patch() {
     local base_name
     base_name=$(basename "$APK_CHOICE")
@@ -418,15 +426,17 @@ execute_patch() {
     local final_apk="$ECO_DIR/Patched-${base_name%.*}.apk"
     TEMP_LOG_FILE="$WORK_DIR/patch_log_$(date +%s).txt"
 
+    # Long-form flags only; the APK input is positional at the very end.
     local java_cmd=(
         java -jar "$MORPHE_JAR" patch
-        -b "$TEMP_PATCH"
-        -a "$APK_CHOICE"
-        -o "$final_apk"
+        --patches "$TEMP_PATCH"
+        --out "$final_apk"
+        --bytecode-mode FULL
     )
     if [[ "$TRACK_CHOICE" == "Pre-release" ]]; then
         java_cmd+=("--force")
     fi
+    java_cmd+=("$APK_CHOICE")
 
     echo -e "\n${YELLOW}[INFO] Starting the patching process... (Do not close Termux!)${NC}"
     if [[ "$TRACK_CHOICE" == "Pre-release" ]]; then
