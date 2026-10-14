@@ -46,7 +46,8 @@ check_dependencies() {
     command -v jq >/dev/null 2>&1 || missing+=("jq")
 
     # Morphe patches require Java 21.
-    if ! java -version 2>&1 | grep -q 'version "21'; then
+    if ! command -v java >/dev/null 2>&1 \
+        || ! java -version 2>&1 | grep -q 'version "21'; then
         missing+=("openjdk-21")
     fi
 
@@ -89,13 +90,13 @@ select_ecosystem() {
         exit 1
     fi
 
-    if ! echo "$map_data" | jq -e 'type == "object"' >/dev/null 2>&1; then
+    if ! printf '%s' "$map_data" | jq -e 'type == "object"' >/dev/null 2>&1; then
         echo -e "${RED}[ERROR] Failed to parse repo_map.json.${NC}" >&2
         exit 1
     fi
 
     local eco_list=()
-    mapfile -t eco_list < <(echo "$map_data" | jq -r 'keys[]')
+    mapfile -t eco_list < <(printf '%s' "$map_data" | jq -r 'keys[]')
 
     if [[ ${#eco_list[@]} -eq 0 ]]; then
         echo -e "${RED}[ERROR] No ecosystems found in repo_map.json.${NC}" >&2
@@ -119,8 +120,8 @@ select_ecosystem() {
             ECO_CHOICE="$choice"
             echo -e "${GREEN}Selected ecosystem: $ECO_CHOICE${NC}"
 
-            TARGET_REPO=$(echo "$map_data" | jq -r --arg eco "$ECO_CHOICE" '.[$eco].repo_url // empty')
-            TARGET_JSON_PATH=$(echo "$map_data" | jq -r --arg eco "$ECO_CHOICE" '.[$eco].config_path // empty')
+            TARGET_REPO=$(printf '%s' "$map_data" | jq -r --arg eco "$ECO_CHOICE" '.[$eco].repo_url // empty')
+            TARGET_JSON_PATH=$(printf '%s' "$map_data" | jq -r --arg eco "$ECO_CHOICE" '.[$eco].config_path // empty')
 
             if [[ -z "$TARGET_REPO" ]]; then
                 TARGET_REPO="chihafuyu/morphe-patches"
@@ -146,11 +147,24 @@ select_ecosystem() {
 show_supported_apps() {
     echo -e "\n${YELLOW}[INFO] Fetching supported apps for $ECO_CHOICE...${NC}"
     local json_url="${REPO_URL}/${TARGET_JSON_PATH}"
+    local jq_filter
 
     echo -e "${CYAN}=== Supported Applications ===${NC}"
 
-    if ! curl -sL --max-time 15 -f "$json_url" \
-        | jq -r '.[].apps | to_entries[] | " - \(.value.search_term) (v\(.value.stable[0] // "Any"))"'; then
+    jq_filter='.[].apps | to_entries[] |
+        " - \(.value.search_term) (\(
+            if .value.stable[0]
+            then "stable: v\(.value.stable[0])"
+            else "stable: Any"
+            end
+        )\(
+            if (.value.beta // []) | length > 0
+            then " | beta: v\(.value.beta[0])"
+            else ""
+            end
+        ))"'
+
+    if ! curl -sL --max-time 15 -f "$json_url" | jq -r "$jq_filter"; then
         echo -e "${RED}[WARN] Could not fetch configuration from $TARGET_JSON_PATH.${NC}" >&2
     fi
     echo -e "${CYAN}==============================${NC}"
@@ -244,7 +258,7 @@ fetch_components() {
     fi
 
     local patch_url=""
-    patch_url=$(echo "$api_response" | jq -r "$jq_filter" | tail -n 1) || true
+    patch_url=$(printf '%s' "$api_response" | jq -r "$jq_filter" | tail -n 1) || true
 
     if [[ -z "$patch_url" || "$patch_url" == "null" ]]; then
         echo -e "${RED}[ERROR] No .mpp file found for $ECO_CHOICE in $TARGET_REPO ($TRACK_CHOICE). API rate limit exceeded?${NC}" >&2
