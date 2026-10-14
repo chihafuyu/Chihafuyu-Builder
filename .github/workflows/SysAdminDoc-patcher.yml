@@ -39,6 +39,11 @@ name: 🛠️ SysAdminDoc Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_tumblr:
+        description: 'Patch HushTumblr'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -191,6 +196,7 @@ jobs:
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: "hushpinterest"
+
   patch-telegram-web:
     if: inputs.app_telegram_web == true
     permissions:
@@ -259,3 +265,26 @@ jobs:
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: "hushfeed"
+
+  patch-tumblr:
+    if: inputs.app_tumblr == true
+    permissions:
+      contents: write
+    uses: ./.github/workflows/core-engine.yml
+    secrets: inherit
+    with:
+      ecosystem: "SysAdminDoc"
+      apps: "tumblr"
+      architecture: ${{ inputs.architecture }}
+      version_selection: ${{ inputs.version_selection }}
+      custom_version: ${{ inputs.custom_version }}
+      download_source: ${{ inputs.download_source }}
+      continue_on_error: ${{ inputs.continue_on_error }}
+      cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
+      patches_track: ${{ inputs.patches_track }}
+      repo_url: "SysAdminDoc/HushTumblr"
+      custom_patch_filename: "hushtumblr-custom.mpp"
+      upload_github_release: ${{ inputs.upload_github_release }}
+      send_to_telegram: ${{ inputs.send_to_telegram }}
+      release_tag_prefix: "hushtumblr"

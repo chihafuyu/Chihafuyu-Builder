@@ -589,6 +589,29 @@
                         "enabled": false
                     }
                 }
+            },
+            "tumblr": {
+                "package": "com.tumblr",
+                "search_term": "Tumblr",
+                "stable": [
+                    "46.5.0.109"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "1460500109",
+                    "arm64-v8a": "1460500109",
+                    "armeabi-v7a": "1460500109",
+                    "x86_64": "1460500109",
+                    "x86": "1460500109"
+                },
+                "strip": true,
+                "force_bundle": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Spoof signature for Google sign-in": {
+                        "enabled": true
+                    }
+                }
             }
         }
     }

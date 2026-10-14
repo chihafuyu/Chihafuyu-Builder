@@ -44,11 +44,6 @@ name: 📧 Heval99 Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_osmand:
-        description: 'Patch osmand'
-        required: true
-        type: boolean
-        default: false
       app_pi_music_player:
         description: 'Patch pi-music-player'
         required: true
@@ -61,6 +56,11 @@ name: 📧 Heval99 Ecosystem Patcher
         default: false
       app_textra:
         description: 'Patch textra'
+        required: true
+        type: boolean
+        default: false
+      app_truecaller:
+        description: 'Patch truecaller'
         required: true
         type: boolean
         default: false
@@ -148,10 +148,10 @@ jobs:
       APP_LIBRERA: ${{ inputs.app_librera }}
       APP_MOON_READER: ${{ inputs.app_moon_reader }}
       APP_NOTEPAD: ${{ inputs.app_notepad }}
-      APP_OSMAND: ${{ inputs.app_osmand }}
       APP_PI_MUSIC_PLAYER: ${{ inputs.app_pi_music_player }}
       APP_TASKER: ${{ inputs.app_tasker }}
       APP_TEXTRA: ${{ inputs.app_textra }}
+      APP_TRUECALLER: ${{ inputs.app_truecaller }}
       APP_UNIFIED_REMOTE: ${{ inputs.app_unified_remote }}
       APP_WEATHER_UNDERGROUND: ${{ inputs.app_weather_underground }}
     steps:
@@ -183,9 +183,6 @@ jobs:
           if [[ "$APP_NOTEPAD" == "true" ]]; then
             LIST="$LIST,notepad"
           fi
-          if [[ "$APP_OSMAND" == "true" ]]; then
-            LIST="$LIST,osmand"
-          fi
           if [[ "$APP_PI_MUSIC_PLAYER" == "true" ]]; then
             LIST="$LIST,pi-music-player"
           fi
@@ -194,6 +191,9 @@ jobs:
           fi
           if [[ "$APP_TEXTRA" == "true" ]]; then
             LIST="$LIST,textra"
+          fi
+          if [[ "$APP_TRUECALLER" == "true" ]]; then
+            LIST="$LIST,truecaller"
           fi
           if [[ "$APP_UNIFIED_REMOTE" == "true" ]]; then
             LIST="$LIST,unified-remote"

@@ -16,7 +16,7 @@
                 "package": "club.boxbox.android",
                 "search_term": "Box Box",
                 "stable": [
-                    "5.4.16"
+                    "5.4.17"
                 ],
                 "beta": [],
                 "version_codes": {
@@ -121,24 +121,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "osmand": {
-                "package": "net.osmand",
-                "search_term": "OsmAnd",
-                "stable": [
-                    "5.4.9"
-                ],
-                "beta": [],
-                "version_codes": {
-                    "universal": "5409",
-                    "arm64-v8a": "5409",
-                    "armeabi-v7a": "5409",
-                    "x86_64": "5409",
-                    "x86": "5409"
-                },
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "pi-music-player": {
                 "package": "com.Project100Pi.themusicplayer",
                 "search_term": "Pi Music Player",
@@ -174,6 +156,24 @@
                     "armeabi-v7a": "48761",
                     "x86_64": "48761",
                     "x86": "48761"
+                },
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "truecaller": {
+                "package": "com.truecaller",
+                "search_term": "TrueCaller",
+                "stable": [
+                    "26.39.6"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "12L+",
+                    "arm64-v8a": "12L+",
+                    "armeabi-v7a": "12L+",
+                    "x86_64": "12L+",
+                    "x86": "12L+"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
