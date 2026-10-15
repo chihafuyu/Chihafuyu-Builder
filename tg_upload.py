@@ -20,11 +20,8 @@ def get_documents(ecosystem: str) -> tuple[list, str]:
     if not apk_dir.is_dir():
         raise FileNotFoundError(f"Output directory not found: {apk_dir}")
 
-    documents = [
-        InputMediaDocument(media=str(apk))
-        for apk in sorted(apk_dir.glob("*.apk"))
-    ]
-    if not documents:
+    apk_files = sorted(apk_dir.glob("*.apk"))
+    if not apk_files:
         raise FileNotFoundError(f"No APKs found in {apk_dir}")
 
     changelog_path = Path(f"{ecosystem}/changelog.md")
@@ -35,6 +32,8 @@ def get_documents(ecosystem: str) -> tuple[list, str]:
 
     if len(caption) > CAPTION_LIMIT:
         caption = caption[: CAPTION_LIMIT - 3] + "..."
+
+    documents = [InputMediaDocument(media=str(apk)) for apk in apk_files]
     return documents, caption
 
 
@@ -89,9 +88,7 @@ async def _resolve_target_chat(app: Client) -> int | str:
     return target_chat
 
 
-async def _send_with_retry(
-    coro_factory, label: str
-) -> None:
+async def _send_with_retry(coro_factory, label: str) -> None:
     """Runs an async send operation with FloodWait-aware retries.
 
     Raises RuntimeError when every attempt fails so the CI job exits non-zero.
@@ -110,18 +107,32 @@ async def _send_with_retry(
 
 
 async def _send_chunk(
-    app: Client, target_chat: int | str, chunk: list, chunk_idx: int
+    app: Client,
+    target_chat: int | str,
+    chunk: list,
+    chunk_idx: int,
+    caption: str | None = None,
 ) -> None:
-    """Uploads a single chunk of documents.
+    """Uploads one chunk of documents, attaching the caption to the first item.
 
-    Captions are always sent separately by the caller, so no per-item
-    caption handling is required here.
+    Embedding the caption into the first document produces a single Telegram
+    message: the album and the changelog appear in one bubble. Because the
+    caption lives on a media message (not a standalone text message), Telegram
+    does not render a link preview for URLs inside it.
     """
+    if caption and chunk:
+        first = chunk[0]
+        chunk[0] = InputMediaDocument(media=first.media, caption=caption)
+
     if len(chunk) == 1:
+        single = chunk[0]
+        single_caption = getattr(single, "caption", None) or None
+
         async def _send_single() -> None:
             await app.send_document(
                 chat_id=target_chat,
-                document=chunk[0].media,
+                document=single.media,
+                caption=single_caption,
             )
         action = _send_single
     else:
@@ -132,17 +143,6 @@ async def _send_chunk(
     await _send_with_retry(action, f"chunk {chunk_idx}")
     print(f"Uploaded chunk {chunk_idx}.", flush=True)
     await asyncio.sleep(3)
-
-
-async def _send_caption(
-    app: Client, target_chat: int | str, caption: str
-) -> None:
-    """Sends the changelog as a standalone message after the media group."""
-    async def _send() -> None:
-        await app.send_message(chat_id=target_chat, text=caption)
-
-    await _send_with_retry(_send, "caption")
-    print("Caption delivered.", flush=True)
 
 
 async def upload_files() -> None:
@@ -160,9 +160,12 @@ async def upload_files() -> None:
 
         for i in range(0, len(documents), CHUNK_SIZE):
             chunk = documents[i:i + CHUNK_SIZE]
-            await _send_chunk(app, target_chat, chunk, (i // CHUNK_SIZE) + 1)
-
-        await _send_caption(app, target_chat, caption)
+            chunk_idx = (i // CHUNK_SIZE) + 1
+            # Caption only rides along with the first chunk.
+            chunk_caption = caption if i == 0 else None
+            await _send_chunk(
+                app, target_chat, chunk, chunk_idx, chunk_caption
+            )
 
     print("Upload complete!", flush=True)
 

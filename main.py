@@ -14,6 +14,7 @@ import threading
 import time
 from contextlib import ExitStack
 from typing import Any
+from urllib.parse import urlparse
 
 from scrapers import AVAILABLE_SCRAPERS
 from core.context import Context, RateLimiter
@@ -27,7 +28,6 @@ from core.utils import (
     update_options_json,
 )
 
-# 5.5h budget so the job stops before GitHub Actions 6h hard-kill.
 MAX_RUNTIME_SECONDS = 19800
 ECOSYSTEM_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
 
@@ -88,23 +88,15 @@ def download_apk(ctx: Context, args: Any) -> str | None:
 
 
 def _normalize_repo_url(repo: str) -> str:
-    """Normalizes a repo identifier into a fully-qualified GitHub URL.
-
-    Accepts any of:
-      - "owner/repo"
-      - "github.com/owner/repo"
-      - "https://github.com/owner/repo"
-
-    Trailing slashes are stripped. Returns an empty string when input is empty.
-    """
+    """Normalizes a repo identifier into a fully-qualified GitHub URL."""
     repo = (repo or "").strip().rstrip("/")
     if not repo:
         return ""
-    if repo.startswith(("https://", "http://")):
-        return repo
-    if repo.startswith("github.com/"):
-        return f"https://{repo}"
-    return f"https://github.com/{repo}"
+    parsed = urlparse(repo if "://" in repo else f"https://{repo}")
+    if parsed.hostname in ("github.com", "www.github.com"):
+        path = parsed.path.strip("/")
+        return f"https://github.com/{path}" if path else "https://github.com"
+    return f"https://github.com/{repo.lstrip('/')}"
 
 
 def write_changelog(
@@ -192,12 +184,7 @@ def _get_staging_path(app_name: str, state: dict, ext: str) -> str:
 def build_patch_command(
     args: Any, app_data: dict, paths: tuple, target_arch: str
 ) -> list[str]:
-    """Builds the CLI shell command including exclusive patch parameters.
-
-    Note: keystore credentials are passed as CLI flags because the upstream
-    CLI does not expose an environment-based alternative. This means they
-    are briefly visible via /proc on shared runners. Do not log this list.
-    """
+    """Builds the CLI shell command including exclusive patch parameters."""
     cmd = [
         "java", "-Xmx4G", "-jar", args.cli, "patch",
         "--patches", args.patches,
@@ -241,11 +228,7 @@ def build_patch_command(
 def execute_patch_cli(
     patch_cmd: list[str], log_path: str | None = None
 ) -> tuple[int, bool]:
-    """Executes the patch CLI under a credential-free env with a hard timeout.
-
-    When log_path is provided, the combined stdout/stderr stream is written
-    to that file so it can be aggregated and exported alongside the release.
-    """
+    """Executes the patch CLI under a credential-free env with a hard timeout."""
     zero_patches = False
 
     with ExitStack() as stack:
@@ -303,11 +286,7 @@ def execute_patch_cli(
 def _generate_options_json(
     app_name: str, args: Any, app_data: dict, workspace: str
 ) -> str | None:
-    """Generates options.json required for patching.
-
-    Returns the file path on success, or None when options-create failed
-    to produce a usable file. Callers must handle the None case.
-    """
+    """Generates options.json required for patching."""
     json_file = os.path.join(workspace, f"{_safe_filename(app_name)}-options.json")
     cmd = [
         "java", "-jar", args.cli, "options-create",
@@ -355,10 +334,7 @@ def _resolve_target_version(app_data: dict, args: Any, custom_ver: str) -> str:
 
 
 def _export_options_snapshot(json_file: str, out_opts: str) -> bool:
-    """Copies the generated options.json to the staging folder.
-
-    Returns True on success. Failure is non-fatal but logged.
-    """
+    """Copies the generated options.json to the staging folder."""
     try:
         shutil.copy2(json_file, out_opts)
         print(f"[INFO] Staged options snapshot: {os.path.basename(out_opts)}")
@@ -374,11 +350,7 @@ def _prepare_patch_inputs(
     app_data: dict,
     state: dict,
 ) -> dict | None:
-    """Downloads APK, generates options, and returns a bundle of paths.
-
-    The returned dict has keys: apk, options, out_apk.
-    Returns None if download or options generation failed.
-    """
+    """Downloads APK, generates options, and returns a bundle of paths."""
     app_name, t_ver, arch = app_info
 
     ctx = Context(
@@ -417,7 +389,6 @@ def process_single_app(
     if bundle is None:
         return
 
-    # Stage the exact options used for this patch, even if patching fails.
     _export_options_snapshot(
         bundle["options"], _get_staging_path(app_name, state, "options")
     )
@@ -494,12 +465,7 @@ def _read_staged_options(app_name: str, state: dict) -> Any:
 
 
 def _aggregate_exports(args: Any, state: dict) -> None:
-    """Merges per-app logs and options into single ecosystem-wide files.
-
-    Produces:
-      {out_dir}/{ecosystem}_log.txt
-      {out_dir}/{ecosystem}_options.json
-    """
+    """Merges per-app logs and options into single ecosystem-wide files."""
     if not state["attempted"]:
         return
 
