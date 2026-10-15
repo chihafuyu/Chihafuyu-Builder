@@ -1,0 +1,36 @@
+{
+    "kveld9-extra": {
+        "apps": {
+            "capcut": {
+                "package": "com.lemon.lvoverseas",
+                "search_term": "CapCut",
+                "stable": [
+                    "19.7.0"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "19701600"
+                },
+                "force_bundle": false,
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "copilot": {
+                "package": "com.microsoft.office.officehubrow",
+                "search_term": "Microsoft Copilot",
+                "stable": [
+                    "16.0.20527.20022"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "arm64-v8a": "45451809"
+                },
+                "force_bundle": true,
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

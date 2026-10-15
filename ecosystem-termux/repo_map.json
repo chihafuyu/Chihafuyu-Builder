@@ -88,6 +88,9 @@
     "kveld9": {
         "repo_url": "kveld9/kveld-morphe-patches"
     },
+    "kveld9-extra": {
+        "repo_url": "kveld9/kveld-extra-morphe-patches"
+    },
     "legendsciber": {
         "repo_url": "legendsciber/morphe-patches"
     },

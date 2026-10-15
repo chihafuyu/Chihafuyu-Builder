@@ -1,0 +1,95 @@
+---
+name: 🛡️ Code Audit (Linter & Security)
+
+"on":
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  pylint:
+    name: 🐍 Pylint Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install pylint kurigram tgcrypto google-genai httpx
+          if [ -f requirements.txt ]; then
+            python -m pip install -r requirements.txt
+          fi
+
+      - name: Run Pylint
+        run: |
+          set -euo pipefail
+          git ls-files -z '*.py' | xargs -0 -r python -m pylint
+
+  megalinter:
+    name: 🔍 MegaLinter Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run MegaLinter
+        uses: oxsecurity/megalinter@v10.1.0
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENABLE_LINTERS: >-
+            JSON_JSONLINT,
+            YAML_YAMLLINT,
+            ACTION_ACTIONLINT,
+            MARKDOWN_MARKDOWNLINT
+          # Exclude generated patch lists from linting
+          FILTER_REGEX_EXCLUDE: '(patches-list.*\.json|list_.*\.txt)'
+
+  codeql:
+    name: 🔒 CodeQL Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['python', 'actions']
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{ matrix.language }}"

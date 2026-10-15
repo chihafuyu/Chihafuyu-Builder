@@ -1,6 +1,17 @@
 {
     "hushfeed": {
         "apps": {
+            "pinedrama": {
+                "package": "com.ss.android.ttmd.video",
+                "search_term": "PineDrama - Short Dramas",
+                "stable": [
+                    "47.1.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "tiktok-global": {
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok",
