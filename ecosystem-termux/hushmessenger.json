@@ -5,10 +5,10 @@
                 "package": "com.facebook.orca",
                 "search_term": "Messenger",
                 "stable": [
-                    "582.0.0.61.92"
+                    "583.0.0.29.95"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "346415772"
+                    "arm64-v8a": "346611435"
                 },
                 "force_bundle": false,
                 "strip": true,
@@ -19,9 +19,6 @@
                     },
                     "Custom new-message sound": {
                         "enabled": false
-                    },
-                    "Material You theme": {
-                        "enabled": true
                     },
                     "Spoof package version": {
                         "enabled": true

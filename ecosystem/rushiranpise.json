@@ -118,11 +118,10 @@
                 "package": "com.canva.editor",
                 "search_term": "Canva",
                 "stable": [
-                    "2.375.0"
+                    "2.377.0"
                 ],
                 "beta": [],
                 "strip": true,
-                "uptodown_url": "https://canva.en.uptodown.com/android",
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
@@ -130,7 +129,7 @@
                 "package": "com.socialnmobile.dictapps.notepad.color.note",
                 "search_term": "ColorNote",
                 "stable": [
-                    "4.8.6"
+                    "4.8.8"
                 ],
                 "beta": [],
                 "strip": true,
@@ -185,7 +184,7 @@
                 "package": "com.anetcapture.mock",
                 "search_term": "HTTP Sniffer",
                 "stable": [
-                    "2.3.8-ad_mob"
+                    "2.5.0-ad_mob"
                 ],
                 "beta": [],
                 "strip": true,
@@ -367,7 +366,7 @@
                 "package": "com.twtapp",
                 "search_term": "Stargazing Hub",
                 "stable": [
-                    "3.4.4"
+                    "3.5.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -378,7 +377,7 @@
                 "package": "com.snowcorp.stickerly.android",
                 "search_term": "Sticker.ly",
                 "stable": [
-                    "3.37.0"
+                    "3.40.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -422,7 +421,7 @@
                 "package": "com.windscribe.vpn",
                 "search_term": "Windscribe VPN",
                 "stable": [
-                    "4.2.2328"
+                    "4.3.2360"
                 ],
                 "beta": [],
                 "strip": true,

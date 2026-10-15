@@ -119,6 +119,17 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "zombie-tsunami": {
+                "package": "net.mobigame.zombietsunami",
+                "search_term": "Zombie Tsunami",
+                "stable": [
+                    "4.7.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }
