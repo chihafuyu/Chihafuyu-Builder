@@ -7,6 +7,8 @@ name: 📥 Open a PR to main
       - dev
   workflow_dispatch:
 
+permissions: {}
+
 env:
   MESSAGE: Merge branch `${{ github.head_ref || github.ref_name }}` to `main`
 
@@ -14,6 +16,9 @@ jobs:
   pull-request:
     name: Open pull request
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v7
