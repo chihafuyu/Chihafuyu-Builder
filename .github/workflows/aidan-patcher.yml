@@ -1,5 +1,5 @@
 ---
-name: 🛠️ Aidan Ecosystem Patcher
+name: 🖨️ Aidan Ecosystem Patcher
 
 "on":
   workflow_dispatch:
