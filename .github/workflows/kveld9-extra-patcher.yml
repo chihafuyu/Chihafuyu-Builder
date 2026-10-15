@@ -74,39 +74,47 @@ name: 🛠️ Kveld9-Extra Ecosystem Patcher
         type: boolean
         default: false
 
-jobs:
-  patch-capcut:
-    if: inputs.app_capcut == true
-    permissions:
-      contents: write
-    uses: ./.github/workflows/core-engine.yml
-    secrets: inherit
-    with:
-      ecosystem: "kveld9-extra"
-      apps: "capcut"
-      architecture: ${{ inputs.architecture }}
-      version_selection: ${{ inputs.version_selection }}
-      custom_version: ${{ inputs.custom_version }}
-      download_source: ${{ inputs.download_source }}
-      continue_on_error: ${{ inputs.continue_on_error }}
-      cli_track: ${{ inputs.cli_track }}
-      custom_cli_version: ${{ inputs.custom_cli_version }}
-      patches_track: ${{ inputs.patches_track }}
-      repo_url: "kveld9/kveld-extra-morphe-patches"
-      custom_patch_filename: "kveld9-extra-custom.mpp"
-      upload_github_release: ${{ inputs.upload_github_release }}
-      send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "capcut"
+permissions: {}
 
-  patch-copilot:
-    if: inputs.app_copilot == true
+jobs:
+  prepare-apps:
+    runs-on: ubuntu-latest
+    outputs:
+      selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_CAPCUT: ${{ inputs.app_capcut }}
+      APP_COPILOT: ${{ inputs.app_copilot }}
+    steps:
+      - id: build-list
+        run: |
+          set -euo pipefail
+          LIST=""
+          if [[ "$APP_CAPCUT" == "true" ]]; then
+            LIST="$LIST,capcut"
+          fi
+          if [[ "$APP_COPILOT" == "true" ]]; then
+            LIST="$LIST,copilot"
+          fi
+          LIST="${LIST#,}"
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
+          {
+            echo "apps<<EOF"
+            echo "$LIST"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+  call-patcher:
+    needs: prepare-apps
     permissions:
       contents: write
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
       ecosystem: "kveld9-extra"
-      apps: "copilot"
+      apps: ${{ needs.prepare-apps.outputs.selected }}
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
       custom_version: ${{ inputs.custom_version }}
@@ -119,4 +127,4 @@ jobs:
       custom_patch_filename: "kveld9-extra-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "copilot"
+      release_tag_prefix: "kveld9-extra"

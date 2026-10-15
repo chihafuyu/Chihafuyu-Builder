@@ -114,6 +114,8 @@ name: 📺 Ajstrick81 Ecosystem Patcher
         type: boolean
         default: false
 
+permissions: {}
+
 jobs:
   prepare-apps:
     runs-on: ubuntu-latest

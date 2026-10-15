@@ -109,6 +109,8 @@ name: 🧰 SysAdminDoc Ecosystem Patcher
         type: boolean
         default: false
 
+permissions: {}
+
 jobs:
   patch-facebook:
     if: inputs.app_facebook == true
