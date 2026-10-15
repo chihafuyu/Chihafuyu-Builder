@@ -5,7 +5,7 @@ import re
 import time
 from dataclasses import dataclass
 from typing import Any
-from urllib.parse import quote_plus, urljoin
+from urllib.parse import quote_plus, urljoin, urlparse
 
 from bs4 import BeautifulSoup
 import requests
@@ -201,7 +201,9 @@ class ApkmirrorScraper(BaseScraper):
             resp = self._session.get(url, timeout=FETCH_TIMEOUT_SECONDS)
             elapsed = time.monotonic() - start
 
-            if resp.status_code == 200 and "apkmirror.com" in str(resp.url):
+            if resp.status_code == 200 and urlparse(
+                str(resp.url)
+            ).hostname in ("apkmirror.com", "www.apkmirror.com"):
                 print(
                     f"[INFO] Fetch succeeded in {elapsed:.1f}s.",
                     flush=True,
