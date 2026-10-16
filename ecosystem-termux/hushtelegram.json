@@ -5,15 +5,15 @@
                 "package": "org.telegram.messenger.web",
                 "search_term": "Telegram Web",
                 "stable": [
-                    "13.0.2"
+                    "13.0.3"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "71759",
-                    "arm64-v8a": "71759",
-                    "armeabi-v7a": "71759",
-                    "x86_64": "71759",
-                    "x86": "71759"
+                    "universal": "71839",
+                    "arm64-v8a": "71839",
+                    "armeabi-v7a": "71839",
+                    "x86_64": "71839",
+                    "x86": "71839"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",

@@ -1,0 +1,59 @@
+{
+    "JordanWoodson": {
+        "apps": {
+            "kick": {
+                "package": "com.kick.mobile",
+                "search_term": "Kick",
+                "stable": [
+                    "40.32.1"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "60006965",
+                    "arm64-v8a": "60006965",
+                    "armeabi-v7a": "60006965"
+                },
+                "force_bundle": true,
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "rumble": {
+                "package": "com.rumble.battles",
+                "search_term": "Rumble",
+                "stable": [
+                    "3.21.0"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "887",
+                    "arm64-v8a": "887",
+                    "armeabi-v7a": "887"
+                },
+                "force_bundle": true,
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "twitch": {
+                "package": "tv.twitch.android.app",
+                "search_term": "Twitch",
+                "stable": [
+                    "31.6.0"
+                ],
+                "beta": [],
+                "version_codes": {
+                    "universal": "12L+",
+                    "arm64-v8a": "12L+",
+                    "armeabi-v7a": "12L+",
+                    "x86_64": "12L+",
+                    "x86": "12L+"
+                },
+                "force_bundle": true,
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}
