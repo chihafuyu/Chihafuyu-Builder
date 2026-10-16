@@ -120,6 +120,25 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "zen-pinball": {
+                "package": "com.zenstudios.ZenPinball",
+                "search_term": "Zen Pinball",
+                "stable": [
+                    "1.49.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_bundle": true,
+                "version_codes": {
+                    "universal": "95",
+                    "arm64-v8a": "95",
+                    "armeabi-v7a": "95",
+                    "x86_64": "95",
+                    "x86": "95"
+                },
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "zombie-tsunami": {
                 "package": "net.mobigame.zombietsunami",
                 "search_term": "Zombie Tsunami",
