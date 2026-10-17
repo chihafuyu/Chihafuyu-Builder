@@ -108,8 +108,14 @@ def _parse_bundle_json(url):
         if not isinstance(data, dict):
             print("  -> Invalid JSON format: expected an object.")
             return None
-    except (requests.exceptions.RequestException, json.JSONDecodeError) as err:
-        print(f"  -> Failed to fetch bundle data: {err}")
+    except requests.exceptions.HTTPError as err:
+        print(f"  -> HTTP Error: {err}")
+        return None
+    except requests.exceptions.RequestException as err:
+        print(f"  -> Network Error: {err}")
+        return None
+    except json.JSONDecodeError as err:
+        print(f"  -> JSON Decode Error: {err}")
         return None
 
     app_version = data.get("app_version")
@@ -155,8 +161,14 @@ def fetch_patches_list(url):
             print("  -> Invalid JSON format: expected an object.")
             return None
         return data
-    except (requests.exceptions.RequestException, json.JSONDecodeError) as err:
-        print(f"  -> Failed to fetch data: {err}")
+    except requests.exceptions.HTTPError as err:
+        print(f"  -> HTTP Error: {err}")
+        return None
+    except requests.exceptions.RequestException as err:
+        print(f"  -> Network Error: {err}")
+        return None
+    except json.JSONDecodeError as err:
+        print(f"  -> JSON Decode Error: {err}")
         return None
 
 
@@ -439,25 +451,34 @@ def update_config(config_path, stable_data):
     return changed
 
 
+def _process_ecosystem(config_path, url):
+    """Process a single ecosystem and return the fetched data."""
+    if not os.path.exists(config_path):
+        print(
+            f"Skipping '{config_path}': "
+            "Config file not found in the repository."
+        )
+        return None
+
+    stable_data = fetch_patches_list(url)
+    if stable_data is None:
+        print(
+            f"Skipping '{config_path}': "
+            "Failed to fetch or parse upstream data (see error above)."
+        )
+        return None
+    return stable_data
+
+
 def main():
     """Run the auto-update process for all configured ecosystems."""
     ecosystems = load_ecosystems()
     fetched_ecosystems = []
 
     for config_path, url in ecosystems.items():
-        if not os.path.exists(config_path):
-            print(f"Config file not found: {config_path}. Skipping.")
-            continue
-
-        stable_data = fetch_patches_list(url)
-        if stable_data is None:
-            print(
-                f"Failed to fetch stable data for {config_path}. "
-                "Aborting to prevent data loss."
-            )
-            sys.exit(1)
-
-        fetched_ecosystems.append((config_path, stable_data))
+        stable_data = _process_ecosystem(config_path, url)
+        if stable_data is not None:
+            fetched_ecosystems.append((config_path, stable_data))
 
     any_change = False
     for config_path, stable_data in fetched_ecosystems:

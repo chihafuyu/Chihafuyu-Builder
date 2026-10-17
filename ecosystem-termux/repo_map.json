@@ -112,6 +112,7 @@
     },
     "piko-newx": {
         "repo_url": "crimera/piko-newx",
+        "file_path": "patches-bundle.json",
         "config_path": "ecosystem-termux/piko-newx.json"
     },
     "plyrs1": {
