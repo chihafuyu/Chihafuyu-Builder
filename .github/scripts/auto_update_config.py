@@ -159,11 +159,13 @@ def _extract_pkg_data(patches_data):
             if patch_name:
                 pkg_data[pkg_name]["patches"][patch_name] = default_enabled
 
-            for target in pkg.get("targets") or []:
-                if (
-                    isinstance(target, dict)
-                    and target not in pkg_data[pkg_name]["all_targets"]
-                ):
+            # Filter out experimental targets and ensure valid structure
+            valid_targets = [
+                t for t in pkg.get("targets") or []
+                if isinstance(t, dict) and not t.get("isExperimental", False)
+            ]
+            for target in valid_targets:
+                if target not in pkg_data[pkg_name]["all_targets"]:
                     pkg_data[pkg_name]["all_targets"].append(target)
 
     for data in pkg_data.values():
@@ -181,7 +183,7 @@ def _extract_pkg_data(patches_data):
 def _sync_app_patches(app_cfg, compatible_patches, app_key):
     """
     Sync patches in options_override, adding ONLY patches with default false.
-    NOTE: This function is currently disabled in the main loop to prevent 
+    NOTE: This function is currently disabled in the main loop to prevent
     config bloat when upstream adds many new disabled patches.
     """
     changed = False
@@ -216,7 +218,7 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
     target_list = [str(new_version)]
 
-    # Prevent downgrading versions (e.g., 2026.44.0 -> 2026.43.0)
+    # Prevent downgrading versions (safety fallback)
     old_stable = app_cfg.get("stable", [])
     if old_stable and isinstance(old_stable, list) and len(old_stable) > 0:
         old_version = str(old_stable[0])
@@ -266,7 +268,7 @@ def _process_existing_apps(app_configs, stable_pkgs):
         if _update_app_version(app_key, app_cfg, pkg_info):
             changed = True
 
-        # Dimatikan sementara agar config tidak "tambah banyak" saat upstream update
+        # Temporarily disabled to prevent config bloat when upstream updates
         # if _sync_app_patches(app_cfg, pkg_info["patches"], app_key):
         #     changed = True
 
