@@ -68,10 +68,30 @@ def fetch_patches_list(url):
         return None
 
 
+def _normalize_vcodes(raw_vcodes):
+    """Normalize versionCodes from a dict or list into a string dictionary."""
+    if isinstance(raw_vcodes, dict):
+        return {
+            str(k).lower(): str(v)
+            for k, v in raw_vcodes.items()
+            if v is not None
+        }
+    if isinstance(raw_vcodes, list) and raw_vcodes:
+        return {"universal": str(raw_vcodes[-1])}
+    return {}
+
+
 def _get_target_sort_key(target):
     """Return sort key prioritizing highest version code and numeric version."""
-    vcodes = target.get("versionCodes") or {}
-    codes = [int(v) for v in vcodes.values() if str(v).isdigit()]
+    vcodes = target.get("versionCodes")
+    if isinstance(vcodes, dict):
+        raw_values = vcodes.values()
+    elif isinstance(vcodes, list):
+        raw_values = vcodes
+    else:
+        raw_values = ()
+
+    codes = [int(v) for v in raw_values if str(v).isdigit()]
     highest_code = max(codes) if codes else -1
     ver_str = str(target.get("version") or "")
     ver_nums = tuple(int(part) for part in re.findall(r"\d+", ver_str))
@@ -81,23 +101,33 @@ def _get_target_sort_key(target):
 def _extract_pkg_data(patches_data):
     """Extract package data and compatible patches from patches list."""
     pkg_data = {}
-    for patch in patches_data.get("patches", []):
-        for pkg in patch.get("compatiblePackages", []):
+    for patch in patches_data.get("patches") or []:
+        if not isinstance(patch, dict):
+            continue
+        patch_name = patch.get("name")
+        for pkg in patch.get("compatiblePackages") or []:
+            if not isinstance(pkg, dict):
+                continue
             pkg_name = pkg.get("packageName")
             if not pkg_name:
                 continue
 
             if pkg_name not in pkg_data:
                 pkg_data[pkg_name] = {
-                    "name": pkg.get("name", pkg_name),
+                    "name": pkg.get("name") or pkg_name,
                     "all_targets": [],
                     "patches": set(),
                 }
 
-            pkg_data[pkg_name]["patches"].add(patch["name"])
+            if patch_name:
+                pkg_data[pkg_name]["patches"].add(patch_name)
 
-            for target in pkg.get("targets", []):
-                pkg_data[pkg_name]["all_targets"].append(target)
+            for target in pkg.get("targets") or []:
+                if (
+                    isinstance(target, dict)
+                    and target not in pkg_data[pkg_name]["all_targets"]
+                ):
+                    pkg_data[pkg_name]["all_targets"].append(target)
 
     for data in pkg_data.values():
         targets = data["all_targets"]
@@ -153,13 +183,11 @@ def _update_app_version(app_key, app_cfg, pkg_info, track_name):
     if not latest:
         return changed
 
-    new_version = latest["version"]
-    new_vcodes = {
-        k.lower(): str(v) for k, v in (latest.get("versionCodes") or {}).items()
-    }
-    current_versions = app_cfg.get(track_name, [])
+    new_version = latest.get("version")
+    new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
+    current_versions = app_cfg.get(track_name) or []
 
-    if new_version not in current_versions:
+    if new_version and new_version not in current_versions:
         print(
             f"    -> Updating {track_name} version of '{app_key}' "
             f"from {current_versions} to {new_version}."
