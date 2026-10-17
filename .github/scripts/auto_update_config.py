@@ -75,19 +75,41 @@ def _extract_pkg_data(patches_data):
     pkg_data = {}
     for patch in patches_data.get("patches", []):
         for pkg in patch.get("compatiblePackages", []):
-            pkg_name = pkg["packageName"]
+            pkg_name = pkg.get("packageName")
+            if not pkg_name:
+                continue
+
             if pkg_name not in pkg_data:
                 pkg_data[pkg_name] = {
                     "name": pkg.get("name", pkg_name),
-                    "latest_target": None,
+                    "all_targets": [],
                     "patches": set(),
                 }
 
             pkg_data[pkg_name]["patches"].add(patch["name"])
 
-            targets = pkg.get("targets", [])
-            if targets and not pkg_data[pkg_name]["latest_target"]:
-                pkg_data[pkg_name]["latest_target"] = targets[0]
+            for target in pkg.get("targets", []):
+                pkg_data[pkg_name]["all_targets"].append(target)
+
+    # Find the latest target for each package
+    for pkg_name, data in pkg_data.items():
+        targets = data["all_targets"]
+        if not targets:
+            data["latest_target"] = None
+            continue
+
+        def _get_sort_key(t):
+            vcodes = t.get("versionCodes") or {}
+            for v in vcodes.values():
+                try:
+                    return int(v)
+                except (ValueError, TypeError):
+                    pass
+            return t.get("version", "")
+
+        targets.sort(key=_get_sort_key, reverse=True)
+        data["latest_target"] = targets[0]
+        del data["all_targets"]
 
     return pkg_data
 
@@ -133,7 +155,7 @@ def _update_app_version(app_key, app_cfg, pkg_info, track_name):
 
     new_version = latest["version"]
     new_vcodes = {
-        k.lower(): str(v) for k, v in latest.get("versionCodes", {}).items()
+        k.lower(): str(v) for k, v in (latest.get("versionCodes") or {}).items()
     }
     current_versions = app_cfg.get(track_name, [])
 
@@ -144,39 +166,12 @@ def _update_app_version(app_key, app_cfg, pkg_info, track_name):
         )
         app_cfg[track_name] = [new_version]
         # Only update version_codes if we're updating the stable track,
-        # or if the dev track has a newer version code.
+        # or if the beta track has a newer version code.
         if track_name == "stable" or not app_cfg.get("version_codes"):
             app_cfg["version_codes"] = new_vcodes
         changed = True
 
     return changed
-
-
-def _create_new_app(pkg_name, pkg_info, track_name):
-    """Create a new app config entry based on branch track."""
-    latest = pkg_info.get("latest_target")
-    new_version = latest["version"] if latest else ""
-    new_vcodes = (
-        {k.lower(): str(v) for k, v in latest.get("versionCodes", {}).items()}
-        if latest
-        else {}
-    )
-
-    app_cfg = {
-        "package": pkg_name,
-        "search_term": pkg_info["name"],
-        "stable": [],
-        "beta": [],
-        "version_codes": new_vcodes,
-        "strip": True,
-        "archive_id": "ZeNiX",
-        "options_override": {},
-    }
-
-    if new_version:
-        app_cfg[track_name] = [new_version]
-
-    return app_cfg
 
 
 def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
@@ -185,15 +180,15 @@ def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
     all_pkgs = set(stable_pkgs.keys()).union(dev_pkgs.keys())
 
     for app_key in list(app_configs.keys()):
-        # Safely get the package name to avoid KeyError on malformed configs
         pkg_name = app_configs[app_key].get("package")
         if not pkg_name:
             continue
 
         if pkg_name not in all_pkgs:
-            print(f"    -> Removing app '{app_key}' (not in patches-list).")
-            del app_configs[app_key]
-            changed = True
+            print(
+                f"    -> WARNING: App '{app_key}' not found in patches-list. "
+                "Keeping it to prevent data loss."
+            )
             continue
 
         app_cfg = app_configs[app_key]
@@ -206,7 +201,6 @@ def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
                 changed = True
 
         if pkg_name in dev_pkgs:
-            # FIX: Map "dev" branch to "beta" field in schema
             if _update_app_version(app_key, app_cfg, dev_pkgs[pkg_name], "beta"):
                 changed = True
 
@@ -231,21 +225,34 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
 
         print(f"    -> Adding new app '{pkg_name}'.")
 
-        # Handle Key Collision by appending a counter
         base_key = pkg_name.split(".")[-1]
         app_key = base_key
         counter = 1
-        while app_key in app_configs and app_configs[app_key].get("package") != pkg_name:
+        while (
+            app_key in app_configs
+            and app_configs[app_key].get("package") != pkg_name
+        ):
             app_key = f"{base_key}_{counter}"
             counter += 1
 
         combined_patches = _get_pkg_patches(pkg_name, stable_pkgs, dev_pkgs)
+        pkg_info = stable_pkgs.get(pkg_name) or dev_pkgs.get(pkg_name)
+
+        app_cfg = {
+            "package": pkg_name,
+            "search_term": pkg_info["name"],
+            "stable": [],
+            "beta": [],
+            "version_codes": {},
+            "strip": True,
+            "archive_id": "ZeNiX",
+            "options_override": {},
+        }
 
         if pkg_name in stable_pkgs:
-            app_cfg = _create_new_app(pkg_name, stable_pkgs[pkg_name], "stable")
-        else:
-            # Map "dev" to "beta" for new apps
-            app_cfg = _create_new_app(pkg_name, dev_pkgs[pkg_name], "beta")
+            _update_app_version(app_key, app_cfg, stable_pkgs[pkg_name], "stable")
+        if pkg_name in dev_pkgs:
+            _update_app_version(app_key, app_cfg, dev_pkgs[pkg_name], "beta")
 
         app_configs[app_key] = app_cfg
         _sync_app_patches(app_cfg, combined_patches, app_key)
@@ -256,7 +263,6 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
 
 def update_config(config_path, stable_data, dev_data):
     """Update a single config file based on patches-list data."""
-    # Skip if either fetch failed to avoid wiping configs on network errors
     if stable_data is None or dev_data is None:
         print(f"  -> Skipping {config_path} due to missing data from network.")
         return False
@@ -285,7 +291,6 @@ def update_config(config_path, stable_data, dev_data):
     if changed:
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4, ensure_ascii=False)
-            # Append POSIX newline at the end of the file
             f.write("\n")
         print(f"  -> File {config_path} updated.")
     else:
