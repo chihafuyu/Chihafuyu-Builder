@@ -1,0 +1,55 @@
+---
+name: 🤖 Auto-Update Ecosystem Configs
+
+"on":
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-configs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.14'
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Run Auto-Update Script
+        run: python .github/scripts/auto_update_config.py
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(config): auto-update ecosystem configs"
+          committer: GitHub <noreply@github.com>
+          author: >-
+            ${{ github.actor }}
+            <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: auto-update/configs
+          delete-branch: true
+          title: '🤖 Auto-Update Ecosystem Configs'
+          body: |
+            This PR contains automated updates to ecosystem configuration files.
+
+            - Updated app versions and version codes.
+            - Added newly discovered patches with `enabled: false`.
+            - Preserved existing local patches missing from upstream `patches-list.json`.
+
+            Please review the changes before merging.
+          labels: |
+            automated
+            config-update
