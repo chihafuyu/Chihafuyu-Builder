@@ -14,6 +14,16 @@ name: 🛠️ Kveld9-Extra Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_hevy:
+        description: 'Patch hevy'
+        required: true
+        type: boolean
+        default: false
+      app_nokoprint:
+        description: 'Patch nokoprint'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -84,6 +94,8 @@ jobs:
     env:
       APP_CAPCUT: ${{ inputs.app_capcut }}
       APP_COPILOT: ${{ inputs.app_copilot }}
+      APP_HEVY: ${{ inputs.app_hevy }}
+      APP_NOKOPRINT: ${{ inputs.app_nokoprint }}
     steps:
       - id: build-list
         run: |
@@ -94,6 +106,12 @@ jobs:
           fi
           if [[ "$APP_COPILOT" == "true" ]]; then
             LIST="$LIST,copilot"
+          fi
+          if [[ "$APP_HEVY" == "true" ]]; then
+            LIST="$LIST,hevy"
+          fi
+          if [[ "$APP_NOKOPRINT" == "true" ]]; then
+            LIST="$LIST,nokoprint"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

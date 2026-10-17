@@ -9,16 +9,6 @@ name: 🦁 Kveld9 Ecosystem Patcher
         required: true
         type: boolean
         default: true
-      app_hevy:
-        description: 'Patch hevy'
-        required: true
-        type: boolean
-        default: false
-      app_nokoprint:
-        description: 'Patch nokoprint'
-        required: true
-        type: boolean
-        default: false
       app_tiktok_global:
         description: 'Patch tiktok-global'
         required: true
@@ -93,8 +83,6 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_BRAVE_BROWSER: ${{ inputs.app_brave_browser }}
-      APP_HEVY: ${{ inputs.app_hevy }}
-      APP_NOKOPRINT: ${{ inputs.app_nokoprint }}
       APP_TIKTOK_GLOBAL: ${{ inputs.app_tiktok_global }}
     steps:
       - id: build-list
@@ -103,12 +91,6 @@ jobs:
           LIST=""
           if [[ "$APP_BRAVE_BROWSER" == "true" ]]; then
             LIST="$LIST,brave-browser"
-          fi
-          if [[ "$APP_HEVY" == "true" ]]; then
-            LIST="$LIST,hevy"
-          fi
-          if [[ "$APP_NOKOPRINT" == "true" ]]; then
-            LIST="$LIST,nokoprint"
           fi
           if [[ "$APP_TIKTOK_GLOBAL" == "true" ]]; then
             LIST="$LIST,tiktok-global"

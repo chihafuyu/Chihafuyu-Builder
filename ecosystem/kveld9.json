@@ -23,7 +23,7 @@
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
                 "stable": [
-                    "1.97.57"
+                    "1.97.59"
                 ],
                 "beta": [],
                 "strip": true,
@@ -50,37 +50,6 @@
                         "enabled": true
                     }
                 }
-            },
-            "hevy": {
-                "package": "com.hevy",
-                "search_term": "Hevy",
-                "stable": [
-                    "3.1.14"
-                ],
-                "beta": [],
-                "version_codes": {
-                    "arm64-v8a": "3308730"
-                },
-                "strip": true,
-                "force_arch": "arm64-v8a",
-                "force_bundle": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "nokoprint": {
-                "package": "com.nokoprint",
-                "search_term": "NokoPrint",
-                "stable": [
-                    "5.28.6"
-                ],
-                "beta": [],
-                "version_codes": {
-                    "universal": "318"
-                },
-                "strip": true,
-                "force_arch": "universal",
-                "archive_id": "ZeNiX",
-                "options_override": {}
             },
             "tiktok-global": {
                 "package": "com.zhiliaoapp.musically",
