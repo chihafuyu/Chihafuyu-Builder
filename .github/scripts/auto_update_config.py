@@ -1,5 +1,5 @@
 """
-Auto-update ecosystem configs from patches-list.json or Kotlin sources.
+Auto-update ecosystem configs from patches-list.json or bundle metadata.
 Run by GitHub Actions to create a Pull Request.
 """
 
@@ -26,9 +26,6 @@ VERSION_SPLIT_RE = re.compile(r"^(\d+(?:\.\d+)*)(.*)$")
 PRE_STAGE_RE = re.compile(
     r"(?<![a-z])(dev|alpha|preview|pre|beta|rc)(?![a-z])", re.IGNORECASE
 )
-KOTLIN_TARGET_RE = re.compile(
-    r'AppTarget\(version\s*=\s*"([^"]+)"(?:\s*,\s*isExperimental\s*=\s*(true|false))?\)'
-)
 
 
 def load_ecosystems():
@@ -46,7 +43,6 @@ def load_ecosystems():
                 if not repo_url:
                     continue
 
-                # Construct URL based on repo_map properties
                 branch = info.get("branch", "main")
                 file_path = info.get("file_path", "patches-list.json")
                 url = (
@@ -58,7 +54,6 @@ def load_ecosystems():
         except (OSError, json.JSONDecodeError) as err:
             print(f"Failed to load repo_map.json: {err}")
 
-    # Fallback if repo_map.json is missing or empty
     if not ecosystems:
         ecosystems = {
             "ecosystem/morphe.json": (
@@ -73,47 +68,43 @@ def load_ecosystems():
     return ecosystems
 
 
-def _parse_kotlin_constants(url):
-    """Parse Kotlin Constants.kt file and mock a patches-list.json."""
-    print(f"Fetching Kotlin source {url}...")
+def _parse_bundle_json(url):
+    """Parse patches-bundle.json to extract the stable app version."""
+    print(f"Fetching bundle metadata {url}...")
     try:
         resp = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
         resp.raise_for_status()
-        text = resp.text
-    except requests.exceptions.RequestException as err:
-        print(f"  -> Failed to fetch data: {err}")
+        data = resp.json()
+        if not isinstance(data, dict):
+            print("  -> Invalid JSON format: expected an object.")
+            return None
+    except (requests.exceptions.RequestException, json.JSONDecodeError) as err:
+        print(f"  -> Failed to fetch bundle data: {err}")
         return None
 
-    # Extract package name and apk file type
-    pkg_match = re.search(r'packageName\s*=\s*"([^"]+)"', text)
-    pkg_name = pkg_match.group(1) if pkg_match else "com.twitter.android"
+    app_version = data.get("app_version")
+    if not app_version:
+        print("  -> Missing 'app_version' in bundle metadata.")
+        return None
 
-    apk_match = re.search(r'apkFileType\s*=\s*ApkFileType\.([A-Z_]+)', text)
-    apk_type = apk_match.group(1) if apk_match else "APKM"
-
-    # Extract targets (versions)
-    targets = []
-    for match in KOTLIN_TARGET_RE.finditer(text):
-        version = match.group(1)
-        is_exp = match.group(2) == "true"
-        targets.append({
-            "version": version,
-            "isExperimental": is_exp,
-            "versionCodes": None,
-        })
-
-    # Return a mock structure compatible with the rest of the script
+    # Return a mock patches-list structure compatible with existing logic
     return {
         "patches": [
             {
-                "name": "NewX: Share post as image",
+                "name": "Default Bundle Patch",
                 "default": True,
                 "compatiblePackages": [
                     {
-                        "packageName": pkg_name,
+                        "packageName": "com.twitter.android",
                         "name": "X",
-                        "apkFileType": apk_type,
-                        "targets": targets,
+                        "apkFileType": "APKM",
+                        "targets": [
+                            {
+                                "version": app_version,
+                                "isExperimental": False,
+                                "versionCodes": None,
+                            }
+                        ],
                     }
                 ],
             }
@@ -122,9 +113,9 @@ def _parse_kotlin_constants(url):
 
 
 def fetch_patches_list(url):
-    """Fetch patches-list.json or parse Kotlin source from a URL."""
-    if url.endswith(".kt"):
-        return _parse_kotlin_constants(url)
+    """Fetch patches-list.json or parse bundle metadata from a URL."""
+    if url.endswith("patches-bundle.json"):
+        return _parse_bundle_json(url)
 
     print(f"Fetching {url}...")
     try:
@@ -220,7 +211,6 @@ def _process_package(pkg_data, pkg, patch_name, default_enabled):
     if patch_name:
         pkg_data[pkg_name]["patches"][patch_name] = default_enabled
 
-    # Filter out experimental targets and ensure valid structure
     valid_targets = [
         t for t in pkg.get("targets") or []
         if isinstance(t, dict) and not t.get("isExperimental", False)
@@ -267,7 +257,6 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
         app_cfg["options_override"] = options
 
     for patch_name, default_val in sorted(compatible_patches.items()):
-        # Only add if default is False and it's not already in the config
         if default_val is False and patch_name not in options:
             print(
                 f"    -> Adding new patch '{patch_name}' "
@@ -293,7 +282,7 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
     target_list = [str(new_version)]
 
-    # Prevent downgrading versions
+    # Strict downgrade guard: compare numeric and pre-release stages
     old_stable = app_cfg.get("stable", [])
     if old_stable and isinstance(old_stable, list) and len(old_stable) > 0:
         old_version = str(old_stable[0])
