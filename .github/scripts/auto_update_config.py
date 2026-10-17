@@ -160,6 +160,10 @@ def _extract_pkg_data(patches_data):
         if not isinstance(patch, dict):
             continue
         patch_name = patch.get("name")
+        
+        # Respect upstream default status (use or default field)
+        default_enabled = patch.get("use", patch.get("default", False))
+        
         for pkg in patch.get("compatiblePackages") or []:
             if not isinstance(pkg, dict):
                 continue
@@ -171,11 +175,11 @@ def _extract_pkg_data(patches_data):
                 pkg_data[pkg_name] = {
                     "name": pkg.get("name") or pkg_name,
                     "all_targets": [],
-                    "patches": set(),
+                    "patches": {},  # Now a dict to store default status
                 }
 
             if patch_name:
-                pkg_data[pkg_name]["patches"].add(patch_name)
+                pkg_data[pkg_name]["patches"][patch_name] = default_enabled
 
             for target in pkg.get("targets") or []:
                 if (
@@ -198,29 +202,33 @@ def _extract_pkg_data(patches_data):
 
 def _get_pkg_patches(pkg_name, stable_pkgs, dev_pkgs):
     """Get all compatible patches from both stable and dev branches."""
-    patches = set()
+    patches = {}
     if pkg_name in stable_pkgs:
         patches.update(stable_pkgs[pkg_name]["patches"])
     if pkg_name in dev_pkgs:
-        patches.update(dev_pkgs[pkg_name]["patches"])
+        # Only add from dev if not already present in stable
+        for name, default_val in dev_pkgs[pkg_name]["patches"].items():
+            if name not in patches:
+                patches[name] = default_val
     return patches
 
 
 def _sync_app_patches(app_cfg, compatible_patches, app_key):
-    """Sync patches in options_override, adding missing ones as false."""
+    """Sync patches in options_override, adding missing ones with upstream default."""
     changed = False
     options = app_cfg.get("options_override")
     if not isinstance(options, dict):
         options = {}
         app_cfg["options_override"] = options
 
-    for patch_name in sorted(compatible_patches):
+    # compatible_patches is a dict: {patch_name: default_bool}
+    for patch_name, default_val in sorted(compatible_patches.items()):
         if patch_name not in options:
             print(
                 f"    -> Adding new patch '{patch_name}' "
-                f"to '{app_key}' (false)."
+                f"to '{app_key}' (default: {default_val})."
             )
-            options[patch_name] = {"enabled": False}
+            options[patch_name] = {"enabled": default_val}
             changed = True
 
     for opt_name in options:
@@ -243,11 +251,14 @@ def _update_app_version(
         return changed
 
     new_version = latest.get("version")
+    if not new_version:
+        return changed
+
     new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
     current_val = app_cfg.get(track_name)
-    target_list = [str(new_version)] if new_version else []
+    target_list = [str(new_version)]
 
-    if target_list and current_val != target_list:
+    if current_val != target_list:
         print(
             f"    -> Updating {track_name} version of '{app_key}' "
             f"from {current_val} to {target_list}."
@@ -311,78 +322,6 @@ def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
     return changed
 
 
-def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
-    """Add new apps that are present in stable or dev branches."""
-    changed = False
-    all_pkgs = sorted(set(stable_pkgs.keys()).union(dev_pkgs.keys()))
-    default_archive_id = next(
-        (
-            cfg.get("archive_id")
-            for cfg in app_configs.values()
-            if isinstance(cfg, dict) and cfg.get("archive_id")
-        ),
-        "ZeNiX",
-    )
-
-    for pkg_name in all_pkgs:
-        app_key = next(
-            (
-                k
-                for k, v in app_configs.items()
-                if isinstance(v, dict) and v.get("package") == pkg_name
-            ),
-            None,
-        )
-        if app_key:
-            continue
-
-        print(f"    -> Adding new app '{pkg_name}'.")
-
-        base_key = pkg_name.split(".")[-1].lower()
-        app_key = base_key
-        counter = 1
-        while app_key in app_configs:
-            app_key = f"{base_key}_{counter}"
-            counter += 1
-
-        combined_patches = _get_pkg_patches(pkg_name, stable_pkgs, dev_pkgs)
-        pkg_info = stable_pkgs.get(pkg_name) or dev_pkgs.get(pkg_name)
-
-        app_cfg = {
-            "package": pkg_name,
-            "search_term": pkg_info["name"],
-            "stable": [],
-            "beta": [],
-            "version_codes": {},
-            "strip": True,
-            "archive_id": default_archive_id,
-            "options_override": {},
-        }
-
-        if pkg_name in stable_pkgs:
-            _update_app_version(
-                app_key,
-                app_cfg,
-                stable_pkgs[pkg_name],
-                "stable",
-                update_vcodes=True,
-            )
-        if pkg_name in dev_pkgs:
-            _update_app_version(
-                app_key,
-                app_cfg,
-                dev_pkgs[pkg_name],
-                "beta",
-                update_vcodes=pkg_name not in stable_pkgs,
-            )
-
-        _sync_app_patches(app_cfg, combined_patches, app_key)
-        app_configs[app_key] = app_cfg
-        changed = True
-
-    return changed
-
-
 def _write_config_atomic(config_path, config):
     """Write updated config to a temporary file and atomically replace."""
     tmp_path = f"{config_path}.tmp"
@@ -437,10 +376,9 @@ def update_config(config_path, stable_data, dev_data):
     dev_pkgs = _extract_pkg_data(dev_data)
 
     changed = False
+    
+    # Process only existing apps to prevent unwanted additions
     if _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
-        changed = True
-
-    if _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
         changed = True
 
     if changed:
