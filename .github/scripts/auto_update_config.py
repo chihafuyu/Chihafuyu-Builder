@@ -11,46 +11,22 @@ import sys
 import requests
 
 ECOSYSTEMS = {
-    "morphe.json": {
-        "stable": (
-            "https://raw.githubusercontent.com/MorpheApp/"
-            "morphe-patches/main/patches-list.json"
-        ),
-        "dev": (
-            "https://raw.githubusercontent.com/MorpheApp/"
-            "morphe-patches/dev/patches-list.json"
-        ),
-    },
-    "kveld9.json": {
-        "stable": (
-            "https://raw.githubusercontent.com/kveld9/"
-            "kveld-morphe-patches/main/patches-list.json"
-        ),
-        "dev": (
-            "https://raw.githubusercontent.com/kveld9/"
-            "kveld-morphe-patches/dev/patches-list.json"
-        ),
-    },
-    "legendsciber.json": {
-        "stable": (
-            "https://raw.githubusercontent.com/legendsciber/"
-            "morphe-patches/main/patches-list.json"
-        ),
-        "dev": (
-            "https://raw.githubusercontent.com/legendsciber/"
-            "morphe-patches/dev/patches-list.json"
-        ),
-    },
-    "jordanwoodson.json": {
-        "stable": (
-            "https://raw.githubusercontent.com/jordanwoodson/"
-            "lurk-morphe-patches/main/patches-list.json"
-        ),
-        "dev": (
-            "https://raw.githubusercontent.com/jordanwoodson/"
-            "lurk-morphe-patches/dev/patches-list.json"
-        ),
-    },
+    "morphe.json": (
+        "https://raw.githubusercontent.com/MorpheApp/"
+        "morphe-patches/main/patches-list.json"
+    ),
+    "kveld9.json": (
+        "https://raw.githubusercontent.com/kveld9/"
+        "kveld-morphe-patches/main/patches-list.json"
+    ),
+    "legendsciber.json": (
+        "https://raw.githubusercontent.com/legendsciber/"
+        "morphe-patches/main/patches-list.json"
+    ),
+    "jordanwoodson.json": (
+        "https://raw.githubusercontent.com/jordanwoodson/"
+        "lurk-morphe-patches/main/patches-list.json"
+    ),
 }
 
 ECOSYSTEM_DIR = "ecosystem"
@@ -160,10 +136,10 @@ def _extract_pkg_data(patches_data):
         if not isinstance(patch, dict):
             continue
         patch_name = patch.get("name")
-        
-        # Respect upstream default status (use or default field)
+
+        # Respect upstream default status
         default_enabled = patch.get("use", patch.get("default", False))
-        
+
         for pkg in patch.get("compatiblePackages") or []:
             if not isinstance(pkg, dict):
                 continue
@@ -175,7 +151,7 @@ def _extract_pkg_data(patches_data):
                 pkg_data[pkg_name] = {
                     "name": pkg.get("name") or pkg_name,
                     "all_targets": [],
-                    "patches": {},  # Now a dict to store default status
+                    "patches": {},  # Store patch_name: default_status
                 }
 
             if patch_name:
@@ -200,51 +176,29 @@ def _extract_pkg_data(patches_data):
     return pkg_data
 
 
-def _get_pkg_patches(pkg_name, stable_pkgs, dev_pkgs):
-    """Get all compatible patches from both stable and dev branches."""
-    patches = {}
-    if pkg_name in stable_pkgs:
-        patches.update(stable_pkgs[pkg_name]["patches"])
-    if pkg_name in dev_pkgs:
-        # Only add from dev if not already present in stable
-        for name, default_val in dev_pkgs[pkg_name]["patches"].items():
-            if name not in patches:
-                patches[name] = default_val
-    return patches
-
-
 def _sync_app_patches(app_cfg, compatible_patches, app_key):
-    """Sync patches in options_override, adding missing ones with upstream default."""
+    """Sync patches in options_override, adding ONLY patches with default false."""
     changed = False
     options = app_cfg.get("options_override")
     if not isinstance(options, dict):
         options = {}
         app_cfg["options_override"] = options
 
-    # compatible_patches is a dict: {patch_name: default_bool}
     for patch_name, default_val in sorted(compatible_patches.items()):
-        if patch_name not in options:
+        # Only add if default is False and it's not already in the config
+        if default_val is False and patch_name not in options:
             print(
                 f"    -> Adding new patch '{patch_name}' "
-                f"to '{app_key}' (default: {default_val})."
+                f"to '{app_key}' (enabled: false)."
             )
-            options[patch_name] = {"enabled": default_val}
+            options[patch_name] = {"enabled": False}
             changed = True
-
-    for opt_name in options:
-        if opt_name not in compatible_patches:
-            print(
-                f"    -> WARNING: Patch '{opt_name}' on '{app_key}' "
-                "is not in upstream. Keeping it."
-            )
 
     return changed
 
 
-def _update_app_version(
-    app_key, app_cfg, pkg_info, track_name, update_vcodes=False
-):
-    """Update single-item version list (stable or beta) for an app config."""
+def _update_app_version(app_key, app_cfg, pkg_info):
+    """Update version data for an existing app config."""
     changed = False
     latest = pkg_info.get("latest_target")
     if not latest:
@@ -255,30 +209,27 @@ def _update_app_version(
         return changed
 
     new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
-    current_val = app_cfg.get(track_name)
     target_list = [str(new_version)]
 
-    if current_val != target_list:
+    if app_cfg.get("stable") != target_list:
         print(
-            f"    -> Updating {track_name} version of '{app_key}' "
-            f"from {current_val} to {target_list}."
+            f"    -> Updating stable version of '{app_key}' "
+            f"from {app_cfg.get('stable')} to {target_list}."
         )
-        app_cfg[track_name] = target_list
+        app_cfg["stable"] = target_list
         changed = True
 
-    if new_vcodes and (update_vcodes or not app_cfg.get("version_codes")):
-        if app_cfg.get("version_codes") != new_vcodes:
-            print(f"    -> Updating version codes for '{app_key}'.")
-            app_cfg["version_codes"] = new_vcodes
-            changed = True
+    if new_vcodes and app_cfg.get("version_codes") != new_vcodes:
+        print(f"    -> Updating version codes for '{app_key}'.")
+        app_cfg["version_codes"] = new_vcodes
+        changed = True
 
     return changed
 
 
-def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
+def _process_existing_apps(app_configs, stable_pkgs):
     """Update existing apps while preserving apps missing from upstream."""
     changed = False
-    all_pkgs = set(stable_pkgs.keys()).union(dev_pkgs.keys())
 
     for app_key, app_cfg in list(app_configs.items()):
         if not isinstance(app_cfg, dict):
@@ -287,36 +238,20 @@ def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
         if not pkg_name:
             continue
 
-        if pkg_name not in all_pkgs:
+        if pkg_name not in stable_pkgs:
             print(
                 f"    -> WARNING: App '{app_key}' not found in patches-list. "
                 "Keeping it to prevent data loss."
             )
             continue
 
-        combined_patches = _get_pkg_patches(pkg_name, stable_pkgs, dev_pkgs)
+        pkg_info = stable_pkgs[pkg_name]
+        compatible_patches = pkg_info["patches"]
 
-        if pkg_name in stable_pkgs:
-            if _update_app_version(
-                app_key,
-                app_cfg,
-                stable_pkgs[pkg_name],
-                "stable",
-                update_vcodes=True,
-            ):
-                changed = True
+        if _update_app_version(app_key, app_cfg, pkg_info):
+            changed = True
 
-        if pkg_name in dev_pkgs:
-            if _update_app_version(
-                app_key,
-                app_cfg,
-                dev_pkgs[pkg_name],
-                "beta",
-                update_vcodes=pkg_name not in stable_pkgs,
-            ):
-                changed = True
-
-        if _sync_app_patches(app_cfg, combined_patches, app_key):
+        if _sync_app_patches(app_cfg, compatible_patches, app_key):
             changed = True
 
     return changed
@@ -341,15 +276,11 @@ def _write_config_atomic(config_path, config):
         return False
 
 
-def update_config(config_path, stable_data, dev_data):
+def update_config(config_path, stable_data):
     """Update a single config file based on patches-list data."""
     if stable_data is None:
-        print(f"  -> Skipping {config_path} due to missing stable data.")
+        print(f"  -> Skipping {config_path} due to missing data.")
         return False
-
-    if dev_data is None:
-        print(f"  -> No dev data for {config_path}, assuming empty.")
-        dev_data = {}
 
     print(f"  -> Processing {config_path}...")
 
@@ -373,12 +304,9 @@ def update_config(config_path, stable_data, dev_data):
         config[root_key]["apps"] = app_configs
 
     stable_pkgs = _extract_pkg_data(stable_data)
-    dev_pkgs = _extract_pkg_data(dev_data)
 
     changed = False
-    
-    # Process only existing apps to prevent unwanted additions
-    if _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
+    if _process_existing_apps(app_configs, stable_pkgs):
         changed = True
 
     if changed:
@@ -396,14 +324,14 @@ def main():
     """Run the auto-update process for all configured ecosystems."""
     fetched_ecosystems = []
 
-    for filename, urls in ECOSYSTEMS.items():
+    for filename, url in ECOSYSTEMS.items():
         config_path = os.path.join(ECOSYSTEM_DIR, filename)
         if not os.path.exists(config_path):
             print(f"Config file not found: {config_path}. Skipping.")
             continue
 
-        # Fetch stable (mandatory)
-        stable_data = fetch_patches_list(urls["stable"])
+        # Fetch stable only
+        stable_data = fetch_patches_list(url)
         if stable_data is None:
             print(
                 f"Failed to fetch stable data for {filename}. "
@@ -411,16 +339,11 @@ def main():
             )
             sys.exit(1)
 
-        # Fetch dev (optional)
-        dev_data = fetch_patches_list(urls["dev"])
-        if dev_data is None:
-            print(f"No dev branch found for {filename}. Proceeding without it.")
-
-        fetched_ecosystems.append((config_path, stable_data, dev_data))
+        fetched_ecosystems.append((config_path, stable_data))
 
     any_change = False
-    for config_path, stable_data, dev_data in fetched_ecosystems:
-        if update_config(config_path, stable_data, dev_data):
+    for config_path, stable_data in fetched_ecosystems:
+        if update_config(config_path, stable_data):
             any_change = True
 
     if not any_change:
