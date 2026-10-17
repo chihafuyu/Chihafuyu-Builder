@@ -27,38 +27,63 @@ PRE_STAGE_RE = re.compile(
 )
 
 
+def _find_repo_map(script_dir, repo_root):
+    """Find repo_map.json in expected locations."""
+    possible_paths = [
+        os.path.join(repo_root, "repo_map.json"),
+        os.path.join(script_dir, "repo_map.json"),
+        os.path.abspath("repo_map.json"),
+    ]
+    return next(
+        (path for path in possible_paths if os.path.exists(path)), None
+    )
+
+
+def _parse_repo_info(name, info, repo_root):
+    """Parse repo info into a config path and URL."""
+    repo_url = info.get("repo_url")
+    if not repo_url:
+        return None, None
+
+    branch = info.get("branch", "main")
+    file_path = info.get("file_path", "patches-list.json")
+    url = (
+        f"https://raw.githubusercontent.com/{repo_url}"
+        f"/{branch}/{file_path}"
+    )
+    config_path = info.get("config_path", f"ecosystem/{name}.json")
+    abs_config_path = os.path.normpath(
+        os.path.join(repo_root, config_path)
+    )
+    return abs_config_path, url
+
+
 def load_ecosystems():
-    """Load ecosystems from repo_map.json dynamically."""
+    """Load ecosystems from repo_map.json dynamically with robust pathing."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
     repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
-    repo_map_path = os.path.join(repo_root, "repo_map.json")
 
+    repo_map_path = _find_repo_map(script_dir, repo_root)
     ecosystems = {}
-    if os.path.exists(repo_map_path):
+
+    if repo_map_path:
+        print(f"Found repo_map.json at: {repo_map_path}")
         try:
             with open(repo_map_path, "r", encoding="utf-8") as file_obj:
                 repo_map = json.load(file_obj)
             for name, info in repo_map.items():
-                repo_url = info.get("repo_url")
-                if not repo_url:
-                    continue
-
-                branch = info.get("branch", "main")
-                file_path = info.get("file_path", "patches-list.json")
-                url = (
-                    f"https://raw.githubusercontent.com/{repo_url}"
-                    f"/{branch}/{file_path}"
+                abs_config_path, url = _parse_repo_info(
+                    name, info, repo_root
                 )
-                config_path = info.get("config_path", f"ecosystem/{name}.json")
-                # Use absolute path to prevent cwd issues during CI runs
-                abs_config_path = os.path.normpath(
-                    os.path.join(repo_root, config_path)
-                )
-                ecosystems[abs_config_path] = url
+                if abs_config_path and url:
+                    ecosystems[abs_config_path] = url
         except (OSError, json.JSONDecodeError) as err:
             print(f"Failed to load repo_map.json: {err}")
+    else:
+        print("repo_map.json not found in any expected location.")
 
     if not ecosystems:
+        print("Using fallback ecosystems (morphe & kveld9).")
         ecosystems = {
             os.path.join(repo_root, "ecosystem/morphe.json"): (
                 "https://raw.githubusercontent.com/MorpheApp/"
@@ -262,7 +287,7 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
 
     for patch_name, default_val in sorted(compatible_patches.items()):
         # Only add if default is False and it's not already in the config.
-        # The "patch_name not in options" check prevents adding duplicates.
+        # Using a dict inherently prevents duplicates.
         if default_val is False and patch_name not in options:
             print(
                 f"    -> Adding new patch '{patch_name}' "
@@ -288,7 +313,7 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
     target_list = [str(new_version)]
 
-    # Prevent downgrading versions (safety fallback)
+    # Strict downgrade guard: compare numeric and pre-release stages
     old_stable = app_cfg.get("stable", [])
     if old_stable and isinstance(old_stable, list) and len(old_stable) > 0:
         old_version = str(old_stable[0])
