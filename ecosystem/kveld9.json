@@ -48,6 +48,12 @@
                     },
                     "PNG Asset Optimizer": {
                         "enabled": true
+                    },
+                    "Remove Extra Files": {
+                        "enabled": false
+                    },
+                    "Remove Extra Languages": {
+                        "enabled": false
                     }
                 }
             },
@@ -165,6 +171,51 @@
                     },
                     "Voice & Speech Engine De-bloat": {
                         "enabled": true
+                    },
+                    "Declutter Direct Messages": {
+                        "enabled": false
+                    },
+                    "Declutter Video Interface": {
+                        "enabled": false
+                    },
+                    "Disable History Recording": {
+                        "enabled": false
+                    },
+                    "Disable Live Gift Effects": {
+                        "enabled": false
+                    },
+                    "Hide Inbox Story Tray": {
+                        "enabled": false
+                    },
+                    "Playback & Display Governor": {
+                        "enabled": false
+                    },
+                    "Remember Clear Display": {
+                        "enabled": false
+                    },
+                    "Remember Playback Speed": {
+                        "enabled": false
+                    },
+                    "Remove Creator Tools": {
+                        "enabled": false
+                    },
+                    "Remove Extra Languages": {
+                        "enabled": false
+                    },
+                    "Remove Live Stream Files": {
+                        "enabled": false
+                    },
+                    "Remove Voice Tools": {
+                        "enabled": false
+                    },
+                    "Strip Sensitive Permissions": {
+                        "enabled": false
+                    },
+                    "Use System Font": {
+                        "enabled": false
+                    },
+                    "Video Fit Mode": {
+                        "enabled": false
                     }
                 }
             }
