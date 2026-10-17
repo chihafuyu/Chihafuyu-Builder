@@ -100,12 +100,9 @@ def _extract_pkg_data(patches_data):
 
         def _get_sort_key(t):
             vcodes = t.get("versionCodes") or {}
-            for v in vcodes.values():
-                try:
-                    return int(v)
-                except (ValueError, TypeError):
-                    pass
-            return t.get("version", "")
+            codes = [int(v) for v in vcodes.values() if str(v).isdigit()]
+            highest_code = max(codes) if codes else -1
+            return (highest_code, t.get("version", ""))
 
         targets.sort(key=_get_sort_key, reverse=True)
         data["latest_target"] = targets[0]
@@ -125,16 +122,13 @@ def _get_pkg_patches(pkg_name, stable_pkgs, dev_pkgs):
 
 
 def _sync_app_patches(app_cfg, compatible_patches, app_key):
-    """Sync patches in options_override, adding missing ones as false."""
+    """Sync patches in options_override, adding missing ones as false.
+    
+    Note: We no longer remove obsolete patches to protect local/custom
+    patches from being accidentally deleted.
+    """
     changed = False
     options = app_cfg.setdefault("options_override", {})
-
-    # Remove obsolete patches
-    for opt_name in list(options.keys()):
-        if opt_name not in compatible_patches:
-            print(f"    -> Removing obsolete patch '{opt_name}' from '{app_key}'.")
-            del options[opt_name]
-            changed = True
 
     # Add new patches
     for patch_name in compatible_patches:
@@ -142,6 +136,11 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
             print(f"    -> Adding new patch '{patch_name}' to '{app_key}' (false).")
             options[patch_name] = {"enabled": False}
             changed = True
+
+    # Warn about obsolete patches but DO NOT delete them
+    for opt_name in options.keys():
+        if opt_name not in compatible_patches:
+            print(f"    -> WARNING: Patch '{opt_name}' on '{app_key}' is not in upstream. Keeping it.")
 
     return changed
 
@@ -165,11 +164,14 @@ def _update_app_version(app_key, app_cfg, pkg_info, track_name):
             f"from {current_versions} to {new_version}."
         )
         app_cfg[track_name] = [new_version]
-        # Only update version_codes if we're updating the stable track,
-        # or if the beta track has a newer version code.
-        if track_name == "stable" or not app_cfg.get("version_codes"):
-            app_cfg["version_codes"] = new_vcodes
         changed = True
+
+    # Update version_codes even if semantic version didn't change
+    if track_name == "stable" or not app_cfg.get("version_codes"):
+        if app_cfg.get("version_codes") != new_vcodes:
+            print(f"    -> Updating version codes for '{app_key}'.")
+            app_cfg["version_codes"] = new_vcodes
+            changed = True
 
     return changed
 
