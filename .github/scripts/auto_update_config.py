@@ -5,11 +5,11 @@ Run by GitHub Actions to create a Pull Request.
 
 import json
 import os
+import re
 import sys
+
 import requests
 
-# List of ecosystems to automate.
-# Format: { "config_filename": { "stable": "url_main", "dev": "url_dev" } }
 ECOSYSTEMS = {
     "morphe.json": {
         "stable": (
@@ -51,10 +51,8 @@ ECOSYSTEMS = {
             "lurk-morphe-patches/dev/patches-list.json"
         ),
     },
-    # Add other ecosystems here
 }
 
-# Path to the ecosystem folder in your repo
 ECOSYSTEM_DIR = "ecosystem"
 
 
@@ -65,9 +63,19 @@ def fetch_patches_list(url):
         resp = requests.get(url, timeout=30)
         resp.raise_for_status()
         return resp.json()
-    except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-        print(f"  -> Failed to fetch data: {e}")
+    except (requests.exceptions.RequestException, json.JSONDecodeError) as err:
+        print(f"  -> Failed to fetch data: {err}")
         return None
+
+
+def _get_target_sort_key(target):
+    """Return sort key prioritizing highest version code and numeric version."""
+    vcodes = target.get("versionCodes") or {}
+    codes = [int(v) for v in vcodes.values() if str(v).isdigit()]
+    highest_code = max(codes) if codes else -1
+    ver_str = str(target.get("version") or "")
+    ver_nums = tuple(int(part) for part in re.findall(r"\d+", ver_str))
+    return (highest_code, ver_nums, ver_str)
 
 
 def _extract_pkg_data(patches_data):
@@ -91,20 +99,13 @@ def _extract_pkg_data(patches_data):
             for target in pkg.get("targets", []):
                 pkg_data[pkg_name]["all_targets"].append(target)
 
-    # Find the latest target for each package
-    for pkg_name, data in pkg_data.items():
+    for data in pkg_data.values():
         targets = data["all_targets"]
         if not targets:
             data["latest_target"] = None
             continue
 
-        def _get_sort_key(t):
-            vcodes = t.get("versionCodes") or {}
-            codes = [int(v) for v in vcodes.values() if str(v).isdigit()]
-            highest_code = max(codes) if codes else -1
-            return (highest_code, t.get("version", ""))
-
-        targets.sort(key=_get_sort_key, reverse=True)
+        targets.sort(key=_get_target_sort_key, reverse=True)
         data["latest_target"] = targets[0]
         del data["all_targets"]
 
@@ -122,25 +123,25 @@ def _get_pkg_patches(pkg_name, stable_pkgs, dev_pkgs):
 
 
 def _sync_app_patches(app_cfg, compatible_patches, app_key):
-    """Sync patches in options_override, adding missing ones as false.
-    
-    Note: We no longer remove obsolete patches to protect local/custom
-    patches from being accidentally deleted.
-    """
+    """Sync patches in options_override, adding missing ones as false."""
     changed = False
     options = app_cfg.setdefault("options_override", {})
 
-    # Add new patches
     for patch_name in compatible_patches:
         if patch_name not in options:
-            print(f"    -> Adding new patch '{patch_name}' to '{app_key}' (false).")
+            print(
+                f"    -> Adding new patch '{patch_name}' "
+                f"to '{app_key}' (false)."
+            )
             options[patch_name] = {"enabled": False}
             changed = True
 
-    # Warn about obsolete patches but DO NOT delete them
-    for opt_name in options.keys():
+    for opt_name in options:
         if opt_name not in compatible_patches:
-            print(f"    -> WARNING: Patch '{opt_name}' on '{app_key}' is not in upstream. Keeping it.")
+            print(
+                f"    -> WARNING: Patch '{opt_name}' on '{app_key}' "
+                "is not in upstream. Keeping it."
+            )
 
     return changed
 
@@ -166,7 +167,6 @@ def _update_app_version(app_key, app_cfg, pkg_info, track_name):
         app_cfg[track_name] = [new_version]
         changed = True
 
-    # Update version_codes even if semantic version didn't change
     if track_name == "stable" or not app_cfg.get("version_codes"):
         if app_cfg.get("version_codes") != new_vcodes:
             print(f"    -> Updating version codes for '{app_key}'.")
@@ -177,7 +177,7 @@ def _update_app_version(app_key, app_cfg, pkg_info, track_name):
 
 
 def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
-    """Update existing apps, or remove them if no longer supported."""
+    """Update existing apps while preserving apps missing from upstream."""
     changed = False
     all_pkgs = set(stable_pkgs.keys()).union(dev_pkgs.keys())
 
@@ -203,7 +203,9 @@ def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
                 changed = True
 
         if pkg_name in dev_pkgs:
-            if _update_app_version(app_key, app_cfg, dev_pkgs[pkg_name], "beta"):
+            if _update_app_version(
+                app_key, app_cfg, dev_pkgs[pkg_name], "beta"
+            ):
                 changed = True
 
         if _sync_app_patches(app_cfg, combined_patches, app_key):
@@ -216,6 +218,14 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
     """Add new apps that are present in stable or dev branches."""
     changed = False
     all_pkgs = set(stable_pkgs.keys()).union(dev_pkgs.keys())
+    default_archive_id = next(
+        (
+            cfg.get("archive_id")
+            for cfg in app_configs.values()
+            if cfg.get("archive_id")
+        ),
+        "ZeNiX",
+    )
 
     for pkg_name in all_pkgs:
         app_key = next(
@@ -247,12 +257,14 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
             "beta": [],
             "version_codes": {},
             "strip": True,
-            "archive_id": "ZeNiX",
+            "archive_id": default_archive_id,
             "options_override": {},
         }
 
         if pkg_name in stable_pkgs:
-            _update_app_version(app_key, app_cfg, stable_pkgs[pkg_name], "stable")
+            _update_app_version(
+                app_key, app_cfg, stable_pkgs[pkg_name], "stable"
+            )
         if pkg_name in dev_pkgs:
             _update_app_version(app_key, app_cfg, dev_pkgs[pkg_name], "beta")
 
@@ -271,8 +283,8 @@ def update_config(config_path, stable_data, dev_data):
 
     print(f"  -> Processing {config_path}...")
 
-    with open(config_path, "r", encoding="utf-8") as f:
-        config = json.load(f)
+    with open(config_path, "r", encoding="utf-8") as file_obj:
+        config = json.load(file_obj)
 
     root_key = os.path.basename(config_path).replace(".json", "")
     if root_key not in config:
@@ -291,9 +303,9 @@ def update_config(config_path, stable_data, dev_data):
         changed = True
 
     if changed:
-        with open(config_path, "w", encoding="utf-8") as f:
-            json.dump(config, f, indent=4, ensure_ascii=False)
-            f.write("\n")
+        with open(config_path, "w", encoding="utf-8") as file_obj:
+            json.dump(config, file_obj, indent=4, ensure_ascii=False)
+            file_obj.write("\n")
         print(f"  -> File {config_path} updated.")
     else:
         print(f"  -> No changes for {config_path}.")
@@ -304,6 +316,8 @@ def update_config(config_path, stable_data, dev_data):
 def main():
     """Run the auto-update process for all configured ecosystems."""
     any_change = False
+    fetch_failed = False
+
     for filename, urls in ECOSYSTEMS.items():
         config_path = os.path.join(ECOSYSTEM_DIR, filename)
         if not os.path.exists(config_path):
@@ -313,8 +327,16 @@ def main():
         stable_data = fetch_patches_list(urls["stable"])
         dev_data = fetch_patches_list(urls["dev"])
 
+        if stable_data is None or dev_data is None:
+            fetch_failed = True
+            continue
+
         if update_config(config_path, stable_data, dev_data):
             any_change = True
+
+    if fetch_failed:
+        print("One or more network fetches failed.")
+        sys.exit(1)
 
     if not any_change:
         print("No updates found across all ecosystems.")
