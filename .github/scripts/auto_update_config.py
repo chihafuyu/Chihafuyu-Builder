@@ -91,7 +91,7 @@ def _normalize_vcodes(raw_vcodes):
 
 
 def _get_target_sort_key(target):
-    """Return sort key prioritizing highest version code and numeric version."""
+    """Return sort key prioritizing semantic version then version code."""
     vcodes = target.get("versionCodes")
     if isinstance(vcodes, dict):
         raw_values = vcodes.values()
@@ -104,7 +104,7 @@ def _get_target_sort_key(target):
     highest_code = max(codes) if codes else -1
     ver_str = str(target.get("version") or "")
     ver_nums = tuple(int(part) for part in re.findall(r"\d+", ver_str))
-    return (highest_code, ver_nums, ver_str)
+    return (ver_nums, highest_code, ver_str)
 
 
 def _extract_pkg_data(patches_data):
@@ -163,7 +163,10 @@ def _get_pkg_patches(pkg_name, stable_pkgs, dev_pkgs):
 def _sync_app_patches(app_cfg, compatible_patches, app_key):
     """Sync patches in options_override, adding missing ones as false."""
     changed = False
-    options = app_cfg.setdefault("options_override", {})
+    options = app_cfg.get("options_override")
+    if not isinstance(options, dict):
+        options = {}
+        app_cfg["options_override"] = options
 
     for patch_name in sorted(compatible_patches):
         if patch_name not in options:
@@ -185,7 +188,7 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
 
 
 def _update_app_version(app_key, app_cfg, pkg_info, track_name):
-    """Update version data (stable or beta) for an existing app config."""
+    """Update single-item version list (stable or beta) for an app config."""
     changed = False
     latest = pkg_info.get("latest_target")
     if not latest:
@@ -193,21 +196,15 @@ def _update_app_version(app_key, app_cfg, pkg_info, track_name):
 
     new_version = latest.get("version")
     new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
+    current_val = app_cfg.get(track_name)
+    target_list = [str(new_version)] if new_version else []
 
-    raw_current = app_cfg.get(track_name)
-    if isinstance(raw_current, str):
-        current_versions = [raw_current]
-    elif isinstance(raw_current, list):
-        current_versions = raw_current
-    else:
-        current_versions = []
-
-    if new_version and new_version not in current_versions:
+    if target_list and current_val != target_list:
         print(
             f"    -> Updating {track_name} version of '{app_key}' "
-            f"from {current_versions} to {new_version}."
+            f"from {current_val} to {target_list}."
         )
-        app_cfg[track_name] = [new_version]
+        app_cfg[track_name] = target_list
         changed = True
 
     if new_vcodes and (
@@ -226,8 +223,10 @@ def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
     changed = False
     all_pkgs = set(stable_pkgs.keys()).union(dev_pkgs.keys())
 
-    for app_key in list(app_configs.keys()):
-        pkg_name = app_configs[app_key].get("package")
+    for app_key, app_cfg in list(app_configs.items()):
+        if not isinstance(app_cfg, dict):
+            continue
+        pkg_name = app_cfg.get("package")
         if not pkg_name:
             continue
 
@@ -238,7 +237,6 @@ def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
             )
             continue
 
-        app_cfg = app_configs[app_key]
         combined_patches = _get_pkg_patches(pkg_name, stable_pkgs, dev_pkgs)
 
         if pkg_name in stable_pkgs:
@@ -267,14 +265,18 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
         (
             cfg.get("archive_id")
             for cfg in app_configs.values()
-            if cfg.get("archive_id")
+            if isinstance(cfg, dict) and cfg.get("archive_id")
         ),
         "ZeNiX",
     )
 
     for pkg_name in all_pkgs:
         app_key = next(
-            (k for k, v in app_configs.items() if v.get("package") == pkg_name),
+            (
+                k
+                for k, v in app_configs.items()
+                if isinstance(v, dict) and v.get("package") == pkg_name
+            ),
             None,
         )
         if app_key:
@@ -285,9 +287,9 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
         base_key = pkg_name.split(".")[-1].lower()
         app_key = base_key
         counter = 1
-        while (
-            app_key in app_configs
-            and app_configs[app_key].get("package") != pkg_name
+        while app_key in app_configs and (
+            not isinstance(app_configs[app_key], dict)
+            or app_configs[app_key].get("package") != pkg_name
         ):
             app_key = f"{base_key}_{counter}"
             counter += 1
@@ -328,8 +330,12 @@ def update_config(config_path, stable_data, dev_data):
 
     print(f"  -> Processing {config_path}...")
 
-    with open(config_path, "r", encoding="utf-8") as file_obj:
-        config = json.load(file_obj)
+    try:
+        with open(config_path, "r", encoding="utf-8") as file_obj:
+            config = json.load(file_obj)
+    except (OSError, json.JSONDecodeError) as err:
+        print(f"    -> Failed to read {config_path}: {err}. Skipping.")
+        return False
 
     root_key = os.path.basename(config_path).replace(".json", "")
     if not isinstance(config, dict) or not isinstance(
@@ -338,7 +344,11 @@ def update_config(config_path, stable_data, dev_data):
         print(f"    -> Root key '{root_key}' not found or invalid. Skipping.")
         return False
 
-    app_configs = config[root_key].setdefault("apps", {})
+    app_configs = config[root_key].get("apps")
+    if not isinstance(app_configs, dict):
+        app_configs = {}
+        config[root_key]["apps"] = app_configs
+
     stable_pkgs = _extract_pkg_data(stable_data)
     dev_pkgs = _extract_pkg_data(dev_data)
 
