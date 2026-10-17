@@ -62,8 +62,9 @@ PRE_STAGE_RANKS = {
     "beta": 3,
     "rc": 4,
 }
+VERSION_SPLIT_RE = re.compile(r"^(\d+(?:\.\d+)*)(.*)$")
 PRE_STAGE_RE = re.compile(
-    r"(dev|alpha|preview|pre|beta|rc)", re.IGNORECASE
+    r"(?<![a-z])(dev|alpha|preview|pre|beta|rc)(?![a-z])", re.IGNORECASE
 )
 
 
@@ -103,13 +104,21 @@ def _normalize_vcodes(raw_vcodes):
 
 def _parse_version_key(ver_str):
     """Parse version string sorting stable releases above pre-release tags."""
-    parts = re.split(r"[-_]", ver_str.strip(), maxsplit=1)
-    base_nums = tuple(int(n) for n in re.findall(r"\d+", parts[0]))
-    suffix = parts[1].lower() if len(parts) > 1 else ""
+    cleaned = ver_str.strip().lstrip("vV")
+    ver_match = VERSION_SPLIT_RE.match(cleaned)
+    if ver_match:
+        base_part = ver_match.group(1)
+        suffix = ver_match.group(2).lower()
+    else:
+        parts = re.split(r"[-_]", cleaned, maxsplit=1)
+        base_part = parts[0]
+        suffix = parts[1].lower() if len(parts) > 1 else ""
+
+    base_nums = tuple(int(n) for n in re.findall(r"\d+", base_part))
     pre_match = PRE_STAGE_RE.search(suffix) or PRE_STAGE_RE.search(
-        parts[0].lower()
+        base_part.lower()
     )
-    if not pre_match and not suffix:
+    if not pre_match and not suffix.strip("-_."):
         return (base_nums, 2, 0, (), ver_str)
 
     stage = (
@@ -368,6 +377,25 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
     return changed
 
 
+def _write_config_atomic(config_path, config):
+    """Write updated config to a temporary file and atomically replace."""
+    tmp_path = f"{config_path}.tmp"
+    try:
+        with open(tmp_path, "w", encoding="utf-8") as file_obj:
+            json.dump(config, file_obj, indent=4, ensure_ascii=False)
+            file_obj.write("\n")
+        os.replace(tmp_path, config_path)
+        return True
+    except OSError as err:
+        print(f"    -> Failed to write {config_path}: {err}.")
+        if os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+        return False
+
+
 def update_config(config_path, stable_data, dev_data):
     """Update a single config file based on patches-list data."""
     if stable_data is None or dev_data is None:
@@ -406,10 +434,10 @@ def update_config(config_path, stable_data, dev_data):
         changed = True
 
     if changed:
-        with open(config_path, "w", encoding="utf-8") as file_obj:
-            json.dump(config, file_obj, indent=4, ensure_ascii=False)
-            file_obj.write("\n")
-        print(f"  -> File {config_path} updated.")
+        if _write_config_atomic(config_path, config):
+            print(f"  -> File {config_path} updated.")
+        else:
+            changed = False
     else:
         print(f"  -> No changes for {config_path}.")
 
