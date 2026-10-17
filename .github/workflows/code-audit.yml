@@ -60,7 +60,9 @@ jobs:
           VALIDATE_ALL_CODEBASE: 'true'
           FLAVOR_SUGGESTIONS: 'false'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ENABLE_LINTERS: 'JSON_JSONLINT,YAML_YAMLLINT,ACTION_ACTIONLINT,MARKDOWN_MARKDOWNLINT'
+          ENABLE_LINTERS: >-
+            JSON_JSONLINT,YAML_YAMLLINT,ACTION_ACTIONLINT,
+            MARKDOWN_MARKDOWNLINT
           FILTER_REGEX_EXCLUDE: '(patches-list.*\.json|list_.*\.txt)'
 
   codeql:
