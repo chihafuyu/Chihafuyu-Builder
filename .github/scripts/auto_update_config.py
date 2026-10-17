@@ -124,7 +124,7 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
     return changed
 
 
-def _update_app_version(app_key, app_cfg, pkg_info, track):
+def _update_app_version(app_key, app_cfg, pkg_info, track_name):
     """Update version data (stable or beta) for an existing app config."""
     changed = False
     latest = pkg_info.get("latest_target")
@@ -135,24 +135,24 @@ def _update_app_version(app_key, app_cfg, pkg_info, track):
     new_vcodes = {
         k.lower(): str(v) for k, v in latest.get("versionCodes", {}).items()
     }
-    current_versions = app_cfg.get(track, [])
+    current_versions = app_cfg.get(track_name, [])
 
     if new_version not in current_versions:
         print(
-            f"    -> Updating {track} version of '{app_key}' "
+            f"    -> Updating {track_name} version of '{app_key}' "
             f"from {current_versions} to {new_version}."
         )
-        app_cfg[track] = [new_version]
+        app_cfg[track_name] = [new_version]
         # Only update version_codes if we're updating the stable track,
         # or if the dev track has a newer version code.
-        if track == "stable" or not app_cfg.get("version_codes"):
+        if track_name == "stable" or not app_cfg.get("version_codes"):
             app_cfg["version_codes"] = new_vcodes
         changed = True
 
     return changed
 
 
-def _create_new_app(pkg_name, pkg_info, track):
+def _create_new_app(pkg_name, pkg_info, track_name):
     """Create a new app config entry based on branch track."""
     latest = pkg_info.get("latest_target")
     new_version = latest["version"] if latest else ""
@@ -174,7 +174,7 @@ def _create_new_app(pkg_name, pkg_info, track):
     }
 
     if new_version:
-        app_cfg[track] = [new_version]
+        app_cfg[track_name] = [new_version]
 
     return app_cfg
 
@@ -185,7 +185,11 @@ def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
     all_pkgs = set(stable_pkgs.keys()).union(dev_pkgs.keys())
 
     for app_key in list(app_configs.keys()):
-        pkg_name = app_configs[app_key]["package"]
+        # Safely get the package name to avoid KeyError on malformed configs
+        pkg_name = app_configs[app_key].get("package")
+        if not pkg_name:
+            continue
+
         if pkg_name not in all_pkgs:
             print(f"    -> Removing app '{app_key}' (not in patches-list).")
             del app_configs[app_key]
@@ -202,7 +206,8 @@ def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
                 changed = True
 
         if pkg_name in dev_pkgs:
-            if _update_app_version(app_key, app_cfg, dev_pkgs[pkg_name], "dev"):
+            # FIX: Map "dev" branch to "beta" field in schema
+            if _update_app_version(app_key, app_cfg, dev_pkgs[pkg_name], "beta"):
                 changed = True
 
         if _sync_app_patches(app_cfg, combined_patches, app_key):
@@ -218,20 +223,29 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
 
     for pkg_name in all_pkgs:
         app_key = next(
-            (k for k, v in app_configs.items() if v["package"] == pkg_name),
+            (k for k, v in app_configs.items() if v.get("package") == pkg_name),
             None,
         )
         if app_key:
             continue
 
         print(f"    -> Adding new app '{pkg_name}'.")
-        app_key = pkg_name.split(".")[-1]
+
+        # Handle Key Collision by appending a counter
+        base_key = pkg_name.split(".")[-1]
+        app_key = base_key
+        counter = 1
+        while app_key in app_configs and app_configs[app_key].get("package") != pkg_name:
+            app_key = f"{base_key}_{counter}"
+            counter += 1
+
         combined_patches = _get_pkg_patches(pkg_name, stable_pkgs, dev_pkgs)
 
         if pkg_name in stable_pkgs:
             app_cfg = _create_new_app(pkg_name, stable_pkgs[pkg_name], "stable")
         else:
-            app_cfg = _create_new_app(pkg_name, dev_pkgs[pkg_name], "dev")
+            # Map "dev" to "beta" for new apps
+            app_cfg = _create_new_app(pkg_name, dev_pkgs[pkg_name], "beta")
 
         app_configs[app_key] = app_cfg
         _sync_app_patches(app_cfg, combined_patches, app_key)
@@ -242,6 +256,11 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
 
 def update_config(config_path, stable_data, dev_data):
     """Update a single config file based on patches-list data."""
+    # Skip if either fetch failed to avoid wiping configs on network errors
+    if stable_data is None or dev_data is None:
+        print(f"  -> Skipping {config_path} due to missing data from network.")
+        return False
+
     print(f"  -> Processing {config_path}...")
 
     with open(config_path, "r", encoding="utf-8") as f:
@@ -253,8 +272,8 @@ def update_config(config_path, stable_data, dev_data):
         return False
 
     app_configs = config[root_key].setdefault("apps", {})
-    stable_pkgs = _extract_pkg_data(stable_data) if stable_data else {}
-    dev_pkgs = _extract_pkg_data(dev_data) if dev_data else {}
+    stable_pkgs = _extract_pkg_data(stable_data)
+    dev_pkgs = _extract_pkg_data(dev_data)
 
     changed = False
     if _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
@@ -266,6 +285,8 @@ def update_config(config_path, stable_data, dev_data):
     if changed:
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4, ensure_ascii=False)
+            # Append POSIX newline at the end of the file
+            f.write("\n")
         print(f"  -> File {config_path} updated.")
     else:
         print(f"  -> No changes for {config_path}.")
