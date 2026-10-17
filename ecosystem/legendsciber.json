@@ -10,7 +10,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Age Of War 2 Remove Ads": {
+                        "enabled": false
+                    },
+                    "Age Of War 2 Store Modes Unlock": {
+                        "enabled": false
+                    }
+                }
             },
             "dan-the-man": {
                 "package": "com.halfbrick.dantheman",
@@ -21,7 +28,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Dan The Man Free IAP": {
+                        "enabled": false
+                    }
+                }
             },
             "extreme-car-driving-simulator": {
                 "package": "com.aim.racing",
@@ -32,7 +43,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Extreme Car Driving Add Native Lib": {
+                        "enabled": false
+                    },
+                    "Extreme Car Driving Unlimited Currencies": {
+                        "enabled": false
+                    }
+                }
             },
             "hill-climb-racing": {
                 "package": "com.fingersoft.hillclimb",
@@ -46,7 +64,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Hill Climb Racing Free Store": {
+                        "enabled": false
+                    },
+                    "Hill Climb Racing Instant Rewarded Video Rewards": {
+                        "enabled": false
+                    }
+                }
             },
             "hungry-shark-evolution": {
                 "package": "com.fgol.HungrySharkEvolution",
@@ -63,7 +88,14 @@
                     "armeabi-v7a": "10752"
                 },
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Hungry Shark Currency Hack": {
+                        "enabled": false
+                    },
+                    "Hungry Shark Installer Source Fix": {
+                        "enabled": false
+                    }
+                }
             },
             "red-ball-4": {
                 "package": "com.FDGEntertainment.redball4.gp",
@@ -74,7 +106,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "RB4 Premium & Skin Unlock": {
+                        "enabled": false
+                    }
+                }
             },
             "smash-hit": {
                 "package": "com.mediocre.smashhit",
@@ -85,7 +121,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Smash Hit Premium Unlock": {
+                        "enabled": false
+                    }
+                }
             },
             "solar-smash": {
                 "package": "com.paradyme.solarsmash",
@@ -96,7 +136,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Solar Smash All Packages Purchased": {
+                        "enabled": false
+                    }
+                }
             },
             "subway-surfers": {
                 "package": "com.kiloo.subwaysurf",
@@ -107,7 +151,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Subway Surfers Currency Hack": {
+                        "enabled": false
+                    },
+                    "Subway Surfers Free IAP": {
+                        "enabled": false
+                    }
+                }
             },
             "temple-run-2": {
                 "package": "com.imangi.templerun2",
@@ -118,7 +169,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Temple Run 2 Free IAP": {
+                        "enabled": false
+                    },
+                    "Temple Run 2 Instant Rewards": {
+                        "enabled": false
+                    }
+                }
             },
             "zen-pinball": {
                 "package": "com.zenstudios.ZenPinball",
@@ -137,7 +195,11 @@
                     "x86": "95"
                 },
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Zen Pinball Free IAP": {
+                        "enabled": false
+                    }
+                }
             },
             "zombie-tsunami": {
                 "package": "net.mobigame.zombietsunami",
@@ -148,7 +210,150 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Zombie Tsunami Free IAP": {
+                        "enabled": false
+                    },
+                    "Zombie Tsunami Installer Check Fix": {
+                        "enabled": false
+                    }
+                }
+            },
+            "newstarsoccer": {
+                "package": "com.newstargames.newstarsoccer",
+                "search_term": "New Star Soccer",
+                "stable": [
+                    "4.32"
+                ],
+                "beta": [],
+                "version_codes": {},
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "New Star Soccer Free IAP": {
+                        "enabled": false
+                    }
+                }
+            },
+            "slingdrift": {
+                "package": "com.rubygames.slingdrift",
+                "search_term": "Sling Drift",
+                "stable": [
+                    "5.13.2"
+                ],
+                "beta": [],
+                "version_codes": {},
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Sling Drift All Cars Unlock": {
+                        "enabled": false
+                    },
+                    "Sling Drift Instant Rewards": {
+                        "enabled": false
+                    },
+                    "Sling Drift Unlimited Money": {
+                        "enabled": false
+                    },
+                    "Sling Drift VIP Unlock": {
+                        "enabled": false
+                    }
+                }
+            },
+            "star": {
+                "package": "com.soccer.score.star",
+                "search_term": "Soccer Star",
+                "stable": [
+                    "0.3.88"
+                ],
+                "beta": [],
+                "version_codes": {},
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Soccer Star Ad Removal": {
+                        "enabled": false
+                    },
+                    "Soccer Star Instant Rewarded": {
+                        "enabled": false
+                    },
+                    "Soccer Star VIP Unlock": {
+                        "enabled": false
+                    }
+                }
+            },
+            "colony": {
+                "package": "com.tranquility.colony",
+                "search_term": "Death Rover",
+                "stable": [
+                    "2.7.3"
+                ],
+                "beta": [],
+                "version_codes": {},
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Death Rover Free IAP": {
+                        "enabled": false
+                    },
+                    "Death Rover Unlimited Turbo": {
+                        "enabled": false
+                    }
+                }
+            },
+            "aphelion": {
+                "package": "com.wave.aphelion",
+                "search_term": "Aphelion",
+                "stable": [
+                    "0.5.8"
+                ],
+                "beta": [],
+                "version_codes": {},
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Aphelion Ad-Free Hint Unlock": {
+                        "enabled": false
+                    },
+                    "Aphelion Installer Source Fix": {
+                        "enabled": false
+                    }
+                }
+            },
+            "keymapper": {
+                "package": "io.github.sds100.keymapper",
+                "search_term": "Key Mapper",
+                "stable": [
+                    "4.5.0"
+                ],
+                "beta": [],
+                "version_codes": {},
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Premium": {
+                        "enabled": false
+                    }
+                }
+            },
+            "mctoolbox": {
+                "package": "io.mrarm.mctoolbox",
+                "search_term": "Toolbox for Minecraft PE",
+                "stable": [
+                    "5.4.58"
+                ],
+                "beta": [],
+                "version_codes": {},
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Bypass Google Play Install Check": {
+                        "enabled": false
+                    },
+                    "Premium": {
+                        "enabled": false
+                    }
+                }
             }
         }
     }

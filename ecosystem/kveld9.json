@@ -23,9 +23,11 @@
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
                 "stable": [
+                    "1.97.57"
+                ],
+                "beta": [
                     "1.97.59"
                 ],
-                "beta": [],
                 "strip": true,
                 "github_repo": "brave/brave-browser",
                 "github_asset": "Bravemonoarm64.apk",
@@ -48,6 +50,54 @@
                     },
                     "PNG Asset Optimizer": {
                         "enabled": true
+                    },
+                    "Block Motion Sensors": {
+                        "enabled": false
+                    },
+                    "Block Popups & Rating Requests": {
+                        "enabled": false
+                    },
+                    "Block Trackers": {
+                        "enabled": false
+                    },
+                    "Brave Origin": {
+                        "enabled": false
+                    },
+                    "Clean Shared Links": {
+                        "enabled": false
+                    },
+                    "Clean Start Page": {
+                        "enabled": false
+                    },
+                    "Faster Startup": {
+                        "enabled": false
+                    },
+                    "Hide Battery Status": {
+                        "enabled": false
+                    },
+                    "Keep Tabs Open": {
+                        "enabled": false
+                    },
+                    "Remove Extra Files": {
+                        "enabled": false
+                    },
+                    "Remove Extra Languages": {
+                        "enabled": false
+                    },
+                    "Select Previous Tab on Close": {
+                        "enabled": false
+                    },
+                    "Silence Promo Notifications": {
+                        "enabled": false
+                    },
+                    "Skip Welcome Screens": {
+                        "enabled": false
+                    },
+                    "Stop Background Sync": {
+                        "enabled": false
+                    },
+                    "Stop Text Sharing with System": {
+                        "enabled": false
                     }
                 }
             },
@@ -58,7 +108,9 @@
                 "stable": [
                     "47.1.4"
                 ],
-                "beta": [],
+                "beta": [
+                    "47.1.4"
+                ],
                 "version_codes": {
                     "universal": "2024701040",
                     "arm64-v8a": "2024701040"
@@ -165,6 +217,285 @@
                     },
                     "Voice & Speech Engine De-bloat": {
                         "enabled": true
+                    },
+                    "Allow Screenshots": {
+                        "enabled": false
+                    },
+                    "Always Show Publish Date": {
+                        "enabled": false
+                    },
+                    "Battery & Resource Saver": {
+                        "enabled": false
+                    },
+                    "Block P2P Video Relay": {
+                        "enabled": false
+                    },
+                    "Block Popups & Prompts": {
+                        "enabled": false
+                    },
+                    "Block Trackers": {
+                        "enabled": false
+                    },
+                    "Block Trackers (Setup)": {
+                        "enabled": false
+                    },
+                    "Bypass Mandatory Login": {
+                        "enabled": false
+                    },
+                    "Clean Share Links": {
+                        "enabled": false
+                    },
+                    "Comment Customizer": {
+                        "enabled": false
+                    },
+                    "Custom Share Sheet": {
+                        "enabled": false
+                    },
+                    "Customize Search": {
+                        "enabled": false
+                    },
+                    "Declutter Direct Messages": {
+                        "enabled": false
+                    },
+                    "Declutter Navigation Bar": {
+                        "enabled": false
+                    },
+                    "Declutter Video Interface": {
+                        "enabled": false
+                    },
+                    "Device Privacy Guard": {
+                        "enabled": false
+                    },
+                    "Disable History Recording": {
+                        "enabled": false
+                    },
+                    "Disable Live Gift Effects": {
+                        "enabled": false
+                    },
+                    "Disable On-Device AI": {
+                        "enabled": false
+                    },
+                    "Download Without Watermark": {
+                        "enabled": false
+                    },
+                    "Enable Profile Banner": {
+                        "enabled": false
+                    },
+                    "Feed Ads & Content Filter": {
+                        "enabled": false
+                    },
+                    "Force Auto-Scroll": {
+                        "enabled": false
+                    },
+                    "Friends & Suggestions Filter": {
+                        "enabled": false
+                    },
+                    "Hide Inbox Promos & Alerts": {
+                        "enabled": false
+                    },
+                    "Hide Inbox Story Tray": {
+                        "enabled": false
+                    },
+                    "In-App Browser Privacy Guard": {
+                        "enabled": false
+                    },
+                    "Instant Launch": {
+                        "enabled": false
+                    },
+                    "Login Compatibility Fix": {
+                        "enabled": false
+                    },
+                    "Offline Video Limit": {
+                        "enabled": false
+                    },
+                    "Playback & Display Governor": {
+                        "enabled": false
+                    },
+                    "Remember Clear Display": {
+                        "enabled": false
+                    },
+                    "Remember Playback Speed": {
+                        "enabled": false
+                    },
+                    "Remove Creator Tools": {
+                        "enabled": false
+                    },
+                    "Remove Extra Files": {
+                        "enabled": false
+                    },
+                    "Remove Extra Languages": {
+                        "enabled": false
+                    },
+                    "Remove Live Stream Files": {
+                        "enabled": false
+                    },
+                    "Remove Voice Tools": {
+                        "enabled": false
+                    },
+                    "Show Seekbar": {
+                        "enabled": false
+                    },
+                    "Strip Sensitive Permissions": {
+                        "enabled": false
+                    },
+                    "Use System Font": {
+                        "enabled": false
+                    },
+                    "Video Fit Mode": {
+                        "enabled": false
+                    }
+                }
+            },
+            "latin": {
+                "package": "com.google.android.inputmethod.latin",
+                "search_term": "Gboard Lite",
+                "stable": [
+                    "18.5.1.993608717-lite_beta-arm64-v8a"
+                ],
+                "beta": [
+                    "18.5.1.993608717-lite_beta-arm64-v8a"
+                ],
+                "version_codes": {},
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Block App Hijacking": {
+                        "enabled": false
+                    },
+                    "Block Trackers": {
+                        "enabled": false
+                    },
+                    "Disable Cloud Backup": {
+                        "enabled": false
+                    },
+                    "Disable Play Services": {
+                        "enabled": false
+                    },
+                    "Install a Copy": {
+                        "enabled": false
+                    },
+                    "Keyboard Settings": {
+                        "enabled": false
+                    },
+                    "Offline Only": {
+                        "enabled": false
+                    },
+                    "Remove Extra Files": {
+                        "enabled": false
+                    },
+                    "Remove Permissions": {
+                        "enabled": false
+                    },
+                    "Stop Background Sync": {
+                        "enabled": false
+                    },
+                    "Stop Remote Updates": {
+                        "enabled": false
+                    }
+                }
+            },
+            "hevy": {
+                "package": "com.hevy",
+                "search_term": "Hevy - Gym Log Workout Tracker",
+                "stable": [
+                    "3.1.14"
+                ],
+                "beta": [],
+                "version_codes": {},
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Block Trackers": {
+                        "enabled": false
+                    },
+                    "Remove Extra Files": {
+                        "enabled": false
+                    },
+                    "Stop Background Sync": {
+                        "enabled": false
+                    },
+                    "Unlock Pro": {
+                        "enabled": false
+                    }
+                }
+            },
+            "earphone": {
+                "package": "com.mi.earphone",
+                "search_term": "Xiaomi Earbuds",
+                "stable": [
+                    "1.38.0i"
+                ],
+                "beta": [],
+                "version_codes": {},
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Block Trackers": {
+                        "enabled": false
+                    },
+                    "Device Privacy Guard": {
+                        "enabled": false
+                    },
+                    "Offline Only": {
+                        "enabled": false
+                    },
+                    "Run on Rooted Devices": {
+                        "enabled": false
+                    },
+                    "Safer Connections": {
+                        "enabled": false
+                    },
+                    "Show All Models": {
+                        "enabled": false
+                    },
+                    "Skip Popups & Tutorials": {
+                        "enabled": false
+                    },
+                    "Stop Background Activity": {
+                        "enabled": false
+                    },
+                    "Unlock Sound Features": {
+                        "enabled": false
+                    },
+                    "Unlock for Other Phones": {
+                        "enabled": false
+                    },
+                    "Update Without Account": {
+                        "enabled": false
+                    }
+                }
+            },
+            "nokoprint": {
+                "package": "com.nokoprint",
+                "search_term": "NokoPrint - WiFi, Bluetooth, USB",
+                "stable": [
+                    "5.28.6"
+                ],
+                "beta": [],
+                "version_codes": {},
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Block Ads": {
+                        "enabled": false
+                    },
+                    "Block Trackers": {
+                        "enabled": false
+                    },
+                    "Remove Extra Files": {
+                        "enabled": false
+                    },
+                    "Remove Extra Stores": {
+                        "enabled": false
+                    },
+                    "Safer Connections": {
+                        "enabled": false
+                    },
+                    "Skip Welcome Screen": {
+                        "enabled": false
+                    },
+                    "Stop Background Sync": {
+                        "enabled": false
                     }
                 }
             }
