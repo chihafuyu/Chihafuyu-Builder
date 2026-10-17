@@ -27,6 +27,10 @@ ECOSYSTEMS = {
         "https://raw.githubusercontent.com/jordanwoodson/"
         "lurk-morphe-patches/main/patches-list.json"
     ),
+    "byehi98.json": (
+        "https://raw.githubusercontent.com/byehi98/"
+        "okish-morphe-patches/main/patches-list.json"
+    ),
 }
 
 ECOSYSTEM_DIR = "ecosystem"
@@ -136,8 +140,6 @@ def _extract_pkg_data(patches_data):
         if not isinstance(patch, dict):
             continue
         patch_name = patch.get("name")
-
-        # Respect upstream default status
         default_enabled = patch.get("use", patch.get("default", False))
 
         for pkg in patch.get("compatiblePackages") or []:
@@ -151,7 +153,7 @@ def _extract_pkg_data(patches_data):
                 pkg_data[pkg_name] = {
                     "name": pkg.get("name") or pkg_name,
                     "all_targets": [],
-                    "patches": {},  # Store patch_name: default_status
+                    "patches": {},
                 }
 
             if patch_name:
@@ -177,7 +179,11 @@ def _extract_pkg_data(patches_data):
 
 
 def _sync_app_patches(app_cfg, compatible_patches, app_key):
-    """Sync patches in options_override, adding ONLY patches with default false."""
+    """
+    Sync patches in options_override, adding ONLY patches with default false.
+    NOTE: This function is currently disabled in the main loop to prevent 
+    config bloat when upstream adds many new disabled patches.
+    """
     changed = False
     options = app_cfg.get("options_override")
     if not isinstance(options, dict):
@@ -185,7 +191,6 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
         app_cfg["options_override"] = options
 
     for patch_name, default_val in sorted(compatible_patches.items()):
-        # Only add if default is False and it's not already in the config
         if default_val is False and patch_name not in options:
             print(
                 f"    -> Adding new patch '{patch_name}' "
@@ -210,6 +215,17 @@ def _update_app_version(app_key, app_cfg, pkg_info):
 
     new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
     target_list = [str(new_version)]
+
+    # Prevent downgrading versions (e.g., 2026.44.0 -> 2026.43.0)
+    old_stable = app_cfg.get("stable", [])
+    if old_stable and isinstance(old_stable, list) and len(old_stable) > 0:
+        old_version = str(old_stable[0])
+        if _parse_version_key(old_version) > _parse_version_key(new_version):
+            print(
+                f"    -> Skipping downgrade for '{app_key}': "
+                f"{old_version} -> {new_version}."
+            )
+            return changed
 
     if app_cfg.get("stable") != target_list:
         print(
@@ -246,13 +262,13 @@ def _process_existing_apps(app_configs, stable_pkgs):
             continue
 
         pkg_info = stable_pkgs[pkg_name]
-        compatible_patches = pkg_info["patches"]
 
         if _update_app_version(app_key, app_cfg, pkg_info):
             changed = True
 
-        if _sync_app_patches(app_cfg, compatible_patches, app_key):
-            changed = True
+        # Dimatikan sementara agar config tidak "tambah banyak" saat upstream update
+        # if _sync_app_patches(app_cfg, pkg_info["patches"], app_key):
+        #     changed = True
 
     return changed
 
