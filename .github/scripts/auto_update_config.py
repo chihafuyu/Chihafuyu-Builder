@@ -41,6 +41,16 @@ ECOSYSTEMS = {
             "morphe-patches/dev/patches-list.json"
         ),
     },
+    "jordanwoodson.json": {
+        "stable": (
+            "https://raw.githubusercontent.com/jordanwoodson/"
+            "lurk-morphe-patches/main/patches-list.json"
+        ),
+        "dev": (
+            "https://raw.githubusercontent.com/jordanwoodson/"
+            "lurk-morphe-patches/dev/patches-list.json"
+        ),
+    },
     # Add other ecosystems here
 }
 
