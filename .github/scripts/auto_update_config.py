@@ -10,29 +10,6 @@ import sys
 
 import requests
 
-ECOSYSTEMS = {
-    "morphe.json": (
-        "https://raw.githubusercontent.com/MorpheApp/"
-        "morphe-patches/main/patches-list.json"
-    ),
-    "kveld9.json": (
-        "https://raw.githubusercontent.com/kveld9/"
-        "kveld-morphe-patches/main/patches-list.json"
-    ),
-    "legendsciber.json": (
-        "https://raw.githubusercontent.com/legendsciber/"
-        "morphe-patches/main/patches-list.json"
-    ),
-    "jordanwoodson.json": (
-        "https://raw.githubusercontent.com/jordanwoodson/"
-        "lurk-morphe-patches/main/patches-list.json"
-    ),
-    "byehi98.json": (
-        "https://raw.githubusercontent.com/byehi98/"
-        "okish-morphe-patches/main/patches-list.json"
-    ),
-}
-
 ECOSYSTEM_DIR = "ecosystem"
 REQUEST_HEADERS = {
     "User-Agent": "Chihafuyu-Builder/1.0 (+https://github.com/chihafuyu)"
@@ -49,6 +26,44 @@ VERSION_SPLIT_RE = re.compile(r"^(\d+(?:\.\d+)*)(.*)$")
 PRE_STAGE_RE = re.compile(
     r"(?<![a-z])(dev|alpha|preview|pre|beta|rc)(?![a-z])", re.IGNORECASE
 )
+
+
+def load_ecosystems():
+    """Load ecosystems from repo_map.json dynamically."""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_map_path = os.path.join(script_dir, "..", "..", "repo_map.json")
+
+    ecosystems = {}
+    if os.path.exists(repo_map_path):
+        try:
+            with open(repo_map_path, "r", encoding="utf-8") as file_obj:
+                repo_map = json.load(file_obj)
+            for name, info in repo_map.items():
+                repo_url = info.get("repo_url")
+                if not repo_url:
+                    continue
+                url = (
+                    f"https://raw.githubusercontent.com/{repo_url}"
+                    "/main/patches-list.json"
+                )
+                config_path = info.get("config_path", f"ecosystem/{name}.json")
+                ecosystems[config_path] = url
+        except (OSError, json.JSONDecodeError) as err:
+            print(f"Failed to load repo_map.json: {err}")
+
+    # Fallback if repo_map.json is missing or empty
+    if not ecosystems:
+        ecosystems = {
+            "ecosystem/morphe.json": (
+                "https://raw.githubusercontent.com/MorpheApp/"
+                "morphe-patches/main/patches-list.json"
+            ),
+            "ecosystem/kveld9.json": (
+                "https://raw.githubusercontent.com/kveld9/"
+                "kveld-morphe-patches/main/patches-list.json"
+            ),
+        }
+    return ecosystems
 
 
 def fetch_patches_list(url):
@@ -347,19 +362,18 @@ def update_config(config_path, stable_data):
 
 def main():
     """Run the auto-update process for all configured ecosystems."""
+    ecosystems = load_ecosystems()
     fetched_ecosystems = []
 
-    for filename, url in ECOSYSTEMS.items():
-        config_path = os.path.join(ECOSYSTEM_DIR, filename)
+    for config_path, url in ecosystems.items():
         if not os.path.exists(config_path):
             print(f"Config file not found: {config_path}. Skipping.")
             continue
 
-        # Fetch stable only
         stable_data = fetch_patches_list(url)
         if stable_data is None:
             print(
-                f"Failed to fetch stable data for {filename}. "
+                f"Failed to fetch stable data for {config_path}. "
                 "Aborting to prevent data loss."
             )
             sys.exit(1)
