@@ -47,7 +47,7 @@ jobs:
 
             - Updated app versions and version codes.
             - Added newly discovered patches with `enabled: false`.
-            - Removed patches missing from upstream `patches-list.json`.
+            - Preserved existing local patches missing from upstream `patches-list.json`.
 
             Please review the changes before merging.
           labels: |

@@ -76,8 +76,13 @@ def _normalize_vcodes(raw_vcodes):
             for k, v in raw_vcodes.items()
             if v is not None
         }
-    if isinstance(raw_vcodes, list) and raw_vcodes:
-        return {"universal": str(raw_vcodes[-1])}
+    if isinstance(raw_vcodes, list):
+        valid = [v for v in raw_vcodes if v is not None]
+        if valid:
+            highest = max(
+                valid, key=lambda v: int(v) if str(v).isdigit() else -1
+            )
+            return {"universal": str(highest)}
     return {}
 
 
@@ -185,7 +190,14 @@ def _update_app_version(app_key, app_cfg, pkg_info, track_name):
 
     new_version = latest.get("version")
     new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
-    current_versions = app_cfg.get(track_name) or []
+
+    raw_current = app_cfg.get(track_name)
+    if isinstance(raw_current, str):
+        current_versions = [raw_current]
+    elif isinstance(raw_current, list):
+        current_versions = raw_current
+    else:
+        current_versions = []
 
     if new_version and new_version not in current_versions:
         print(
@@ -343,8 +355,7 @@ def update_config(config_path, stable_data, dev_data):
 
 def main():
     """Run the auto-update process for all configured ecosystems."""
-    any_change = False
-    fetch_failed = False
+    fetched_ecosystems = []
 
     for filename, urls in ECOSYSTEMS.items():
         config_path = os.path.join(ECOSYSTEM_DIR, filename)
@@ -356,15 +367,17 @@ def main():
         dev_data = fetch_patches_list(urls["dev"])
 
         if stable_data is None or dev_data is None:
-            fetch_failed = True
-            continue
+            print(
+                "One or more network fetches failed. Aborting without writing."
+            )
+            sys.exit(1)
 
+        fetched_ecosystems.append((config_path, stable_data, dev_data))
+
+    any_change = False
+    for config_path, stable_data, dev_data in fetched_ecosystems:
         if update_config(config_path, stable_data, dev_data):
             any_change = True
-
-    if fetch_failed:
-        print("One or more network fetches failed.")
-        sys.exit(1)
 
     if not any_change:
         print("No updates found across all ecosystems.")
