@@ -30,6 +30,7 @@ PRE_STAGE_RE = re.compile(
 def _find_repo_map(script_dir, repo_root):
     """Find repo_map.json in expected locations."""
     possible_paths = [
+        os.path.join(repo_root, "ecosystem-termux", "repo_map.json"),
         os.path.join(repo_root, "repo_map.json"),
         os.path.join(script_dir, "repo_map.json"),
         os.path.abspath("repo_map.json"),
