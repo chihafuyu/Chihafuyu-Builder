@@ -326,10 +326,7 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
         base_key = pkg_name.split(".")[-1].lower()
         app_key = base_key
         counter = 1
-        while app_key in app_configs and (
-            not isinstance(app_configs[app_key], dict)
-            or app_configs[app_key].get("package") != pkg_name
-        ):
+        while app_key in app_configs:
             app_key = f"{base_key}_{counter}"
             counter += 1
 
@@ -386,7 +383,7 @@ def update_config(config_path, stable_data, dev_data):
         print(f"    -> Failed to read {config_path}: {err}. Skipping.")
         return False
 
-    root_key = os.path.basename(config_path).replace(".json", "")
+    root_key = os.path.splitext(os.path.basename(config_path))[0]
     if not isinstance(config, dict) or not isinstance(
         config.get(root_key), dict
     ):
