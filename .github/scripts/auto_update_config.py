@@ -153,6 +153,9 @@ def _get_target_sort_key(target):
 def _extract_pkg_data(patches_data):
     """Extract package data and compatible patches from patches list."""
     pkg_data = {}
+    if not patches_data:
+        return pkg_data
+
     for patch in patches_data.get("patches") or []:
         if not isinstance(patch, dict):
             continue
@@ -356,8 +359,6 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
             "options_override": {},
         }
 
-        # Populate initial versions and patches in-place; adding a new app
-        # entry to app_configs always constitutes a configuration change.
         if pkg_name in stable_pkgs:
             _update_app_version(
                 app_key,
@@ -403,9 +404,13 @@ def _write_config_atomic(config_path, config):
 
 def update_config(config_path, stable_data, dev_data):
     """Update a single config file based on patches-list data."""
-    if stable_data is None or dev_data is None:
-        print(f"  -> Skipping {config_path} due to missing data from network.")
+    if stable_data is None:
+        print(f"  -> Skipping {config_path} due to missing stable data.")
         return False
+
+    if dev_data is None:
+        print(f"  -> No dev data for {config_path}, assuming empty.")
+        dev_data = {}
 
     print(f"  -> Processing {config_path}...")
 
@@ -459,14 +464,19 @@ def main():
             print(f"Config file not found: {config_path}. Skipping.")
             continue
 
+        # Fetch stable (mandatory)
         stable_data = fetch_patches_list(urls["stable"])
-        dev_data = fetch_patches_list(urls["dev"])
-
-        if stable_data is None or dev_data is None:
+        if stable_data is None:
             print(
-                "One or more network fetches failed. Aborting without writing."
+                f"Failed to fetch stable data for {filename}. "
+                "Aborting to prevent data loss."
             )
             sys.exit(1)
+
+        # Fetch dev (optional)
+        dev_data = fetch_patches_list(urls["dev"])
+        if dev_data is None:
+            print(f"No dev branch found for {filename}. Proceeding without it.")
 
         fetched_ecosystems.append((config_path, stable_data, dev_data))
 
