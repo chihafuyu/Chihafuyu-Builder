@@ -54,6 +54,17 @@ ECOSYSTEMS = {
 }
 
 ECOSYSTEM_DIR = "ecosystem"
+PRE_STAGE_RANKS = {
+    "dev": 0,
+    "alpha": 1,
+    "pre": 2,
+    "preview": 2,
+    "beta": 3,
+    "rc": 4,
+}
+PRE_STAGE_RE = re.compile(
+    r"(dev|alpha|preview|pre|beta|rc)", re.IGNORECASE
+)
 
 
 def fetch_patches_list(url):
@@ -90,6 +101,27 @@ def _normalize_vcodes(raw_vcodes):
     return {}
 
 
+def _parse_version_key(ver_str):
+    """Parse version string sorting stable releases above pre-release tags."""
+    parts = re.split(r"[-_]", ver_str.strip(), maxsplit=1)
+    base_nums = tuple(int(n) for n in re.findall(r"\d+", parts[0]))
+    suffix = parts[1].lower() if len(parts) > 1 else ""
+    pre_match = PRE_STAGE_RE.search(suffix) or PRE_STAGE_RE.search(
+        parts[0].lower()
+    )
+    if not pre_match and not suffix:
+        return (base_nums, 2, 0, (), ver_str)
+
+    stage = (
+        PRE_STAGE_RANKS.get(pre_match.group(1).lower(), 5)
+        if pre_match
+        else 5
+    )
+    is_release = 1 if stage == 5 else 0
+    suffix_nums = tuple(int(n) for n in re.findall(r"\d+", suffix))
+    return (base_nums, is_release, stage, suffix_nums, ver_str)
+
+
 def _get_target_sort_key(target):
     """Return sort key prioritizing semantic version then version code."""
     vcodes = target.get("versionCodes")
@@ -103,8 +135,7 @@ def _get_target_sort_key(target):
     codes = [int(v) for v in raw_values if str(v).isdigit()]
     highest_code = max(codes) if codes else -1
     ver_str = str(target.get("version") or "")
-    ver_nums = tuple(int(part) for part in re.findall(r"\d+", ver_str))
-    return (ver_nums, highest_code, ver_str)
+    return (_parse_version_key(ver_str), highest_code)
 
 
 def _extract_pkg_data(patches_data):
@@ -187,7 +218,9 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
     return changed
 
 
-def _update_app_version(app_key, app_cfg, pkg_info, track_name):
+def _update_app_version(
+    app_key, app_cfg, pkg_info, track_name, update_vcodes=False
+):
     """Update single-item version list (stable or beta) for an app config."""
     changed = False
     latest = pkg_info.get("latest_target")
@@ -207,9 +240,7 @@ def _update_app_version(app_key, app_cfg, pkg_info, track_name):
         app_cfg[track_name] = target_list
         changed = True
 
-    if new_vcodes and (
-        track_name == "stable" or not app_cfg.get("version_codes")
-    ):
+    if new_vcodes and (update_vcodes or not app_cfg.get("version_codes")):
         if app_cfg.get("version_codes") != new_vcodes:
             print(f"    -> Updating version codes for '{app_key}'.")
             app_cfg["version_codes"] = new_vcodes
@@ -241,13 +272,21 @@ def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
 
         if pkg_name in stable_pkgs:
             if _update_app_version(
-                app_key, app_cfg, stable_pkgs[pkg_name], "stable"
+                app_key,
+                app_cfg,
+                stable_pkgs[pkg_name],
+                "stable",
+                update_vcodes=True,
             ):
                 changed = True
 
         if pkg_name in dev_pkgs:
             if _update_app_version(
-                app_key, app_cfg, dev_pkgs[pkg_name], "beta"
+                app_key,
+                app_cfg,
+                dev_pkgs[pkg_name],
+                "beta",
+                update_vcodes=pkg_name not in stable_pkgs,
             ):
                 changed = True
 
@@ -310,10 +349,20 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
 
         if pkg_name in stable_pkgs:
             _update_app_version(
-                app_key, app_cfg, stable_pkgs[pkg_name], "stable"
+                app_key,
+                app_cfg,
+                stable_pkgs[pkg_name],
+                "stable",
+                update_vcodes=True,
             )
         if pkg_name in dev_pkgs:
-            _update_app_version(app_key, app_cfg, dev_pkgs[pkg_name], "beta")
+            _update_app_version(
+                app_key,
+                app_cfg,
+                dev_pkgs[pkg_name],
+                "beta",
+                update_vcodes=pkg_name not in stable_pkgs,
+            )
 
         app_configs[app_key] = app_cfg
         _sync_app_patches(app_cfg, combined_patches, app_key)
