@@ -10,7 +10,6 @@ import sys
 
 import requests
 
-ECOSYSTEM_DIR = "ecosystem"
 REQUEST_HEADERS = {
     "User-Agent": "Chihafuyu-Builder/1.0 (+https://github.com/chihafuyu)"
 }
@@ -31,7 +30,8 @@ PRE_STAGE_RE = re.compile(
 def load_ecosystems():
     """Load ecosystems from repo_map.json dynamically."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    repo_map_path = os.path.join(script_dir, "..", "..", "repo_map.json")
+    repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
+    repo_map_path = os.path.join(repo_root, "repo_map.json")
 
     ecosystems = {}
     if os.path.exists(repo_map_path):
@@ -50,17 +50,21 @@ def load_ecosystems():
                     f"/{branch}/{file_path}"
                 )
                 config_path = info.get("config_path", f"ecosystem/{name}.json")
-                ecosystems[config_path] = url
+                # Use absolute path to prevent cwd issues during CI runs
+                abs_config_path = os.path.normpath(
+                    os.path.join(repo_root, config_path)
+                )
+                ecosystems[abs_config_path] = url
         except (OSError, json.JSONDecodeError) as err:
             print(f"Failed to load repo_map.json: {err}")
 
     if not ecosystems:
         ecosystems = {
-            "ecosystem/morphe.json": (
+            os.path.join(repo_root, "ecosystem/morphe.json"): (
                 "https://raw.githubusercontent.com/MorpheApp/"
                 "morphe-patches/main/patches-list.json"
             ),
-            "ecosystem/kveld9.json": (
+            os.path.join(repo_root, "ecosystem/kveld9.json"): (
                 "https://raw.githubusercontent.com/kveld9/"
                 "kveld-morphe-patches/main/patches-list.json"
             ),
@@ -87,7 +91,6 @@ def _parse_bundle_json(url):
         print("  -> Missing 'app_version' in bundle metadata.")
         return None
 
-    # Return a mock patches-list structure compatible with existing logic
     return {
         "patches": [
             {
@@ -209,6 +212,7 @@ def _process_package(pkg_data, pkg, patch_name, default_enabled):
         }
 
     if patch_name:
+        # Dict assignment prevents duplicates if the same patch is listed twice
         pkg_data[pkg_name]["patches"][patch_name] = default_enabled
 
     valid_targets = [
@@ -257,6 +261,8 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
         app_cfg["options_override"] = options
 
     for patch_name, default_val in sorted(compatible_patches.items()):
+        # Only add if default is False and it's not already in the config.
+        # The "patch_name not in options" check prevents adding duplicates.
         if default_val is False and patch_name not in options:
             print(
                 f"    -> Adding new patch '{patch_name}' "
@@ -282,7 +288,7 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
     target_list = [str(new_version)]
 
-    # Strict downgrade guard: compare numeric and pre-release stages
+    # Prevent downgrading versions (safety fallback)
     old_stable = app_cfg.get("stable", [])
     if old_stable and isinstance(old_stable, list) and len(old_stable) > 0:
         old_version = str(old_stable[0])
