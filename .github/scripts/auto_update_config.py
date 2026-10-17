@@ -1,5 +1,5 @@
 """
-Auto-update ecosystem configs from patches-list.json.
+Auto-update ecosystem configs from patches-list.json or Kotlin sources.
 Run by GitHub Actions to create a Pull Request.
 """
 
@@ -26,6 +26,9 @@ VERSION_SPLIT_RE = re.compile(r"^(\d+(?:\.\d+)*)(.*)$")
 PRE_STAGE_RE = re.compile(
     r"(?<![a-z])(dev|alpha|preview|pre|beta|rc)(?![a-z])", re.IGNORECASE
 )
+KOTLIN_TARGET_RE = re.compile(
+    r'AppTarget\(version\s*=\s*"([^"]+)"(?:\s*,\s*isExperimental\s*=\s*(true|false))?\)'
+)
 
 
 def load_ecosystems():
@@ -42,9 +45,13 @@ def load_ecosystems():
                 repo_url = info.get("repo_url")
                 if not repo_url:
                     continue
+
+                # Construct URL based on repo_map properties
+                branch = info.get("branch", "main")
+                file_path = info.get("file_path", "patches-list.json")
                 url = (
                     f"https://raw.githubusercontent.com/{repo_url}"
-                    "/main/patches-list.json"
+                    f"/{branch}/{file_path}"
                 )
                 config_path = info.get("config_path", f"ecosystem/{name}.json")
                 ecosystems[config_path] = url
@@ -66,8 +73,59 @@ def load_ecosystems():
     return ecosystems
 
 
+def _parse_kotlin_constants(url):
+    """Parse Kotlin Constants.kt file and mock a patches-list.json."""
+    print(f"Fetching Kotlin source {url}...")
+    try:
+        resp = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
+        resp.raise_for_status()
+        text = resp.text
+    except requests.exceptions.RequestException as err:
+        print(f"  -> Failed to fetch data: {err}")
+        return None
+
+    # Extract package name and apk file type
+    pkg_match = re.search(r'packageName\s*=\s*"([^"]+)"', text)
+    pkg_name = pkg_match.group(1) if pkg_match else "com.twitter.android"
+
+    apk_match = re.search(r'apkFileType\s*=\s*ApkFileType\.([A-Z_]+)', text)
+    apk_type = apk_match.group(1) if apk_match else "APKM"
+
+    # Extract targets (versions)
+    targets = []
+    for match in KOTLIN_TARGET_RE.finditer(text):
+        version = match.group(1)
+        is_exp = match.group(2) == "true"
+        targets.append({
+            "version": version,
+            "isExperimental": is_exp,
+            "versionCodes": None,
+        })
+
+    # Return a mock structure compatible with the rest of the script
+    return {
+        "patches": [
+            {
+                "name": "NewX: Share post as image",
+                "default": True,
+                "compatiblePackages": [
+                    {
+                        "packageName": pkg_name,
+                        "name": "X",
+                        "apkFileType": apk_type,
+                        "targets": targets,
+                    }
+                ],
+            }
+        ]
+    }
+
+
 def fetch_patches_list(url):
-    """Fetch patches-list.json from a URL."""
+    """Fetch patches-list.json or parse Kotlin source from a URL."""
+    if url.endswith(".kt"):
+        return _parse_kotlin_constants(url)
+
     print(f"Fetching {url}...")
     try:
         resp = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
