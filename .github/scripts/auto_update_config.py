@@ -54,6 +54,9 @@ ECOSYSTEMS = {
 }
 
 ECOSYSTEM_DIR = "ecosystem"
+REQUEST_HEADERS = {
+    "User-Agent": "Chihafuyu-Builder/1.0 (+https://github.com/chihafuyu)"
+}
 PRE_STAGE_RANKS = {
     "dev": 0,
     "alpha": 1,
@@ -72,7 +75,7 @@ def fetch_patches_list(url):
     """Fetch patches-list.json from a URL."""
     print(f"Fetching {url}...")
     try:
-        resp = requests.get(url, timeout=30)
+        resp = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
         resp.raise_for_status()
         data = resp.json()
         if not isinstance(data, dict):
@@ -353,6 +356,8 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
             "options_override": {},
         }
 
+        # Populate initial versions and patches in-place; adding a new app
+        # entry to app_configs always constitutes a configuration change.
         if pkg_name in stable_pkgs:
             _update_app_version(
                 app_key,
@@ -370,8 +375,8 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
                 update_vcodes=pkg_name not in stable_pkgs,
             )
 
-        app_configs[app_key] = app_cfg
         _sync_app_patches(app_cfg, combined_patches, app_key)
+        app_configs[app_key] = app_cfg
         changed = True
 
     return changed
