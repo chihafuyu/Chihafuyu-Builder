@@ -62,7 +62,11 @@ def fetch_patches_list(url):
     try:
         resp = requests.get(url, timeout=30)
         resp.raise_for_status()
-        return resp.json()
+        data = resp.json()
+        if not isinstance(data, dict):
+            print("  -> Invalid JSON format: expected an object.")
+            return None
+        return data
     except (requests.exceptions.RequestException, json.JSONDecodeError) as err:
         print(f"  -> Failed to fetch data: {err}")
         return None
@@ -135,14 +139,13 @@ def _extract_pkg_data(patches_data):
                     pkg_data[pkg_name]["all_targets"].append(target)
 
     for data in pkg_data.values():
-        targets = data["all_targets"]
+        targets = data.pop("all_targets", [])
         if not targets:
             data["latest_target"] = None
             continue
 
         targets.sort(key=_get_target_sort_key, reverse=True)
         data["latest_target"] = targets[0]
-        del data["all_targets"]
 
     return pkg_data
 
@@ -162,7 +165,7 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
     changed = False
     options = app_cfg.setdefault("options_override", {})
 
-    for patch_name in compatible_patches:
+    for patch_name in sorted(compatible_patches):
         if patch_name not in options:
             print(
                 f"    -> Adding new patch '{patch_name}' "
@@ -207,7 +210,9 @@ def _update_app_version(app_key, app_cfg, pkg_info, track_name):
         app_cfg[track_name] = [new_version]
         changed = True
 
-    if track_name == "stable" or not app_cfg.get("version_codes"):
+    if new_vcodes and (
+        track_name == "stable" or not app_cfg.get("version_codes")
+    ):
         if app_cfg.get("version_codes") != new_vcodes:
             print(f"    -> Updating version codes for '{app_key}'.")
             app_cfg["version_codes"] = new_vcodes
@@ -257,7 +262,7 @@ def _process_existing_apps(app_configs, stable_pkgs, dev_pkgs):
 def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
     """Add new apps that are present in stable or dev branches."""
     changed = False
-    all_pkgs = set(stable_pkgs.keys()).union(dev_pkgs.keys())
+    all_pkgs = sorted(set(stable_pkgs.keys()).union(dev_pkgs.keys()))
     default_archive_id = next(
         (
             cfg.get("archive_id")
@@ -277,7 +282,7 @@ def _process_new_apps(app_configs, stable_pkgs, dev_pkgs):
 
         print(f"    -> Adding new app '{pkg_name}'.")
 
-        base_key = pkg_name.split(".")[-1]
+        base_key = pkg_name.split(".")[-1].lower()
         app_key = base_key
         counter = 1
         while (
@@ -327,8 +332,10 @@ def update_config(config_path, stable_data, dev_data):
         config = json.load(file_obj)
 
     root_key = os.path.basename(config_path).replace(".json", "")
-    if root_key not in config:
-        print(f"    -> Root key '{root_key}' not found. Skipping.")
+    if not isinstance(config, dict) or not isinstance(
+        config.get(root_key), dict
+    ):
+        print(f"    -> Root key '{root_key}' not found or invalid. Skipping.")
         return False
 
     app_configs = config[root_key].setdefault("apps", {})
