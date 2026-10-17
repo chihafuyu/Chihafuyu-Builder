@@ -130,6 +130,33 @@ def _get_target_sort_key(target):
     return (_parse_version_key(ver_str), highest_code)
 
 
+def _process_package(pkg_data, pkg, patch_name, default_enabled):
+    """Process a single compatible package entry."""
+    pkg_name = pkg.get("packageName")
+    if not pkg_name:
+        return
+
+    if pkg_name not in pkg_data:
+        pkg_data[pkg_name] = {
+            "name": pkg.get("name") or pkg_name,
+            "all_targets": [],
+            "patches": {},
+            "apk_file_type": pkg.get("apkFileType"),
+        }
+
+    if patch_name:
+        pkg_data[pkg_name]["patches"][patch_name] = default_enabled
+
+    # Filter out experimental targets and ensure valid structure
+    valid_targets = [
+        t for t in pkg.get("targets") or []
+        if isinstance(t, dict) and not t.get("isExperimental", False)
+    ]
+    for target in valid_targets:
+        if target not in pkg_data[pkg_name]["all_targets"]:
+            pkg_data[pkg_name]["all_targets"].append(target)
+
+
 def _extract_pkg_data(patches_data):
     """Extract package data and compatible patches from patches list."""
     pkg_data = {}
@@ -140,33 +167,11 @@ def _extract_pkg_data(patches_data):
         if not isinstance(patch, dict):
             continue
         patch_name = patch.get("name")
-        default_enabled = patch.get("use", patch.get("default", False))
+        default_enabled = patch.get("default", False)
 
         for pkg in patch.get("compatiblePackages") or []:
-            if not isinstance(pkg, dict):
-                continue
-            pkg_name = pkg.get("packageName")
-            if not pkg_name:
-                continue
-
-            if pkg_name not in pkg_data:
-                pkg_data[pkg_name] = {
-                    "name": pkg.get("name") or pkg_name,
-                    "all_targets": [],
-                    "patches": {},
-                }
-
-            if patch_name:
-                pkg_data[pkg_name]["patches"][patch_name] = default_enabled
-
-            # Filter out experimental targets and ensure valid structure
-            valid_targets = [
-                t for t in pkg.get("targets") or []
-                if isinstance(t, dict) and not t.get("isExperimental", False)
-            ]
-            for target in valid_targets:
-                if target not in pkg_data[pkg_name]["all_targets"]:
-                    pkg_data[pkg_name]["all_targets"].append(target)
+            if isinstance(pkg, dict):
+                _process_package(pkg_data, pkg, patch_name, default_enabled)
 
     for data in pkg_data.values():
         targets = data.pop("all_targets", [])
@@ -181,11 +186,7 @@ def _extract_pkg_data(patches_data):
 
 
 def _sync_app_patches(app_cfg, compatible_patches, app_key):
-    """
-    Sync patches in options_override, adding ONLY patches with default false.
-    NOTE: This function is currently disabled in the main loop to prevent
-    config bloat when upstream adds many new disabled patches.
-    """
+    """Sync patches in options_override, adding ONLY patches with default false."""
     changed = False
     options = app_cfg.get("options_override")
     if not isinstance(options, dict):
@@ -193,6 +194,7 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
         app_cfg["options_override"] = options
 
     for patch_name, default_val in sorted(compatible_patches.items()):
+        # Only add if default is False and it's not already in the config
         if default_val is False and patch_name not in options:
             print(
                 f"    -> Adding new patch '{patch_name}' "
@@ -218,7 +220,7 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
     target_list = [str(new_version)]
 
-    # Prevent downgrading versions (safety fallback)
+    # Prevent downgrading versions
     old_stable = app_cfg.get("stable", [])
     if old_stable and isinstance(old_stable, list) and len(old_stable) > 0:
         old_version = str(old_stable[0])
@@ -240,6 +242,12 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     if new_vcodes and app_cfg.get("version_codes") != new_vcodes:
         print(f"    -> Updating version codes for '{app_key}'.")
         app_cfg["version_codes"] = new_vcodes
+        changed = True
+
+    apk_type = pkg_info.get("apk_file_type")
+    if apk_type == "APKM" and not app_cfg.get("force_bundle"):
+        print(f"    -> Setting force_bundle=True for '{app_key}'.")
+        app_cfg["force_bundle"] = True
         changed = True
 
     return changed
@@ -268,9 +276,8 @@ def _process_existing_apps(app_configs, stable_pkgs):
         if _update_app_version(app_key, app_cfg, pkg_info):
             changed = True
 
-        # Temporarily disabled to prevent config bloat when upstream updates
-        # if _sync_app_patches(app_cfg, pkg_info["patches"], app_key):
-        #     changed = True
+        if _sync_app_patches(app_cfg, pkg_info["patches"], app_key):
+            changed = True
 
     return changed
 
