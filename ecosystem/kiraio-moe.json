@@ -117,7 +117,11 @@
                 ],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Enable Deluxe Plan": {
+                        "enabled": false
+                    }
+                }
             },
             "nekopoi": {
                 "package": "com.kcstream.cing",

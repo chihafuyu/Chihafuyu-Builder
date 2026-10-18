@@ -14,7 +14,20 @@
                 "strip": true,
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change Zalo app name": {
+                        "enabled": false
+                    },
+                    "Change Zalo package name": {
+                        "enabled": false
+                    },
+                    "Configurable native backup interval": {
+                        "enabled": false
+                    },
+                    "Enable Google Drive photo backup": {
+                        "enabled": false
+                    }
+                }
             }
         }
     }

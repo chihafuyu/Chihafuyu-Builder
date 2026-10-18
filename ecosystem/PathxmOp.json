@@ -10,7 +10,12 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Clone Chess.com": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
             }
         }
     }

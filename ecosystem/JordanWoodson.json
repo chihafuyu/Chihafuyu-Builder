@@ -16,7 +16,29 @@
                 "force_bundle": true,
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Bypass VOD ad sessions": {
+                        "enabled": false
+                    },
+                    "Change app name": {
+                        "enabled": false
+                    },
+                    "Clone app": {
+                        "enabled": false
+                    },
+                    "Default video quality": {
+                        "enabled": false
+                    },
+                    "Hide Clips": {
+                        "enabled": false
+                    },
+                    "Hide KICKs tipping": {
+                        "enabled": false
+                    },
+                    "Hide subscription upsells": {
+                        "enabled": false
+                    }
+                }
             },
             "rumble": {
                 "package": "com.rumble.battles",
@@ -33,7 +55,26 @@
                 "force_bundle": true,
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change app name": {
+                        "enabled": false
+                    },
+                    "Clone app": {
+                        "enabled": false
+                    },
+                    "Default video quality": {
+                        "enabled": false
+                    },
+                    "Disable autoplay": {
+                        "enabled": false
+                    },
+                    "Hide Shorts": {
+                        "enabled": false
+                    },
+                    "Hide tipping and Rants": {
+                        "enabled": false
+                    }
+                }
             },
             "twitch": {
                 "package": "tv.twitch.android.app",
@@ -52,7 +93,44 @@
                 "force_bundle": true,
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change app name": {
+                        "enabled": false
+                    },
+                    "Clone app": {
+                        "enabled": false
+                    },
+                    "Default video quality": {
+                        "enabled": false
+                    },
+                    "Hide Bits tipping": {
+                        "enabled": false
+                    },
+                    "Hide Clips": {
+                        "enabled": false
+                    },
+                    "Hide Home sections": {
+                        "enabled": false
+                    },
+                    "Hide chat highlights": {
+                        "enabled": false
+                    },
+                    "Hide mature content warning": {
+                        "enabled": false
+                    },
+                    "Hide player buttons": {
+                        "enabled": false
+                    },
+                    "Hide subscription upsells": {
+                        "enabled": false
+                    },
+                    "Playlist proxy": {
+                        "enabled": false
+                    },
+                    "Show video stats": {
+                        "enabled": false
+                    }
+                }
             }
         }
     }

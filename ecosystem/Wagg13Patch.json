@@ -16,7 +16,7 @@
                 "package": "com.guochao.faceshow",
                 "search_term": "BuzzCast",
                 "stable": [
-                    "3.2.90"
+                    "3.2.92"
                 ],
                 "beta": [],
                 "strip": true,
@@ -47,7 +47,11 @@
                 "force_bundle": true,
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Spoof signature": {
+                        "enabled": false
+                    }
+                }
             }
         }
     }

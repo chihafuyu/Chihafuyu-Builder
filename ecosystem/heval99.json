@@ -10,7 +10,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "200700061",
+                    "armeabi-v7a": "200700061",
+                    "x86-64": "200700061",
+                    "x86": "200700061"
+                },
+                "force_bundle": true
             },
             "box-box": {
                 "package": "club.boxbox.android",
@@ -20,15 +27,15 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "12L+",
-                    "arm64-v8a": "12L+",
-                    "armeabi-v7a": "12L+",
-                    "x86_64": "12L+",
-                    "x86": "12L+"
+                    "arm64-v8a": "261",
+                    "armeabi-v7a": "261",
+                    "x86-64": "261",
+                    "x86": "261"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "fairemail": {
                 "package": "eu.faircode.email",
@@ -39,7 +46,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "2338",
+                    "armeabi-v7a": "2338",
+                    "x86-64": "2338",
+                    "x86": "2338"
+                }
             },
             "iptv": {
                 "package": "ru.iptvremote.android.iptv",
@@ -50,7 +63,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "5010",
+                    "armeabi-v7a": "5010",
+                    "x86-64": "5010",
+                    "x86": "5010"
+                },
+                "force_bundle": true
             },
             "jetaudio": {
                 "package": "com.jetappfactory.jetaudio",
@@ -60,15 +80,15 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "261320",
                     "arm64-v8a": "261320",
                     "armeabi-v7a": "261320",
-                    "x86_64": "261320",
+                    "x86-64": "261320",
                     "x86": "261320"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "librera": {
                 "package": "com.foobnix.pdf.reader",
@@ -78,10 +98,9 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "7175",
                     "arm64-v8a": "7175",
                     "armeabi-v7a": "7175",
-                    "x86_64": "7175",
+                    "x86-64": "7175",
                     "x86": "7175"
                 },
                 "strip": true,
@@ -96,15 +115,15 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "1007000",
                     "arm64-v8a": "1007000",
                     "armeabi-v7a": "1007000",
-                    "x86_64": "1007000",
+                    "x86-64": "1007000",
                     "x86": "1007000"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "notepad": {
                 "package": "com.ztnstudio.notepad",
@@ -114,7 +133,10 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "19019"
+                    "arm64-v8a": "19019",
+                    "armeabi-v7a": "19019",
+                    "x86-64": "19019",
+                    "x86": "19019"
                 },
                 "strip": true,
                 "force_bundle": true,
@@ -130,7 +152,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "32001",
+                    "armeabi-v7a": "32001",
+                    "x86-64": "32001",
+                    "x86": "32001"
+                },
+                "force_bundle": true
             },
             "tasker": {
                 "package": "net.dinglisch.android.taskerm",
@@ -141,7 +170,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "5445",
+                    "armeabi-v7a": "5445",
+                    "x86-64": "5445",
+                    "x86": "5445"
+                }
             },
             "textra": {
                 "package": "com.textra",
@@ -151,15 +186,15 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "48761",
                     "arm64-v8a": "48761",
                     "armeabi-v7a": "48761",
-                    "x86_64": "48761",
+                    "x86-64": "48761",
                     "x86": "48761"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "truecaller": {
                 "package": "com.truecaller",
@@ -169,15 +204,49 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "12L+",
-                    "arm64-v8a": "12L+",
-                    "armeabi-v7a": "12L+",
-                    "x86_64": "12L+",
-                    "x86": "12L+"
+                    "arm64-v8a": "2640005",
+                    "armeabi-v7a": "2640005",
+                    "x86-64": "2640005",
+                    "x86": "2640005"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Fix T9 contact search": {
+                        "enabled": false
+                    },
+                    "GmsCore support": {
+                        "enabled": false
+                    },
+                    "Hide Assistant tab": {
+                        "enabled": false
+                    },
+                    "Hide Blocking tab": {
+                        "enabled": false
+                    },
+                    "Hide Messages tab": {
+                        "enabled": false
+                    },
+                    "Hide Premium tab": {
+                        "enabled": false
+                    },
+                    "Hide Scam feed": {
+                        "enabled": false
+                    },
+                    "Hide family button": {
+                        "enabled": false
+                    },
+                    "Restore classic call log": {
+                        "enabled": false
+                    },
+                    "Spoof signature": {
+                        "enabled": false
+                    },
+                    "Use SMS for verification codes": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
             },
             "unified-remote": {
                 "package": "com.Relmtech.Remote",
@@ -187,10 +256,9 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "325001",
                     "arm64-v8a": "325001",
                     "armeabi-v7a": "325001",
-                    "x86_64": "325001",
+                    "x86-64": "325001",
                     "x86": "325001"
                 },
                 "strip": true,
@@ -206,7 +274,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "2019070035",
+                    "armeabi-v7a": "2019070035",
+                    "x86-64": "2019070035",
+                    "x86": "2019070035"
+                }
             }
         }
     }
