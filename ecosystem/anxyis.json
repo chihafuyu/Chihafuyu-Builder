@@ -9,12 +9,19 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "1002578"
+                    "arm64-v8a": "1002578",
+                    "armeabi-v7a": "1002578",
+                    "x86-64": "1002578",
+                    "x86": "1002578"
                 },
                 "force_bundle": true,
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "New effects pack": {
+                        "enabled": false
+                    }
+                }
             }
         }
     }

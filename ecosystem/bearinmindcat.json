@@ -10,7 +10,8 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "google-maps": {
                 "package": "com.google.android.apps.maps",
@@ -22,7 +23,11 @@
                 "strip": true,
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Add microG support": {
+                        "enabled": false
+                    }
+                }
             },
             "waze": {
                 "package": "com.waze",
@@ -33,7 +38,36 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Alert distances": {
+                        "enabled": false
+                    },
+                    "All moods": {
+                        "enabled": false
+                    },
+                    "Navigation distances": {
+                        "enabled": false
+                    },
+                    "No AI reporting": {
+                        "enabled": false
+                    },
+                    "No Google Assistant": {
+                        "enabled": false
+                    },
+                    "Report speed limit": {
+                        "enabled": false
+                    },
+                    "Speed cameras everywhere": {
+                        "enabled": false
+                    },
+                    "Speed limit sign": {
+                        "enabled": false
+                    },
+                    "Stay awake in the background": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
             }
         }
     }

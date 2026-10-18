@@ -14,7 +14,14 @@
                 "force_bundle": false,
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Locale Assets Slimmer": {
+                        "enabled": false
+                    },
+                    "Native Bloat Slimmer": {
+                        "enabled": false
+                    }
+                }
             },
             "copilot": {
                 "package": "com.microsoft.office.officehubrow",
@@ -29,7 +36,11 @@
                 "force_bundle": true,
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Copilot Companion Native Slimmer": {
+                        "enabled": false
+                    }
+                }
             },
             "hevy": {
                 "package": "com.hevy",
@@ -45,7 +56,11 @@
                 "force_arch": "arm64-v8a",
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Unlock Pro": {
+                        "enabled": false
+                    }
+                }
             },
             "nokoprint": {
                 "package": "com.nokoprint",

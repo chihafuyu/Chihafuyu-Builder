@@ -9,12 +9,44 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "384510827"
+                    "arm64-v8a": "385311895"
                 },
                 "strip": true,
                 "force_arch": "arm64-v8a",
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Allow user network certificate": {
+                        "enabled": false
+                    },
+                    "Clone": {
+                        "enabled": false
+                    },
+                    "Disable analytics": {
+                        "enabled": false
+                    },
+                    "Disable screenshot detection": {
+                        "enabled": false
+                    },
+                    "Make ephemeral media permanent": {
+                        "enabled": false
+                    },
+                    "Unlock Plus benefits": {
+                        "enabled": false
+                    },
+                    "Unlock employee options": {
+                        "enabled": false
+                    },
+                    "View DMs anonymously": {
+                        "enabled": false
+                    },
+                    "View live anonymously": {
+                        "enabled": false
+                    },
+                    "View stories anonymously": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
             },
             "x-twitter": {
                 "package": "com.twitter.android",
@@ -29,8 +61,15 @@
                 "options_override": {
                     "Dynamic color": {
                         "enabled": true
+                    },
+                    "Bring back twitter": {
+                        "enabled": false
+                    },
+                    "Export all activities": {
+                        "enabled": false
                     }
-                }
+                },
+                "force_bundle": true
             }
         }
     }
