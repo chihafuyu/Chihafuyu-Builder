@@ -295,16 +295,26 @@ def _extract_pkg_data(patches_data):
 
 
 def _sync_app_patches(app_cfg, compatible_patches, app_key):
-    """Sync patches in options_override, adding ONLY patches with default false."""
+    """Sync patches in options_override to match upstream 1:1."""
     changed = False
     options = app_cfg.get("options_override")
     if not isinstance(options, dict):
         options = {}
         app_cfg["options_override"] = options
 
+    # 1. Remove obsolete patches not present in upstream
+    for patch_name in list(options.keys()):
+        if patch_name not in compatible_patches:
+            print(
+                f"    -> Removing obsolete patch '{patch_name}' "
+                f"from '{app_key}'."
+            )
+            del options[patch_name]
+            changed = True
+
+    # 2. Add new patches that are disabled by default
     for patch_name, default_val in sorted(compatible_patches.items()):
-        # Only add if default is False and it's not already in the config.
-        # Using a dict inherently prevents duplicates.
+        # Only add if default is False and it's not already in the config
         if default_val is False and patch_name not in options:
             print(
                 f"    -> Adding new patch '{patch_name}' "
