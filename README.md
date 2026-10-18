@@ -64,7 +64,7 @@ To auto-upload patched APKs to Telegram (bypassing the 50 MB bot upload limit), 
 Configure the following secrets at **Settings → Secrets and variables → Actions**:
 
 | Secret | Description |
-|--------|-------------|
+| :--- | :--- |
 | `GEMINI_API_KEY` | Google Gemini API key for the automated PR code reviewer |
 | `KEYSTORE_BASE64` | Contents of `custom_keystore_base64.txt` from Step 2 |
 | `KEYSTORE_ALIAS` | Keystore alias chosen during generation |
