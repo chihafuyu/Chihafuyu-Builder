@@ -173,10 +173,14 @@ def fetch_patches_list(url):
 
 
 def _normalize_vcodes(raw_vcodes):
-    """Normalize versionCodes from a dict or list into a string dictionary."""
+    """
+    Normalize versionCodes from a dict or list into a string dictionary.
+    Converts underscores to hyphens to match APKMirror/APKPure format
+    (e.g., 'arm64_v8a' becomes 'arm64-v8a').
+    """
     if isinstance(raw_vcodes, dict):
         return {
-            str(k).lower(): str(v)
+            str(k).lower().replace("_", "-"): str(v)
             for k, v in raw_vcodes.items()
             if v is not None
         }
