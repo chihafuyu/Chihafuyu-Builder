@@ -56,12 +56,11 @@ def _parse_repo_info(name, info, repo_root):
     abs_config_path = os.path.normpath(
         os.path.join(repo_root, config_path)
     )
-    # Return extra flags for special handling
     return abs_config_path, url, info.get("release_patches", False)
 
 
 def load_ecosystems():
-    """Load ecosystems from repo_map.json dynamically with robust pathing."""
+    """Load ecosystems from repo_map.json dynamically."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
     repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
 
@@ -109,7 +108,7 @@ def load_ecosystems():
 
 
 def _fetch_json(url):
-    """Helper to fetch and parse JSON from a URL with error handling."""
+    """Fetch and parse JSON from a URL with error handling."""
     try:
         resp = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
         resp.raise_for_status()
@@ -136,7 +135,7 @@ def _parse_bundle_json(url):
         print("  -> Missing 'app_version' in bundle metadata.")
         return None
 
-    # Return a mock patches-list structure compatible with existing logic
+    # Return a mock patches-list structure compatible with downstream logic
     return {
         "patches": [
             {
@@ -169,14 +168,14 @@ def _fetch_release_patches(url):
         print("  -> Invalid JSON format: expected an array.")
         return None
 
-    # Wrap the array into a mock patches-list structure
     patch_names = [item for item in data if isinstance(item, str)]
 
+    # Return a mock structure so _extract_pkg_data can process the list
     return {
         "patches": [
             {
                 "name": p_name,
-                "default": True,  # Force all patches to be enabled
+                "default": True,
                 "compatiblePackages": [
                     {
                         "packageName": "com.twitter.android",
@@ -208,11 +207,7 @@ def fetch_patches_list(url, release_patches=False):
 
 
 def _normalize_vcodes(raw_vcodes):
-    """
-    Normalize versionCodes from a dict or list into a string dictionary.
-    Converts underscores to hyphens to match APKMirror/APKPure format
-    (e.g., 'arm64_v8a' becomes 'arm64-v8a').
-    """
+    """Normalize versionCodes and convert underscores to hyphens."""
     if isinstance(raw_vcodes, dict):
         return {
             str(k).lower().replace("_", "-"): str(v)
@@ -289,7 +284,6 @@ def _process_package(pkg_data, pkg, patch_name, default_enabled):
         }
 
     if patch_name:
-        # Dict assignment prevents duplicates if the same patch is listed twice
         pkg_data[pkg_name]["patches"][patch_name] = default_enabled
 
     valid_targets = [
@@ -337,7 +331,7 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key, force_enable=False):
         options = {}
         app_cfg["options_override"] = options
 
-    # 1. Remove obsolete patches not present in upstream
+    # Remove obsolete patches or patches that are now default: true upstream
     for patch_name in list(options.keys()):
         if patch_name not in compatible_patches:
             print(
@@ -346,21 +340,33 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key, force_enable=False):
             )
             del options[patch_name]
             changed = True
+        elif not force_enable and compatible_patches[patch_name] is True:
+            # Upstream default is now true, so remove local override to let it auto-apply
+            print(
+                f"    -> Removing redundant patch '{patch_name}' "
+                f"(now default: true upstream) from '{app_key}'."
+            )
+            del options[patch_name]
+            changed = True
 
-    # 2. Add new patches
     for patch_name, default_val in sorted(compatible_patches.items()):
         if patch_name not in options:
-            # For piko-newx, force all patches to be enabled
-            enabled = force_enable or default_val
-            if not enabled and not force_enable:
-                # Skip adding default-false patches if not forcing
-                continue
-            print(
-                f"    -> Adding new patch '{patch_name}' "
-                f"to '{app_key}' (enabled: {enabled})."
-            )
-            options[patch_name] = {"enabled": enabled}
-            changed = True
+            if force_enable:
+                # Force enable all patches for piko-newx
+                print(
+                    f"    -> Adding new patch '{patch_name}' "
+                    f"to '{app_key}' (enabled: true)."
+                )
+                options[patch_name] = {"enabled": True}
+                changed = True
+            elif default_val is False:
+                # Add default-false patches so they are explicitly disabled
+                print(
+                    f"    -> Adding new patch '{patch_name}' "
+                    f"to '{app_key}' (enabled: false)."
+                )
+                options[patch_name] = {"enabled": False}
+                changed = True
 
     return changed
 
@@ -531,9 +537,7 @@ def _process_ecosystem(config_path, ecosystem_info):
         )
         return None, False
 
-    # Special flag to force all patches to be enabled
-    force_enable = release_patches
-    return stable_data, force_enable
+    return stable_data, release_patches
 
 
 def main():
