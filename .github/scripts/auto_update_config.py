@@ -56,7 +56,8 @@ def _parse_repo_info(name, info, repo_root):
     abs_config_path = os.path.normpath(
         os.path.join(repo_root, config_path)
     )
-    return abs_config_path, url
+    # Return extra flags for special handling
+    return abs_config_path, url, info.get("release_patches", False)
 
 
 def load_ecosystems():
@@ -73,11 +74,14 @@ def load_ecosystems():
             with open(repo_map_path, "r", encoding="utf-8") as file_obj:
                 repo_map = json.load(file_obj)
             for name, info in repo_map.items():
-                abs_config_path, url = _parse_repo_info(
+                abs_config_path, url, is_release = _parse_repo_info(
                     name, info, repo_root
                 )
                 if abs_config_path and url:
-                    ecosystems[abs_config_path] = url
+                    ecosystems[abs_config_path] = {
+                        "url": url,
+                        "release_patches": is_release,
+                    }
         except (OSError, json.JSONDecodeError) as err:
             print(f"Failed to load repo_map.json: {err}")
     else:
@@ -86,14 +90,20 @@ def load_ecosystems():
     if not ecosystems:
         print("Using fallback ecosystems (morphe & kveld9).")
         ecosystems = {
-            os.path.join(repo_root, "ecosystem/morphe.json"): (
-                "https://raw.githubusercontent.com/MorpheApp/"
-                "morphe-patches/main/patches-list.json"
-            ),
-            os.path.join(repo_root, "ecosystem/kveld9.json"): (
-                "https://raw.githubusercontent.com/kveld9/"
-                "kveld-morphe-patches/main/patches-list.json"
-            ),
+            os.path.join(repo_root, "ecosystem/morphe.json"): {
+                "url": (
+                    "https://raw.githubusercontent.com/MorpheApp/"
+                    "morphe-patches/main/patches-list.json"
+                ),
+                "release_patches": False,
+            },
+            os.path.join(repo_root, "ecosystem/kveld9.json"): {
+                "url": (
+                    "https://raw.githubusercontent.com/kveld9/"
+                    "kveld-morphe-patches/main/patches-list.json"
+                ),
+                "release_patches": False,
+            },
         }
     return ecosystems
 
@@ -123,6 +133,7 @@ def _parse_bundle_json(url):
         print("  -> Missing 'app_version' in bundle metadata.")
         return None
 
+    # Return a mock patches-list structure compatible with existing logic
     return {
         "patches": [
             {
@@ -147,8 +158,56 @@ def _parse_bundle_json(url):
     }
 
 
-def fetch_patches_list(url):
+def _fetch_release_patches(url):
+    """Fetch patches-list.json from a GitHub release asset."""
+    print(f"Fetching release patches from {url}...")
+    try:
+        resp = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+        if not isinstance(data, list):
+            print("  -> Invalid JSON format: expected an array.")
+            return None
+        # Wrap the array into a mock patches-list structure
+        patch_names = []
+        for item in data:
+            if isinstance(item, str):
+                patch_names.append(item)
+        # Return a mock structure that _extract_pkg_data can process
+        # We use a dummy package for "com.twitter.android"
+        return {
+            "patches": [
+                {
+                    "name": p_name,
+                    "default": True,  # Force all patches to be enabled
+                    "compatiblePackages": [
+                        {
+                            "packageName": "com.twitter.android",
+                            "name": "X",
+                            "apkFileType": "APKM",
+                            "targets": [],
+                        }
+                    ],
+                }
+                for p_name in patch_names
+            ]
+        }
+    except requests.exceptions.HTTPError as err:
+        print(f"  -> HTTP Error: {err}")
+        return None
+    except requests.exceptions.RequestException as err:
+        print(f"  -> Network Error: {err}")
+        return None
+    except json.JSONDecodeError as err:
+        print(f"  -> JSON Decode Error: {err}")
+        return None
+
+
+def fetch_patches_list(url, release_patches=False):
     """Fetch patches-list.json or parse bundle metadata from a URL."""
+    if release_patches:
+        return _fetch_release_patches(url)
+
     if url.endswith("patches-bundle.json"):
         return _parse_bundle_json(url)
 
@@ -294,7 +353,7 @@ def _extract_pkg_data(patches_data):
     return pkg_data
 
 
-def _sync_app_patches(app_cfg, compatible_patches, app_key):
+def _sync_app_patches(app_cfg, compatible_patches, app_key, force_enable=False):
     """Sync patches in options_override to match upstream 1:1."""
     changed = False
     options = app_cfg.get("options_override")
@@ -312,15 +371,19 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
             del options[patch_name]
             changed = True
 
-    # 2. Add new patches that are disabled by default
+    # 2. Add new patches
     for patch_name, default_val in sorted(compatible_patches.items()):
-        # Only add if default is False and it's not already in the config
-        if default_val is False and patch_name not in options:
+        if patch_name not in options:
+            # For piko-newx, force all patches to be enabled
+            enabled = force_enable or default_val
+            if not enabled and not force_enable:
+                # Skip adding default-false patches if not forcing
+                continue
             print(
                 f"    -> Adding new patch '{patch_name}' "
-                f"to '{app_key}' (enabled: false)."
+                f"to '{app_key}' (enabled: {enabled})."
             )
-            options[patch_name] = {"enabled": False}
+            options[patch_name] = {"enabled": enabled}
             changed = True
 
     return changed
@@ -373,7 +436,7 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     return changed
 
 
-def _process_existing_apps(app_configs, stable_pkgs):
+def _process_existing_apps(app_configs, stable_pkgs, force_enable_patches):
     """Update existing apps while preserving apps missing from upstream."""
     changed = False
 
@@ -396,7 +459,12 @@ def _process_existing_apps(app_configs, stable_pkgs):
         if _update_app_version(app_key, app_cfg, pkg_info):
             changed = True
 
-        if _sync_app_patches(app_cfg, pkg_info["patches"], app_key):
+        if _sync_app_patches(
+            app_cfg,
+            pkg_info["patches"],
+            app_key,
+            force_enable=force_enable_patches,
+        ):
             changed = True
 
     return changed
@@ -421,7 +489,7 @@ def _write_config_atomic(config_path, config):
         return False
 
 
-def update_config(config_path, stable_data):
+def update_config(config_path, stable_data, force_enable_patches=False):
     """Update a single config file based on patches-list data."""
     if stable_data is None:
         print(f"  -> Skipping {config_path} due to missing data.")
@@ -451,7 +519,9 @@ def update_config(config_path, stable_data):
     stable_pkgs = _extract_pkg_data(stable_data)
 
     changed = False
-    if _process_existing_apps(app_configs, stable_pkgs):
+    if _process_existing_apps(
+        app_configs, stable_pkgs, force_enable_patches
+    ):
         changed = True
 
     if changed:
@@ -465,23 +535,29 @@ def update_config(config_path, stable_data):
     return changed
 
 
-def _process_ecosystem(config_path, url):
+def _process_ecosystem(config_path, ecosystem_info):
     """Process a single ecosystem and return the fetched data."""
     if not os.path.exists(config_path):
         print(
             f"Skipping '{config_path}': "
             "Config file not found in the repository."
         )
-        return None
+        return None, False
 
-    stable_data = fetch_patches_list(url)
+    url = ecosystem_info["url"]
+    release_patches = ecosystem_info["release_patches"]
+
+    stable_data = fetch_patches_list(url, release_patches=release_patches)
     if stable_data is None:
         print(
             f"Skipping '{config_path}': "
             "Failed to fetch or parse upstream data (see error above)."
         )
-        return None
-    return stable_data
+        return None, False
+
+    # Special flag to force all patches to be enabled
+    force_enable = release_patches
+    return stable_data, force_enable
 
 
 def main():
@@ -489,14 +565,18 @@ def main():
     ecosystems = load_ecosystems()
     fetched_ecosystems = []
 
-    for config_path, url in ecosystems.items():
-        stable_data = _process_ecosystem(config_path, url)
+    for config_path, info in ecosystems.items():
+        stable_data, force_enable = _process_ecosystem(config_path, info)
         if stable_data is not None:
-            fetched_ecosystems.append((config_path, stable_data))
+            fetched_ecosystems.append(
+                (config_path, stable_data, force_enable)
+            )
 
     any_change = False
-    for config_path, stable_data in fetched_ecosystems:
-        if update_config(config_path, stable_data):
+    for config_path, stable_data, force_enable in fetched_ecosystems:
+        if update_config(
+            config_path, stable_data, force_enable_patches=force_enable
+        ):
             any_change = True
 
     if not any_change:
