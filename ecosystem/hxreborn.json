@@ -10,7 +10,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "130010",
+                    "armeabi-v7a": "130010",
+                    "x86-64": "130010",
+                    "x86": "130010"
+                }
             },
             "all-in-one-calculator": {
                 "package": "all.in.one.calculator",
@@ -21,7 +27,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "340",
+                    "armeabi-v7a": "340",
+                    "x86-64": "340",
+                    "x86": "340"
+                }
             },
             "audiolab": {
                 "package": "com.hitrolab.audioeditor",
@@ -32,10 +44,9 @@
                 "beta": [],
                 "strip": true,
                 "version_codes": {
-                    "universal": "5163",
                     "arm64-v8a": "5163",
                     "armeabi-v7a": "5163",
-                    "x86_64": "5163",
+                    "x86-64": "5163",
                     "x86": "5163"
                 },
                 "archive_id": "ZeNiX",
@@ -50,7 +61,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "26910",
+                    "armeabi-v7a": "26910",
+                    "x86-64": "26910",
+                    "x86": "26910"
+                }
             },
             "cx-file-explorer": {
                 "package": "com.cxinventor.file.explorer",
@@ -61,7 +78,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "281",
+                    "armeabi-v7a": "281",
+                    "x86-64": "281",
+                    "x86": "281"
+                }
             },
             "musixmatch": {
                 "package": "com.musixmatch.android.lyrify",
@@ -72,10 +95,9 @@
                 "beta": [],
                 "strip": true,
                 "version_codes": {
-                    "universal": "2026061901",
                     "arm64-v8a": "2026061901",
                     "armeabi-v7a": "2026061901",
-                    "x86_64": "2026061901",
+                    "x86-64": "2026061901",
                     "x86": "2026061901"
                 },
                 "archive_id": "ZeNiX",
@@ -90,7 +112,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "4197424",
+                    "armeabi-v7a": "4197424",
+                    "x86-64": "4197424",
+                    "x86": "4197424"
+                }
             },
             "photo-editor-pro": {
                 "package": "photo.editor.photoeditor.photoeditorpro",
@@ -101,7 +129,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "266201",
+                    "armeabi-v7a": "266201",
+                    "x86-64": "266201",
+                    "x86": "266201"
+                }
             },
             "proton-mail": {
                 "package": "ch.protonmail.android",
@@ -112,7 +146,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "18325",
+                    "armeabi-v7a": "18325",
+                    "x86-64": "18325",
+                    "x86": "18325"
+                }
             },
             "quranify": {
                 "package": "com.mchutov.Quranify",
@@ -123,7 +163,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "82",
+                    "armeabi-v7a": "82",
+                    "x86-64": "82",
+                    "x86": "82"
+                }
             },
             "readera": {
                 "package": "org.readera",
@@ -134,7 +180,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "2320",
+                    "armeabi-v7a": "2320",
+                    "x86-64": "2320",
+                    "x86": "2320"
+                }
             },
             "rise-sleep-tracker": {
                 "package": "com.risesci.nyx",
@@ -156,7 +208,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "127812",
+                    "armeabi-v7a": "127812",
+                    "x86-64": "127812",
+                    "x86": "127812"
+                }
             },
             "terabox": {
                 "package": "com.dubox.drive",
@@ -167,7 +225,17 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Clone app": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "699",
+                    "armeabi-v7a": "699",
+                    "x86-64": "699",
+                    "x86": "699"
+                }
             },
             "vllo": {
                 "package": "com.darinsoft.vimo",
@@ -178,7 +246,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "130900",
+                    "armeabi-v7a": "130900",
+                    "x86-64": "130900",
+                    "x86": "130900"
+                }
             }
         }
     }

@@ -31,23 +31,11 @@
                 "github_asset": "Bravemonoarm64.apk",
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "DPI Resource Slimmer": {
-                        "enabled": true,
-                        "options": {
-                            "dpis": "xxhdpi"
-                        }
+                    "Remove Extra Files": {
+                        "enabled": false
                     },
-                    "Locale PAK Slimmer": {
-                        "enabled": true,
-                        "options": {
-                            "locales": "en-US, id"
-                        }
-                    },
-                    "Native Bloat Slimmer": {
-                        "enabled": true
-                    },
-                    "PNG Asset Optimizer": {
-                        "enabled": true
+                    "Remove Extra Languages": {
+                        "enabled": false
                     }
                 }
             },
@@ -73,64 +61,7 @@
                     "Camera & Microphone Indicator": {
                         "enabled": true
                     },
-                    "Direct Message Declutter": {
-                        "enabled": true
-                    },
-                    "Disable Double Tap to Like": {
-                        "enabled": true
-                    },
-                    "Disable Feed Long-Press Actions": {
-                        "enabled": true
-                    },
-                    "Disable HDR Video Playback": {
-                        "enabled": false
-                    },
-                    "Disable Post-Download Share Dialog": {
-                        "enabled": true
-                    },
-                    "Disable Profile Photo LIVE Status": {
-                        "enabled": true
-                    },
                     "Disable Push Notifications": {
-                        "enabled": true
-                    },
-                    "Disable Search History Recording": {
-                        "enabled": true
-                    },
-                    "Disable Watch History Recording": {
-                        "enabled": true
-                    },
-                    "Display Refresh Rate Governor": {
-                        "enabled": true
-                    },
-                    "Enable Live Search": {
-                        "enabled": true
-                    },
-                    "Feed Interface Declutter": {
-                        "enabled": true
-                    },
-                    "Feed Live Stream Blocker": {
-                        "enabled": true
-                    },
-                    "Hide AI-Generated Content": {
-                        "enabled": true
-                    },
-                    "Hide Inbox Story & Status Tray": {
-                        "enabled": true
-                    },
-                    "Language Pack Purger": {
-                        "enabled": true,
-                        "options": {
-                            "locales": "en, id, in, ru"
-                        }
-                    },
-                    "Live Stream 3D Gift Optimizer": {
-                        "enabled": true
-                    },
-                    "Live Stream SDK & Minigame De-bloat": {
-                        "enabled": true
-                    },
-                    "Playback Speed Persistence": {
                         "enabled": true
                     },
                     "Resume Video After Scroll": {
@@ -142,29 +73,53 @@
                     "Show Author Region": {
                         "enabled": true
                     },
-                    "Skip Content Warnings": {
-                        "enabled": true
-                    },
                     "Stop Video Looping": {
                         "enabled": true
                     },
-                    "Studio & Creation De-bloat": {
-                        "enabled": true
-                    },
-                    "System Font": {
+                    "Declutter Direct Messages": {
                         "enabled": false
                     },
-                    "TikTok Privacy Permissions Stripper": {
-                        "enabled": true
+                    "Declutter Video Interface": {
+                        "enabled": false
                     },
-                    "Video Fit": {
-                        "enabled": true
+                    "Disable History Recording": {
+                        "enabled": false
                     },
-                    "Video Quality Governor": {
-                        "enabled": true
+                    "Disable Live Gift Effects": {
+                        "enabled": false
                     },
-                    "Voice & Speech Engine De-bloat": {
-                        "enabled": true
+                    "Hide Inbox Story Tray": {
+                        "enabled": false
+                    },
+                    "Playback & Display Governor": {
+                        "enabled": false
+                    },
+                    "Remember Clear Display": {
+                        "enabled": false
+                    },
+                    "Remember Playback Speed": {
+                        "enabled": false
+                    },
+                    "Remove Creator Tools": {
+                        "enabled": false
+                    },
+                    "Remove Extra Languages": {
+                        "enabled": false
+                    },
+                    "Remove Live Stream Files": {
+                        "enabled": false
+                    },
+                    "Remove Voice Tools": {
+                        "enabled": false
+                    },
+                    "Strip Sensitive Permissions": {
+                        "enabled": false
+                    },
+                    "Use System Font": {
+                        "enabled": false
+                    },
+                    "Video Fit Mode": {
+                        "enabled": false
                     }
                 }
             }

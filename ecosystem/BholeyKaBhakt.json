@@ -27,7 +27,7 @@
                 "package": "pl.solidexplorer2",
                 "search_term": "Solid Explorer",
                 "stable": [
-                    "3.4.10"
+                    "3.5.7b"
                 ],
                 "beta": [],
                 "strip": true,

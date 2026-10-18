@@ -10,7 +10,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Allow System UI": {
+                        "enabled": false
+                    }
+                }
             },
             "habitica": {
                 "package": "com.habitrpg.android.habitica",
@@ -32,7 +36,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Disable Licensing": {
+                        "enabled": false
+                    }
+                }
             },
             "struk-pom": {
                 "package": "com.garnesapps.strukpom",

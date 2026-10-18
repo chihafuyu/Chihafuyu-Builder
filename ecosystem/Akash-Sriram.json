@@ -15,7 +15,10 @@
                 "force_bundle": false,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Change to official package name": {
+                    "Custom Morphe branding": {
+                        "enabled": false
+                    },
+                    "Official package name": {
                         "enabled": false
                     }
                 }

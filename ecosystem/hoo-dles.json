@@ -9,10 +9,9 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "universal": "42220003",
                     "arm64-v8a": "42220003",
                     "armeabi-v7a": "42220003",
-                    "x86_64": "42220003",
+                    "x86-64": "42220003",
                     "x86": "42220003"
                 },
                 "strip": true,
@@ -54,6 +53,12 @@
                 "options_override": {
                     "Unlimited RampUp time": {
                         "enabled": true
+                    },
+                    "Disable dynamic app icon": {
+                        "enabled": false
+                    },
+                    "Enable debug mode": {
+                        "enabled": false
                     }
                 }
             },
@@ -103,7 +108,7 @@
                 "package": "bitpit.launcher",
                 "search_term": "Niagara Launcher",
                 "stable": [
-                    "1.16.24"
+                    "1.16.31"
                 ],
                 "beta": [],
                 "strip": true,
@@ -136,7 +141,7 @@
                 "package": "ginlemon.flowerfree",
                 "search_term": "Smart Launcher 6",
                 "stable": [
-                    "6.6 build 016"
+                    "6.6 build 020"
                 ],
                 "beta": [],
                 "strip": true,
@@ -169,7 +174,7 @@
                 "package": "com.xodo.pdf.reader",
                 "search_term": "Xodo",
                 "stable": [
-                    "11.0.0"
+                    "11.2.0"
                 ],
                 "beta": [],
                 "strip": true,

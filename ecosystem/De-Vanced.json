@@ -8,12 +8,13 @@
                     "580.0.0.51.74"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "75019344"
+                    "arm64-v8a": "475019344"
                 },
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "google-photos": {
                 "package": "com.google.android.apps.photos",
@@ -30,7 +31,11 @@
                 "strip": true,
                 "force_bundle": false,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Enable DCIM folders backup control": {
+                        "enabled": false
+                    }
+                }
             },
             "pixiv": {
                 "package": "jp.pxv.android",

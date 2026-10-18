@@ -5,7 +5,7 @@
                 "package": "com.rebeltwins.aliensdrivemecrazy",
                 "search_term": "Aliens Drive Me Crazy",
                 "stable": [
-                    "3.2.7"
+                    "3.2.10"
                 ],
                 "beta": [],
                 "strip": true,
@@ -38,7 +38,7 @@
                 "package": "com.yodo1.crossyroad",
                 "search_term": "Crossy Road",
                 "stable": [
-                    "7.13.2"
+                    "7.14.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -147,7 +147,8 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "swift-backup": {
                 "package": "org.swiftapps.swiftbackup",

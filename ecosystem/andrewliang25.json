@@ -10,7 +10,24 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "[General] AMOLED black theme": {
+                        "enabled": false
+                    },
+                    "[Reels] Picture-in-picture": {
+                        "enabled": false
+                    },
+                    "[Stories] Disable auto advance": {
+                        "enabled": false
+                    },
+                    "[Stories] View stories anonymously": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "474426275"
+                },
+                "force_bundle": true
             },
             "line": {
                 "package": "jp.naver.line.android",
@@ -21,7 +38,12 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "[General] Trust user-installed CAs": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
             }
         }
     }

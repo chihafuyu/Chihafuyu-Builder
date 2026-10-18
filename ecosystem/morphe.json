@@ -21,8 +21,11 @@
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Disable Play Store updates": {
-                        "enabled": true
+                    "Custom branding name for Reddit": {
+                        "enabled": false
+                    },
+                    "Hide Reddit search": {
+                        "enabled": false
                     }
                 }
             },
@@ -42,12 +45,8 @@
                 "force_bundle": false,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Hide Shorts components": {
-                        "enabled": true,
-                        "options": {
-                            "hideShortsAppShortcut": true,
-                            "hideShortsWidget": true
-                        }
+                    "Network proxy": {
+                        "enabled": false
                     }
                 }
             },
@@ -66,7 +65,11 @@
                 "strip": true,
                 "force_bundle": false,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Network proxy": {
+                        "enabled": false
+                    }
+                }
             }
         }
     }
