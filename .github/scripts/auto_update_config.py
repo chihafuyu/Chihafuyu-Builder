@@ -108,24 +108,27 @@ def load_ecosystems():
     return ecosystems
 
 
-def _parse_bundle_json(url):
-    """Parse patches-bundle.json to extract the stable app version."""
-    print(f"Fetching bundle metadata {url}...")
+def _fetch_json(url):
+    """Helper to fetch and parse JSON from a URL with error handling."""
     try:
         resp = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
         resp.raise_for_status()
-        data = resp.json()
-        if not isinstance(data, dict):
-            print("  -> Invalid JSON format: expected an object.")
-            return None
+        return resp.json()
     except requests.exceptions.HTTPError as err:
         print(f"  -> HTTP Error: {err}")
-        return None
     except requests.exceptions.RequestException as err:
         print(f"  -> Network Error: {err}")
-        return None
     except json.JSONDecodeError as err:
         print(f"  -> JSON Decode Error: {err}")
+    return None
+
+
+def _parse_bundle_json(url):
+    """Parse patches-bundle.json to extract the stable app version."""
+    print(f"Fetching bundle metadata {url}...")
+    data = _fetch_json(url)
+    if not isinstance(data, dict):
+        print("  -> Invalid JSON format: expected an object.")
         return None
 
     app_version = data.get("app_version")
@@ -161,46 +164,31 @@ def _parse_bundle_json(url):
 def _fetch_release_patches(url):
     """Fetch patches-list.json from a GitHub release asset."""
     print(f"Fetching release patches from {url}...")
-    try:
-        resp = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
-        if not isinstance(data, list):
-            print("  -> Invalid JSON format: expected an array.")
-            return None
-        # Wrap the array into a mock patches-list structure
-        patch_names = []
-        for item in data:
-            if isinstance(item, str):
-                patch_names.append(item)
-        # Return a mock structure that _extract_pkg_data can process
-        # We use a dummy package for "com.twitter.android"
-        return {
-            "patches": [
-                {
-                    "name": p_name,
-                    "default": True,  # Force all patches to be enabled
-                    "compatiblePackages": [
-                        {
-                            "packageName": "com.twitter.android",
-                            "name": "X",
-                            "apkFileType": "APKM",
-                            "targets": [],
-                        }
-                    ],
-                }
-                for p_name in patch_names
-            ]
-        }
-    except requests.exceptions.HTTPError as err:
-        print(f"  -> HTTP Error: {err}")
+    data = _fetch_json(url)
+    if not isinstance(data, list):
+        print("  -> Invalid JSON format: expected an array.")
         return None
-    except requests.exceptions.RequestException as err:
-        print(f"  -> Network Error: {err}")
-        return None
-    except json.JSONDecodeError as err:
-        print(f"  -> JSON Decode Error: {err}")
-        return None
+
+    # Wrap the array into a mock patches-list structure
+    patch_names = [item for item in data if isinstance(item, str)]
+
+    return {
+        "patches": [
+            {
+                "name": p_name,
+                "default": True,  # Force all patches to be enabled
+                "compatiblePackages": [
+                    {
+                        "packageName": "com.twitter.android",
+                        "name": "X",
+                        "apkFileType": "APKM",
+                        "targets": [],
+                    }
+                ],
+            }
+            for p_name in patch_names
+        ]
+    }
 
 
 def fetch_patches_list(url, release_patches=False):
@@ -212,23 +200,11 @@ def fetch_patches_list(url, release_patches=False):
         return _parse_bundle_json(url)
 
     print(f"Fetching {url}...")
-    try:
-        resp = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
-        if not isinstance(data, dict):
-            print("  -> Invalid JSON format: expected an object.")
-            return None
-        return data
-    except requests.exceptions.HTTPError as err:
-        print(f"  -> HTTP Error: {err}")
+    data = _fetch_json(url)
+    if not isinstance(data, dict):
+        print("  -> Invalid JSON format: expected an object.")
         return None
-    except requests.exceptions.RequestException as err:
-        print(f"  -> Network Error: {err}")
-        return None
-    except json.JSONDecodeError as err:
-        print(f"  -> JSON Decode Error: {err}")
-        return None
+    return data
 
 
 def _normalize_vcodes(raw_vcodes):
