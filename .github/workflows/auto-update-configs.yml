@@ -3,8 +3,7 @@ name: 🤖 Auto-Update Ecosystem Configs
 
 "on":
   schedule:
-    # Run daily at 00:00 UTC
-    - cron: '0 0 * * *'
+    - cron: '48 23 * * *'
   workflow_dispatch:
 
 permissions:
@@ -24,7 +23,7 @@ jobs:
           python-version: '3.14'
 
       - name: Install Dependencies
-        run: pip install requests
+        run: python -m pip install requests
 
       - name: Run Auto-Update Script
         run: python .github/scripts/auto_update_config.py
