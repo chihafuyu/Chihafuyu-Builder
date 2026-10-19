@@ -44,9 +44,23 @@ def _find_repo_map(script_dir, repo_root):
 
 def _parse_repo_info(name, info, repo_root):
     """Parse repo info into a config path and URL."""
+    config_path = info.get("config_path", f"ecosystem/{name}.json")
+    abs_config_path = os.path.normpath(
+        os.path.join(repo_root, config_path)
+    )
+    release_patches = info.get("release_patches", False)
+
+    # Handle aggregated repos (e.g., SysAdminDoc)
+    if "aggregate_repos" in info:
+        urls = [
+            f"https://raw.githubusercontent.com/{repo}/main/patches-list.json"
+            for repo in info["aggregate_repos"]
+        ]
+        return abs_config_path, urls, release_patches
+
     repo_url = info.get("repo_url")
     if not repo_url:
-        return None, None
+        return None, None, False
 
     branch = info.get("branch", "main")
     file_path = info.get("file_path", "patches-list.json")
@@ -54,11 +68,7 @@ def _parse_repo_info(name, info, repo_root):
         f"https://raw.githubusercontent.com/{repo_url}"
         f"/{branch}/{file_path}"
     )
-    config_path = info.get("config_path", f"ecosystem/{name}.json")
-    abs_config_path = os.path.normpath(
-        os.path.join(repo_root, config_path)
-    )
-    return abs_config_path, url, info.get("release_patches", False)
+    return abs_config_path, url, release_patches
 
 
 def load_ecosystems():
@@ -192,6 +202,15 @@ def _fetch_release_patches(url):
 
 def fetch_patches_list(url, release_patches=False):
     """Fetch patches-list.json or parse bundle metadata from a URL."""
+    if isinstance(url, list):
+        print(f"Fetching aggregated patches from {len(url)} URLs...")
+        all_patches = []
+        for u in url:
+            data = _fetch_json(u)
+            if data and isinstance(data.get("patches"), list):
+                all_patches.extend(data["patches"])
+        return {"patches": all_patches}
+
     if release_patches:
         return _fetch_release_patches(url)
 
@@ -271,17 +290,14 @@ def _get_target_sort_key(target):
 
 def _parse_patch_packages(patch):
     """Extract the packages list from a patch, handling multiple formats."""
-    # Prioritize "compatibility" array (SysAdminDoc)
     packages = patch.get("compatibility")
     if isinstance(packages, list):
         return packages
 
-    # Fallback to standard Morphe "compatiblePackages"
     packages = patch.get("compatiblePackages")
     if isinstance(packages, list):
         return packages
     if isinstance(packages, dict):
-        # Handle SysAdminDoc "compatiblePackages" dict format
         return [
             {"packageName": k, "targets": []}
             for k in packages
@@ -311,7 +327,6 @@ def _process_package(pkg_data, pkg, patch_name, default_enabled):
     for t in pkg.get("targets") or []:
         if not isinstance(t, dict):
             continue
-        # Check both keys for experimental (Morphe vs SysAdminDoc)
         is_exp = t.get("isExperimental", t.get("experimental", False))
         if not is_exp:
             valid_targets.append(t)
@@ -331,7 +346,6 @@ def _extract_pkg_data(patches_data):
         if not isinstance(patch, dict):
             continue
         patch_name = patch.get("name")
-        # Morphe uses "default", SysAdminDoc uses "use"
         default_enabled = patch.get("default", patch.get("use", False))
 
         packages = _parse_patch_packages(patch)
@@ -359,7 +373,6 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key, force_enable=False):
         options = {}
         app_cfg["options_override"] = options
 
-    # Remove obsolete patches or patches that are now default: true upstream
     for patch_name in list(options.keys()):
         if patch_name not in compatible_patches:
             print(
@@ -369,7 +382,6 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key, force_enable=False):
             del options[patch_name]
             changed = True
         elif not force_enable and compatible_patches[patch_name] is True:
-            # Do not remove if the user explicitly disabled it
             local_opt = options[patch_name]
             if isinstance(local_opt, dict) and local_opt.get("enabled") is False:
                 continue

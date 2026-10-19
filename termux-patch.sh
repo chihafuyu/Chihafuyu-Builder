@@ -8,7 +8,9 @@ GREEN='\033[0;32m'; RED='\033[0;31m'; NC='\033[0m'
 TERMUX_PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 TERMUX_HOME="${HOME:-/data/data/com.termux/files/home}"
 USER_AGENT="ChihafuyuBuilder/2.0 (Termux; Android)"
-WORK_DIR="$TERMUX_PREFIX/var/chihafuyu-workspace"
+
+# Store workspace in .cache to keep $PREFIX clean and safe
+WORK_DIR="$TERMUX_HOME/.cache/chihafuyu-workspace"
 BASE_DIR="$TERMUX_HOME/storage/downloads/Chihafuyu"
 MORPHE_JAR="$BASE_DIR/morphe.jar"
 REPO_URL="https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main"
@@ -76,7 +78,11 @@ check_dependencies() {
     if [[ ${#missing[@]} -gt 0 ]]; then
         echo -e "${YELLOW}[INFO] Installing: ${missing[*]}${NC}"
         pkg update -y || true
-        pkg install "${missing[@]}" -y
+        # Added fallback if pkg install fails
+        if ! pkg install "${missing[@]}" -y; then
+            echo -e "${RED}[ERROR] Failed to install dependencies. Check your internet connection or Termux mirrors.${NC}" >&2
+            exit 1
+        fi
     fi
 }
 
@@ -105,7 +111,8 @@ select_ecosystem() {
     echo -e "${YELLOW}[INFO] Fetching ecosystem map...${NC}"
     local map_url="${REPO_URL}/ecosystem-termux/repo_map.json"
     local map_data
-    if ! map_data=$(curl -sL --max-time 15 -A "$USER_AGENT" "$map_url"); then
+    # Increased timeout to 30s
+    if ! map_data=$(curl -sL --max-time 30 -A "$USER_AGENT" "$map_url"); then
         echo -e "${RED}[ERROR] Failed to fetch repo_map.json.${NC}" >&2
         exit 1
     fi
@@ -161,7 +168,8 @@ show_supported_apps() {
         ))"'
 
     echo -e "${CYAN}=== Supported Applications ===${NC}"
-    if ! curl -sL --max-time 15 -f "$json_url" | jq -r "$jq_filter"; then
+    # Increased timeout to 30s
+    if ! curl -sL --max-time 30 -f "$json_url" | jq -r "$jq_filter"; then
         echo -e "${RED}[WARN] Could not fetch $TARGET_JSON_PATH.${NC}" >&2
     fi
     echo -e "${CYAN}==============================${NC}"
@@ -184,8 +192,7 @@ select_track() {
 
 # ─── Downloads ───────────────────────────────────────────────────
 # Downloads url to dest using HTTP caching (-z). Uses a .tmp staging
-# file so a failed download cannot corrupt the cached copy. On update
-# failure with a cache present, keeps the cached copy and warns.
+# file so a failed download cannot corrupt the cached copy.
 _download_with_cache() {
     local url="$1" dest="$2" timeout="$3"
     local tmp="${dest}.tmp"
@@ -211,12 +218,12 @@ _download_with_cache() {
     mv -f "$tmp" "$dest"
 }
 
-# Resolves and downloads the Morphe CLI JAR (from morphe-desktop's
-# latest release) and the .mpp patch bundle (from TARGET_REPO).
+# Resolves and downloads the Morphe CLI JAR and the .mpp patch bundle.
 fetch_components() {
     echo -e "\n${YELLOW}[INFO] Checking components...${NC}"
 
-    local api_cmd=(curl -sLf --max-time 15 -A "$USER_AGENT")
+    # Increased API timeout to 30s
+    local api_cmd=(curl -sLf --max-time 30 -A "$USER_AGENT")
     if [[ -n "${GITHUB_TOKEN:-}" ]]; then
         echo -e "${GREEN}[INFO] Using authenticated GitHub API.${NC}"
         api_cmd+=("-H" "Authorization: Bearer $GITHUB_TOKEN")
@@ -268,7 +275,7 @@ fetch_components() {
 
     TEMP_PATCH="${ECO_CHOICE}-${TRACK_CHOICE// /-}.mpp"
     echo -e "${CYAN}Checking ecosystem patches...${NC}"
-    if ! _download_with_cache "$patch_url" "$TEMP_PATCH" 60; then
+    if ! _download_with_cache "$patch_url" "$WORK_DIR/$TEMP_PATCH" 60; then
         echo -e "${RED}[ERROR] Failed to download patches.${NC}" >&2
         exit 1
     fi
@@ -306,8 +313,6 @@ _autodetect_keystore() {
 
 # Resolves keystore path and credentials. Priority chain per field:
 #   env var → keystore.txt → auto-detect → Morphe default.
-# Entry password falls back to an interactive prompt when nothing else
-# is set. Never fails; falls back to Morphe's default keystore.
 load_keystore_config() {
     local cfg="${KEYSTORE_CONFIG:-$BASE_DIR/keystore.txt}"
     local cfg_path="" cfg_alias="" cfg_store="" cfg_entry="" cfg_signer=""
@@ -410,18 +415,17 @@ select_apk() {
     echo -e "${GREEN}Target: $(basename "$APK_CHOICE")${NC}"
 }
 
-# Runs the Morphe CLI patch subcommand. Split bundles are auto-merged
-# by the CLI. Pre-release track adds --force; Stable stays strict.
-# Custom keystore flags are attached only when KEYSTORE_PATH is set.
+# Runs the Morphe CLI patch subcommand.
 execute_patch() {
     local base_name
     base_name=$(basename "$APK_CHOICE")
     local final_apk="$ECO_DIR/Patched-${base_name%.*}.apk"
     TEMP_LOG_FILE="$WORK_DIR/patch_log_$(date +%s).txt"
 
+    # Explicitly use $WORK_DIR for patches to prevent pathing issues
     local java_cmd=(
         java -jar "$MORPHE_JAR" patch
-        --patches "$TEMP_PATCH"
+        --patches "$WORK_DIR/$TEMP_PATCH"
         --out "$final_apk"
         --bytecode-mode FULL
     )
@@ -469,7 +473,6 @@ execute_patch() {
 }
 
 # ─── Entrypoint ──────────────────────────────────────────────────
-# Orchestrates the flow: bootstrap → select → download → patch.
 main() {
     echo -e "${CYAN}=========================================${NC}"
     echo -e "${YELLOW}       CHIHAFUYU LOCAL BUILDER           ${NC}"
