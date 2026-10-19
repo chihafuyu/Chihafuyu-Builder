@@ -1,24 +1,6 @@
 {
     "kveld9": {
         "apps": {
-            "audiolab": {
-                "package": "com.hitrolab.audioeditor",
-                "search_term": "AudioLab",
-                "stable": [
-                    "1.3.33"
-                ],
-                "beta": [],
-                "version_codes": {
-                    "universal": "5163",
-                    "arm64-v8a": "5163",
-                    "armeabi-v7a": "5163",
-                    "x86_64": "5163",
-                    "x86": "5163"
-                },
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "brave-browser": {
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
