@@ -50,7 +50,6 @@ def _parse_repo_info(name, info, repo_root):
     )
     release_patches = info.get("release_patches", False)
 
-    # Handle aggregated repos (e.g., SysAdminDoc)
     if "aggregate_repos" in info:
         urls = [
             f"https://raw.githubusercontent.com/{repo}/main/patches-list.json"
@@ -361,6 +360,12 @@ def _extract_pkg_data(patches_data):
 
         targets.sort(key=_get_target_sort_key, reverse=True)
         data["latest_target"] = targets[0]
+
+    # Log found packages for debugging
+    for pkg_name, data in pkg_data.items():
+        latest = data.get("latest_target")
+        ver = latest.get("version") if latest else "None"
+        print(f"    -> Found upstream package: {pkg_name} (latest: {ver})")
 
     return pkg_data
 
