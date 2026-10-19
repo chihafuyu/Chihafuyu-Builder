@@ -10,9 +10,11 @@ import sys
 
 import requests
 
-REQUEST_HEADERS = {
-    "User-Agent": "Chihafuyu-Builder/1.0 (+https://github.com/chihafuyu)"
-}
+_REQUEST_SESSION = requests.Session()
+_REQUEST_SESSION.headers.update(
+    {"User-Agent": "Chihafuyu-Builder/1.0 (+https://github.com/chihafuyu)"}
+)
+
 PRE_STAGE_RANKS = {
     "dev": 0,
     "alpha": 1,
@@ -110,7 +112,7 @@ def load_ecosystems():
 def _fetch_json(url):
     """Fetch and parse JSON from a URL with error handling."""
     try:
-        resp = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
+        resp = _REQUEST_SESSION.get(url, timeout=30)
         resp.raise_for_status()
         return resp.json()
     except requests.exceptions.HTTPError as err:
@@ -135,7 +137,6 @@ def _parse_bundle_json(url):
         print("  -> Missing 'app_version' in bundle metadata.")
         return None
 
-    # Return a mock patches-list structure compatible with downstream logic
     return {
         "patches": [
             {
@@ -170,7 +171,6 @@ def _fetch_release_patches(url):
 
     patch_names = [item for item in data if isinstance(item, str)]
 
-    # Return a mock structure so _extract_pkg_data can process the list
     return {
         "patches": [
             {
@@ -269,6 +269,27 @@ def _get_target_sort_key(target):
     return (_parse_version_key(ver_str), highest_code)
 
 
+def _parse_patch_packages(patch):
+    """Extract the packages list from a patch, handling multiple formats."""
+    # Prioritize "compatibility" array (SysAdminDoc)
+    packages = patch.get("compatibility")
+    if isinstance(packages, list):
+        return packages
+
+    # Fallback to standard Morphe "compatiblePackages"
+    packages = patch.get("compatiblePackages")
+    if isinstance(packages, list):
+        return packages
+    if isinstance(packages, dict):
+        # Handle SysAdminDoc "compatiblePackages" dict format
+        return [
+            {"packageName": k, "targets": []}
+            for k in packages
+            if isinstance(k, str)
+        ]
+    return []
+
+
 def _process_package(pkg_data, pkg, patch_name, default_enabled):
     """Process a single compatible package entry."""
     pkg_name = pkg.get("packageName")
@@ -286,10 +307,15 @@ def _process_package(pkg_data, pkg, patch_name, default_enabled):
     if patch_name:
         pkg_data[pkg_name]["patches"][patch_name] = default_enabled
 
-    valid_targets = [
-        t for t in pkg.get("targets") or []
-        if isinstance(t, dict) and not t.get("isExperimental", False)
-    ]
+    valid_targets = []
+    for t in pkg.get("targets") or []:
+        if not isinstance(t, dict):
+            continue
+        # Check both keys for experimental (Morphe vs SysAdminDoc)
+        is_exp = t.get("isExperimental", t.get("experimental", False))
+        if not is_exp:
+            valid_targets.append(t)
+
     for target in valid_targets:
         if target not in pkg_data[pkg_name]["all_targets"]:
             pkg_data[pkg_name]["all_targets"].append(target)
@@ -305,9 +331,11 @@ def _extract_pkg_data(patches_data):
         if not isinstance(patch, dict):
             continue
         patch_name = patch.get("name")
-        default_enabled = patch.get("default", False)
+        # Morphe uses "default", SysAdminDoc uses "use"
+        default_enabled = patch.get("default", patch.get("use", False))
 
-        for pkg in patch.get("compatiblePackages") or []:
+        packages = _parse_patch_packages(patch)
+        for pkg in packages:
             if isinstance(pkg, dict):
                 _process_package(pkg_data, pkg, patch_name, default_enabled)
 
@@ -341,7 +369,10 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key, force_enable=False):
             del options[patch_name]
             changed = True
         elif not force_enable and compatible_patches[patch_name] is True:
-            # Upstream default is now true, so remove local override to let it auto-apply
+            # Do not remove if the user explicitly disabled it
+            local_opt = options[patch_name]
+            if isinstance(local_opt, dict) and local_opt.get("enabled") is False:
+                continue
             print(
                 f"    -> Removing redundant patch '{patch_name}' "
                 f"(now default: true upstream) from '{app_key}'."
@@ -352,7 +383,6 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key, force_enable=False):
     for patch_name, default_val in sorted(compatible_patches.items()):
         if patch_name not in options:
             if force_enable:
-                # Force enable all patches for piko-newx
                 print(
                     f"    -> Adding new patch '{patch_name}' "
                     f"to '{app_key}' (enabled: true)."
@@ -360,7 +390,6 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key, force_enable=False):
                 options[patch_name] = {"enabled": True}
                 changed = True
             elif default_val is False:
-                # Add default-false patches so they are explicitly disabled
                 print(
                     f"    -> Adding new patch '{patch_name}' "
                     f"to '{app_key}' (enabled: false)."
@@ -385,7 +414,6 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
     target_list = [str(new_version)]
 
-    # Strict downgrade guard: compare numeric and pre-release stages
     old_stable = app_cfg.get("stable", [])
     if old_stable and isinstance(old_stable, list) and len(old_stable) > 0:
         old_version = str(old_stable[0])
