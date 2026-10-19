@@ -174,6 +174,46 @@ def _fetch_release_patches(url):
     """Fetch patches-list.json from a GitHub release asset."""
     print(f"Fetching release patches from {url}...")
     data = _fetch_json(url)
+
+    # Handle case where URL is patches-bundle.json (an object) instead of a patch array
+    if isinstance(data, dict):
+        app_version = data.get("app_version")
+        download_url = data.get("download_url")
+        if app_version and download_url:
+            # Construct URL to release patches-list.json based on the bundle info
+            tag = download_url.split("/")[-2]
+            repo_base = url.split("/main/")[0]
+            patch_list_url = f"{repo_base}/releases/download/{tag}/patches-list.json"
+            print(f"  -> Found bundle data. Fetching actual patches from: {patch_list_url}")
+            patch_data = _fetch_json(patch_list_url)
+            if isinstance(patch_data, list):
+                patch_names = [item for item in patch_data if isinstance(item, str)]
+                return {
+                    "patches": [
+                        {
+                            "name": p_name,
+                            "default": True,
+                            "compatiblePackages": [
+                                {
+                                    "packageName": "com.twitter.android",
+                                    "name": "X",
+                                    "apkFileType": "APKM",
+                                    "targets": [
+                                        {
+                                            "version": app_version,
+                                            "isExperimental": False,
+                                            "versionCodes": None,
+                                        }
+                                    ],
+                                }
+                            ],
+                        }
+                        for p_name in patch_names
+                    ]
+                }
+        print("  -> Invalid bundle metadata format.")
+        return None
+
     if not isinstance(data, list):
         print("  -> Invalid JSON format: expected an array.")
         return None
@@ -361,7 +401,6 @@ def _extract_pkg_data(patches_data):
         targets.sort(key=_get_target_sort_key, reverse=True)
         data["latest_target"] = targets[0]
 
-    # Log found packages for debugging
     for pkg_name, data in pkg_data.items():
         latest = data.get("latest_target")
         ver = latest.get("version") if latest else "None"
