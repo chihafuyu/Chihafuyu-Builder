@@ -5,11 +5,9 @@ set -euo pipefail
 CYAN='\033[0;36m'; YELLOW='\033[1;33m'; WHITE='\033[1;37m'
 GREEN='\033[0;32m'; RED='\033[0;31m'; NC='\033[0m'
 
-TERMUX_PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 TERMUX_HOME="${HOME:-/data/data/com.termux/files/home}"
 USER_AGENT="ChihafuyuBuilder/2.0 (Termux; Android)"
 
-# Store workspace in .cache to keep $PREFIX clean and safe
 WORK_DIR="$TERMUX_HOME/.cache/chihafuyu-workspace"
 BASE_DIR="$TERMUX_HOME/storage/downloads/Chihafuyu"
 MORPHE_JAR="$BASE_DIR/morphe.jar"
@@ -23,8 +21,6 @@ KEYSTORE_PATH="" KEYSTORE_ALIAS="Morphe"
 KEYSTORE_STORE_PASS="" KEYSTORE_ENTRY_PASS="Morphe" KEYSTORE_SIGNER="Morphe"
 
 # ─── Cleanup ─────────────────────────────────────────────────────
-# Releases the wakelock, deletes the scratch log, and preserves the
-# original exit code. Traps on EXIT so INT/TERM (130/143) hit it too.
 cleanup() {
     local code=$?
     trap - EXIT INT TERM
@@ -41,19 +37,14 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 # ─── Menu helper ─────────────────────────────────────────────────
-# _select_menu <prompt> <exit-label> <item...>
-# Writes the chosen item to stdout. Exits the script when the exit
-# label is picked. Re-prompts on invalid input.
+# _select_menu <prompt> <item...>
+# Writes the chosen item to stdout. Handles exiting via return instead of exit.
 _select_menu() {
-    local prompt="$1" exit_label="$2"
-    shift 2
+    local prompt="$1"
+    shift 1
     local items=("$@") backup="${PS3:-}" choice
     PS3="$prompt"
     select choice in "${items[@]}"; do
-        if [[ "$choice" == "$exit_label" ]]; then
-            echo -e "${YELLOW}Exiting builder. Goodbye!${NC}" >&2
-            exit 0
-        fi
         if [[ -n "$choice" ]]; then
             PS3="$backup"
             printf '%s' "$choice"
@@ -66,7 +57,6 @@ _select_menu() {
 }
 
 # ─── Pre-flight ──────────────────────────────────────────────────
-# Installs curl, jq, and OpenJDK 21 via pkg when any is missing.
 check_dependencies() {
     local missing=()
     command -v curl >/dev/null 2>&1 || missing+=("curl")
@@ -78,7 +68,6 @@ check_dependencies() {
     if [[ ${#missing[@]} -gt 0 ]]; then
         echo -e "${YELLOW}[INFO] Installing: ${missing[*]}${NC}"
         pkg update -y || true
-        # Added fallback if pkg install fails
         if ! pkg install "${missing[@]}" -y; then
             echo -e "${RED}[ERROR] Failed to install dependencies. Check your internet connection or Termux mirrors.${NC}" >&2
             exit 1
@@ -86,7 +75,6 @@ check_dependencies() {
     fi
 }
 
-# Requests Termux storage permission; waits up to 30s for the grant.
 ensure_storage_access() {
     local target="$TERMUX_HOME/storage/downloads"
     if [[ -d "$target" ]]; then
@@ -106,12 +94,10 @@ ensure_storage_access() {
 }
 
 # ─── Selectors ───────────────────────────────────────────────────
-# Fetches repo_map.json and lets the user pick an ecosystem.
 select_ecosystem() {
     echo -e "${YELLOW}[INFO] Fetching ecosystem map...${NC}"
     local map_url="${REPO_URL}/ecosystem-termux/repo_map.json"
     local map_data
-    # Increased timeout to 30s
     if ! map_data=$(curl -sL --max-time 30 -A "$USER_AGENT" "$map_url"); then
         echo -e "${RED}[ERROR] Failed to fetch repo_map.json.${NC}" >&2
         exit 1
@@ -121,8 +107,10 @@ select_ecosystem() {
         exit 1
     fi
 
+    # Filter out aggregate repos (like SysAdminDoc) for Termux
     local eco_list=()
-    mapfile -t eco_list < <(printf '%s' "$map_data" | jq -r 'keys[]')
+    mapfile -t eco_list < <(printf '%s' "$map_data" | jq -r 'to_entries[] | select(.value.aggregate_repos == null) | .key')
+    
     if [[ ${#eco_list[@]} -eq 0 ]]; then
         echo -e "${RED}[ERROR] No ecosystems found.${NC}" >&2
         exit 1
@@ -131,7 +119,13 @@ select_ecosystem() {
 
     echo -e "\n${WHITE}Select Ecosystem Patches:${NC}"
     export COLUMNS=20
-    ECO_CHOICE=$(_select_menu "Enter your choice: " "Exit" "${eco_list[@]}")
+    ECO_CHOICE=$(_select_menu "Enter your choice: " "${eco_list[@]}")
+    
+    if [[ "$ECO_CHOICE" == "Exit" ]]; then
+        echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
+        exit 0
+    fi
+    
     echo -e "${GREEN}Selected: $ECO_CHOICE${NC}"
 
     TARGET_REPO=$(printf '%s' "$map_data" | jq -r --arg e "$ECO_CHOICE" '.[$e].repo_url // empty')
@@ -148,8 +142,6 @@ select_ecosystem() {
     mkdir -p "$ECO_DIR"
 }
 
-# Prints the supported apps for the selected ecosystem, including
-# stable and beta version tags when available.
 show_supported_apps() {
     echo -e "\n${YELLOW}[INFO] Supported apps for $ECO_CHOICE:${NC}"
     local json_url="${REPO_URL}/${TARGET_JSON_PATH}"
@@ -168,19 +160,22 @@ show_supported_apps() {
         ))"'
 
     echo -e "${CYAN}=== Supported Applications ===${NC}"
-    # Increased timeout to 30s
     if ! curl -sL --max-time 30 -f "$json_url" | jq -r "$jq_filter"; then
         echo -e "${RED}[WARN] Could not fetch $TARGET_JSON_PATH.${NC}" >&2
     fi
     echo -e "${CYAN}==============================${NC}"
 }
 
-# Asks the user to choose Stable or Pre-release. Pre-release adds a
-# warning and later enables --force during patching.
 select_track() {
     echo -e "\n${WHITE}Select Patch Track:${NC}"
-    TRACK_CHOICE=$(_select_menu "Enter track number: " "Exit" \
+    TRACK_CHOICE=$(_select_menu "Enter track number: " \
         "Stable" "Pre-release" "Exit")
+        
+    if [[ "$TRACK_CHOICE" == "Exit" ]]; then
+        echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
+        exit 0
+    fi
+    
     echo -e "${GREEN}Selected track: $TRACK_CHOICE${NC}"
 
     if [[ "$TRACK_CHOICE" == "Pre-release" ]]; then
@@ -191,8 +186,6 @@ select_track() {
 }
 
 # ─── Downloads ───────────────────────────────────────────────────
-# Downloads url to dest using HTTP caching (-z). Uses a .tmp staging
-# file so a failed download cannot corrupt the cached copy.
 _download_with_cache() {
     local url="$1" dest="$2" timeout="$3"
     local tmp="${dest}.tmp"
@@ -218,18 +211,15 @@ _download_with_cache() {
     mv -f "$tmp" "$dest"
 }
 
-# Resolves and downloads the Morphe CLI JAR and the .mpp patch bundle.
 fetch_components() {
     echo -e "\n${YELLOW}[INFO] Checking components...${NC}"
 
-    # Increased API timeout to 30s
     local api_cmd=(curl -sLf --max-time 30 -A "$USER_AGENT")
     if [[ -n "${GITHUB_TOKEN:-}" ]]; then
         echo -e "${GREEN}[INFO] Using authenticated GitHub API.${NC}"
         api_cmd+=("-H" "Authorization: Bearer $GITHUB_TOKEN")
     fi
 
-    # ── Morphe CLI ──
     echo -e "${CYAN}Checking morphe-cli...${NC}"
     local cli_json
     if ! cli_json=$("${api_cmd[@]}" \
@@ -250,7 +240,6 @@ fetch_components() {
         exit 1
     fi
 
-    # ── Patches ──
     local api_url jq_filter
     if [[ "$TRACK_CHOICE" == "Stable" ]]; then
         api_url="https://api.github.com/repos/${TARGET_REPO}/releases/latest"
@@ -282,7 +271,6 @@ fetch_components() {
 }
 
 # ─── Keystore ────────────────────────────────────────────────────
-# Reads a single 'key=value' line from a config file.
 _read_cfg() {
     local file="$1" key="$2"
     if [[ ! -f "$file" ]]; then
@@ -291,8 +279,6 @@ _read_cfg() {
     grep -m1 "^${key}=" "$file" 2>/dev/null | cut -d= -f2-
 }
 
-# Auto-detects a keystore in BASE_DIR, ordered by extension priority:
-# .jks → .keystore → .bks → .p12 → .pfx.
 _autodetect_keystore() {
     local nullglob_was_set=0
     if shopt -q nullglob; then
@@ -311,8 +297,6 @@ _autodetect_keystore() {
     fi
 }
 
-# Resolves keystore path and credentials. Priority chain per field:
-#   env var → keystore.txt → auto-detect → Morphe default.
 load_keystore_config() {
     local cfg="${KEYSTORE_CONFIG:-$BASE_DIR/keystore.txt}"
     local cfg_path="" cfg_alias="" cfg_store="" cfg_entry="" cfg_signer=""
@@ -329,7 +313,6 @@ load_keystore_config() {
         cfg_signer=$(_read_cfg "$cfg" signer)
     fi
 
-    # Path resolution: env → file → auto-detect.
     if [[ -z "${KEYSTORE_PATH:-}" ]]; then
         if [[ -n "$cfg_path" ]]; then
             KEYSTORE_PATH="$cfg_path"
@@ -349,7 +332,6 @@ load_keystore_config() {
     fi
     echo -e "${GREEN}[INFO] Using custom keystore: $(basename "$KEYSTORE_PATH")${NC}"
 
-    # Alias and signer.
     if [[ -z "${KEYSTORE_ALIAS:-}" ]]; then
         KEYSTORE_ALIAS="${cfg_alias:-Morphe}"
     fi
@@ -357,14 +339,12 @@ load_keystore_config() {
         KEYSTORE_SIGNER="${cfg_signer:-Morphe}"
     fi
 
-    # Store password.
     if [[ -n "${KEYSTORE_STORE_PASSWORD:-}" ]]; then
         KEYSTORE_STORE_PASS="$KEYSTORE_STORE_PASSWORD"
     else
         KEYSTORE_STORE_PASS="${cfg_store:-}"
     fi
 
-    # Entry password: env → file → prompt.
     if [[ -n "${KEYSTORE_PASSWORD:-}" ]]; then
         KEYSTORE_ENTRY_PASS="$KEYSTORE_PASSWORD"
     elif [[ -n "$cfg_entry" ]]; then
@@ -380,7 +360,6 @@ load_keystore_config() {
 }
 
 # ─── APK selection & patching ────────────────────────────────────
-# Pauses the flow until the user drops an APK/bundle into ECO_DIR.
 wait_for_apk() {
     echo -e "\n${WHITE}⚠️ ACTION REQUIRED ⚠️${NC}"
     echo -e "Download the APK or bundle (.apk / .apkm / .xapk) of the app to patch."
@@ -390,7 +369,6 @@ wait_for_apk() {
     read -r -p "$(echo -e "${CYAN}Press [ENTER] when ready...${NC}")" _
 }
 
-# Scans ECO_DIR for .apk/.apkm/.xapk files and lets the user pick one.
 select_apk() {
     echo -e "\n${WHITE}Scanning $ECO_DIR for APKs...${NC}"
 
@@ -411,18 +389,22 @@ select_apk() {
     apk_files+=("Exit")
 
     echo -e "${WHITE}Select the file to patch:${NC}"
-    APK_CHOICE=$(_select_menu "Select APK number: " "Exit" "${apk_files[@]}")
+    APK_CHOICE=$(_select_menu "Select APK number: " "${apk_files[@]}")
+    
+    if [[ "$APK_CHOICE" == "Exit" ]]; then
+        echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
+        exit 0
+    fi
+    
     echo -e "${GREEN}Target: $(basename "$APK_CHOICE")${NC}"
 }
 
-# Runs the Morphe CLI patch subcommand.
 execute_patch() {
     local base_name
     base_name=$(basename "$APK_CHOICE")
     local final_apk="$ECO_DIR/Patched-${base_name%.*}.apk"
     TEMP_LOG_FILE="$WORK_DIR/patch_log_$(date +%s).txt"
 
-    # Explicitly use $WORK_DIR for patches to prevent pathing issues
     local java_cmd=(
         java -jar "$MORPHE_JAR" patch
         --patches "$WORK_DIR/$TEMP_PATCH"
@@ -492,8 +474,6 @@ main() {
     wait_for_apk
     select_apk
 
-    # Acquire wakelock just before the long-running patch. The flag is
-    # read by cleanup() so any exit path releases it.
     if command -v termux-wake-lock >/dev/null 2>&1; then
         if termux-wake-lock >/dev/null 2>&1; then
             WAKELOCK_HELD=1
