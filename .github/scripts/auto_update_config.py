@@ -175,19 +175,19 @@ def _fetch_release_patches(url):
     print(f"Fetching release patches from {url}...")
     data = _fetch_json(url)
 
-    # Handle case where URL is patches-bundle.json (an object) instead of a patch array
     if isinstance(data, dict):
         app_version = data.get("app_version")
         download_url = data.get("download_url")
         if app_version and download_url:
-            # Construct URL to release patches-list.json based on the bundle info
-            tag = download_url.split("/")[-2]
-            repo_base = url.split("/main/")[0]
-            patch_list_url = f"{repo_base}/releases/download/{tag}/patches-list.json"
-            print(f"  -> Found bundle data. Fetching actual patches from: {patch_list_url}")
+            # Extract base URL from download_url
+            base_release_url = download_url.rsplit("/", 1)[0]
+            patch_list_url = f"{base_release_url}/patches-list.json"
+            print(f"  -> Found bundle data. Fetching from: {patch_list_url}")
             patch_data = _fetch_json(patch_list_url)
             if isinstance(patch_data, list):
-                patch_names = [item for item in patch_data if isinstance(item, str)]
+                patch_names = [
+                    item for item in patch_data if isinstance(item, str)
+                ]
                 return {
                     "patches": [
                         {
