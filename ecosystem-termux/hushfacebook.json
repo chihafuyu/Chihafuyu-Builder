@@ -8,7 +8,8 @@
                     "583.0.0.39.55"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "475614366"
+                    "arm64-v8a": "475614366",
+                    "armeabi-v7a": "475614365"
                 },
                 "force_bundle": true,
                 "strip": true,

@@ -10,13 +10,50 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Block P2P video relay": {
+                        "enabled": false
+                    },
+                    "Change app name": {
+                        "enabled": false
+                    },
+                    "Feature Gate Recorder": {
+                        "enabled": false
+                    },
+                    "Hide Play Store update offer": {
+                        "enabled": false
+                    },
+                    "Look like the store app": {
+                        "enabled": false
+                    },
+                    "Network request report": {
+                        "enabled": false
+                    },
+                    "Region spoof": {
+                        "enabled": false
+                    },
+                    "Remove unused language packs": {
+                        "enabled": false
+                    },
+                    "Skip first-launch setup": {
+                        "enabled": false
+                    },
+                    "Trust user certificates": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "2024701040",
+                    "armeabi-v7a": "2024701040",
+                    "x86": "2024701040",
+                    "x86-64": "2024701040"
+                }
             },
             "tiktok-global": {
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok",
                 "stable": [
-                    "47.1.4"
+                    "47.4.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -25,175 +62,31 @@
                     "AMOLED dark theme": {
                         "enabled": true
                     },
-                    "Advanced downloads": {
-                        "enabled": true
-                    },
-                    "Allow Duet and Stitch": {
-                        "enabled": true
-                    },
-                    "Allow screenshots and Circle to Search": {
-                        "enabled": true
-                    },
-                    "App lock": {
-                        "enabled": true
-                    },
-                    "Automatic video advance": {
-                        "enabled": true
-                    },
                     "Block P2P video relay": {
-                        "enabled": true
-                    },
-                    "Block author button": {
-                        "enabled": true
-                    },
-                    "Block contact list access": {
-                        "enabled": true
-                    },
-                    "Block installed app scanning": {
-                        "enabled": true
-                    },
-                    "Camera and microphone indicator": {
                         "enabled": true
                     },
                     "Change app name": {
                         "enabled": true
                     },
-                    "Comment sort controls": {
-                        "enabled": true
-                    },
-                    "Comment tools": {
-                        "enabled": true
-                    },
-                    "Confirm feed interactions": {
-                        "enabled": true
-                    },
                     "Custom launcher icon": {
-                        "enabled": true
-                    },
-                    "Device privacy guard": {
-                        "enabled": true
-                    },
-                    "Diagnostic tools": {
-                        "enabled": true
-                    },
-                    "Disable telemetry": {
-                        "enabled": true
-                    },
-                    "Disable the long press quick share": {
-                        "enabled": true
-                    },
-                    "Disable the long press repost": {
-                        "enabled": true
-                    },
-                    "Double-tap controls": {
-                        "enabled": true
-                    },
-                    "Drop the animated image cache": {
-                        "enabled": true
-                    },
-                    "Enable voice comments": {
-                        "enabled": true
-                    },
-                    "Expand activity list": {
                         "enabled": true
                     },
                     "Feature Gate Recorder": {
                         "enabled": true
                     },
-                    "Feed tab navigation": {
-                        "enabled": true
-                    },
                     "Feed text sizes": {
                         "enabled": false
                     },
-                    "Fit the video to the screen": {
-                        "enabled": true
-                    },
-                    "Foldable split comment view": {
-                        "enabled": true
-                    },
-                    "Ghost mode": {
-                        "enabled": true
-                    },
                     "Hide Play Store update offer": {
-                        "enabled": true
-                    },
-                    "Hide already seen videos": {
-                        "enabled": true
-                    },
-                    "Hide comment popup ads": {
-                        "enabled": true
-                    },
-                    "Hide feed LIVE button": {
-                        "enabled": true
-                    },
-                    "Hide feed follow button": {
-                        "enabled": true
-                    },
-                    "Hide feed save button": {
-                        "enabled": true
-                    },
-                    "Hide floating promotions": {
-                        "enabled": true
-                    },
-                    "Hide inbox items": {
-                        "enabled": true
-                    },
-                    "Hide inbox stories": {
-                        "enabled": true
-                    },
-                    "Hide profile shortcuts": {
-                        "enabled": true
-                    },
-                    "Hide search suggestions": {
-                        "enabled": true
-                    },
-                    "Hide suggested accounts": {
-                        "enabled": true
-                    },
-                    "Hide the launcher shortcuts": {
                         "enabled": true
                     },
                     "Hide the risk control CAPTCHA": {
                         "enabled": true
                     },
-                    "Hide video overlays": {
-                        "enabled": true
-                    },
-                    "In-app browser privacy guard": {
-                        "enabled": true
-                    },
-                    "Keep a streak going": {
-                        "enabled": true
-                    },
-                    "Keep playing in the background": {
-                        "enabled": true
-                    },
-                    "Keep the screen's refresh rate": {
-                        "enabled": true
-                    },
-                    "Limit background traffic": {
-                        "enabled": true
-                    },
-                    "Location access governor": {
-                        "enabled": true
-                    },
-                    "Long-press controls": {
-                        "enabled": true
-                    },
                     "Look like the store app": {
                         "enabled": true
                     },
-                    "Mute feed videos": {
-                        "enabled": true
-                    },
                     "Network request report": {
-                        "enabled": true
-                    },
-                    "Not interested button": {
-                        "enabled": true
-                    },
-                    "Playback quality": {
                         "enabled": true
                     },
                     "Region spoof": {
@@ -211,46 +104,10 @@
                     "Remove unused language packs": {
                         "enabled": true
                     },
-                    "Resource and battery governor": {
-                        "enabled": true
-                    },
                     "Run beside the store app": {
                         "enabled": false
                     },
-                    "Share sheet tools": {
-                        "enabled": true
-                    },
-                    "Show author region": {
-                        "enabled": true
-                    },
-                    "Show engagement rate": {
-                        "enabled": true
-                    },
-                    "Skip content warnings": {
-                        "enabled": true
-                    },
                     "Skip first-launch setup": {
-                        "enabled": true
-                    },
-                    "Skip the splash ad": {
-                        "enabled": true
-                    },
-                    "Skip update checks": {
-                        "enabled": true
-                    },
-                    "Stop on-device AI profiling": {
-                        "enabled": true
-                    },
-                    "Stop recording watch history": {
-                        "enabled": true
-                    },
-                    "Stop saving search history": {
-                        "enabled": true
-                    },
-                    "Subtitle tools": {
-                        "enabled": true
-                    },
-                    "Swipe-left controls": {
                         "enabled": true
                     },
                     "Trust user certificates": {
@@ -258,7 +115,16 @@
                     },
                     "Use system font": {
                         "enabled": false
+                    },
+                    "Accent color": {
+                        "enabled": false
                     }
+                },
+                "version_codes": {
+                    "arm64-v8a": "2024704030",
+                    "armeabi-v7a": "2024704030",
+                    "x86": "2024704030",
+                    "x86-64": "2024704030"
                 }
             }
         }

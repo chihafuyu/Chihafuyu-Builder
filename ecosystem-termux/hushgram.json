@@ -21,9 +21,6 @@
                     "Install next to Instagram": {
                         "enabled": false
                     },
-                    "Open developer options": {
-                        "enabled": true
-                    },
                     "Pure black dark mode": {
                         "enabled": true
                     },
