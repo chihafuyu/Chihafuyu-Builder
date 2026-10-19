@@ -215,9 +215,6 @@
                     "Fix T9 contact search": {
                         "enabled": false
                     },
-                    "GmsCore support": {
-                        "enabled": false
-                    },
                     "Hide Assistant tab": {
                         "enabled": false
                     },
@@ -239,10 +236,10 @@
                     "Restore classic call log": {
                         "enabled": false
                     },
-                    "Spoof signature": {
+                    "Use SMS for verification codes": {
                         "enabled": false
                     },
-                    "Use SMS for verification codes": {
+                    "Hide business media": {
                         "enabled": false
                     }
                 },
