@@ -37,8 +37,6 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 # ─── Menu helper ─────────────────────────────────────────────────
-# _select_menu <prompt> <item...>
-# Writes the chosen item to stdout. Handles exiting via return instead of exit.
 _select_menu() {
     local prompt="$1"
     shift 1
@@ -107,7 +105,6 @@ select_ecosystem() {
         exit 1
     fi
 
-    # Filter out aggregate repos (like SysAdminDoc) for Termux
     local eco_list=()
     mapfile -t eco_list < <(printf '%s' "$map_data" | jq -r 'to_entries[] | select(.value.aggregate_repos == null) | .key')
     
@@ -120,11 +117,6 @@ select_ecosystem() {
     echo -e "\n${WHITE}Select Ecosystem Patches:${NC}"
     export COLUMNS=20
     ECO_CHOICE=$(_select_menu "Enter your choice: " "${eco_list[@]}")
-    
-    if [[ "$ECO_CHOICE" == "Exit" ]]; then
-        echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
-        exit 0
-    fi
     
     echo -e "${GREEN}Selected: $ECO_CHOICE${NC}"
 
@@ -169,13 +161,8 @@ show_supported_apps() {
 select_track() {
     echo -e "\n${WHITE}Select Patch Track:${NC}"
     TRACK_CHOICE=$(_select_menu "Enter track number: " \
-        "Stable" "Pre-release" "Exit")
+        "Stable" "Pre-release" "Back" "Exit")
         
-    if [[ "$TRACK_CHOICE" == "Exit" ]]; then
-        echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
-        exit 0
-    fi
-    
     echo -e "${GREEN}Selected track: $TRACK_CHOICE${NC}"
 
     if [[ "$TRACK_CHOICE" == "Pre-release" ]]; then
@@ -386,17 +373,14 @@ select_apk() {
         echo -e "${RED}[ERROR] No APK/Bundle files found.${NC}" >&2
         exit 1
     fi
-    apk_files+=("Exit")
+    apk_files+=("Back" "Exit")
 
     echo -e "${WHITE}Select the file to patch:${NC}"
     APK_CHOICE=$(_select_menu "Select APK number: " "${apk_files[@]}")
     
-    if [[ "$APK_CHOICE" == "Exit" ]]; then
-        echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
-        exit 0
+    if [[ "$APK_CHOICE" != "Exit" && "$APK_CHOICE" != "Back" ]]; then
+        echo -e "${GREEN}Target: $(basename "$APK_CHOICE")${NC}"
     fi
-    
-    echo -e "${GREEN}Target: $(basename "$APK_CHOICE")${NC}"
 }
 
 execute_patch() {
@@ -466,26 +450,74 @@ main() {
     check_dependencies
     ensure_storage_access
 
-    select_ecosystem
-    show_supported_apps
-    select_track
-    fetch_components
-    load_keystore_config
-    wait_for_apk
-    select_apk
+    # State machine for Global Back navigation
+    local step=1
+    while true; do
+        case "$step" in
+            1)
+                select_ecosystem
+                if [[ "$ECO_CHOICE" == "Exit" ]]; then
+                    echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
+                    exit 0
+                fi
+                step=2
+                ;;
+            2)
+                show_supported_apps
+                step=3
+                ;;
+            3)
+                select_track
+                if [[ "$TRACK_CHOICE" == "Exit" ]]; then
+                    echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
+                    exit 0
+                elif [[ "$TRACK_CHOICE" == "Back" ]]; then
+                    step=1
+                else
+                    step=4
+                fi
+                ;;
+            4)
+                fetch_components
+                step=5
+                ;;
+            5)
+                load_keystore_config
+                step=6
+                ;;
+            6)
+                wait_for_apk
+                step=7
+                ;;
+            7)
+                select_apk
+                if [[ "$APK_CHOICE" == "Exit" ]]; then
+                    echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
+                    exit 0
+                elif [[ "$APK_CHOICE" == "Back" ]]; then
+                    step=3
+                else
+                    step=8
+                fi
+                ;;
+            8)
+                # Acquire wakelock just before the long-running patch.
+                if command -v termux-wake-lock >/dev/null 2>&1; then
+                    if termux-wake-lock >/dev/null 2>&1; then
+                        WAKELOCK_HELD=1
+                        echo -e "${GREEN}[INFO] Wakelock acquired.${NC}"
+                    fi
+                else
+                    echo -e "${YELLOW}[WARN] termux-wake-lock missing; install termux-tools.${NC}" >&2
+                fi
+                echo -e "${CYAN}[TIP] Set Display → Screen timeout to 'Never' to keep${NC}"
+                echo -e "${CYAN}      the screen on (wakelock only keeps CPU awake).${NC}\n"
 
-    if command -v termux-wake-lock >/dev/null 2>&1; then
-        if termux-wake-lock >/dev/null 2>&1; then
-            WAKELOCK_HELD=1
-            echo -e "${GREEN}[INFO] Wakelock acquired.${NC}"
-        fi
-    else
-        echo -e "${YELLOW}[WARN] termux-wake-lock missing; install termux-tools.${NC}" >&2
-    fi
-    echo -e "${CYAN}[TIP] Set Display → Screen timeout to 'Never' to keep${NC}"
-    echo -e "${CYAN}      the screen on (wakelock only keeps CPU awake).${NC}\n"
-
-    execute_patch
+                execute_patch
+                break
+                ;;
+        esac
+    done
 }
 
 main
