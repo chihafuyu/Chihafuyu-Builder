@@ -118,6 +118,11 @@ select_ecosystem() {
     export COLUMNS=20
     ECO_CHOICE=$(_select_menu "Enter your choice: " "${eco_list[@]}")
     
+    # Early return if user selects Exit
+    if [[ "$ECO_CHOICE" == "Exit" ]]; then
+        return 0
+    fi
+
     echo -e "${GREEN}Selected: $ECO_CHOICE${NC}"
 
     TARGET_REPO=$(printf '%s' "$map_data" | jq -r --arg e "$ECO_CHOICE" '.[$e].repo_url // empty')
@@ -163,6 +168,11 @@ select_track() {
     TRACK_CHOICE=$(_select_menu "Enter track number: " \
         "Stable" "Pre-release" "Back" "Exit")
         
+    # Early return if user selects Back or Exit
+    if [[ "$TRACK_CHOICE" == "Back" || "$TRACK_CHOICE" == "Exit" ]]; then
+        return 0
+    fi
+
     echo -e "${GREEN}Selected track: $TRACK_CHOICE${NC}"
 
     if [[ "$TRACK_CHOICE" == "Pre-release" ]]; then
@@ -378,9 +388,12 @@ select_apk() {
     echo -e "${WHITE}Select the file to patch:${NC}"
     APK_CHOICE=$(_select_menu "Select APK number: " "${apk_files[@]}")
     
-    if [[ "$APK_CHOICE" != "Exit" && "$APK_CHOICE" != "Back" ]]; then
-        echo -e "${GREEN}Target: $(basename "$APK_CHOICE")${NC}"
+    # Early return if user selects Back or Exit
+    if [[ "$APK_CHOICE" == "Back" || "$APK_CHOICE" == "Exit" ]]; then
+        return 0
     fi
+    
+    echo -e "${GREEN}Target: $(basename "$APK_CHOICE")${NC}"
 }
 
 execute_patch() {
