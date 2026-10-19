@@ -4,11 +4,17 @@
             "disneyplus": {
                 "package": "com.disney.disneyplus",
                 "search_term": "Disney+",
-                "stable": ["26.16.0+rc2-2026.09.08"],
+                "stable": [
+                    "26.16.0+rc2-2026.09.08"
+                ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Suppress Household Prompt": {
+                        "enabled": false
+                    }
+                },
                 "apkm_include": [
                     "android tv"
                 ],
@@ -20,25 +26,42 @@
             "hbo-max": {
                 "package": "com.wbd.hbomax",
                 "search_term": "HBO Max",
-                "stable": ["7.9.0.61"],
+                "stable": [
+                    "7.9.0.61"
+                ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "HBO Max - Block SSAI Ad Origins": {
+                        "enabled": false
+                    }
+                }
             },
             "netflix": {
                 "package": "com.netflix.ninja",
                 "search_term": "Netflix",
-                "stable": ["13.0.1 build 25028"],
+                "stable": [
+                    "13.0.1 build 25028"
+                ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Minimize Network Fingerprint": {
+                        "enabled": false
+                    },
+                    "Suppress Household Prompt": {
+                        "enabled": false
+                    }
+                }
             },
             "paramount-plus": {
                 "package": "com.cbs.ott",
                 "search_term": "Paramount+",
-                "stable": ["16.19.0"],
+                "stable": [
+                    "16.19.0"
+                ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -47,11 +70,17 @@
             "peacock": {
                 "package": "com.peacocktv.peacockandroid",
                 "search_term": "Peacock",
-                "stable": ["7.10.102"],
+                "stable": [
+                    "7.10.102"
+                ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Clone Peacock": {
+                        "enabled": false
+                    }
+                }
             },
             "pluto-tv": {
                 "package": "tv.pluto.android",
@@ -62,16 +91,32 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Clone Pluto TV": {
+                        "enabled": false
+                    },
+                    "Override certificate pinning": {
+                        "enabled": false
+                    }
+                }
             },
             "prime-video": {
                 "package": "com.amazon.amazonvideo.livingroom",
                 "search_term": "Prime Video",
-                "stable": ["6.23.23+v15.5.0.70-armv7a"],
+                "stable": [
+                    "6.23.23+v15.5.0.70-armv7a"
+                ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Clone Prime Video": {
+                        "enabled": false
+                    },
+                    "Override certificate pinning": {
+                        "enabled": false
+                    }
+                }
             },
             "tubi": {
                 "package": "com.tubitv",
@@ -82,12 +127,18 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Block analytics & tracking": {
+                        "enabled": false
+                    }
+                }
             },
             "twitch": {
                 "package": "tv.twitch.android.app",
                 "search_term": "Twitch",
-                "stable": ["13.0.0.2"],
+                "stable": [
+                    "13.0.0.2"
+                ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
