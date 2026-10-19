@@ -192,7 +192,7 @@
                 "package": "com.risesci.nyx",
                 "search_term": "RISE Sleep Tracker",
                 "stable": [
-                    "Android V1.78.52"
+                    "Android V1.79.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -241,17 +241,17 @@
                 "package": "com.darinsoft.vimo",
                 "search_term": "VLLO",
                 "stable": [
-                    "13.9.0"
+                    "13.9.6"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "130900",
-                    "armeabi-v7a": "130900",
-                    "x86-64": "130900",
-                    "x86": "130900"
+                    "arm64-v8a": "130906",
+                    "armeabi-v7a": "130906",
+                    "x86-64": "130906",
+                    "x86": "130906"
                 }
             }
         }
