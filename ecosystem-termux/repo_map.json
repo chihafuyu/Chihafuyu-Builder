@@ -134,6 +134,20 @@
     "spicetify": {
         "repo_url": "spicetify/morphe-patches"
     },
+    "SysAdminDoc": {
+        "repo_url": "SysAdminDoc/SysAdminDoc",
+        "config_path": "ecosystem/SysAdminDoc.json",
+        "aggregate_repos": [
+            "SysAdminDoc/HushFacebook",
+            "SysAdminDoc/HushGram",
+            "SysAdminDoc/HushMessenger",
+            "SysAdminDoc/HushFeed",
+            "SysAdminDoc/HushPinterest",
+            "SysAdminDoc/HushTelegram",
+            "SysAdminDoc/HushThreads",
+            "SysAdminDoc/HushTumblr"
+        ]
+    },
     "Wagg13Patch": {
         "repo_url": "WaggBR/Wagg13Patch_Morphe"
     },
