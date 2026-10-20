@@ -40,35 +40,35 @@
     },
     "hushfacebook": {
         "repo_url": "SysAdminDoc/HushFacebook",
-        "config_path": "ecosystem-termux/hushfacebook.json"
+        "config_path": "ecosystem/hushfacebook.json"
     },
     "hushfeed": {
         "repo_url": "SysAdminDoc/HushFeed",
-        "config_path": "ecosystem-termux/hushfeed.json"
+        "config_path": "ecosystem/hushfeed.json"
     },
     "hushgram": {
         "repo_url": "SysAdminDoc/HushGram",
-        "config_path": "ecosystem-termux/hushgram.json"
+        "config_path": "ecosystem/hushgram.json"
     },
     "hushmessenger": {
         "repo_url": "SysAdminDoc/HushMessenger",
-        "config_path": "ecosystem-termux/hushmessenger.json"
+        "config_path": "ecosystem/hushmessenger.json"
     },
     "hushpinterest": {
         "repo_url": "SysAdminDoc/HushPinterest",
-        "config_path": "ecosystem-termux/hushpinterest.json"
+        "config_path": "ecosystem/hushpinterest.json"
     },
     "hushtelegram": {
         "repo_url": "SysAdminDoc/HushTelegram",
-        "config_path": "ecosystem-termux/hushtelegram.json"
+        "config_path": "ecosystem/hushtelegram.json"
     },
     "hushthreads": {
         "repo_url": "SysAdminDoc/HushThreads",
-        "config_path": "ecosystem-termux/hushthreads.json"
+        "config_path": "ecosystem/hushthreads.json"
     },
     "hushtumblr": {
         "repo_url": "SysAdminDoc/HushTumblr",
-        "config_path": "ecosystem-termux/hushtumblr.json"
+        "config_path": "ecosystem/hushtumblr.json"
     },
     "hxreborn": {
         "repo_url": "hxreborn/morphe-patches"
@@ -108,12 +108,12 @@
     },
     "piko": {
         "repo_url": "crimera/piko",
-        "config_path": "ecosystem-termux/piko.json"
+        "config_path": "ecosystem/piko.json"
     },
     "piko-newx": {
         "repo_url": "crimera/piko-newx",
         "file_path": "patches-bundle.json",
-        "config_path": "ecosystem-termux/piko-newx.json",
+        "config_path": "ecosystem/piko-newx.json",
         "release_patches": true
     },
     "plyrs1": {
