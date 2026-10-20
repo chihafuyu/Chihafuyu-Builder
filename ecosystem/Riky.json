@@ -13,24 +13,6 @@
                 "options_override": {},
                 "force_bundle": true
             },
-            "capcut": {
-                "package": "com.lemon.lvoverseas",
-                "search_term": "CapCut",
-                "stable": [
-                    "19.2.0"
-                ],
-                "beta": [],
-                "version_codes": {
-                    "arm64-v8a": "19201600"
-                },
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {
-                    "CapCut network tunnel": {
-                        "enabled": false
-                    }
-                }
-            },
             "electron": {
                 "package": "com.mahersafadi.electron",
                 "search_term": "Electron",
