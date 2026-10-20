@@ -20,8 +20,156 @@
                 "options_override": {
                     "NewX: Share post as image": {
                         "enabled": true
+                    },
+                    "NewX: Browse tweet object": {
+                        "enabled": true
+                    },
+                    "NewX: Classic inline action spacing": {
+                        "enabled": true
+                    },
+                    "NewX: Clone": {
+                        "enabled": true
+                    },
+                    "NewX: Crash logs": {
+                        "enabled": true
+                    },
+                    "NewX: Custom font": {
+                        "enabled": true
+                    },
+                    "NewX: Custom sharing domain": {
+                        "enabled": true
+                    },
+                    "NewX: Customize drawer items": {
+                        "enabled": true
+                    },
+                    "NewX: Customize inline actions": {
+                        "enabled": true
+                    },
+                    "NewX: Customize media menu items": {
+                        "enabled": true
+                    },
+                    "NewX: Customize navigation bar": {
+                        "enabled": true
+                    },
+                    "NewX: Customize post menu items": {
+                        "enabled": true
+                    },
+                    "NewX: Customize profile tabs": {
+                        "enabled": true
+                    },
+                    "NewX: Customize timeline tabs": {
+                        "enabled": true
+                    },
+                    "NewX: Disable automatic timeline refresh": {
+                        "enabled": true
+                    },
+                    "NewX: Disable blur effects": {
+                        "enabled": true
+                    },
+                    "NewX: Disable video player scrolling": {
+                        "enabled": true
+                    },
+                    "NewX: Feature switch overrides": {
+                        "enabled": true
+                    },
+                    "NewX: Filter For You by topic": {
+                        "enabled": true
+                    },
+                    "NewX: Filter posts by keyword": {
+                        "enabled": true
+                    },
+                    "NewX: Gallery profile Photos tab": {
+                        "enabled": true
+                    },
+                    "NewX: Hide AI-generated posts": {
+                        "enabled": true
+                    },
+                    "NewX: Hide Discover more": {
+                        "enabled": true
+                    },
+                    "NewX: Hide Spaces bar": {
+                        "enabled": true
+                    },
+                    "NewX: Hide compose button": {
+                        "enabled": true
+                    },
+                    "NewX: Hide new posts pill": {
+                        "enabled": true
+                    },
+                    "NewX: Hide post author actions": {
+                        "enabled": true
+                    },
+                    "NewX: Hide post dividers": {
+                        "enabled": true
+                    },
+                    "NewX: Hide post reply bar": {
+                        "enabled": true
+                    },
+                    "NewX: Hide posts by verified account type": {
+                        "enabled": true
+                    },
+                    "NewX: Hide premium upsell": {
+                        "enabled": true
+                    },
+                    "NewX: Hide timeline tabs bar": {
+                        "enabled": true
+                    },
+                    "NewX: Hide who to follow": {
+                        "enabled": true
+                    },
+                    "NewX: Inline download button": {
+                        "enabled": true
+                    },
+                    "NewX: Log HLS audio renditions": {
+                        "enabled": true
+                    },
+                    "NewX: Open canonical URLs": {
+                        "enabled": true
+                    },
+                    "NewX: Redirect downloads to chosen folder": {
+                        "enabled": true
+                    },
+                    "NewX: Remove ads": {
+                        "enabled": true
+                    },
+                    "NewX: Restore Twitter branding": {
+                        "enabled": true
+                    },
+                    "NewX: Restore pinned home tab": {
+                        "enabled": true
+                    },
+                    "NewX: Restore timeline position": {
+                        "enabled": true
+                    },
+                    "NewX: Server error logging": {
+                        "enabled": true
+                    },
+                    "NewX: Set default media tab": {
+                        "enabled": true
+                    },
+                    "NewX: Set default profile post sorting": {
+                        "enabled": true
+                    },
+                    "NewX: Set default reply sorting": {
+                        "enabled": true
+                    },
+                    "NewX: Show poll results": {
+                        "enabled": true
+                    },
+                    "NewX: Show sensitive media": {
+                        "enabled": true
+                    },
+                    "NewX: Theme": {
+                        "enabled": true
+                    },
+                    "NewX: Unlock color customization": {
+                        "enabled": true
+                    },
+                    "NewX: Unlock downloads": {
+                        "enabled": true
                     }
-                }
+                },
+                "force_bundle": true
             }
         }
     }
