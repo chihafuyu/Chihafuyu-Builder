@@ -407,7 +407,7 @@ def _extract_pkg_data(patches_data):
     return pkg_data
 
 
-def _sync_app_patches(app_cfg, compatible_patches, app_key, force_enable=False):
+def _sync_app_patches(app_cfg, compatible_patches, app_key):
     """Sync patches in options_override to match upstream 1:1."""
     changed = False
     options = app_cfg.get("options_override")
@@ -423,7 +423,7 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key, force_enable=False):
             )
             del options[patch_name]
             changed = True
-        elif not force_enable and compatible_patches[patch_name] is True:
+        elif compatible_patches[patch_name] is True:
             local_opt = options[patch_name]
             if isinstance(local_opt, dict) and local_opt.get("enabled") is False:
                 continue
@@ -436,14 +436,7 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key, force_enable=False):
 
     for patch_name, default_val in sorted(compatible_patches.items()):
         if patch_name not in options:
-            if force_enable:
-                print(
-                    f"    -> Adding new patch '{patch_name}' "
-                    f"to '{app_key}' (enabled: true)."
-                )
-                options[patch_name] = {"enabled": True}
-                changed = True
-            elif default_val is False:
+            if default_val is False:
                 print(
                     f"    -> Adding new patch '{patch_name}' "
                     f"to '{app_key}' (enabled: false)."
@@ -500,9 +493,7 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     return changed
 
 
-def _process_existing_apps(
-    app_configs, stable_pkgs, force_enable_patches, skip_patches=False
-):
+def _process_existing_apps(app_configs, stable_pkgs, skip_patches=False):
     """Update existing apps while preserving apps missing from upstream."""
     changed = False
 
@@ -530,7 +521,6 @@ def _process_existing_apps(
                 app_cfg,
                 pkg_info["patches"],
                 app_key,
-                force_enable=force_enable_patches,
             ):
                 changed = True
 
@@ -556,7 +546,7 @@ def _write_config_atomic(config_path, config):
         return False
 
 
-def update_config(config_path, stable_data, force_enable_patches=False):
+def update_config(config_path, stable_data):
     """Update a single config file based on patches-list data."""
     if stable_data is None:
         print(f"  -> Skipping {config_path} due to missing data.")
@@ -587,9 +577,7 @@ def update_config(config_path, stable_data, force_enable_patches=False):
     skip_patches = stable_data.get("is_plain_list", False)
 
     changed = False
-    if _process_existing_apps(
-        app_configs, stable_pkgs, force_enable_patches, skip_patches
-    ):
+    if _process_existing_apps(app_configs, stable_pkgs, skip_patches):
         changed = True
 
     if changed:
@@ -610,7 +598,7 @@ def _process_ecosystem(config_path, ecosystem_info):
             f"Skipping '{config_path}': "
             "Config file not found in the repository."
         )
-        return None, False
+        return None
 
     url = ecosystem_info["url"]
     release_patches = ecosystem_info["release_patches"]
@@ -621,9 +609,9 @@ def _process_ecosystem(config_path, ecosystem_info):
             f"Skipping '{config_path}': "
             "Failed to fetch or parse upstream data (see error above)."
         )
-        return None, False
+        return None
 
-    return stable_data, release_patches
+    return stable_data
 
 
 def main():
@@ -632,17 +620,13 @@ def main():
     fetched_ecosystems = []
 
     for config_path, info in ecosystems.items():
-        stable_data, force_enable = _process_ecosystem(config_path, info)
+        stable_data = _process_ecosystem(config_path, info)
         if stable_data is not None:
-            fetched_ecosystems.append(
-                (config_path, stable_data, force_enable)
-            )
+            fetched_ecosystems.append((config_path, stable_data))
 
     any_change = False
-    for config_path, stable_data, force_enable in fetched_ecosystems:
-        if update_config(
-            config_path, stable_data, force_enable_patches=force_enable
-        ):
+    for config_path, stable_data in fetched_ecosystems:
+        if update_config(config_path, stable_data):
             any_change = True
 
     if not any_change:
