@@ -126,7 +126,7 @@ jobs:
           fi
 
           if [[ "$APP_NEWX_TWITTER" == "true" ]]; then
-            JSON_BLOCK='{"ecosystem": "piko-newx", "target_name": "NewX", '
+            JSON_BLOCK='{"ecosystem": "../ecosystem-termux/piko-newx", "target_name": "NewX", '
             JSON_BLOCK+='"repo": "crimera/piko-newx", '
             JSON_BLOCK+='"apps": "newx-twitter", '
             JSON_BLOCK+='"track": "'"$NEWX_TRACK"'", '
