@@ -178,19 +178,18 @@ def _fetch_release_patches(url):
         app_version = data.get("app_version")
         download_url = data.get("download_url")
         if app_version and download_url:
-            # Extract base URL from download_url
             base_release_url = download_url.rsplit("/", 1)[0]
             patch_list_url = f"{base_release_url}/patches-list.json"
             print(f"  -> Found bundle data. Fetching from: {patch_list_url}")
             patch_data = _fetch_json(patch_list_url)
             if isinstance(patch_data, list):
-                patch_names = [
-                    item for item in patch_data if isinstance(item, str)
-                ]
+                is_plain_list = all(isinstance(item, str) for item in patch_data)
+                if is_plain_list:
+                    print("  -> Detected plain list format. Skipping patch sync.")
                 return {
                     "patches": [
                         {
-                            "name": p_name,
+                            "name": "Default Bundle Patch",
                             "default": True,
                             "compatiblePackages": [
                                 {
@@ -207,8 +206,8 @@ def _fetch_release_patches(url):
                                 }
                             ],
                         }
-                        for p_name in patch_names
-                    ]
+                    ],
+                    "is_plain_list": is_plain_list,
                 }
         print("  -> Invalid bundle metadata format.")
         return None
@@ -501,7 +500,9 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     return changed
 
 
-def _process_existing_apps(app_configs, stable_pkgs, force_enable_patches):
+def _process_existing_apps(
+    app_configs, stable_pkgs, force_enable_patches, skip_patches=False
+):
     """Update existing apps while preserving apps missing from upstream."""
     changed = False
 
@@ -524,13 +525,14 @@ def _process_existing_apps(app_configs, stable_pkgs, force_enable_patches):
         if _update_app_version(app_key, app_cfg, pkg_info):
             changed = True
 
-        if _sync_app_patches(
-            app_cfg,
-            pkg_info["patches"],
-            app_key,
-            force_enable=force_enable_patches,
-        ):
-            changed = True
+        if not skip_patches:
+            if _sync_app_patches(
+                app_cfg,
+                pkg_info["patches"],
+                app_key,
+                force_enable=force_enable_patches,
+            ):
+                changed = True
 
     return changed
 
@@ -582,10 +584,11 @@ def update_config(config_path, stable_data, force_enable_patches=False):
         config[root_key]["apps"] = app_configs
 
     stable_pkgs = _extract_pkg_data(stable_data)
+    skip_patches = stable_data.get("is_plain_list", False)
 
     changed = False
     if _process_existing_apps(
-        app_configs, stable_pkgs, force_enable_patches
+        app_configs, stable_pkgs, force_enable_patches, skip_patches
     ):
         changed = True
 
