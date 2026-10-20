@@ -9,11 +9,6 @@ name: 🧩 Riky Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_capcut:
-        description: 'Patch capcut'
-        required: true
-        type: boolean
-        default: false
       app_electron:
         description: 'Patch electron'
         required: true
@@ -88,7 +83,6 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_3BMETEO: ${{ inputs.app_3bmeteo }}
-      APP_CAPCUT: ${{ inputs.app_capcut }}
       APP_ELECTRON: ${{ inputs.app_electron }}
     steps:
       - id: build-list
@@ -97,9 +91,6 @@ jobs:
           LIST=""
           if [[ "$APP_3BMETEO" == "true" ]]; then
             LIST="$LIST,3bmeteo"
-          fi
-          if [[ "$APP_CAPCUT" == "true" ]]; then
-            LIST="$LIST,capcut"
           fi
           if [[ "$APP_ELECTRON" == "true" ]]; then
             LIST="$LIST,electron"
