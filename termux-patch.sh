@@ -94,7 +94,7 @@ ensure_storage_access() {
 # ─── Selectors ───────────────────────────────────────────────────
 select_ecosystem() {
     echo -e "${YELLOW}[INFO] Fetching ecosystem map...${NC}"
-    local map_url="${REPO_URL}/ecosystem-termux/repo_map.json"
+    local map_url="${REPO_URL}/repo_map.json"
     local map_data
     if ! map_data=$(curl -sL --max-time 30 -A "$USER_AGENT" "$map_url"); then
         echo -e "${RED}[ERROR] Failed to fetch repo_map.json.${NC}" >&2
