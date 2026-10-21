@@ -76,6 +76,29 @@
                 "force_arch": "universal",
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "powerpoint": {
+                "package": "com.microsoft.office.powerpoint",
+                "search_term": "Microsoft PowerPoint",
+                "stable": [
+                    "16.0.20527.20034"
+                ],
+                "beta": [],
+                "strip": true,
+                "force_bundle": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "sd-maid-se": {
+                "package": "eu.darken.sdmse",
+                "search_term": "SD Maid SE",
+                "stable": [
+                    "2.2.2-rc0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }

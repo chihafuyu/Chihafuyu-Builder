@@ -24,6 +24,16 @@ name: 🛠️ Kveld9-Extra Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_powerpoint:
+        description: 'Patch powerpoint'
+        required: true
+        type: boolean
+        default: false
+      app_sd_maid_se:
+        description: 'Patch sd-maid-se'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -96,6 +106,8 @@ jobs:
       APP_COPILOT: ${{ inputs.app_copilot }}
       APP_HEVY: ${{ inputs.app_hevy }}
       APP_NOKOPRINT: ${{ inputs.app_nokoprint }}
+      APP_POWERPOINT: ${{ inputs.app_powerpoint }}
+      APP_SD_MAID_SE: ${{ inputs.app_sd_maid_se }}
     steps:
       - id: build-list
         run: |
@@ -112,6 +124,12 @@ jobs:
           fi
           if [[ "$APP_NOKOPRINT" == "true" ]]; then
             LIST="$LIST,nokoprint"
+          fi
+          if [[ "$APP_POWERPOINT" == "true" ]]; then
+            LIST="$LIST,powerpoint"
+          fi
+          if [[ "$APP_SD_MAID_SE" == "true" ]]; then
+            LIST="$LIST,sd-maid-se"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

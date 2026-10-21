@@ -148,7 +148,7 @@ Because these ecosystems track dozens of apps, the dispatch form uses a **text i
 **Example:**
 
 ```text
-tumblr, twitch, finch, poweramp
+finch, poweramp, webtoon
 ```
 
 ### `arandomhooman` apps
@@ -166,9 +166,6 @@ tumblr, twitch, finch, poweramp
 - `liquid-gallery`
 - `poweramp`
 - `smart-audiobook`
-- `symfonium`
-- `tumblr`
-- `twitch`
 - `video-converter`
 - `webtoon`
 
@@ -177,7 +174,6 @@ tumblr, twitch, finch, poweramp
 - `1-1-1-1`
 - `accubattery`
 - `accuweather`
-- `adobe-scan`
 - `aida64`
 - `amoledpix`
 - `ampere`
@@ -205,11 +201,9 @@ tumblr, twitch, finch, poweramp
 - `proxyman`
 - `psiphon-pro`
 - `rar`
-- `sd-maid-se`
 - `stargazing-hub`
 - `stickerly`
 - `turboscan`
-- `uptodown-store`
 - `wallverse`
 - `windscribe-vpn`
 - `wolfram-alpha`
