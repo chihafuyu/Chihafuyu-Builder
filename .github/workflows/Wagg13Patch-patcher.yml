@@ -5,22 +5,32 @@ name: 🩷 Wagg13Patch Ecosystem Patcher
   workflow_dispatch:
     inputs:
       app_bisbi:
-        description: 'Patch Bisbi'
+        description: 'Patch bisbi'
         required: true
         type: boolean
         default: true
       app_buzzcast:
-        description: 'Patch BuzzCast'
+        description: 'Patch buzzcast'
+        required: true
+        type: boolean
+        default: true
+      app_image_date_fixer:
+        description: 'Patch image-video-date-fixer'
         required: true
         type: boolean
         default: true
       app_native_camera:
-        description: 'Patch Native Camera'
+        description: 'Patch native-camera'
+        required: true
+        type: boolean
+        default: true
+      app_picsart:
+        description: 'Patch picsart'
         required: true
         type: boolean
         default: true
       app_tinder:
-        description: 'Patch Tinder'
+        description: 'Patch tinder'
         required: true
         type: boolean
         default: true
@@ -94,7 +104,9 @@ jobs:
     env:
       APP_BISBI: ${{ inputs.app_bisbi }}
       APP_BUZZCAST: ${{ inputs.app_buzzcast }}
+      APP_IMAGE_DATE_FIXER: ${{ inputs.app_image_date_fixer }}
       APP_NATIVE_CAMERA: ${{ inputs.app_native_camera }}
+      APP_PICSART: ${{ inputs.app_picsart }}
       APP_TINDER: ${{ inputs.app_tinder }}
     steps:
       - id: build-list
@@ -107,8 +119,14 @@ jobs:
           if [[ "$APP_BUZZCAST" == "true" ]]; then
             LIST="$LIST,buzzcast"
           fi
+          if [[ "$APP_IMAGE_DATE_FIXER" == "true" ]]; then
+            LIST="$LIST,image-date-fixer"
+          fi
           if [[ "$APP_NATIVE_CAMERA" == "true" ]]; then
             LIST="$LIST,native-camera"
+          fi
+          if [[ "$APP_PICSART" == "true" ]]; then
+            LIST="$LIST,picsart"
           fi
           if [[ "$APP_TINDER" == "true" ]]; then
             LIST="$LIST,tinder"
