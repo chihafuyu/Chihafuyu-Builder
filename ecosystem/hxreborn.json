@@ -78,7 +78,17 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "26091051",
+                    "armeabi-v7a": "26091051",
+                    "x86-64": "26091051",
+                    "x86": "26091051"
+                }
             },
             "musixmatch": {
                 "package": "com.musixmatch.android.lyrify",

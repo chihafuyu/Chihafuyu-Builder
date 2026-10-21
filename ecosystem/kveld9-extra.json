@@ -87,7 +87,11 @@
                 "strip": true,
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "PowerPoint Companion Native Slimmer": {
+                        "enabled": false
+                    }
+                }
             },
             "sd-maid-se": {
                 "package": "eu.darken.sdmse",
