@@ -21,13 +21,17 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Block app open reports": {
+                        "enabled": false
+                    }
+                }
             },
             "native-camera": {
                 "package": "com.rawcam.app",
                 "search_term": "Native Camera",
                 "stable": [
-                    "1.4.1"
+                    "1.4.4"
                 ],
                 "beta": [],
                 "strip": true,
