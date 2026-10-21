@@ -14,11 +14,6 @@ name: 🔥 Hxreborn Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_audiolab:
-        description: 'Patch audiolab'
-        required: true
-        type: boolean
-        default: false
       app_bettersleep:
         description: 'Patch bettersleep'
         required: true
@@ -26,6 +21,11 @@ name: 🔥 Hxreborn Ecosystem Patcher
         default: false
       app_cx_file_explorer:
         description: 'Patch cx-file-explorer'
+        required: true
+        type: boolean
+        default: false
+      app_imo:
+        description: 'Patch imo'
         required: true
         type: boolean
         default: false
@@ -149,9 +149,9 @@ jobs:
     env:
       APP_1WEATHER: ${{ inputs.app_1weather }}
       APP_ALL_IN_ONE_CALCULATOR: ${{ inputs.app_all_in_one_calculator }}
-      APP_AUDIOLAB: ${{ inputs.app_audiolab }}
       APP_BETTERSLEEP: ${{ inputs.app_bettersleep }}
       APP_CX_FILE_EXPLORER: ${{ inputs.app_cx_file_explorer }}
+      APP_IMO: ${{ inputs.app_imo }}
       APP_MUSIXMATCH: ${{ inputs.app_musixmatch }}
       APP_NOTESNOOK: ${{ inputs.app_notesnook }}
       APP_PHOTO_EDITOR_PRO: ${{ inputs.app_photo_editor_pro }}
@@ -173,14 +173,14 @@ jobs:
           if [[ "$APP_ALL_IN_ONE_CALCULATOR" == "true" ]]; then
             LIST="$LIST,all-in-one-calculator"
           fi
-          if [[ "$APP_AUDIOLAB" == "true" ]]; then
-            LIST="$LIST,audiolab"
-          fi
           if [[ "$APP_BETTERSLEEP" == "true" ]]; then
             LIST="$LIST,bettersleep"
           fi
           if [[ "$APP_CX_FILE_EXPLORER" == "true" ]]; then
             LIST="$LIST,cx-file-explorer"
+          fi
+          if [[ "$APP_IMO" == "true" ]]; then
+            LIST="$LIST,imo"
           fi
           if [[ "$APP_MUSIXMATCH" == "true" ]]; then
             LIST="$LIST,musixmatch"

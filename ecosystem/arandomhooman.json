@@ -144,39 +144,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "symfonium": {
-                "package": "app.symfonik.music.player",
-                "search_term": "Symfonium",
-                "stable": [
-                    "14.1.0"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "tumblr": {
-                "package": "com.tumblr",
-                "search_term": "Tumblr",
-                "stable": [
-                    "45.8.0.110"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "twitch": {
-                "package": "tv.twitch.android.app",
-                "search_term": "Twitch",
-                "stable": [
-                    "30.7.2"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "video-converter": {
                 "package": "app.remux.video.converter",
                 "search_term": "Video Converter",

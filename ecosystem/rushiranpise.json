@@ -58,17 +58,6 @@
                 },
                 "force_bundle": true
             },
-            "adobe-scan": {
-                "package": "com.adobe.scan.android",
-                "search_term": "Adobe Scan",
-                "stable": [
-                    "26.08.01"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "aida64": {
                 "package": "com.finalwire.aida64",
                 "search_term": "AIDA64",
@@ -533,23 +522,6 @@
                 },
                 "force_bundle": true
             },
-            "sd-maid-se": {
-                "package": "eu.darken.sdmse",
-                "search_term": "SD Maid SE",
-                "stable": [
-                    "2.0.3-rc0"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "version_codes": {
-                    "arm64-v8a": "20003000",
-                    "armeabi-v7a": "20003000",
-                    "x86-64": "20003000",
-                    "x86": "20003000"
-                }
-            },
             "stargazing-hub": {
                 "package": "com.twtapp",
                 "search_term": "Stargazing Hub",
@@ -599,23 +571,6 @@
                     "armeabi-v7a": "123",
                     "x86-64": "123",
                     "x86": "123"
-                }
-            },
-            "uptodown-store": {
-                "package": "com.uptodown",
-                "search_term": "Uptodown App Store",
-                "stable": [
-                    "7.37"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "version_codes": {
-                    "arm64-v8a": "737",
-                    "armeabi-v7a": "737",
-                    "x86-64": "737",
-                    "x86": "737"
                 }
             },
             "wallverse": {
