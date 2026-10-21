@@ -36,10 +36,10 @@
                     "21.20.405"
                 ],
                 "beta": [
-                    "21.42.241"
+                    "21.42.243"
                 ],
                 "version_codes": {
-                    "universal": "1561304923"
+                    "universal": "1561304941"
                 },
                 "strip": true,
                 "force_bundle": false,
