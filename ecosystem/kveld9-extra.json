@@ -102,6 +102,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
+                "apkm_exclude": [
+                    "github"
+                ],
+                "force_arch": "universal",
+                "version_codes": {
+                    "universal": "12L+"
+                },
                 "options_override": {}
             }
         }
