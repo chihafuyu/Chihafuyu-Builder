@@ -51,6 +51,9 @@
                     },
                     "View DM photos and videos anonymously": {
                         "enabled": true
+                    },
+                    "Swipe left to open the profile": {
+                        "enabled": false
                     }
                 }
             },
@@ -265,6 +268,9 @@
                         "enabled": false
                     },
                     "Accent color": {
+                        "enabled": false
+                    },
+                    "Remove voice tools": {
                         "enabled": false
                     }
                 },

@@ -118,6 +118,9 @@
                     },
                     "Accent color": {
                         "enabled": false
+                    },
+                    "Remove voice tools": {
+                        "enabled": false
                     }
                 },
                 "version_codes": {
