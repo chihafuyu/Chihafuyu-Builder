@@ -27,11 +27,33 @@
                     }
                 }
             },
+            "image-date-fixer": {
+                "package": "eu.duong.imagedatefixer",
+                "search_term": "Image & Video Date Fixer",
+                "stable": [
+                    "3.10.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "native-camera": {
                 "package": "com.rawcam.app",
                 "search_term": "Native Camera",
                 "stable": [
                     "1.4.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "picsart": {
+                "package": "com.picsart.studio",
+                "search_term": "Picsart",
+                "stable": [
+                    "30.9.5"
                 ],
                 "beta": [],
                 "strip": true,
