@@ -78,19 +78,82 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
-    env:
-      APPS_TO_PATCH: ${{ inputs.apps_to_patch }}
     steps:
-      - id: build-list
+      - name: Validate and Normalize App List
+        id: build-list
+        env:
+          APPS_RAW: ${{ inputs.apps_to_patch }}
         run: |
           set -euo pipefail
-          if [[ -z "$APPS_TO_PATCH" ]]; then
+
+          RAW_CLEAN=$(printf '%s' "$APPS_RAW" | tr -d '[:space:]')
+          if [ -z "$RAW_CLEAN" ]; then
             echo "::error::No applications specified!"
             exit 1
           fi
+
+          ECO="rushiranpise"
+          CONFIG="ecosystem/${ECO}.json"
+          if [ ! -f "$CONFIG" ]; then
+            echo "::error::Config not found: $CONFIG"
+            exit 1
+          fi
+
+          VALID=$(CONFIG_PATH="$CONFIG" ECO_NAME="$ECO" python3 -c "
+          import os, json
+          with open(os.environ['CONFIG_PATH']) as f:
+              data = json.load(f)[os.environ['ECO_NAME']]['apps']
+          print('\n'.join(sorted(data)))
+          ")
+
+          APPS=()
+          while IFS= read -r APP; do
+            APP=$(printf '%s' "$APP" | tr -d '[:space:]')
+            [ -z "$APP" ] && continue
+            APPS+=("$APP")
+          done < <(printf '%s' "$APPS_RAW" | tr ',' '\n')
+
+          if [ ${#APPS[@]} -eq 0 ]; then
+            echo "::error::Input contains no valid app names"
+            exit 1
+          fi
+
+          HAS_ALL=0
+          OTHERS=()
+          for APP in "${APPS[@]}"; do
+            if [ "${APP,,}" = "all" ]; then
+              HAS_ALL=1
+            else
+              OTHERS+=("$APP")
+            fi
+          done
+
+          if [ "$HAS_ALL" -eq 1 ]; then
+            if [ ${#OTHERS[@]} -gt 0 ]; then
+              echo "::warning::Token 'all' present; ignored individual app names: ${OTHERS[*]}"
+            fi
+            SELECTED="all"
+          else
+            INVALID=()
+            for APP in "${APPS[@]}"; do
+              if ! grep -qxF "$APP" <<< "$VALID"; then
+                INVALID+=("$APP")
+              fi
+            done
+            if [ ${#INVALID[@]} -gt 0 ]; then
+              echo "::error::Unknown app(s) for ecosystem '$ECO': ${INVALID[*]}"
+              echo "::error::Valid apps:"
+              while IFS= read -r line; do
+                echo "  - $line"
+              done <<< "$VALID"
+              exit 1
+            fi
+            SELECTED=$(IFS=,; echo "${APPS[*]}")
+          fi
+
           {
             echo "apps<<EOF"
-            echo "$APPS_TO_PATCH"
+            echo "$SELECTED"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 

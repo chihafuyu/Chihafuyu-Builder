@@ -6,6 +6,8 @@ name: 🧹 Automated Release Janitor
     - cron: '48 5,11,17,23 * * *'
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
@@ -13,48 +15,51 @@ jobs:
       contents: write
       actions: write
 
+    env:
+      RETENTION_DAYS: 14
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
-      - name: Purge All Releases and Tags
+      - name: Purge Stale Patcher Releases
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          CUTOFF=$(date -u -d "-${RETENTION_DAYS} days" +%Y-%m-%dT%H:%M:%SZ)
+          echo "[INFO] Deleting patcher releases older than ${CUTOFF}"
 
-          echo "[INFO] Starting Total Release Janitor..."
-          gh release list --limit 1000 --json tagName \
-            -q '.[].tagName' | while read -r TAG_NAME; do
-            if [[ -n "$TAG_NAME" ]]; then
-              echo "[INFO] Initiating deletion for: $TAG_NAME"
-              gh release delete "$TAG_NAME" --yes --cleanup-tag || true
+          gh release list --limit 1000 \
+            --json tagName,createdAt \
+            -q ".[] | select(.createdAt < \"${CUTOFF}\") | .tagName" \
+            | while read -r TAG_NAME; do
+            if [[ -z "$TAG_NAME" ]]; then
+              continue
             fi
+            if [[ ! "$TAG_NAME" =~ -[0-9]+$ ]]; then
+              echo "[SKIP] Non-patcher release: $TAG_NAME"
+              continue
+            fi
+            echo "[INFO] Deleting release: $TAG_NAME"
+            gh release delete "$TAG_NAME" --yes --cleanup-tag || true
           done
 
-      - name: Purge All Workflow Runs
+      - name: Purge Stale Workflow Runs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          CUTOFF=$(date -u -d "-${RETENTION_DAYS} days" +%Y-%m-%dT%H:%M:%SZ)
+          echo "[INFO] Deleting completed runs older than ${CUTOFF}"
 
-          echo "[INFO] Starting Total Workflow Run Janitor..."
-
-          RUN_IDS=$(gh run list --limit 1000 \
-            --json databaseId -q '.[].databaseId')
-
-          if [[ -z "$RUN_IDS" ]]; then
-            echo "[INFO] No extra workflow runs to delete."
-            echo "[INFO] The dashboard is clean!"
-          else
-            for RUN_ID in $RUN_IDS; do
-              if [[ "$RUN_ID" == "${{ github.run_id }}" ]]; then
-                echo "[SKIP] Run ID $RUN_ID is the active job."
-                continue
-              fi
-
-              echo "[INFO] Deleting workflow run: $RUN_ID"
-              gh run delete "$RUN_ID" || true
-            done
-            echo "[INFO] Workflow run cleanup complete!"
-          fi
+          gh run list --limit 1000 --status completed \
+            --json databaseId,createdAt \
+            -q ".[] | select(.createdAt < \"${CUTOFF}\") | .databaseId" \
+            | while read -r RUN_ID; do
+            if [[ -z "$RUN_ID" || "$RUN_ID" == "${{ github.run_id }}" ]]; then
+              continue
+            fi
+            echo "[INFO] Deleting run: $RUN_ID"
+            gh run delete "$RUN_ID" || true
+          done

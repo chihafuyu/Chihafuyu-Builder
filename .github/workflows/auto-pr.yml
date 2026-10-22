@@ -23,7 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Create Draft Pull Request
+      - name: Create or Promote Pull Request
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_TITLE: 'chore: ${{ env.MESSAGE }}'
@@ -36,23 +36,20 @@ jobs:
             - [ ] Verify if the multi-tier downloader runs correctly 📥
             - [ ] Ensure options.json injection works ⚙️
         run: |
-          # Check if a PR from the current branch to main already exists
-          PR_EXISTS=$(gh pr list \
+          PR_NUMBER=$(gh pr list \
             --base main \
-            --head ${{ github.ref_name }} \
+            --head "${{ github.ref_name }}" \
             --json number \
             -q '.[0].number')
 
-          # If no PR exists, create a new draft PR
-          if [ -z "$PR_EXISTS" ] || [ "$PR_EXISTS" == "null" ]; then
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" == "null" ]; then
             gh pr create \
               --base main \
-              --head ${{ github.ref_name }} \
+              --head "${{ github.ref_name }}" \
               --title "$PR_TITLE" \
-              --body "$PR_BODY" \
-              --draft
-            echo "Draft Pull Request created successfully! 🚀"
+              --body "$PR_BODY"
+            echo "Pull Request created successfully!"
           else
-            # If a PR already exists, skip creation
-            echo "Pull Request already exists: #$PR_EXISTS. Skipping creation."
+            gh pr ready "$PR_NUMBER" 2>/dev/null || true
+            echo "Pull Request #$PR_NUMBER is ready for review."
           fi
