@@ -99,10 +99,10 @@ jobs:
             exit 1
           fi
 
-          VALID=$(python3 -c "
-          import json
-          with open('$CONFIG') as f:
-              data = json.load(f)['$ECO']['apps']
+          VALID=$(CONFIG_PATH="$CONFIG" ECO_NAME="$ECO" python3 -c "
+          import os, json
+          with open(os.environ['CONFIG_PATH']) as f:
+              data = json.load(f)[os.environ['ECO_NAME']]['apps']
           print('\n'.join(sorted(data)))
           ")
 
@@ -148,6 +148,8 @@ jobs:
               done <<< "$VALID"
               exit 1
             fi
+            SELECTED=$(IFS=,; echo "${APPS[*]}")
+          fi
 
           {
             echo "apps<<EOF"
