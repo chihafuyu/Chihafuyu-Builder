@@ -143,11 +143,11 @@ jobs:
             if [ ${#INVALID[@]} -gt 0 ]; then
               echo "::error::Unknown app(s) for ecosystem '$ECO': ${INVALID[*]}"
               echo "::error::Valid apps:"
-              echo "$VALID" | sed 's/^/  - /'
+              while IFS= read -r line; do
+                echo "  - $line"
+              done <<< "$VALID"
               exit 1
             fi
-            SELECTED=$(IFS=,; echo "${APPS[*]}")
-          fi
 
           {
             echo "apps<<EOF"
