@@ -15,7 +15,7 @@ name: 🩷 Wagg13Patch Ecosystem Patcher
         type: boolean
         default: true
       app_image_date_fixer:
-        description: 'Patch image-video-date-fixer'
+        description: 'Patch image-date-fixer'
         required: true
         type: boolean
         default: true

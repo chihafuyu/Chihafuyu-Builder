@@ -20,7 +20,7 @@ name: 🧰 SysAdminDoc Ecosystem Patcher
         type: boolean
         default: true
       app_pinedrama:
-        description: 'Patch HushPinedrama'
+        description: 'Patch HushPinedrama (repo: HushFeed)'
         required: true
         type: boolean
         default: false
@@ -112,38 +112,76 @@ name: 🧰 SysAdminDoc Ecosystem Patcher
 permissions: {}
 
 jobs:
-  patch-facebook:
-    if: inputs.app_facebook == true
-    permissions:
-      contents: write
-    uses: ./.github/workflows/core-engine.yml
-    secrets: inherit
-    with:
-      ecosystem: "SysAdminDoc"
-      apps: "facebook"
-      architecture: ${{ inputs.architecture }}
-      version_selection: ${{ inputs.version_selection }}
-      custom_version: ${{ inputs.custom_version }}
-      download_source: ${{ inputs.download_source }}
-      continue_on_error: ${{ inputs.continue_on_error }}
-      cli_track: ${{ inputs.cli_track }}
-      custom_cli_version: ${{ inputs.custom_cli_version }}
-      patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/HushFacebook"
-      custom_patch_filename: "hushfacebook-custom.mpp"
-      upload_github_release: ${{ inputs.upload_github_release }}
-      send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "hushfacebook"
+  prepare-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build.outputs.matrix }}
+    env:
+      APP_FACEBOOK: ${{ inputs.app_facebook }}
+      APP_INSTAGRAM: ${{ inputs.app_instagram }}
+      APP_MESSENGER: ${{ inputs.app_messenger }}
+      APP_PINEDRAMA: ${{ inputs.app_pinedrama }}
+      APP_PINTEREST: ${{ inputs.app_pinterest }}
+      APP_TELEGRAM_WEB: ${{ inputs.app_telegram_web }}
+      APP_THREADS: ${{ inputs.app_threads }}
+      APP_TIKTOK_GLOBAL: ${{ inputs.app_tiktok_global }}
+      APP_TUMBLR: ${{ inputs.app_tumblr }}
+    steps:
+      - name: Generate Dynamic Matrix
+        id: build
+        run: |
+          set -euo pipefail
+          entries=()
+          add_entry() {
+            entries+=("{\"app\":\"$1\",\"repo\":\"$2\",\"prefix\":\"$3\",\"mpp\":\"$4\"}")
+          }
+          if [[ "$APP_FACEBOOK" == "true" ]]; then
+            add_entry facebook HushFacebook hushfacebook hushfacebook-custom.mpp
+          fi
+          if [[ "$APP_INSTAGRAM" == "true" ]]; then
+            add_entry instagram HushGram hushgram hushgram-custom.mpp
+          fi
+          if [[ "$APP_MESSENGER" == "true" ]]; then
+            add_entry messenger HushMessenger hushmessenger hushmessenger-custom.mpp
+          fi
+          if [[ "$APP_PINEDRAMA" == "true" ]]; then
+            add_entry pinedrama HushFeed hushpinedrama hushfeed-custom.mpp
+          fi
+          if [[ "$APP_PINTEREST" == "true" ]]; then
+            add_entry pinterest HushPinterest hushpinterest hushpinterest-custom.mpp
+          fi
+          if [[ "$APP_TELEGRAM_WEB" == "true" ]]; then
+            add_entry telegram-web HushTelegram hushtelegram hushtelegram-custom.mpp
+          fi
+          if [[ "$APP_THREADS" == "true" ]]; then
+            add_entry threads HushThreads hushthreads hushthreads-custom.mpp
+          fi
+          if [[ "$APP_TIKTOK_GLOBAL" == "true" ]]; then
+            add_entry tiktok-global HushFeed hushfeed hushfeed-custom.mpp
+          fi
+          if [[ "$APP_TUMBLR" == "true" ]]; then
+            add_entry tumblr HushTumblr hushtumblr hushtumblr-custom.mpp
+          fi
+          if [ ${#entries[@]} -eq 0 ]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
+          matrix="[$(IFS=,; echo "${entries[*]}")]"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
-  patch-instagram:
-    if: inputs.app_instagram == true
+  call-patcher:
+    needs: prepare-matrix
     permissions:
       contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
     uses: ./.github/workflows/core-engine.yml
     secrets: inherit
     with:
       ecosystem: "SysAdminDoc"
-      apps: "instagram"
+      apps: ${{ matrix.app }}
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
       custom_version: ${{ inputs.custom_version }}
@@ -152,169 +190,8 @@ jobs:
       cli_track: ${{ inputs.cli_track }}
       custom_cli_version: ${{ inputs.custom_cli_version }}
       patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/HushGram"
-      custom_patch_filename: "hushgram-custom.mpp"
+      repo_url: SysAdminDoc/${{ matrix.repo }}
+      custom_patch_filename: ${{ matrix.mpp }}
       upload_github_release: ${{ inputs.upload_github_release }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "hushgram"
-
-  patch-messenger:
-    if: inputs.app_messenger == true
-    permissions:
-      contents: write
-    uses: ./.github/workflows/core-engine.yml
-    secrets: inherit
-    with:
-      ecosystem: "SysAdminDoc"
-      apps: "messenger"
-      architecture: ${{ inputs.architecture }}
-      version_selection: ${{ inputs.version_selection }}
-      custom_version: ${{ inputs.custom_version }}
-      download_source: ${{ inputs.download_source }}
-      continue_on_error: ${{ inputs.continue_on_error }}
-      cli_track: ${{ inputs.cli_track }}
-      custom_cli_version: ${{ inputs.custom_cli_version }}
-      patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/HushMessenger"
-      custom_patch_filename: "hushmessenger-custom.mpp"
-      upload_github_release: ${{ inputs.upload_github_release }}
-      send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "hushmessenger"
-
-  patch-pinedrama:
-    if: inputs.app_pinedrama == true
-    permissions:
-      contents: write
-    uses: ./.github/workflows/core-engine.yml
-    secrets: inherit
-    with:
-      ecosystem: "SysAdminDoc"
-      apps: "pinedrama"
-      architecture: ${{ inputs.architecture }}
-      version_selection: ${{ inputs.version_selection }}
-      custom_version: ${{ inputs.custom_version }}
-      download_source: ${{ inputs.download_source }}
-      continue_on_error: ${{ inputs.continue_on_error }}
-      cli_track: ${{ inputs.cli_track }}
-      custom_cli_version: ${{ inputs.custom_cli_version }}
-      patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/HushPinedrama"
-      custom_patch_filename: "hushpinedrama-custom.mpp"
-      upload_github_release: ${{ inputs.upload_github_release }}
-      send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "hushpinedrama"
-
-  patch-pinterest:
-    if: inputs.app_pinterest == true
-    permissions:
-      contents: write
-    uses: ./.github/workflows/core-engine.yml
-    secrets: inherit
-    with:
-      ecosystem: "SysAdminDoc"
-      apps: "pinterest"
-      architecture: ${{ inputs.architecture }}
-      version_selection: ${{ inputs.version_selection }}
-      custom_version: ${{ inputs.custom_version }}
-      download_source: ${{ inputs.download_source }}
-      continue_on_error: ${{ inputs.continue_on_error }}
-      cli_track: ${{ inputs.cli_track }}
-      custom_cli_version: ${{ inputs.custom_cli_version }}
-      patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/HushPinterest"
-      custom_patch_filename: "hushpinterest-custom.mpp"
-      upload_github_release: ${{ inputs.upload_github_release }}
-      send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "hushpinterest"
-
-  patch-telegram-web:
-    if: inputs.app_telegram_web == true
-    permissions:
-      contents: write
-    uses: ./.github/workflows/core-engine.yml
-    secrets: inherit
-    with:
-      ecosystem: "SysAdminDoc"
-      apps: "telegram-web"
-      architecture: ${{ inputs.architecture }}
-      version_selection: ${{ inputs.version_selection }}
-      custom_version: ${{ inputs.custom_version }}
-      download_source: ${{ inputs.download_source }}
-      continue_on_error: ${{ inputs.continue_on_error }}
-      cli_track: ${{ inputs.cli_track }}
-      custom_cli_version: ${{ inputs.custom_cli_version }}
-      patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/HushTelegram"
-      custom_patch_filename: "hushtelegram-custom.mpp"
-      upload_github_release: ${{ inputs.upload_github_release }}
-      send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "hushtelegram"
-
-  patch-threads:
-    if: inputs.app_threads == true
-    permissions:
-      contents: write
-    uses: ./.github/workflows/core-engine.yml
-    secrets: inherit
-    with:
-      ecosystem: "SysAdminDoc"
-      apps: "threads"
-      architecture: ${{ inputs.architecture }}
-      version_selection: ${{ inputs.version_selection }}
-      custom_version: ${{ inputs.custom_version }}
-      download_source: ${{ inputs.download_source }}
-      continue_on_error: ${{ inputs.continue_on_error }}
-      cli_track: ${{ inputs.cli_track }}
-      custom_cli_version: ${{ inputs.custom_cli_version }}
-      patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/HushThreads"
-      custom_patch_filename: "hushthreads-custom.mpp"
-      upload_github_release: ${{ inputs.upload_github_release }}
-      send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "hushthreads"
-
-  patch-tiktok-global:
-    if: inputs.app_tiktok_global == true
-    permissions:
-      contents: write
-    uses: ./.github/workflows/core-engine.yml
-    secrets: inherit
-    with:
-      ecosystem: "SysAdminDoc"
-      apps: "tiktok-global"
-      architecture: ${{ inputs.architecture }}
-      version_selection: ${{ inputs.version_selection }}
-      custom_version: ${{ inputs.custom_version }}
-      download_source: ${{ inputs.download_source }}
-      continue_on_error: ${{ inputs.continue_on_error }}
-      cli_track: ${{ inputs.cli_track }}
-      custom_cli_version: ${{ inputs.custom_cli_version }}
-      patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/HushFeed"
-      custom_patch_filename: "hushfeed-custom.mpp"
-      upload_github_release: ${{ inputs.upload_github_release }}
-      send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "hushfeed"
-
-  patch-tumblr:
-    if: inputs.app_tumblr == true
-    permissions:
-      contents: write
-    uses: ./.github/workflows/core-engine.yml
-    secrets: inherit
-    with:
-      ecosystem: "SysAdminDoc"
-      apps: "tumblr"
-      architecture: ${{ inputs.architecture }}
-      version_selection: ${{ inputs.version_selection }}
-      custom_version: ${{ inputs.custom_version }}
-      download_source: ${{ inputs.download_source }}
-      continue_on_error: ${{ inputs.continue_on_error }}
-      cli_track: ${{ inputs.cli_track }}
-      custom_cli_version: ${{ inputs.custom_cli_version }}
-      patches_track: ${{ inputs.patches_track }}
-      repo_url: "SysAdminDoc/HushTumblr"
-      custom_patch_filename: "hushtumblr-custom.mpp"
-      upload_github_release: ${{ inputs.upload_github_release }}
-      send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "hushtumblr"
+      release_tag_prefix: ${{ matrix.prefix }}

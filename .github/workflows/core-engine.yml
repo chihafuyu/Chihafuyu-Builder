@@ -59,8 +59,6 @@ jobs:
   execute:
     runs-on: ubuntu-latest
     timeout-minutes: 350
-    # Serialize Telegram uploads globally (Pyrogram session is shared).
-    # Non-Telegram runs use a per-ecosystem/tag prefix key.
     concurrency:
       group: >-
         ${{ inputs.send_to_telegram == true
@@ -90,11 +88,17 @@ jobs:
         run: |
           set -euo pipefail
 
-          IMAGE="ghcr.io/flaresolverr/flaresolverr:latest"
-          docker pull "$IMAGE"
+          retry() {
+            local n=3
+            until "$@"; do
+              ((n--)) || return 1
+              sleep 5
+            done
+          }
 
-          # Log the digest so the exact image used in this run is
-          # recorded in the CI log, even though the tag is mutable.
+          IMAGE="ghcr.io/flaresolverr/flaresolverr:latest"
+          retry docker pull "$IMAGE"
+
           DIGEST="$(
             docker inspect \
               --format='{{index .RepoDigests 0}}' "$IMAGE"
@@ -159,15 +163,28 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Fetch CLI
+          retry() {
+            local n=3
+            until "$@"; do
+              ((n--)) || return 1
+              sleep 5
+            done
+          }
+
+          if [[ "$INPUT_REPO_URL" == *://* ]]; then
+            echo "::error::repo_url must be 'owner/repo', got: $INPUT_REPO_URL"
+            exit 1
+          fi
+          echo "TARGET_REPO_URL=https://github.com/$INPUT_REPO_URL" \
+            >> "$GITHUB_ENV"
+
+          # --- Resolve CLI tag ---
           if [[ "$INPUT_CLI_TRACK" == "Custom" ]]; then
             CLI_TAG="$INPUT_CUSTOM_CLI_VERSION"
             if [[ -z "$CLI_TAG" ]]; then
               echo "::error::Custom CLI version input is empty!"
               exit 1
             fi
-            gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop \
-              --pattern "morphe-desktop-*-all.jar"
           elif [[ "$INPUT_CLI_TRACK" == "Pre-release" ]]; then
             JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
             JQ_FLTR="${JQ_FLTR} | .[].tag_name"
@@ -177,93 +194,93 @@ jobs:
               echo "::error::No Morphe CLI pre-release was found"
               exit 1
             fi
-            gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop \
-              --pattern "morphe-desktop-*-all.jar"
           else
-            gh release download -R MorpheApp/morphe-desktop \
-              --pattern "morphe-desktop-*-all.jar"
+            CLI_TAG="$(gh api repos/MorpheApp/morphe-desktop/releases/latest \
+              | jq -r '.tag_name // empty')"
+            if [[ -z "$CLI_TAG" ]]; then
+              echo "::error::No stable Morphe CLI release was found"
+              exit 1
+            fi
           fi
+          echo "CLI_VERSION=$CLI_TAG" >> "$GITHUB_ENV"
 
-          mapfile -t JARS < <(find . -maxdepth 1 -type f \
+          CLI_DIR=".cli_download"
+          rm -rf "$CLI_DIR"
+          mkdir -p "$CLI_DIR"
+          retry gh release download "$CLI_TAG" -R MorpheApp/morphe-desktop \
+            --pattern "morphe-desktop-*-all.jar" -D "$CLI_DIR"
+
+          mapfile -t JARS < <(find "$CLI_DIR" -maxdepth 1 -type f \
             -name 'morphe-desktop-*-all.jar' -print | sort -V)
           if (( ${#JARS[@]} == 0 )); then
             echo "::error::Morphe CLI JAR was not downloaded"
             exit 1
           fi
+          mv -- "${JARS[${#JARS[@]}-1]}" morphe.jar
 
-          LATEST_JAR="${JARS[${#JARS[@]}-1]}"
-          if [[ "$LATEST_JAR" != "./morphe.jar" && \
-                "$LATEST_JAR" != "morphe.jar" ]]; then
-            mv -- "$LATEST_JAR" morphe.jar
-          fi
-
-          # Fetch Patches
-          TARGET_URL="https://github.com/$INPUT_REPO_URL"
-          echo "TARGET_REPO_URL=$TARGET_URL" >> "$GITHUB_ENV"
-
+          # --- Resolve patches ---
           if [[ "$INPUT_PATCHES_TRACK" == "Custom Local" ]]; then
-            test -f "Custom-Patches/$INPUT_CUSTOM_PATCH_FILENAME"
-            cp -- "Custom-Patches/$INPUT_CUSTOM_PATCH_FILENAME" patches.mpp
+            CUSTOM_PATCH="Custom-Patches/$INPUT_CUSTOM_PATCH_FILENAME"
+            if [[ ! -f "$CUSTOM_PATCH" ]]; then
+              echo "::error::Custom patch not found: $CUSTOM_PATCH"
+              ls -la Custom-Patches/ 2>/dev/null || echo "(no Custom-Patches/ directory)"
+              exit 1
+            fi
+            if [[ ! -s "$CUSTOM_PATCH" ]]; then
+              echo "::error::Custom patch is empty: $CUSTOM_PATCH"
+              exit 1
+            fi
+            cp -- "$CUSTOM_PATCH" patches.mpp
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
-
-          elif [[ "$INPUT_PATCHES_TRACK" == "Pre-release" ]]; then
-            JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
-            JQ_FLTR="${JQ_FLTR} | .[].tag_name"
-            PATCH_TAG="$(gh api "repos/$INPUT_REPO_URL/releases" \
-              --paginate | jq -r -s "$JQ_FLTR" | sort -V | tail -n 1)"
-            if [[ -z "$PATCH_TAG" ]]; then
-              echo "::error::No patches pre-release found in $INPUT_REPO_URL"
-              exit 1
-            fi
-            gh release download "$PATCH_TAG" -R "$INPUT_REPO_URL" \
-              --pattern "*.mpp"
-            mapfile -t MPPS < <(find . -maxdepth 1 -type f \
-              -name '*.mpp' -print | sort -V)
-            if (( ${#MPPS[@]} == 0 )); then
-              echo "::error::No .mpp patch bundle downloaded"
-              exit 1
-            fi
-            LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
-            if [[ "$LATEST_MPP" != "./patches.mpp" && \
-                  "$LATEST_MPP" != "patches.mpp" ]]; then
-              mv -- "$LATEST_MPP" patches.mpp
-            fi
-            echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
-
           else
-            PATCH_TAG="$(gh api "repos/$INPUT_REPO_URL/releases/latest" \
-              | jq -r '.tag_name // empty')"
-            if [[ -z "$PATCH_TAG" ]]; then
-              echo "::error::No stable patches release found in $INPUT_REPO_URL"
-              exit 1
+            if [[ "$INPUT_PATCHES_TRACK" == "Pre-release" ]]; then
+              JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
+              JQ_FLTR="${JQ_FLTR} | .[].tag_name"
+              PATCH_TAG="$(gh api "repos/$INPUT_REPO_URL/releases" \
+                --paginate | jq -r -s "$JQ_FLTR" | sort -V | tail -n 1)"
+              if [[ -z "$PATCH_TAG" ]]; then
+                echo "::error::No patches pre-release found in $INPUT_REPO_URL"
+                exit 1
+              fi
+            else
+              PATCH_TAG="$(gh api "repos/$INPUT_REPO_URL/releases/latest" \
+                | jq -r '.tag_name // empty')"
+              if [[ -z "$PATCH_TAG" ]]; then
+                echo "::error::No stable patches release found in $INPUT_REPO_URL"
+                exit 1
+              fi
             fi
-            gh release download "$PATCH_TAG" -R "$INPUT_REPO_URL" \
-              --pattern "*.mpp"
-            mapfile -t MPPS < <(find . -maxdepth 1 -type f \
+
+            MPP_DIR=".patches_download"
+            rm -rf "$MPP_DIR"
+            mkdir -p "$MPP_DIR"
+            retry gh release download "$PATCH_TAG" -R "$INPUT_REPO_URL" \
+              --pattern "*.mpp" -D "$MPP_DIR"
+
+            mapfile -t MPPS < <(find "$MPP_DIR" -maxdepth 1 -type f \
               -name '*.mpp' -print | sort -V)
             if (( ${#MPPS[@]} == 0 )); then
               echo "::error::No .mpp patch bundle downloaded"
               exit 1
             fi
-            LATEST_MPP="${MPPS[${#MPPS[@]}-1]}"
-            if [[ "$LATEST_MPP" != "./patches.mpp" && \
-                  "$LATEST_MPP" != "patches.mpp" ]]; then
-              mv -- "$LATEST_MPP" patches.mpp
-            fi
+            mv -- "${MPPS[${#MPPS[@]}-1]}" patches.mpp
             echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
           fi
 
       - name: Decode Custom Keystore
+        id: keystore
         env:
           KEYSTORE_B64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
           set -euo pipefail
           if [[ -z "$KEYSTORE_B64" ]]; then
-            echo "::error::KEYSTORE_BASE64 secret is missing"
-            exit 1
+            echo "::warning::KEYSTORE_BASE64 is not set; patched APKs will be signed with the Morphe default keystore."
+            echo "USE_KEYSTORE=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           printf '%s' "$KEYSTORE_B64" | base64 --decode > custom.keystore
           chmod 0600 custom.keystore
+          echo "USE_KEYSTORE=true" >> "$GITHUB_OUTPUT"
 
       - name: Evaluate Pre-release Flag
         env:
@@ -288,6 +305,7 @@ jobs:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_SIGNER_NAME: ${{ secrets.KEYSTORE_SIGNER_NAME }}
+          USE_KEYSTORE: ${{ steps.keystore.outputs.USE_KEYSTORE }}
           VT_API_KEY: ${{ secrets.VT_API_KEY }}
           HA_API_KEY: ${{ secrets.HA_API_KEY }}
           MD_API_KEY: ${{ secrets.MD_API_KEY }}
@@ -306,22 +324,14 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Fetch real CLI version using GitHub CLI to avoid rate limits
-          if [[ "$INPUT_CLI_TRACK" == "Stable" ]]; then
-            R="repos/MorpheApp/morphe-desktop/releases/latest"
-            REAL_CLI_TAG="$(gh api "$R" | jq -r '.tag_name // empty')"
-          elif [[ "$INPUT_CLI_TRACK" == "Pre-release" ]]; then
-            R="repos/MorpheApp/morphe-desktop/releases"
-            JQ_F='map(select(.prerelease == true))'
-            JQ_F="${JQ_F} | .[0].tag_name // empty"
-            REAL_CLI_TAG="$(gh api "$R" | jq -r "$JQ_F")"
-          else
-            REAL_CLI_TAG="$INPUT_CUSTOM_CLI_VERSION"
-          fi
-
-          # Fallback if GitHub API fails or tag is empty
-          if [[ -z "$REAL_CLI_TAG" || "$REAL_CLI_TAG" == "null" ]]; then
-            REAL_CLI_TAG="$INPUT_CLI_TRACK"
+          KEYSTORE_OPTS=()
+          if [[ "$USE_KEYSTORE" == "true" ]]; then
+            KEYSTORE_OPTS=(
+              --keystore "custom.keystore"
+              --ks-alias "$KEYSTORE_ALIAS"
+              --ks-pass "$KEYSTORE_PASSWORD"
+              --signer "$KEYSTORE_SIGNER_NAME"
+            )
           fi
 
           python -u main.py \
@@ -333,15 +343,12 @@ jobs:
             --download-source "$INPUT_DOWNLOAD_SOURCE" \
             --continue-on-error "$INPUT_CONTINUE_ON_ERROR" \
             --cli "morphe.jar" \
-            --cli-version "$REAL_CLI_TAG" \
+            --cli-version "$CLI_VERSION" \
             --patches "patches.mpp" \
             --patches-version "$PATCHES_VERSION" \
             --repo-url "$TARGET_REPO_URL" \
-            --keystore "custom.keystore" \
-            --ks-alias "$KEYSTORE_ALIAS" \
-            --ks-pass "$KEYSTORE_PASSWORD" \
-            --signer "$KEYSTORE_SIGNER_NAME" \
-            --is-prerelease "$IS_PRERELEASE"
+            --is-prerelease "$IS_PRERELEASE" \
+            "${KEYSTORE_OPTS[@]}"
 
       - name: Validate Release Outputs
         env:
@@ -357,7 +364,6 @@ jobs:
             exit 1
           }
 
-          # Auxiliary exports (options / logs) are non-fatal but reported.
           APK_COUNT=$(find "./$INPUT_ECOSYSTEM/Output" -maxdepth 1 \
             -type f -name '*.apk' | wc -l)
           JSON_COUNT=$(find "./$INPUT_ECOSYSTEM/Output" -maxdepth 1 \
@@ -401,5 +407,5 @@ jobs:
           set -euo pipefail
           python -m pip install \
             --disable-pip-version-check \
-            "kurigram~=2.2" "TgrCrypto~=1.1"
+            "kurigram" "TgCryptoRust"
           python tg_upload.py
