@@ -324,7 +324,7 @@ def _generate_options_json(
     res = run_java_tool(cmd, tag=f"options-create ({app_name})")
 
     if res is not None and res.returncode != 0:
-        err_out = (res.stderr or res.stdout or "").strip()[-500:]
+        err_out = (res.stderr or res.stdout or "").strip()[:1000]
         print(f"[WARN] CLI options-create failed (exit {res.returncode}): {err_out}")
 
     if not os.path.isfile(json_file):
