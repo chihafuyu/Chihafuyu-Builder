@@ -30,6 +30,11 @@ from core.utils import (
 
 MAX_RUNTIME_SECONDS = 19800
 ECOSYSTEM_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
+ZERO_PATCH_RE = re.compile(
+    r"(Applying\s+0\s+patches?|0\s+patches?\s+applied|No patches applied)",
+    re.IGNORECASE,
+)
+GOOGLE_PACKAGE_PREFIX = "com.google."
 
 
 def load_config(ecosystem_name: str) -> dict[str, Any]:
@@ -88,12 +93,20 @@ def download_apk(ctx: Context, args: Any) -> str | None:
 
 
 def _normalize_repo_url(repo: str) -> str:
-    """Normalizes a repo identifier into a fully-qualified GitHub URL."""
+    """Normalizes a repo identifier into a fully-qualified GitHub URL.
+
+    Accepts either a plain `owner/repo` path or a full https://github.com/...
+    URL. Any other hostname is rejected (returns empty string) instead of
+    producing a malformed URL.
+    """
     repo = (repo or "").strip().rstrip("/")
     if not repo:
         return ""
-    parsed = urlparse(repo if "://" in repo else f"https://{repo}")
-    if parsed.hostname in ("github.com", "www.github.com"):
+    if "://" in repo:
+        parsed = urlparse(repo)
+        if parsed.hostname not in ("github.com", "www.github.com"):
+            print(f"[WARN] Non-GitHub repo URL ignored: {repo!r}")
+            return ""
         path = parsed.path.strip("/")
         return f"https://github.com/{path}" if path else "https://github.com"
     return f"https://github.com/{repo.lstrip('/')}"
@@ -107,9 +120,14 @@ def write_changelog(
     cli_version = args.cli_version if args.cli_version else "Unknown"
     repo_url = _normalize_repo_url(args.repo_url)
 
+    has_google_apps = any(
+        str(app.get("package", "")).startswith(GOOGLE_PACKAGE_PREFIX)
+        for app in apps_patched
+    )
+
     with open(log_path, "w", encoding="utf-8") as f_obj:
         f_obj.write(f"## Automatically Patched Applications ({args.ecosystem})\n\n")
-        if args.is_prerelease.lower() == "true":
+        if (args.is_prerelease or "").lower() == "true":
             f_obj.write("> [!WARNING]\n")
             f_obj.write("> **Patched using pre-release tools. Use with caution.**\n\n")
 
@@ -120,7 +138,10 @@ def write_changelog(
             )
         else:
             f_obj.write(f"- Patches from `{args.ecosystem}`. ")
-        f_obj.write(f"Source: [Repository]({repo_url})\n")
+        if repo_url:
+            f_obj.write(f"Source: [Repository]({repo_url})\n")
+        else:
+            f_obj.write("Source: (repository URL not provided)\n")
         f_obj.write(
             f"- CLI version **v{cli_version.lstrip('v')}** from `morphe-desktop`. "
         )
@@ -136,10 +157,12 @@ def write_changelog(
                 f"(v{app['version']}{b_str} - `{app['arch']}`)\n"
             )
             f_obj.write(line)
-        f_obj.write("\n---\n### ⚠️ microG Required\n")
-        f_obj.write(
-            f"For Google Apps, install [microG-RE]({args.microg_url}).\n"
-        )
+
+        if has_google_apps:
+            f_obj.write("\n---\n### ⚠️ microG Required\n")
+            f_obj.write(
+                f"For Google Apps, install [microG-RE]({args.microg_url}).\n"
+            )
 
 
 def _parse_custom_versions(ver_str: str) -> dict:
@@ -167,12 +190,16 @@ def _get_apk_output_path(
 ) -> str:
     """Constructs the release path for the patched APK."""
     app, ver, arch = app_info
-    stem = (
-        f"{_safe_filename(app)}_{_safe_filename(args.ecosystem)}_"
-        f"{_safe_filename(ver)}-{_safe_filename(arch)}_"
-        f"patches_{_safe_filename(state['clean_ver'])}"
-    )
-    return os.path.join(state["out_dir"], f"{stem}_patched.apk")
+    stem_parts = [
+        _safe_filename(app),
+        _safe_filename(args.ecosystem),
+        f"{_safe_filename(ver)}-{_safe_filename(arch)}",
+    ]
+    if state["clean_ver"] and state["clean_ver"] != "unknown":
+        stem_parts.append(f"patches_{_safe_filename(state['clean_ver'])}")
+    stem_parts.append("patched")
+    stem = "_".join(stem_parts)
+    return os.path.join(state["out_dir"], f"{stem}.apk")
 
 
 def _get_staging_path(app_name: str, state: dict, ext: str) -> str:
@@ -258,7 +285,7 @@ def execute_patch_cli(
                         print(line, end="")
                         if log_handle is not None:
                             log_handle.write(line)
-                        if "Applying 0 patches" in line:
+                        if ZERO_PATCH_RE.search(line):
                             zero_patches = True
 
                 reader = threading.Thread(target=_stream_output, daemon=True)
@@ -381,7 +408,17 @@ def process_single_app(
 ) -> None:
     """Processes a single application for downloading and patching safely."""
     t_ver = _resolve_target_version(app_data, args, custom_ver)
-    arch = app_data.get("force_arch", args.arch)
+
+    forced_arch = app_data.get("force_arch")
+    if forced_arch and forced_arch != args.arch:
+        print(
+            f"[WARN] {app_name}: force_arch={forced_arch!r} overrides "
+            f"--arch={args.arch!r}."
+        )
+        arch = forced_arch
+    else:
+        arch = args.arch
+
     print(f"\n--- {app_name} ({app_data['package']}) ---")
 
     app_info = (app_name, t_ver, arch)
@@ -415,6 +452,7 @@ def process_single_app(
         print(f"\n[INFO] SUCCESS: {app_name}")
         state["success"].append({
             "name": app_name,
+            "package": app_data["package"],
             "version": t_ver,
             "build": app_data.get("version_codes", {}).get(arch),
             "arch": arch,
@@ -498,6 +536,7 @@ def _process_app_loop(args: Any, state: dict) -> None:
             break
 
         if app_name not in state["eco_apps"]:
+            print(f"[WARN] App '{app_name}' not found in ecosystem config; skipping.")
             continue
 
         c_ver = (
@@ -505,6 +544,25 @@ def _process_app_loop(args: Any, state: dict) -> None:
             or state["custom_vers"].get("_global", "")
         )
         process_single_app(app_name, args, state["eco_apps"][app_name], c_ver, state)
+
+
+def _resolve_app_list(apps_arg: str, eco_apps: dict) -> list[str]:
+    """Resolves the --apps argument into a concrete list of app keys.
+
+    Supports the reserved token `all` (alone or mixed with other names),
+    tolerates surrounding whitespace, and de-duplicates while preserving
+    the input order.
+    """
+    raw = [a.strip() for a in apps_arg.split(",") if a.strip()]
+    if not raw:
+        return []
+    if any(a.lower() == "all" for a in raw):
+        return list(eco_apps.keys())
+
+    seen: dict[str, None] = {}
+    for name in raw:
+        seen.setdefault(name, None)
+    return list(seen)
 
 
 def run_patcher(args: Any) -> None:
@@ -525,11 +583,10 @@ def run_patcher(args: Any) -> None:
     if not isinstance(eco_apps, dict):
         sys.exit(f"[FATAL] '{args.ecosystem}' has no valid 'apps' config.")
 
-    app_list = (
-        list(eco_apps.keys())
-        if args.apps.lower() == "all"
-        else [a.strip() for a in args.apps.split(",") if a.strip()]
-    )
+    app_list = _resolve_app_list(args.apps, eco_apps)
+    if not app_list:
+        sys.exit(f"[FATAL] No apps resolved from --apps={args.apps!r}")
+
     state = {
         "in_dir": in_dir,
         "out_dir": out_dir,

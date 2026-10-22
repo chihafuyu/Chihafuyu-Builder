@@ -8,12 +8,12 @@ name: 🕉️ BholeyKaBhakt Ecosystem Patcher
         description: 'Patch speedtest'
         required: true
         type: boolean
-        default: false
+        default: true
       app_stellarium:
         description: 'Patch stellarium'
         required: true
         type: boolean
-        default: false
+        default: true
       app_proto:
         description: 'Patch proto'
         required: true

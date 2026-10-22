@@ -5,7 +5,7 @@ name: ✨ Gemini PR Reviewer
   pull_request:
     types: [opened, synchronize, ready_for_review]
     paths-ignore:
-      - '*.md'
+      - '**/*.md'
       - 'LICENSE'
       - '.gitignore'
 
@@ -14,11 +14,15 @@ permissions:
   pull-requests: write
   issues: write
 
+concurrency:
+  group: gemini-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   review:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
