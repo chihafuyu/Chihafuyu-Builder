@@ -36,7 +36,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "31000010",
+                    "armeabi-v7a": "31000010",
+                    "x86-64": "31000010",
+                    "x86": "31000010"
+                },
+                "force_bundle": true
             },
             "native-camera": {
                 "package": "com.rawcam.app",
