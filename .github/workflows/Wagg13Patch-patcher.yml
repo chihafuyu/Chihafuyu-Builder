@@ -147,7 +147,22 @@ jobs:
     permissions:
       contents: write
     uses: ./.github/workflows/core-engine.yml
-    secrets: inherit
+    secrets:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+      KEYSTORE_SIGNER_NAME: ${{ secrets.KEYSTORE_SIGNER_NAME }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      VT_API_KEY: ${{ secrets.VT_API_KEY }}
+      HA_API_KEY: ${{ secrets.HA_API_KEY }}
+      MD_API_KEY: ${{ secrets.MD_API_KEY }}
+      PLAY_EMAIL: ${{ secrets.PLAY_EMAIL }}
+      PLAY_AAS_TOKEN: ${{ secrets.PLAY_AAS_TOKEN }}
+      DEVICE_PROPERTIES_B64: ${{ secrets.DEVICE_PROPERTIES_B64 }}
+      API_ID: ${{ secrets.API_ID }}
+      API_HASH: ${{ secrets.API_HASH }}
+      SESSION_STRING: ${{ secrets.SESSION_STRING }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
     with:
       ecosystem: "Wagg13Patch"
       apps: ${{ needs.prepare-apps.outputs.selected }}

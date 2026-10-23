@@ -51,6 +51,37 @@ name: ⚙️ Core Patcher Engine
       release_tag_prefix:
         required: true
         type: string
+    secrets:
+      KEYSTORE_BASE64:
+        required: true
+      KEYSTORE_PASSWORD:
+        required: true
+      KEYSTORE_ALIAS:
+        required: true
+      KEYSTORE_SIGNER_NAME:
+        required: true
+      GEMINI_API_KEY:
+        required: false
+      VT_API_KEY:
+        required: false
+      HA_API_KEY:
+        required: false
+      MD_API_KEY:
+        required: false
+      PLAY_EMAIL:
+        required: false
+      PLAY_AAS_TOKEN:
+        required: false
+      DEVICE_PROPERTIES_B64:
+        required: false
+      API_ID:
+        required: false
+      API_HASH:
+        required: false
+      SESSION_STRING:
+        required: false
+      CHAT_ID:
+        required: false
 
 permissions:
   contents: write
