@@ -5,14 +5,14 @@
                 "package": "com.tumblr",
                 "search_term": "Tumblr",
                 "stable": [
-                    "46.5.0.109"
+                    "46.8.1.100"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "1460500109",
-                    "armeabi-v7a": "1460500109",
-                    "x86": "1460500109",
-                    "x86-64": "1460500109"
+                    "arm64-v8a": "1460801100",
+                    "armeabi-v7a": "1460801100",
+                    "x86": "1460801100",
+                    "x86-64": "1460801100"
                 },
                 "strip": true,
                 "force_bundle": true,

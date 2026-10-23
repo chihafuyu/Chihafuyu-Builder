@@ -17,6 +17,9 @@
                 "options_override": {
                     "Spoof signature for Google sign-in": {
                         "enabled": true
+                    },
+                    "GmsCore support": {
+                        "enabled": false
                     }
                 }
             }
