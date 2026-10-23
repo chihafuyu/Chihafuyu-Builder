@@ -122,7 +122,7 @@
                 "package": "com.tubitv",
                 "search_term": "Tubi",
                 "stable": [
-                    "10.36.5000"
+                    "10.40.5000"
                 ],
                 "beta": [],
                 "strip": true,

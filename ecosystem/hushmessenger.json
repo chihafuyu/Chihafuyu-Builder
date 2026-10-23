@@ -5,7 +5,7 @@
                 "package": "com.facebook.orca",
                 "search_term": "Messenger",
                 "stable": [
-                    "583.0.0.29.95"
+                    "584.0.0.49.98"
                 ],
                 "version_codes": {
                     "arm64-v8a": "346611435"

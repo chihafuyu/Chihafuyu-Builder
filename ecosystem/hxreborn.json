@@ -111,17 +111,17 @@
                 "package": "com.streetwriters.notesnook",
                 "search_term": "Notesnook",
                 "stable": [
-                    "3.4.14"
+                    "3.4.15"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "4197424",
-                    "armeabi-v7a": "4197424",
-                    "x86-64": "4197424",
-                    "x86": "4197424"
+                    "arm64-v8a": "4197425",
+                    "armeabi-v7a": "4197425",
+                    "x86-64": "4197425",
+                    "x86": "4197425"
                 }
             },
             "photo-editor-pro": {
@@ -179,24 +179,24 @@
                 "package": "org.readera",
                 "search_term": "ReadEra",
                 "stable": [
-                    "26.09.29+2320"
+                    "26.10.18+2330"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "2320",
-                    "armeabi-v7a": "2320",
-                    "x86-64": "2320",
-                    "x86": "2320"
+                    "arm64-v8a": "2330",
+                    "armeabi-v7a": "2330",
+                    "x86-64": "2330",
+                    "x86": "2330"
                 }
             },
             "rise-sleep-tracker": {
                 "package": "com.risesci.nyx",
                 "search_term": "RISE Sleep Tracker",
                 "stable": [
-                    "Android V1.79.1"
+                    "Android V1.79.2"
                 ],
                 "beta": [],
                 "strip": true,

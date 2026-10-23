@@ -13,7 +13,15 @@
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Remove Useless/Promotional Items": {
+                        "enabled": false
+                    },
+                    "Use System Font": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
             }
         }
     }
