@@ -183,7 +183,7 @@ def _fetch_release_patches(url, target_package=None, target_name=None):
     """Fetch patches-list.json from a GitHub release asset."""
     print(f"Fetching release patches from {url}...")
     data = _fetch_json(url)
-    
+
     pkg_name = target_package or "com.twitter.android"
     app_name = target_name or "Twitter"
 

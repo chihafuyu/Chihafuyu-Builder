@@ -2,7 +2,6 @@
 py-version = 3.14
 jobs = 1
 persistent = no
-suggestion-mode = yes
 ignore = .git,.venv,venv,build,dist,__pycache__,node_modules
 ignore-patterns = ^\.#
 source-roots = .
@@ -19,7 +18,6 @@ disable =
     R0914,
     R0915,
     R1710,
-    R2004,
     W0613,
     W0703,
     W0718
