@@ -42,23 +42,25 @@ def _find_repo_map(script_dir, repo_root):
 
 
 def _parse_repo_info(name, info, repo_root):
-    """Parse repo info into a config path and URL."""
+    """Parse repo info into a config path, URL, and target metadata."""
     config_path = info.get("config_path", f"ecosystem/{name}.json")
     abs_config_path = os.path.normpath(
         os.path.join(repo_root, config_path)
     )
     release_patches = info.get("release_patches", False)
+    target_package = info.get("target_package")
+    target_name = info.get("target_name")
 
     if "aggregate_repos" in info:
         urls = [
             f"https://raw.githubusercontent.com/{repo}/main/patches-list.json"
             for repo in info["aggregate_repos"]
         ]
-        return abs_config_path, urls, release_patches
+        return abs_config_path, urls, release_patches, target_package, target_name
 
     repo_url = info.get("repo_url")
     if not repo_url:
-        return None, None, False
+        return None, None, False, None, None
 
     branch = info.get("branch", "main")
     file_path = info.get("file_path", "patches-list.json")
@@ -66,7 +68,7 @@ def _parse_repo_info(name, info, repo_root):
         f"https://raw.githubusercontent.com/{repo_url}"
         f"/{branch}/{file_path}"
     )
-    return abs_config_path, url, release_patches
+    return abs_config_path, url, release_patches, target_package, target_name
 
 
 def load_ecosystems():
@@ -83,13 +85,14 @@ def load_ecosystems():
             with open(repo_map_path, "r", encoding="utf-8") as file_obj:
                 repo_map = json.load(file_obj)
             for name, info in repo_map.items():
-                abs_config_path, url, is_release = _parse_repo_info(
-                    name, info, repo_root
-                )
+                res = _parse_repo_info(name, info, repo_root)
+                abs_config_path, url, is_release, target_pkg, target_name = res
                 if abs_config_path and url:
                     ecosystems[abs_config_path] = {
                         "url": url,
                         "release_patches": is_release,
+                        "target_package": target_pkg,
+                        "target_name": target_name,
                     }
         except (OSError, json.JSONDecodeError) as err:
             print(f"Failed to load repo_map.json: {err}")
@@ -105,6 +108,8 @@ def load_ecosystems():
                     "morphe-patches/main/patches-list.json"
                 ),
                 "release_patches": False,
+                "target_package": None,
+                "target_name": None,
             },
             os.path.join(repo_root, "ecosystem/kveld9.json"): {
                 "url": (
@@ -112,6 +117,8 @@ def load_ecosystems():
                     "kveld-morphe-patches/main/patches-list.json"
                 ),
                 "release_patches": False,
+                "target_package": None,
+                "target_name": None,
             },
         }
     return ecosystems
@@ -132,7 +139,7 @@ def _fetch_json(url):
     return None
 
 
-def _parse_bundle_json(url):
+def _parse_bundle_json(url, target_package=None, target_name=None):
     """Parse patches-bundle.json to extract the stable app version."""
     print(f"Fetching bundle metadata {url}...")
     data = _fetch_json(url)
@@ -145,6 +152,9 @@ def _parse_bundle_json(url):
         print("  -> Missing 'app_version' in bundle metadata.")
         return None
 
+    pkg_name = target_package or "com.twitter.android"
+    app_name = target_name or "Twitter"
+
     return {
         "patches": [
             {
@@ -152,8 +162,8 @@ def _parse_bundle_json(url):
                 "default": True,
                 "compatiblePackages": [
                     {
-                        "packageName": "com.twitter.android",
-                        "name": "X",
+                        "packageName": pkg_name,
+                        "name": app_name,
                         "apkFileType": "APKM",
                         "targets": [
                             {
@@ -169,10 +179,13 @@ def _parse_bundle_json(url):
     }
 
 
-def _fetch_release_patches(url):
+def _fetch_release_patches(url, target_package=None, target_name=None):
     """Fetch patches-list.json from a GitHub release asset."""
     print(f"Fetching release patches from {url}...")
     data = _fetch_json(url)
+    
+    pkg_name = target_package or "com.twitter.android"
+    app_name = target_name or "Twitter"
 
     if isinstance(data, dict):
         app_version = data.get("app_version")
@@ -193,8 +206,8 @@ def _fetch_release_patches(url):
                             "default": True,
                             "compatiblePackages": [
                                 {
-                                    "packageName": "com.twitter.android",
-                                    "name": "X",
+                                    "packageName": pkg_name,
+                                    "name": app_name,
                                     "apkFileType": "APKM",
                                     "targets": [
                                         {
@@ -225,8 +238,8 @@ def _fetch_release_patches(url):
                 "default": True,
                 "compatiblePackages": [
                     {
-                        "packageName": "com.twitter.android",
-                        "name": "X",
+                        "packageName": pkg_name,
+                        "name": app_name,
                         "apkFileType": "APKM",
                         "targets": [],
                     }
@@ -237,7 +250,12 @@ def _fetch_release_patches(url):
     }
 
 
-def fetch_patches_list(url, release_patches=False):
+def fetch_patches_list(
+    url,
+    release_patches=False,
+    target_package=None,
+    target_name=None,
+):
     """Fetch patches-list.json or parse bundle metadata from a URL."""
     if isinstance(url, list):
         print(f"Fetching aggregated patches from {len(url)} URLs...")
@@ -249,10 +267,10 @@ def fetch_patches_list(url, release_patches=False):
         return {"patches": all_patches}
 
     if release_patches:
-        return _fetch_release_patches(url)
+        return _fetch_release_patches(url, target_package, target_name)
 
     if url.endswith("patches-bundle.json"):
-        return _parse_bundle_json(url)
+        return _parse_bundle_json(url, target_package, target_name)
 
     print(f"Fetching {url}...")
     data = _fetch_json(url)
@@ -602,8 +620,15 @@ def _process_ecosystem(config_path, ecosystem_info):
 
     url = ecosystem_info["url"]
     release_patches = ecosystem_info["release_patches"]
+    target_pkg = ecosystem_info.get("target_package")
+    target_name = ecosystem_info.get("target_name")
 
-    stable_data = fetch_patches_list(url, release_patches=release_patches)
+    stable_data = fetch_patches_list(
+        url,
+        release_patches=release_patches,
+        target_package=target_pkg,
+        target_name=target_name,
+    )
     if stable_data is None:
         print(
             f"Skipping '{config_path}': "

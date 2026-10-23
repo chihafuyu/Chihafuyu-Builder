@@ -27,8 +27,13 @@ cleanup() {
     if [[ $WAKELOCK_HELD -eq 1 ]]; then
         termux-wake-unlock >/dev/null 2>&1 || true
     fi
+    # Clean up temporary log
     if [[ -n "$TEMP_LOG_FILE" && -f "$TEMP_LOG_FILE" ]]; then
         rm -f "$TEMP_LOG_FILE"
+    fi
+    # Clean up downloaded .mpp to prevent cache buildup
+    if [[ -n "$TEMP_PATCH" && -f "$WORK_DIR/$TEMP_PATCH" ]]; then
+        rm -f "$WORK_DIR/$TEMP_PATCH"
     fi
     exit "$code"
 }
@@ -59,10 +64,13 @@ check_dependencies() {
     local missing=()
     command -v curl >/dev/null 2>&1 || missing+=("curl")
     command -v jq   >/dev/null 2>&1 || missing+=("jq")
+    
+    # Check Java (minimum version 17, as Morphe CLI requires a modern Java)
     if ! command -v java >/dev/null 2>&1 \
-        || ! java -version 2>&1 | grep -q 'version "21'; then
+        || ! java -version 2>&1 | grep -qE 'version "(1[7-9]|2[0-9])'; then
         missing+=("openjdk-21")
     fi
+    
     if [[ ${#missing[@]} -gt 0 ]]; then
         echo -e "${YELLOW}[INFO] Installing: ${missing[*]}${NC}"
         pkg update -y || true
@@ -116,7 +124,8 @@ select_ecosystem() {
 
     echo -e "\n${WHITE}Select Ecosystem Patches:${NC}"
     export COLUMNS=20
-    ECO_CHOICE=$(_select_menu "Enter your choice: " "${eco_list[@]}")
+    # Catch Ctrl+D (EOF) to avoid continuing with an empty variable
+    ECO_CHOICE=$(_select_menu "Enter your choice: " "${eco_list[@]}") || return 1
     
     # Early return if user selects Exit
     if [[ "$ECO_CHOICE" == "Exit" ]]; then
@@ -165,8 +174,9 @@ show_supported_apps() {
 
 select_track() {
     echo -e "\n${WHITE}Select Patch Track:${NC}"
+    # Catch Ctrl+D (EOF)
     TRACK_CHOICE=$(_select_menu "Enter track number: " \
-        "Stable" "Pre-release" "Back" "Exit")
+        "Stable" "Pre-release" "Back" "Exit") || return 1
         
     # Early return if user selects Back or Exit
     if [[ "$TRACK_CHOICE" == "Back" || "$TRACK_CHOICE" == "Exit" ]]; then
@@ -386,7 +396,8 @@ select_apk() {
     apk_files+=("Back" "Exit")
 
     echo -e "${WHITE}Select the file to patch:${NC}"
-    APK_CHOICE=$(_select_menu "Select APK number: " "${apk_files[@]}")
+    # Catch Ctrl+D (EOF)
+    APK_CHOICE=$(_select_menu "Select APK number: " "${apk_files[@]}") || return 1
     
     # Early return if user selects Back or Exit
     if [[ "$APK_CHOICE" == "Back" || "$APK_CHOICE" == "Exit" ]]; then
@@ -468,7 +479,7 @@ main() {
     while true; do
         case "$step" in
             1)
-                select_ecosystem
+                select_ecosystem || exit 1
                 if [[ "$ECO_CHOICE" == "Exit" ]]; then
                     echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
                     exit 0
@@ -480,7 +491,7 @@ main() {
                 step=3
                 ;;
             3)
-                select_track
+                select_track || exit 1
                 if [[ "$TRACK_CHOICE" == "Exit" ]]; then
                     echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
                     exit 0
@@ -503,7 +514,7 @@ main() {
                 step=7
                 ;;
             7)
-                select_apk
+                select_apk || exit 1
                 if [[ "$APK_CHOICE" == "Exit" ]]; then
                     echo -e "${YELLOW}Exiting builder. Goodbye!${NC}"
                     exit 0
