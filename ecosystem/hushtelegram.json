@@ -5,11 +5,11 @@
                 "package": "org.telegram.messenger.web",
                 "search_term": "Telegram Web",
                 "stable": [
-                    "13.0.3"
+                    "13.1.0"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "71839"
+                    "arm64-v8a": "72299"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
