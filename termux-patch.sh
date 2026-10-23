@@ -32,7 +32,7 @@ cleanup() {
         rm -f "$TEMP_LOG_FILE"
     fi
     # Clean up downloaded .mpp to prevent cache buildup
-    if [[ -n "$TEMP_PATCH" && -f "$WORK_DIR/$TEMP_PATCH" ]]; then
+    if [[ -n "$WORK_DIR" && -n "$TEMP_PATCH" && -f "$WORK_DIR/$TEMP_PATCH" ]]; then
         rm -f "$WORK_DIR/$TEMP_PATCH"
     fi
     exit "$code"
