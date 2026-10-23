@@ -9,7 +9,6 @@
                 ],
                 "beta": [],
                 "strip": true,
-                "download_arch": "universal",
                 "force_bundle": false,
                 "version_codes": {
                     "universal": "145767611",

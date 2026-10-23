@@ -117,7 +117,9 @@
         "repo_url": "crimera/piko-newx",
         "file_path": "patches-bundle.json",
         "config_path": "ecosystem/piko-newx.json",
-        "release_patches": true
+        "release_patches": true,
+        "target_package": "com.twitter.android",
+        "target_name": "X (Twitter)"
     },
     "plyrs1": {
         "repo_url": "Plyrs1/morphe-patches"
