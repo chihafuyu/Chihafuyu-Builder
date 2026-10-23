@@ -109,7 +109,7 @@
                 "package": "com.pikpok.dr2.play",
                 "search_term": "Into the Dead 2",
                 "stable": [
-                    "1.87.1"
+                    "1.88.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -131,7 +131,7 @@
                 "package": "com.miniclip.plagueinc",
                 "search_term": "Plague Inc.",
                 "stable": [
-                    "1.26.1"
+                    "1.27.3"
                 ],
                 "beta": [],
                 "strip": true,

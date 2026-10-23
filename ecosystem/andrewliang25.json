@@ -33,13 +33,16 @@
                 "package": "jp.naver.line.android",
                 "search_term": "LINE",
                 "stable": [
-                    "26.15.1"
+                    "26.16.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "[General] Trust user-installed CAs": {
+                        "enabled": false
+                    },
+                    "[Fix] Restore biometric login": {
                         "enabled": false
                     }
                 },

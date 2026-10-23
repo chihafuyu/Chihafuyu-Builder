@@ -201,7 +201,13 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "1792510364",
+                    "armeabi-v7a": "1792510364",
+                    "x86-64": "1792510364",
+                    "x86": "1792510364"
+                }
             },
             "symfonium": {
                 "package": "app.symfonik.music.player",
