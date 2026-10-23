@@ -3,7 +3,7 @@ name: 🤖 Auto-Update Ecosystem Configs
 
 "on":
   schedule:
-    - cron: '48 23 * * *'
+    - cron: '48 3,9,15,21 * * *'
   workflow_dispatch:
 
 permissions:
