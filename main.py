@@ -444,7 +444,7 @@ def process_single_app(
     success = ret_code == 0 and not zero_patches
     status = (
         "success" if success
-        else "DMCA Trap" if zero_patches
+        else "No patches applied (incompatible)" if zero_patches
         else f"Exit code {ret_code}"
     )
 
