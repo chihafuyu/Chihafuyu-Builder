@@ -44,6 +44,7 @@ jobs:
 
   megalinter:
     name: 🔍 MegaLinter Check
+    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -67,6 +68,7 @@ jobs:
 
   codeql:
     name: 🔒 CodeQL Security Scan
+    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
     runs-on: ubuntu-latest
     permissions:
       actions: read

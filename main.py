@@ -219,7 +219,7 @@ def build_patch_command(
         "--out", paths[2],
         "--bytecode-mode", "FULL",
     ]
-    if args.is_prerelease.lower() == "true" or args.version_selection.lower() in (
+    if args.version_selection.lower() in (
         "beta", "pre-release", "latest", "experimental", "custom",
     ):
         cmd.append("--force")
