@@ -109,7 +109,7 @@ jobs:
           java-version: '21'
 
       - name: Initialize Python Environment
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: '3.14'
           cache: 'pip'
