@@ -1,17 +1,6 @@
 {
     "byehi98": {
         "apps": {
-            "aliens-drive-me-crazy": {
-                "package": "com.rebeltwins.aliensdrivemecrazy",
-                "search_term": "Aliens Drive Me Crazy",
-                "stable": [
-                    "3.2.10"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "altos-adventure": {
                 "package": "com.noodlecake.altosadventure",
                 "search_term": "Alto's Adventure",
@@ -121,6 +110,17 @@
                 "search_term": "Jetpack Joyride",
                 "stable": [
                     "1.104.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "plants-vs-zombies-free": {
+                "package": "com.ea.game.pvzfree_row",
+                "search_term": "Plants vs. Zombies FREE",
+                "stable": [
+                    "3.18.0"
                 ],
                 "beta": [],
                 "strip": true,

@@ -45,17 +45,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "plants-vs-zombies-free": {
-                "package": "com.ea.game.pvzfree_row",
-                "search_term": "Plants vs. Zombies FREE",
-                "stable": [
-                    "3.18.0"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "supreme-duelist-stickman": {
                 "package": "com.Neurononfire.SupremeDuelist",
                 "search_term": "Supreme Duelist Stickman",
