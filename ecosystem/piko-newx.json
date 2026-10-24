@@ -5,7 +5,7 @@
                 "package": "com.twitter.android",
                 "search_term": "X",
                 "stable": [
-                    "12.36.1-prod.01"
+                    "12.37.2-prod.01"
                 ],
                 "beta": [],
                 "version_codes": {
@@ -33,10 +33,16 @@
                     "NewX: Server error logging": {
                         "enabled": false
                     },
-                    "NewX: Share post as image": {
-                        "enabled": true
-                    },
                     "NewX: Hide post dividers": {
+                        "enabled": false
+                    },
+                    "Bring back twitter": {
+                        "enabled": false
+                    },
+                    "Dynamic color": {
+                        "enabled": false
+                    },
+                    "Export all activities": {
                         "enabled": false
                     }
                 },
