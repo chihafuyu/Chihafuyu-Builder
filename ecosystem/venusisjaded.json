@@ -5,14 +5,14 @@
                 "package": "com.discord",
                 "search_term": "Discord",
                 "stable": [
-                    "349.9 - Stable"
+                    "350.8 - Stable"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "349009",
-                    "armeabi-v7a": "349009",
-                    "x86-64": "349009",
-                    "x86": "349009"
+                    "arm64-v8a": "350008",
+                    "armeabi-v7a": "350008",
+                    "x86-64": "350008",
+                    "x86": "350008"
                 },
                 "strip": true,
                 "force_bundle": true,
