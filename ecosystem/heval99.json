@@ -54,24 +54,6 @@
                     "x86": "2338"
                 }
             },
-            "iptv": {
-                "package": "ru.iptvremote.android.iptv",
-                "search_term": "IPTV",
-                "stable": [
-                    "9.1.25"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "version_codes": {
-                    "arm64-v8a": "5010",
-                    "armeabi-v7a": "5010",
-                    "x86-64": "5010",
-                    "x86": "5010"
-                },
-                "force_bundle": true
-            },
             "jetaudio": {
                 "package": "com.jetappfactory.jetaudio",
                 "search_term": "jetAudio",
@@ -200,14 +182,14 @@
                 "package": "com.truecaller",
                 "search_term": "TrueCaller",
                 "stable": [
-                    "26.40.5"
+                    "26.41.5"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "2640005",
-                    "armeabi-v7a": "2640005",
-                    "x86-64": "2640005",
-                    "x86": "2640005"
+                    "arm64-v8a": "2641005",
+                    "armeabi-v7a": "2641005",
+                    "x86-64": "2641005",
+                    "x86": "2641005"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -240,6 +222,12 @@
                         "enabled": false
                     },
                     "Hide business media": {
+                        "enabled": false
+                    },
+                    "Hide after-call screen for contacts": {
+                        "enabled": false
+                    },
+                    "Show caller number in call log": {
                         "enabled": false
                     }
                 },

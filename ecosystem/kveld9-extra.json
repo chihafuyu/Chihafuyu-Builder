@@ -20,6 +20,9 @@
                     },
                     "Native Bloat Slimmer": {
                         "enabled": false
+                    },
+                    "Redirect API to v2 Boot": {
+                        "enabled": false
                     }
                 }
             },

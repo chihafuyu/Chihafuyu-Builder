@@ -65,6 +65,9 @@
                     },
                     "Stay awake in the background": {
                         "enabled": false
+                    },
+                    "Open without device location": {
+                        "enabled": false
                     }
                 },
                 "force_bundle": true

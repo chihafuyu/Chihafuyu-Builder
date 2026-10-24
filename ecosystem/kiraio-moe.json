@@ -84,17 +84,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "key-mapper": {
-                "package": "io.github.sds100.keymapper",
-                "search_term": "Key Mapper",
-                "stable": [
-                    "4.2.1"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "keymate": {
                 "package": "net.nemostudio.keymate",
                 "search_term": "Keymate",
@@ -141,19 +130,6 @@
                     "2.1.9"
                 ],
                 "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "pixiv": {
-                "package": "jp.pxv.android",
-                "search_term": "pixiv",
-                "stable": [
-                    "6.189.0"
-                ],
-                "beta": [
-                    "6.197.0"
-                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
