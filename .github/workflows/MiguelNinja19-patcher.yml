@@ -24,11 +24,6 @@ name: 🥷 MiguelNinja19 Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_plants_vs_zombies_free:
-        description: 'Patch plants-vs-zombies-free'
-        required: true
-        type: boolean
-        default: false
       app_supreme_duelist_stickman:
         description: 'Patch supreme-duelist-stickman'
         required: true
@@ -111,7 +106,6 @@ jobs:
       APP_DUCK_LIFE_6_SPACE: ${{ inputs.app_duck_life_6_space }}
       APP_HUNTER_ASSASSIN: ${{ inputs.app_hunter_assassin }}
       APP_LARA_CROFT: ${{ inputs.app_lara_croft_guardian_of_light }}
-      APP_PVZ_FREE: ${{ inputs.app_plants_vs_zombies_free }}
       APP_SUPREME_DUELIST: ${{ inputs.app_supreme_duelist_stickman }}
       APP_BATTLE_POLYTOPIA: ${{ inputs.app_the_battle_of_polytopia }}
     steps:
@@ -130,9 +124,6 @@ jobs:
           fi
           if [[ "$APP_LARA_CROFT" == "true" ]]; then
             LIST="$LIST,lara-croft-guardian-of-light"
-          fi
-          if [[ "$APP_PVZ_FREE" == "true" ]]; then
-            LIST="$LIST,plants-vs-zombies-free"
           fi
           if [[ "$APP_SUPREME_DUELIST" == "true" ]]; then
             LIST="$LIST,supreme-duelist-stickman"
