@@ -512,8 +512,9 @@ def _update_app_version(app_key, app_cfg, pkg_info):
 
 
 def _process_existing_apps(app_configs, stable_pkgs, skip_patches=False):
-    """Update existing apps while preserving apps missing from upstream."""
+    """Update existing apps and remove those missing from upstream."""
     changed = False
+    removed_apps = []
 
     for app_key, app_cfg in list(app_configs.items()):
         if not isinstance(app_cfg, dict):
@@ -524,9 +525,12 @@ def _process_existing_apps(app_configs, stable_pkgs, skip_patches=False):
 
         if pkg_name not in stable_pkgs:
             print(
-                f"    -> WARNING: App '{app_key}' not found in patches-list. "
-                "Keeping it to prevent data loss."
+                f"    -> Removing app '{app_key}' from ecosystem config "
+                "(no longer present in upstream patches-list)."
             )
+            del app_configs[app_key]
+            removed_apps.append(app_key)
+            changed = True
             continue
 
         pkg_info = stable_pkgs[pkg_name]
@@ -542,7 +546,7 @@ def _process_existing_apps(app_configs, stable_pkgs, skip_patches=False):
             ):
                 changed = True
 
-    return changed
+    return changed, removed_apps
 
 
 def _write_config_atomic(config_path, config):
@@ -564,11 +568,67 @@ def _write_config_atomic(config_path, config):
         return False
 
 
+def _remove_app_from_yaml(ecosystem_name, app_key):
+    """Precisely remove an app's input, env, and if-block from the workflow YAML."""
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    yaml_path = os.path.join(repo_root, ".github", "workflows", f"{ecosystem_name}-patcher.yml")
+    if not os.path.exists(yaml_path):
+        return False
+
+    with open(yaml_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    original_content = content
+
+    # 1. Find the ENV var used in the `if` block
+    if_block_re = re.compile(
+        rf'          if \[\[ "\$([A-Z0-9_]+)" == "true" \]\]; then\n'
+        rf'            LIST="\$LIST,{re.escape(app_key)}"\n'
+        rf'          fi\n'
+    )
+    match = if_block_re.search(content)
+    if not match:
+        return False  # Format not supported (e.g., generic matrix)
+
+    env_var = match.group(1)
+    content = if_block_re.sub("", content)
+
+    # 2. Remove ENV line
+    env_line_re = re.compile(
+        rf'^      {env_var}: \$\{{\{{ inputs\.[a-zA-Z0-9_]+ \}}\}}\n',
+        re.MULTILINE
+    )
+    env_match = env_line_re.search(content)
+    if env_match:
+        input_name_match = re.search(r'inputs\.([a-zA-Z0-9_]+)', env_match.group(0))
+        if input_name_match:
+            input_name = input_name_match.group(1)
+            content = env_line_re.sub("", content)
+
+            # 3. Remove Input block
+            input_block_re = re.compile(
+                rf'^      {input_name}:\n'
+                rf'        description: .*\n'
+                rf'        required: true\n'
+                rf'        type: boolean\n'
+                rf'        default: (true|false)\n',
+                re.MULTILINE
+            )
+            content = input_block_re.sub("", content)
+
+    if content != original_content:
+        with open(yaml_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"    -> Removed app '{app_key}' from {ecosystem_name}-patcher.yml")
+        return True
+    return False
+
+
 def update_config(config_path, stable_data):
     """Update a single config file based on patches-list data."""
     if stable_data is None:
         print(f"  -> Skipping {config_path} due to missing data.")
-        return False
+        return False, []
 
     print(f"  -> Processing {config_path}...")
 
@@ -577,14 +637,14 @@ def update_config(config_path, stable_data):
             config = json.load(file_obj)
     except (OSError, json.JSONDecodeError) as err:
         print(f"    -> Failed to read {config_path}: {err}. Skipping.")
-        return False
+        return False, []
 
     root_key = os.path.splitext(os.path.basename(config_path))[0]
     if not isinstance(config, dict) or not isinstance(
         config.get(root_key), dict
     ):
         print(f"    -> Root key '{root_key}' not found or invalid. Skipping.")
-        return False
+        return False, []
 
     app_configs = config[root_key].get("apps")
     if not isinstance(app_configs, dict):
@@ -595,18 +655,23 @@ def update_config(config_path, stable_data):
     skip_patches = stable_data.get("is_plain_list", False)
 
     changed = False
-    if _process_existing_apps(app_configs, stable_pkgs, skip_patches):
+    removed_apps = []
+    apps_changed, apps_removed = _process_existing_apps(app_configs, stable_pkgs, skip_patches)
+    if apps_changed:
         changed = True
+    if apps_removed:
+        removed_apps.extend(apps_removed)
 
     if changed:
         if _write_config_atomic(config_path, config):
             print(f"  -> File {config_path} updated.")
         else:
             changed = False
+            removed_apps = []
     else:
         print(f"  -> No changes for {config_path}.")
 
-    return changed
+    return changed, removed_apps
 
 
 def _process_ecosystem(config_path, ecosystem_info):
@@ -651,8 +716,14 @@ def main():
 
     any_change = False
     for config_path, stable_data in fetched_ecosystems:
-        if update_config(config_path, stable_data):
+        changed, removed_apps = update_config(config_path, stable_data)
+        if changed:
             any_change = True
+        if removed_apps:
+            eco_name = os.path.splitext(os.path.basename(config_path))[0]
+            for app_key in removed_apps:
+                if _remove_app_from_yaml(eco_name, app_key):
+                    any_change = True
 
     if not any_change:
         print("No updates found across all ecosystems.")
