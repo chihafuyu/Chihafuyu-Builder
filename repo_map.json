@@ -114,10 +114,10 @@
         "config_path": "ecosystem/piko.json"
     },
     "piko-newx": {
-        "repo_url": "crimera/piko-newx",
-        "file_path": "patches-bundle.json",
+        "repo_url": "crimera/piko",
+        "branch": "x-lite",
+        "file_path": "patches-list.json",
         "config_path": "ecosystem/piko-newx.json",
-        "release_patches": true,
         "target_package": "com.twitter.android",
         "target_name": "X (Twitter)"
     },
