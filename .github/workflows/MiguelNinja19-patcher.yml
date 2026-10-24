@@ -9,23 +9,8 @@ name: 🥷 MiguelNinja19 Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_duck_life_6_space:
-        description: 'Patch duck-life-6-space'
-        required: true
-        type: boolean
-        default: false
       app_hunter_assassin:
         description: 'Patch hunter-assassin'
-        required: true
-        type: boolean
-        default: false
-      app_lara_croft_guardian_of_light:
-        description: 'Patch lara-croft-guardian-of-light'
-        required: true
-        type: boolean
-        default: false
-      app_supreme_duelist_stickman:
-        description: 'Patch supreme-duelist-stickman'
         required: true
         type: boolean
         default: false
@@ -103,10 +88,7 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_ANGER_OF_STICK_5: ${{ inputs.app_anger_of_stick_5 }}
-      APP_DUCK_LIFE_6_SPACE: ${{ inputs.app_duck_life_6_space }}
       APP_HUNTER_ASSASSIN: ${{ inputs.app_hunter_assassin }}
-      APP_LARA_CROFT: ${{ inputs.app_lara_croft_guardian_of_light }}
-      APP_SUPREME_DUELIST: ${{ inputs.app_supreme_duelist_stickman }}
       APP_BATTLE_POLYTOPIA: ${{ inputs.app_the_battle_of_polytopia }}
     steps:
       - id: build-list
@@ -116,17 +98,8 @@ jobs:
           if [[ "$APP_ANGER_OF_STICK_5" == "true" ]]; then
             LIST="$LIST,anger-of-stick-5"
           fi
-          if [[ "$APP_DUCK_LIFE_6_SPACE" == "true" ]]; then
-            LIST="$LIST,duck-life-6-space"
-          fi
           if [[ "$APP_HUNTER_ASSASSIN" == "true" ]]; then
             LIST="$LIST,hunter-assassin"
-          fi
-          if [[ "$APP_LARA_CROFT" == "true" ]]; then
-            LIST="$LIST,lara-croft-guardian-of-light"
-          fi
-          if [[ "$APP_SUPREME_DUELIST" == "true" ]]; then
-            LIST="$LIST,supreme-duelist-stickman"
           fi
           if [[ "$APP_BATTLE_POLYTOPIA" == "true" ]]; then
             LIST="$LIST,the-battle-of-polytopia"

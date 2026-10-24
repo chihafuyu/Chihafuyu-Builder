@@ -19,11 +19,6 @@ name: 📧 Heval99 Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_iptv:
-        description: 'Patch iptv'
-        required: true
-        type: boolean
-        default: false
       app_jetaudio:
         description: 'Patch jetaudio'
         required: true
@@ -145,7 +140,6 @@ jobs:
       APP_AQUA_MAIL: ${{ inputs.app_aqua_mail }}
       APP_BOX_BOX: ${{ inputs.app_box_box }}
       APP_FAIREMAIL: ${{ inputs.app_fairemail }}
-      APP_IPTV: ${{ inputs.app_iptv }}
       APP_JETAUDIO: ${{ inputs.app_jetaudio }}
       APP_LIBRERA: ${{ inputs.app_librera }}
       APP_MOON_READER: ${{ inputs.app_moon_reader }}
@@ -169,9 +163,6 @@ jobs:
           fi
           if [[ "$APP_FAIREMAIL" == "true" ]]; then
             LIST="$LIST,fairemail"
-          fi
-          if [[ "$APP_IPTV" == "true" ]]; then
-            LIST="$LIST,iptv"
           fi
           if [[ "$APP_JETAUDIO" == "true" ]]; then
             LIST="$LIST,jetaudio"

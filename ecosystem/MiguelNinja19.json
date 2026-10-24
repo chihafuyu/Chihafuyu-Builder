@@ -12,17 +12,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "duck-life-6-space": {
-                "package": "com.mad.DuckLifeSpace",
-                "search_term": "Duck Life 6: Space",
-                "stable": [
-                    "2026.729.2"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "hunter-assassin": {
                 "package": "com.rubygames.assassin",
                 "search_term": "Hunter Assassin",
@@ -30,32 +19,6 @@
                     "2.044"
                 ],
                 "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "lara-croft-guardian-of-light": {
-                "package": "com.feralinteractive.laracroftgol_android",
-                "search_term": "Lara Croft: Guardian of Light",
-                "stable": [
-                    "1.2.7RC2"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "supreme-duelist-stickman": {
-                "package": "com.Neurononfire.SupremeDuelist",
-                "search_term": "Supreme Duelist Stickman",
-                "stable": [
-                    "4.0.5"
-                ],
-                "beta": [],
-                "version_codes": {
-                    "arm64-v8a": "576",
-                    "universal": "576"
-                },
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
