@@ -28,7 +28,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          
+
           if [[ "$IS_MANUAL" == "true" ]]; then
             echo "[INFO] MANUAL RUN DETECTED: Nuking ALL releases and tags without exception."
             gh release list --limit 1000 --json tagName \
@@ -62,7 +62,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          
+
           if [[ "$IS_MANUAL" == "true" ]]; then
             echo "[INFO] MANUAL RUN DETECTED: Nuking ALL completed runs."
             gh run list --limit 1000 --status completed \
