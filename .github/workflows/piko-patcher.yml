@@ -118,7 +118,9 @@ jobs:
           fi
 
           if [[ -n "$PIKO_APPS" ]]; then
-            JSON_BLOCK='{"ecosystem": "piko", "target_name": "Reguler", "repo": "crimera/piko", '
+            JSON_BLOCK='{"ecosystem": "piko", '
+            JSON_BLOCK+='"target_name": "Reguler", '
+            JSON_BLOCK+='"repo": "crimera/piko", '
             JSON_BLOCK+='"apps": "'"$PIKO_APPS"'", '
             JSON_BLOCK+='"track": "'"$REGULER_TRACK"'", '
             JSON_BLOCK+='"mpp_name": "piko-custom.mpp"},'
