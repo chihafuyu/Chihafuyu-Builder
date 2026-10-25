@@ -17,49 +17,72 @@ jobs:
 
     env:
       RETENTION_DAYS: 14
+      IS_MANUAL: ${{ github.event_name == 'workflow_dispatch' }}
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
-      - name: Purge Stale Patcher Releases
+      - name: Purge Releases and Tags
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          CUTOFF=$(date -u -d "-${RETENTION_DAYS} days" +%Y-%m-%dT%H:%M:%SZ)
-          echo "[INFO] Deleting patcher releases older than ${CUTOFF}"
+          
+          if [[ "$IS_MANUAL" == "true" ]]; then
+            echo "[INFO] MANUAL RUN DETECTED: Nuking ALL releases and tags without exception."
+            gh release list --limit 1000 --json tagName \
+              -q '.[].tagName' | while read -r TAG_NAME; do
+              if [[ -n "$TAG_NAME" ]]; then
+                echo "[INFO] Deleting release and tag: $TAG_NAME"
+                gh release delete "$TAG_NAME" --yes --cleanup-tag || true
+              fi
+            done
+          else
+            CUTOFF=$(date -u -d "-${RETENTION_DAYS} days" +%Y-%m-%dT%H:%M:%SZ)
+            echo "[INFO] SCHEDULED RUN: Deleting patcher releases older than ${CUTOFF}"
+            gh release list --limit 1000 \
+              --json tagName,createdAt \
+              -q ".[] | select(.createdAt < \"${CUTOFF}\") | .tagName" \
+              | while read -r TAG_NAME; do
+              if [[ -z "$TAG_NAME" ]]; then
+                continue
+              fi
+              if [[ ! "$TAG_NAME" =~ -[0-9]+$ ]]; then
+                echo "[SKIP] Non-patcher release: $TAG_NAME"
+                continue
+              fi
+              echo "[INFO] Deleting release: $TAG_NAME"
+              gh release delete "$TAG_NAME" --yes --cleanup-tag || true
+            done
+          fi
 
-          gh release list --limit 1000 \
-            --json tagName,createdAt \
-            -q ".[] | select(.createdAt < \"${CUTOFF}\") | .tagName" \
-            | while read -r TAG_NAME; do
-            if [[ -z "$TAG_NAME" ]]; then
-              continue
-            fi
-            if [[ ! "$TAG_NAME" =~ -[0-9]+$ ]]; then
-              echo "[SKIP] Non-patcher release: $TAG_NAME"
-              continue
-            fi
-            echo "[INFO] Deleting release: $TAG_NAME"
-            gh release delete "$TAG_NAME" --yes --cleanup-tag || true
-          done
-
-      - name: Purge Stale Workflow Runs
+      - name: Purge Workflow Runs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          CUTOFF=$(date -u -d "-${RETENTION_DAYS} days" +%Y-%m-%dT%H:%M:%SZ)
-          echo "[INFO] Deleting completed runs older than ${CUTOFF}"
-
-          gh run list --limit 1000 --status completed \
-            --json databaseId,createdAt \
-            -q ".[] | select(.createdAt < \"${CUTOFF}\") | .databaseId" \
-            | while read -r RUN_ID; do
-            if [[ -z "$RUN_ID" || "$RUN_ID" == "${{ github.run_id }}" ]]; then
-              continue
-            fi
-            echo "[INFO] Deleting run: $RUN_ID"
-            gh run delete "$RUN_ID" || true
-          done
+          
+          if [[ "$IS_MANUAL" == "true" ]]; then
+            echo "[INFO] MANUAL RUN DETECTED: Nuking ALL completed runs."
+            gh run list --limit 1000 --status completed \
+              --json databaseId \
+              -q '.[].databaseId' | while read -r RUN_ID; do
+              if [[ -n "$RUN_ID" && "$RUN_ID" != "${{ github.run_id }}" ]]; then
+                echo "[INFO] Deleting run: $RUN_ID"
+                gh run delete "$RUN_ID" || true
+              fi
+            done
+          else
+            CUTOFF=$(date -u -d "-${RETENTION_DAYS} days" +%Y-%m-%dT%H:%M:%SZ)
+            echo "[INFO] SCHEDULED RUN: Deleting completed runs older than ${CUTOFF}"
+            gh run list --limit 1000 --status completed \
+              --json databaseId,createdAt \
+              -q ".[] | select(.createdAt < \"${CUTOFF}\") | .databaseId" \
+              | while read -r RUN_ID; do
+              if [[ -n "$RUN_ID" && "$RUN_ID" != "${{ github.run_id }}" ]]; then
+                echo "[INFO] Deleting run: $RUN_ID"
+                gh run delete "$RUN_ID" || true
+              fi
+            done
+          fi
