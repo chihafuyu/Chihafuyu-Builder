@@ -8,14 +8,10 @@
                     "2026.24.0"
                 ],
                 "beta": [
-                    "2026.42.0"
+                    "2026.43.0"
                 ],
                 "version_codes": {
-                    "universal": "12L+",
-                    "arm64-v8a": "2642001",
-                    "armeabi-v7a": "2642001",
-                    "x86_64": "2642001",
-                    "x86": "2642001"
+                    "universal": "12L+"
                 },
                 "strip": true,
                 "force_bundle": true,
