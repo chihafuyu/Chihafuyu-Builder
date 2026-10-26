@@ -24,7 +24,10 @@
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Add microG support": {
+                    "Add microG-RE support": {
+                        "enabled": false
+                    },
+                    "Add original microG support": {
                         "enabled": false
                     }
                 }
