@@ -6,7 +6,8 @@ name: 🔥 Hxreborn Ecosystem Patcher
     inputs:
       apps_to_patch:
         description: >-
-          Apps to patch (comma-separated, or type "all" for everything)
+          Type "all" to follow config/apps.toml, 
+          or type the name of a specific app (eg: 1weather,3way)
         required: true
         type: string
         default: 'all'
@@ -83,6 +84,14 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
       - name: Validate and Normalize App List
         id: build-list
         env:
@@ -90,71 +99,75 @@ jobs:
         run: |
           set -euo pipefail
 
-          RAW_CLEAN=$(printf '%s' "$APPS_RAW" | tr -d '[:space:]')
-          if [ -z "$RAW_CLEAN" ]; then
-            echo "::error::No applications specified!"
-            exit 1
-          fi
-
           ECO="hxreborn"
           CONFIG="ecosystem/${ECO}.json"
+          TOML_CONFIG="config/apps.toml"
+
           if [ ! -f "$CONFIG" ]; then
             echo "::error::Config not found: $CONFIG"
             exit 1
           fi
 
-          VALID=$(CONFIG_PATH="$CONFIG" ECO_NAME="$ECO" python3 -c "
-          import os, json
-          with open(os.environ['CONFIG_PATH']) as f:
-              data = json.load(f)[os.environ['ECO_NAME']]['apps']
-          print('\n'.join(sorted(data)))
+          # Application selection logic via Python (supports TOML & validation)
+          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          import os, json, sys
+
+          try:
+              import tomllib
+          except ImportError:
+              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              sys.exit(1)
+
+          eco = os.environ['ECO_NAME']
+          config_path = os.environ['CONFIG_PATH']
+          toml_path = os.environ['TOML_PATH']
+          raw_input = os.environ.get('APPS_RAW', '').strip()
+
+          # Load ecosystem JSON
+          with open(config_path) as f:
+              valid_apps = json.load(f)[eco]['apps']
+
+          selected = []
+
+          if raw_input.lower() == 'all':
+              print('[INFO] Mode: Reading from config/apps.toml', file=sys.stderr)
+              if not os.path.exists(toml_path):
+                  print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
+                  sys.exit(1)
+                  
+              with open(toml_path, 'rb') as f:
+                  toml_data = tomllib.load(f)
+                  
+              apps_dict = toml_data.get('apps', {})
+              selected = [k for k, v in apps_dict.items() if v is True]
+              
+              if not selected:
+                  print('::error::No apps set to `true` in apps.toml', file=sys.stderr)
+                  sys.exit(1)
+
+          else:
+              print('[INFO] Mode: Manual Input', file=sys.stderr)
+              selected = [a.strip() for a in raw_input.split(',') if a.strip()]
+
+          # Validation against the JSON ecosystem
+          invalid = [app for app in selected if app not in valid_apps]
+          if invalid:
+              print(f'::error::The following apps were not found in {config_path}: {invalid}', file=sys.stderr)
+              print('Valid apps:', file=sys.stderr)
+              for v in sorted(valid_apps):
+                  print(f'  - {v}', file=sys.stderr)
+              sys.exit(1)
+
+          print(','.join(selected))
           ")
 
-          APPS=()
-          while IFS= read -r APP; do
-            APP=$(printf '%s' "$APP" | tr -d '[:space:]')
-            [ -z "$APP" ] && continue
-            APPS+=("$APP")
-          done < <(printf '%s' "$APPS_RAW" | tr ',' '\n')
-
-          if [ ${#APPS[@]} -eq 0 ]; then
-            echo "::error::Input contains no valid app names"
+          if [ -z "$SELECTED" ]; then
+            echo "::error::No apps selected."
             exit 1
           fi
 
-          HAS_ALL=0
-          OTHERS=()
-          for APP in "${APPS[@]}"; do
-            if [ "${APP,,}" = "all" ]; then
-              HAS_ALL=1
-            else
-              OTHERS+=("$APP")
-            fi
-          done
-
-          if [ "$HAS_ALL" -eq 1 ]; then
-            if [ ${#OTHERS[@]} -gt 0 ]; then
-              echo "::warning::Token 'all' present; ignored individual app names: ${OTHERS[*]}"
-            fi
-            SELECTED="all"
-          else
-            INVALID=()
-            for APP in "${APPS[@]}"; do
-              if ! grep -qxF "$APP" <<< "$VALID"; then
-                INVALID+=("$APP")
-              fi
-            done
-            if [ ${#INVALID[@]} -gt 0 ]; then
-              echo "::error::Unknown app(s) for ecosystem '$ECO': ${INVALID[*]}"
-              echo "::error::Valid apps:"
-              while IFS= read -r line; do
-                echo "  - $line"
-              done <<< "$VALID"
-              exit 1
-            fi
-            SELECTED=$(IFS=,; echo "${APPS[*]}")
-          fi
-
+          echo "Apps to patch: $SELECTED"
+          
           {
             echo "apps<<EOF"
             echo "$SELECTED"
