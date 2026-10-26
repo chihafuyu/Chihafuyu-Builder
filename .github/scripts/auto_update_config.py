@@ -352,12 +352,29 @@ def _parse_patch_packages(patch):
     packages = patch.get("compatiblePackages")
     if isinstance(packages, list):
         return packages
+
     if isinstance(packages, dict):
-        return [
-            {"packageName": k, "targets": []}
-            for k in packages
-            if isinstance(k, str)
-        ]
+        result = []
+        for pkg_name, pkg_val in packages.items():
+            if not isinstance(pkg_name, str):
+                continue
+
+            targets = []
+            if isinstance(pkg_val, list):
+                for ver in pkg_val:
+                    if isinstance(ver, str):
+                        targets.append({
+                            "version": ver,
+                            "isExperimental": False,
+                            "versionCodes": None,
+                        })
+
+            result.append({
+                "packageName": pkg_name,
+                "targets": targets
+            })
+        return result
+
     return []
 
 
