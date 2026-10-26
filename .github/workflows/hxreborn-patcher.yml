@@ -4,81 +4,13 @@ name: 🔥 Hxreborn Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_1weather:
-        description: 'Patch 1weather'
+      apps_to_patch:
+        description: >-
+          Type "all" to follow config/apps.toml,
+          or type the name of a specific app (eg: 1weather,3way)
         required: true
-        type: boolean
-        default: false
-      app_all_in_one_calculator:
-        description: 'Patch all-in-one-calculator'
-        required: true
-        type: boolean
-        default: false
-      app_bettersleep:
-        description: 'Patch bettersleep'
-        required: true
-        type: boolean
-        default: false
-      app_cx_file_explorer:
-        description: 'Patch cx-file-explorer'
-        required: true
-        type: boolean
-        default: false
-      app_imo:
-        description: 'Patch imo'
-        required: true
-        type: boolean
-        default: false
-      app_musixmatch:
-        description: 'Patch musixmatch'
-        required: true
-        type: boolean
-        default: false
-      app_notesnook:
-        description: 'Patch notesnook'
-        required: true
-        type: boolean
-        default: false
-      app_photo_editor_pro:
-        description: 'Patch photo-editor-pro'
-        required: true
-        type: boolean
-        default: false
-      app_proton_mail:
-        description: 'Patch proton-mail'
-        required: true
-        type: boolean
-        default: false
-      app_quranify:
-        description: 'Patch quranify'
-        required: true
-        type: boolean
-        default: false
-      app_readera:
-        description: 'Patch readera'
-        required: true
-        type: boolean
-        default: false
-      app_rise_sleep_tracker:
-        description: 'Patch rise-sleep-tracker'
-        required: true
-        type: boolean
-        default: false
-      app_symfonium:
-        description: 'Patch symfonium'
-        required: true
-        type: boolean
-        default: false
-      app_terabox:
-        description: 'Patch terabox'
-        required: true
-        type: boolean
-        default: false
-      app_vllo:
-        description: 'Patch vllo'
-        required: true
-        type: boolean
-        default: false
+        type: string
+        default: 'all'
       architecture:
         description: 'Target Architecture'
         required: true
@@ -133,6 +65,11 @@ name: 🔥 Hxreborn Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      upload_huggingface:
+        description: 'Upload to HuggingFace Dataset'
+        required: true
+        type: boolean
+        default: false
       send_to_telegram:
         description: 'Send to Telegram'
         required: true
@@ -146,80 +83,94 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
-    env:
-      APP_1WEATHER: ${{ inputs.app_1weather }}
-      APP_ALL_IN_ONE_CALCULATOR: ${{ inputs.app_all_in_one_calculator }}
-      APP_BETTERSLEEP: ${{ inputs.app_bettersleep }}
-      APP_CX_FILE_EXPLORER: ${{ inputs.app_cx_file_explorer }}
-      APP_IMO: ${{ inputs.app_imo }}
-      APP_MUSIXMATCH: ${{ inputs.app_musixmatch }}
-      APP_NOTESNOOK: ${{ inputs.app_notesnook }}
-      APP_PHOTO_EDITOR_PRO: ${{ inputs.app_photo_editor_pro }}
-      APP_PROTON_MAIL: ${{ inputs.app_proton_mail }}
-      APP_QURANIFY: ${{ inputs.app_quranify }}
-      APP_READERA: ${{ inputs.app_readera }}
-      APP_RISE_SLEEP_TRACKER: ${{ inputs.app_rise_sleep_tracker }}
-      APP_SYMFONIUM: ${{ inputs.app_symfonium }}
-      APP_TERABOX: ${{ inputs.app_terabox }}
-      APP_VLLO: ${{ inputs.app_vllo }}
     steps:
-      - id: build-list
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Validate and Normalize App List
+        id: build-list
+        env:
+          APPS_RAW: ${{ inputs.apps_to_patch }}
         run: |
           set -euo pipefail
-          LIST=""
-          if [[ "$APP_1WEATHER" == "true" ]]; then
-            LIST="$LIST,1weather"
-          fi
-          if [[ "$APP_ALL_IN_ONE_CALCULATOR" == "true" ]]; then
-            LIST="$LIST,all-in-one-calculator"
-          fi
-          if [[ "$APP_BETTERSLEEP" == "true" ]]; then
-            LIST="$LIST,bettersleep"
-          fi
-          if [[ "$APP_CX_FILE_EXPLORER" == "true" ]]; then
-            LIST="$LIST,cx-file-explorer"
-          fi
-          if [[ "$APP_IMO" == "true" ]]; then
-            LIST="$LIST,imo"
-          fi
-          if [[ "$APP_MUSIXMATCH" == "true" ]]; then
-            LIST="$LIST,musixmatch"
-          fi
-          if [[ "$APP_NOTESNOOK" == "true" ]]; then
-            LIST="$LIST,notesnook"
-          fi
-          if [[ "$APP_PHOTO_EDITOR_PRO" == "true" ]]; then
-            LIST="$LIST,photo-editor-pro"
-          fi
-          if [[ "$APP_PROTON_MAIL" == "true" ]]; then
-            LIST="$LIST,proton-mail"
-          fi
-          if [[ "$APP_QURANIFY" == "true" ]]; then
-            LIST="$LIST,quranify"
-          fi
-          if [[ "$APP_READERA" == "true" ]]; then
-            LIST="$LIST,readera"
-          fi
-          if [[ "$APP_RISE_SLEEP_TRACKER" == "true" ]]; then
-            LIST="$LIST,rise-sleep-tracker"
-          fi
-          if [[ "$APP_SYMFONIUM" == "true" ]]; then
-            LIST="$LIST,symfonium"
-          fi
-          if [[ "$APP_TERABOX" == "true" ]]; then
-            LIST="$LIST,terabox"
-          fi
-          if [[ "$APP_VLLO" == "true" ]]; then
-            LIST="$LIST,vllo"
-          fi
-          LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then
-            echo "::error::No applications selected!"
+
+          ECO="hxreborn"
+          CONFIG="ecosystem/${ECO}.json"
+          TOML_CONFIG="config/apps.toml"
+
+          if [ ! -f "$CONFIG" ]; then
+            echo "::error::Config not found: $CONFIG"
             exit 1
           fi
+
+          # Application selection logic via Python (supports TOML & validation)
+          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          import os, json, sys
+
+          try:
+              import tomllib
+          except ImportError:
+              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              sys.exit(1)
+
+          eco = os.environ['ECO_NAME']
+          config_path = os.environ['CONFIG_PATH']
+          toml_path = os.environ['TOML_PATH']
+          raw_input = os.environ.get('APPS_RAW', '').strip()
+
+          # Load ecosystem JSON
+          with open(config_path) as f:
+              valid_apps = json.load(f)[eco]['apps']
+
+          selected = []
+
+          if raw_input.lower() == 'all':
+              print('[INFO] Mode: Reading from config/apps.toml', file=sys.stderr)
+              if not os.path.exists(toml_path):
+                  print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
+                  sys.exit(1)
+
+              with open(toml_path, 'rb') as f:
+                  toml_data = tomllib.load(f)
+
+              apps_dict = toml_data.get('apps', {})
+              selected = [k for k, v in apps_dict.items() if v is True]
+
+              if not selected:
+                  print('::error::No apps enabled in apps.toml', file=sys.stderr)
+                  sys.exit(1)
+
+          else:
+              print('[INFO] Mode: Manual Input', file=sys.stderr)
+              selected = [a.strip() for a in raw_input.split(',') if a.strip()]
+
+          # Validation against the JSON ecosystem
+          invalid = [app for app in selected if app not in valid_apps]
+          if invalid:
+              print(f'::error::The following apps were not found in {config_path}: {invalid}', file=sys.stderr)
+              print('Valid apps:', file=sys.stderr)
+              for v in sorted(valid_apps):
+                  print(f'  - {v}', file=sys.stderr)
+              sys.exit(1)
+
+          print(','.join(selected))
+          ")
+
+          if [ -z "$SELECTED" ]; then
+            echo "::error::No apps selected."
+            exit 1
+          fi
+
+          echo "Apps to patch: $SELECTED"
+
           {
             echo "apps<<EOF"
-            echo "$LIST"
+            echo "$SELECTED"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -244,6 +195,8 @@ jobs:
       API_HASH: ${{ secrets.API_HASH }}
       SESSION_STRING: ${{ secrets.SESSION_STRING }}
       CHAT_ID: ${{ secrets.CHAT_ID }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
     with:
       ecosystem: "hxreborn"
       apps: ${{ needs.prepare-apps.outputs.selected }}
@@ -258,5 +211,6 @@ jobs:
       repo_url: "hxreborn/morphe-patches"
       custom_patch_filename: "hxreborn-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
+      upload_huggingface: ${{ inputs.upload_huggingface }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: "hxreborn"
