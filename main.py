@@ -208,12 +208,27 @@ def _get_staging_path(app_name: str, state: dict, ext: str) -> str:
     return os.path.join(state["staging_dir"], f"{safe}.{ext}")
 
 
+def _get_java_heap_size() -> str:
+    """Calculates Java heap size dynamically based on available system RAM."""
+    try:
+        page_size = os.sysconf('SC_PAGE_SIZE')
+        page_count = os.sysconf('SC_PHYS_PAGES')
+        total_ram_gb = (page_size * page_count) / (1024 ** 3)
+
+        heap_gb = int(max(2, min(8, total_ram_gb // 2)))
+        return f"-Xmx{heap_gb}G"
+    except (ValueError, OSError, AttributeError):
+        return "-Xmx4G"
+
+
 def build_patch_command(
     args: Any, app_data: dict, paths: tuple, target_arch: str
 ) -> list[str]:
     """Builds the CLI shell command including exclusive patch parameters."""
+    heap_opt = _get_java_heap_size()
+
     cmd = [
-        "java", "-Xmx4G", "-jar", args.cli, "patch",
+        "java", heap_opt, "-jar", args.cli, "patch",
         "--patches", args.patches,
         "--options-file", paths[1],
         "--out", paths[2],
