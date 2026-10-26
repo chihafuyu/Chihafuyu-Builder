@@ -68,6 +68,9 @@
                     },
                     "Open without device location": {
                         "enabled": false
+                    },
+                    "Bigger alert pins": {
+                        "enabled": false
                     }
                 },
                 "force_bundle": true
