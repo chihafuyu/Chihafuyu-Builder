@@ -46,7 +46,7 @@ name: ⚙️ Core Patcher Engine
         required: true
         type: boolean
       upload_huggingface:
-        required: true
+        required: false
         type: boolean
       send_to_telegram:
         required: true

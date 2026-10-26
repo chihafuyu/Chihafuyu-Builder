@@ -6,7 +6,7 @@ name: 🔥 Hxreborn Ecosystem Patcher
     inputs:
       apps_to_patch:
         description: >-
-          Type "all" to follow config/apps.toml, 
+          Type "all" to follow config/apps.toml,
           or type the name of a specific app (eg: 1weather,3way)
         required: true
         type: string
@@ -134,13 +134,13 @@ jobs:
               if not os.path.exists(toml_path):
                   print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
                   sys.exit(1)
-                  
+
               with open(toml_path, 'rb') as f:
                   toml_data = tomllib.load(f)
-                  
+
               apps_dict = toml_data.get('apps', {})
               selected = [k for k, v in apps_dict.items() if v is True]
-              
+
               if not selected:
                   print('::error::No apps set to `true` in apps.toml', file=sys.stderr)
                   sys.exit(1)
@@ -167,7 +167,7 @@ jobs:
           fi
 
           echo "Apps to patch: $SELECTED"
-          
+
           {
             echo "apps<<EOF"
             echo "$SELECTED"
