@@ -145,17 +145,17 @@
                 "package": "ch.protonmail.android",
                 "search_term": "Proton Mail",
                 "stable": [
-                    "7.11.10"
+                    "7.11.11"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "18325",
-                    "armeabi-v7a": "18325",
-                    "x86-64": "18325",
-                    "x86": "18325"
+                    "arm64-v8a": "18326",
+                    "armeabi-v7a": "18326",
+                    "x86-64": "18326",
+                    "x86": "18326"
                 }
             },
             "quranify": {
@@ -196,17 +196,17 @@
                 "package": "com.risesci.nyx",
                 "search_term": "RISE Sleep Tracker",
                 "stable": [
-                    "Android V1.79.2"
+                    "Android V1.79.3"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "1792510364",
-                    "armeabi-v7a": "1792510364",
-                    "x86-64": "1792510364",
-                    "x86": "1792510364"
+                    "arm64-v8a": "1792671827",
+                    "armeabi-v7a": "1792671827",
+                    "x86-64": "1792671827",
+                    "x86": "1792671827"
                 }
             },
             "symfonium": {
@@ -230,7 +230,7 @@
                 "package": "com.dubox.drive",
                 "search_term": "TeraBox",
                 "stable": [
-                    "4.26.5"
+                    "4.27.5"
                 ],
                 "beta": [],
                 "strip": true,
@@ -241,10 +241,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "699",
-                    "armeabi-v7a": "699",
-                    "x86-64": "699",
-                    "x86": "699"
+                    "arm64-v8a": "702",
+                    "armeabi-v7a": "702",
+                    "x86-64": "702",
+                    "x86": "702"
                 }
             },
             "vllo": {
