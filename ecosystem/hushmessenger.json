@@ -5,7 +5,7 @@
                 "package": "com.facebook.orca",
                 "search_term": "Messenger",
                 "stable": [
-                    "584.0.0.49.98"
+                    "584.1.0.61.98"
                 ],
                 "version_codes": {
                     "arm64-v8a": "346814894"
@@ -22,6 +22,9 @@
                     },
                     "Spoof package version": {
                         "enabled": true
+                    },
+                    "Custom launcher icon": {
+                        "enabled": false
                     }
                 }
             }
