@@ -23,14 +23,14 @@
                 "package": "club.boxbox.android",
                 "search_term": "Box Box",
                 "stable": [
-                    "5.4.17"
+                    "5.4.18"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "261",
-                    "armeabi-v7a": "261",
-                    "x86-64": "261",
-                    "x86": "261"
+                    "arm64-v8a": "262",
+                    "armeabi-v7a": "262",
+                    "x86-64": "262",
+                    "x86": "262"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -41,17 +41,17 @@
                 "package": "eu.faircode.email",
                 "search_term": "FairEmail",
                 "stable": [
-                    "1.2338"
+                    "1.2339"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "2338",
-                    "armeabi-v7a": "2338",
-                    "x86-64": "2338",
-                    "x86": "2338"
+                    "arm64-v8a": "2339",
+                    "armeabi-v7a": "2339",
+                    "x86-64": "2339",
+                    "x86": "2339"
                 }
             },
             "jetaudio": {
@@ -93,14 +93,14 @@
                 "package": "com.flyersoft.moonreader",
                 "search_term": "Moon+ Reader",
                 "stable": [
-                    "10.7"
+                    "10.8"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "1007000",
-                    "armeabi-v7a": "1007000",
-                    "x86-64": "1007000",
-                    "x86": "1007000"
+                    "arm64-v8a": "1008000",
+                    "armeabi-v7a": "1008000",
+                    "x86-64": "1008000",
+                    "x86": "1008000"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -129,17 +129,17 @@
                 "package": "com.Project100Pi.themusicplayer",
                 "search_term": "Pi Music Player",
                 "stable": [
-                    "3.2.0.0_release_2"
+                    "3.2.1.0_release_1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "32001",
-                    "armeabi-v7a": "32001",
-                    "x86-64": "32001",
-                    "x86": "32001"
+                    "arm64-v8a": "32101",
+                    "armeabi-v7a": "32101",
+                    "x86-64": "32101",
+                    "x86": "32101"
                 },
                 "force_bundle": true
             },
@@ -228,6 +228,9 @@
                         "enabled": false
                     },
                     "Show caller number in call log": {
+                        "enabled": false
+                    },
+                    "Hide call log filters": {
                         "enabled": false
                     }
                 },

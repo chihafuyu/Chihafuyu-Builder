@@ -82,7 +82,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "996",
                     "armeabi-v7a": "996",
@@ -100,7 +104,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "30",
                     "armeabi-v7a": "30",
@@ -366,7 +374,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "59",
                     "armeabi-v7a": "59",
@@ -468,17 +480,17 @@
                 "package": "com.performance.meshview",
                 "search_term": "Fast STL Viewer",
                 "stable": [
-                    "2.92"
+                    "2.93"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "337",
-                    "armeabi-v7a": "337",
-                    "x86-64": "337",
-                    "x86": "337"
+                    "arm64-v8a": "339",
+                    "armeabi-v7a": "339",
+                    "x86-64": "339",
+                    "x86": "339"
                 }
             },
             "fddb": {
@@ -508,7 +520,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "237",
                     "armeabi-v7a": "237",
@@ -792,7 +808,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "677",
                     "armeabi-v7a": "677",
@@ -846,7 +866,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "259",
                     "armeabi-v7a": "259",
@@ -912,17 +936,17 @@
                 "package": "com.community.oneroom",
                 "search_term": "MovieBox",
                 "stable": [
-                    "4.0.03.0918.03"
+                    "4.0.03.1022.03"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "50020129",
-                    "armeabi-v7a": "50020129",
-                    "x86-64": "50020129",
-                    "x86": "50020129"
+                    "arm64-v8a": "50020133",
+                    "armeabi-v7a": "50020133",
+                    "x86-64": "50020133",
+                    "x86": "50020133"
                 }
             },
             "moviebox-tv": {
@@ -1077,7 +1101,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "832",
                     "armeabi-v7a": "832",
@@ -1126,17 +1154,17 @@
                 "package": "com.orion.notein.global",
                 "search_term": "Notein",
                 "stable": [
-                    "v2.1.28.0"
+                    "v2.1.37.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "407",
-                    "armeabi-v7a": "407",
-                    "x86-64": "407",
-                    "x86": "407"
+                    "arm64-v8a": "409",
+                    "armeabi-v7a": "409",
+                    "x86-64": "409",
+                    "x86": "409"
                 },
                 "force_bundle": true
             },
@@ -1162,17 +1190,17 @@
                 "package": "com.one4studio.one4home",
                 "search_term": "One4Home Launcher",
                 "stable": [
-                    "0.5.93"
+                    "0.5.104"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "405",
-                    "armeabi-v7a": "405",
-                    "x86-64": "405",
-                    "x86": "405"
+                    "arm64-v8a": "416",
+                    "armeabi-v7a": "416",
+                    "x86-64": "416",
+                    "x86": "416"
                 }
             },
             "opal": {
@@ -1220,7 +1248,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "260665",
                     "armeabi-v7a": "260665",
@@ -1469,7 +1501,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "9070834",
                     "armeabi-v7a": "9070834",
@@ -1642,17 +1678,17 @@
                 "package": "ringtonemaker.musiccutter.customringtones.freeringtonemaker",
                 "search_term": "Ringtone Maker",
                 "stable": [
-                    "1.02.01.1020"
+                    "1.02.01.1023"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "10158",
-                    "armeabi-v7a": "10158",
-                    "x86-64": "10158",
-                    "x86": "10158"
+                    "arm64-v8a": "10159",
+                    "armeabi-v7a": "10159",
+                    "x86-64": "10159",
+                    "x86": "10159"
                 },
                 "force_bundle": true
             },
@@ -1754,7 +1790,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "1001000",
                     "armeabi-v7a": "1001000",
@@ -1808,7 +1848,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "272606020",
                     "armeabi-v7a": "272606020",
@@ -1930,17 +1974,17 @@
                 "package": "com.viber.voip",
                 "search_term": "Viber",
                 "stable": [
-                    "29.1.1.0"
+                    "29.2.0.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "1290101",
-                    "armeabi-v7a": "1290101",
-                    "x86-64": "1290101",
-                    "x86": "1290101"
+                    "arm64-v8a": "1290200",
+                    "armeabi-v7a": "1290200",
+                    "x86-64": "1290200",
+                    "x86": "1290200"
                 },
                 "force_bundle": true
             },
@@ -2109,7 +2153,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Sign-in token": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "875",
                     "armeabi-v7a": "875",
