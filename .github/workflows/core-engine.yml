@@ -45,6 +45,9 @@ name: ⚙️ Core Patcher Engine
       upload_github_release:
         required: true
         type: boolean
+      upload_huggingface:
+        required: true
+        type: boolean
       send_to_telegram:
         required: true
         type: boolean
@@ -82,6 +85,10 @@ name: ⚙️ Core Patcher Engine
         required: false
       CHAT_ID:
         required: false
+      HF_TOKEN:
+        required: false
+      HF_DATASET_ID:
+        required: false
 
 permissions:
   contents: write
@@ -92,8 +99,8 @@ jobs:
     timeout-minutes: 350
     concurrency:
       group: >-
-        ${{ inputs.send_to_telegram == true
-            && 'telegram-session-lock'
+        ${{ (inputs.send_to_telegram || inputs.upload_huggingface) == true
+            && 'upload-session-lock'
             || format('build-{0}-{1}', inputs.ecosystem,
                       inputs.release_tag_prefix) }}
       cancel-in-progress: false
@@ -157,7 +164,8 @@ jobs:
 
           python -m pip install \
             --disable-pip-version-check \
-            -r requirements.txt
+            -r requirements.txt \
+            huggingface_hub
 
           APKEEP_VERSION='1.1.0'
           APKEEP_ASSET='apkeep-x86_64-unknown-linux-gnu'
@@ -425,6 +433,16 @@ jobs:
           prerelease: ${{ env.IS_PRERELEASE == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send to HuggingFace Dataset
+        if: inputs.upload_huggingface
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
+          ECOSYSTEM: ${{ inputs.ecosystem }}
+        run: |
+          set -euo pipefail
+          python hf_upload.py
 
       - name: Send to Telegram Channel
         if: inputs.send_to_telegram

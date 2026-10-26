@@ -3,9 +3,12 @@
 import os
 import sys
 from pathlib import Path
+
 from huggingface_hub import HfApi
 
+
 def main() -> None:
+    """Upload patched APKs from the output directory to HuggingFace."""
     ecosystem = os.environ.get("ECOSYSTEM", "")
     hf_token = os.environ.get("HF_TOKEN", "")
     hf_dataset = os.environ.get("HF_DATASET_ID", "")
@@ -13,7 +16,7 @@ def main() -> None:
     if not ecosystem:
         print("[FATAL] ECOSYSTEM environment variable is required.")
         sys.exit(1)
-        
+
     if not hf_token or not hf_dataset:
         print("[FATAL] HF_TOKEN and HF_DATASET_ID must be provided.")
         sys.exit(1)
@@ -47,6 +50,7 @@ def main() -> None:
             print(f"[ERROR] Failed to upload {apk.name}: {err}")
 
     print("[INFO] HuggingFace upload sequence complete!")
+
 
 if __name__ == "__main__":
     main()
