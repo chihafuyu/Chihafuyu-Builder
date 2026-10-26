@@ -142,7 +142,7 @@ jobs:
               selected = [k for k, v in apps_dict.items() if v is True]
 
               if not selected:
-                  print('::error::No apps set to `true` in apps.toml', file=sys.stderr)
+                  print('::error::No apps enabled in apps.toml', file=sys.stderr)
                   sys.exit(1)
 
           else:
