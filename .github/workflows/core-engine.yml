@@ -48,6 +48,7 @@ name: ⚙️ Core Patcher Engine
       upload_huggingface:
         required: false
         type: boolean
+        default: false
       send_to_telegram:
         required: true
         type: boolean
@@ -108,6 +109,20 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
+
+      - name: Maximize Runner Disk Space
+        id: disk_cleanup
+        uses: justinthelaw/maximize-github-runner-space@master
+        with:
+          cleanup-profile: 'max'
+          skip-components: 'java,docker-engine'
+
+      - name: Show Disk Space Reclaimed
+        run: |
+          echo "=== DISK SPACE REPORT ==="
+          echo "Available Before: ${{ steps.disk_cleanup.outputs.available-bytes-before }} bytes"
+          echo "Available After: ${{ steps.disk_cleanup.outputs.available-bytes-after }} bytes"
+          echo "Total Space Freed: ${{ steps.disk_cleanup.outputs.reclaimed-bytes }} bytes"
 
       - name: Initialize Java JDK
         uses: actions/setup-java@v6.1.0
