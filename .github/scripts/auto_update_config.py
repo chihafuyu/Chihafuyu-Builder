@@ -620,7 +620,7 @@ def _remove_app_from_yaml(ecosystem_name, app_key):
 
     original_content = content
     if_block_re = re.compile(
-        rf'^[ \t]+if \[\[ "\$([A-Z0-9_]+)" == "true" \]\]; then\r?\n'
+        rf'^[ \t]+if \[\[ "\$\{{?([A-Z0-9_]+)\}}?" == "true" \]\]; then\r?\n'
         rf'[ \t]+LIST="\$LIST,{re.escape(app_key)}"\r?\n'
         rf'[ \t]+fi\r?\n',
         re.MULTILINE,
@@ -691,9 +691,13 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         return False
 
     original_content = content
-    arch_pattern = re.compile(r"^[ \t]+architecture:\r?\n", re.MULTILINE)
+    
+    # Anchor strictly to 6-space indentation for GitHub Action inputs
+    arch_pattern = re.compile(r"^ {6}architecture:\r?\n", re.MULTILINE)
     match = arch_pattern.search(content)
     if not match:
+        print("    -> WARNING: Failed to locate 6-space 'architecture:' input in YAML; "
+              "aborting to prevent invalid insertion.")
         return False
 
     input_block = (
@@ -708,7 +712,7 @@ def _add_app_to_yaml(ecosystem_name, app_key):
     env_pattern = re.compile(
         r"(^[ \t]+prepare-apps:\r?\n(?:.*\r?\n)*?"
         r"^[ \t]+env:\r?\n)"
-        r"((?:^[ \t]+[A-Z_]+: \$\{\{ inputs\.[^}]+\}\}\r?\n)+)",
+        r"((?:^[ \t]+[A-Z0-9_]+: \$\{\{ inputs\.[^}]+\}\}\r?\n)+)",
         re.MULTILINE,
     )
     env_match = env_pattern.search(content)
