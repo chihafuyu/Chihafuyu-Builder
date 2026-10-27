@@ -115,7 +115,7 @@ jobs:
         uses: justinthelaw/maximize-github-runner-space@main
         with:
           cleanup-profile: 'max'
-          skip-components: 'java,docker-engine'
+          skip-components: 'java,docker-engine,gh-cli'
 
       - name: Show Disk Space Reclaimed
         run: |
