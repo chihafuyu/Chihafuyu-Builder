@@ -61,6 +61,17 @@
                     }
                 }
             },
+            "samsung-notes": {
+                "package": "com.samsung.android.app.notes",
+                "search_term": "Samsung Notes",
+                "stable": [
+                    "4.4.48.15"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "waze": {
                 "package": "com.waze",
                 "search_term": "Waze",

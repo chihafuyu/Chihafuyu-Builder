@@ -29,6 +29,11 @@ name: 🐻 Bearinmindcat Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_samsung_notes:
+        description: 'Patch samsung-notes'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -102,6 +107,7 @@ jobs:
       APP_WAZE: ${{ inputs.app_waze }}
       APP_SAMSUNG_KEYBOARD: ${{ inputs.app_samsung_keyboard }}
       APP_SAMSUNG_GALLERY: ${{ inputs.app_samsung_gallery }}
+      APP_SAMSUNG_NOTES: ${{ inputs.app_samsung_notes }}
     steps:
       - id: build-list
         run: |
@@ -121,6 +127,9 @@ jobs:
           fi
           if [[ "$APP_SAMSUNG_GALLERY" == "true" ]]; then
             LIST="$LIST,samsung-gallery"
+          fi
+          if [[ "$APP_SAMSUNG_NOTES" == "true" ]]; then
+            LIST="$LIST,samsung-notes"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
