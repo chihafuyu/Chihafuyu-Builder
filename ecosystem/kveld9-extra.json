@@ -23,24 +23,8 @@
                     },
                     "Redirect API to v2 Boot": {
                         "enabled": false
-                    }
-                }
-            },
-            "copilot": {
-                "package": "com.microsoft.office.officehubrow",
-                "search_term": "Microsoft Copilot",
-                "stable": [
-                    "16.0.20604.20012"
-                ],
-                "beta": [],
-                "version_codes": {
-                    "arm64-v8a": "45451809"
-                },
-                "force_bundle": true,
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {
-                    "Copilot Companion Native Slimmer": {
+                    },
+                    "Neutralize Play Billing": {
                         "enabled": false
                     }
                 }
