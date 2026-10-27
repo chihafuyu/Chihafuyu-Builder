@@ -617,9 +617,10 @@ def _remove_app_from_yaml(ecosystem_name, app_key):
 
     original_content = content
     if_block_re = re.compile(
-        rf'          if \[\[ "\$([A-Z0-9_]+)" == "true" \]\]; then\n'
-        rf'            LIST="\$LIST,{re.escape(app_key)}"\n'
-        rf'          fi\n'
+        rf'^[ \t]+if \[\[ "\$([A-Z0-9_]+)" == "true" \]\]; then\r?\n'
+        rf'[ \t]+LIST="\$LIST,{re.escape(app_key)}"\r?\n'
+        rf'[ \t]+fi\r?\n',
+        re.MULTILINE,
     )
     match = if_block_re.search(content)
     if not match:
@@ -628,7 +629,7 @@ def _remove_app_from_yaml(ecosystem_name, app_key):
     content = if_block_re.sub("", content)
 
     env_line_re = re.compile(
-        rf'^      {env_var}: \$\{{\{{ inputs\.[a-zA-Z0-9_]+ \}}\}}\n',
+        rf'^[ \t]+{env_var}: \$\{{\{{ inputs\.[a-zA-Z0-9_]+ \}}\}}\r?\n',
         re.MULTILINE,
     )
     env_match = env_line_re.search(content)
@@ -638,11 +639,11 @@ def _remove_app_from_yaml(ecosystem_name, app_key):
             input_name = input_name_match.group(1)
             content = env_line_re.sub("", content)
             input_block_re = re.compile(
-                rf'^      {input_name}:\n'
-                rf'        description: .*\n'
-                rf'        required: true\n'
-                rf'        type: boolean\n'
-                rf'        default: (true|false)\n',
+                rf'^[ \t]+{input_name}:\r?\n'
+                rf'[ \t]+description: .*\r?\n'
+                rf'[ \t]+required: true\r?\n'
+                rf'[ \t]+type: boolean\r?\n'
+                rf'[ \t]+default: (true|false)\r?\n',
                 re.MULTILINE,
             )
             content = input_block_re.sub("", content)
@@ -685,7 +686,7 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         return False
 
     original_content = content
-    arch_pattern = re.compile(r"^      architecture:\n", re.MULTILINE)
+    arch_pattern = re.compile(r"^[ \t]+architecture:\r?\n", re.MULTILINE)
     match = arch_pattern.search(content)
     if not match:
         return False
@@ -700,9 +701,9 @@ def _add_app_to_yaml(ecosystem_name, app_key):
     content = content[:match.start()] + input_block + content[match.start():]
 
     env_pattern = re.compile(
-        r"(  prepare-apps:\n(?:.*\n)*?"
-        r"    env:\n)"
-        r"((?:      [A-Z_]+: \$\{\{ inputs\.[^}]+\}\}\n)+)",
+        r"(^[ \t]+prepare-apps:\r?\n(?:.*\r?\n)*?"
+        r"^[ \t]+env:\r?\n)"
+        r"((?:^[ \t]+[A-Z_]+: \$\{\{ inputs\.[^}]+\}\}\r?\n)+)",
         re.MULTILINE,
     )
     env_match = env_pattern.search(content)
@@ -711,7 +712,7 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         env_line = f"      {env_var}: ${{{{ inputs.{input_name} }}}}\n"
         content = content[:insert_pos] + env_line + content[insert_pos:]
 
-    list_pattern = re.compile(r'^          LIST="\$\{LIST#,}"\n', re.MULTILINE)
+    list_pattern = re.compile(r'^[ \t]+LIST="\$\{LIST#,}"\r?\n', re.MULTILINE)
     list_match = list_pattern.search(content)
     if list_match:
         if_block = (
@@ -738,13 +739,23 @@ def _rebuild_toml_index(lines):
     """Returns (header_idx, entries) for the [apps] section of apps.toml."""
     header_idx = None
     entries = {}
+    in_apps_section = False
+    
     for i, line in enumerate(lines):
-        if line.strip() == "[apps]":
-            header_idx = i
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
             continue
-        match = APPS_TOML_ENTRY_RE.match(line.strip())
-        if match:
-            entries[match.group(1)] = i
+        if stripped.startswith("["):
+            if stripped == "[apps]":
+                header_idx = i
+                in_apps_section = True
+            else:
+                in_apps_section = False
+            continue
+        if in_apps_section:
+            match = APPS_TOML_ENTRY_RE.match(stripped)
+            if match:
+                entries[match.group(1)] = i
     return header_idx, entries
 
 
