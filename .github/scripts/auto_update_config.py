@@ -59,22 +59,25 @@ def _parse_repo_info(name, info, repo_root):
     release_patches = info.get("release_patches", False)
     target_package = info.get("target_package")
     target_name = info.get("target_name")
+    ignore_packages = info.get("ignore_packages", [])
 
     if "aggregate_repos" in info:
         urls = [
             f"https://raw.githubusercontent.com/{repo}/main/patches-list.json"
             for repo in info["aggregate_repos"]
         ]
-        return abs_config_path, urls, release_patches, target_package, target_name
+        return (
+            abs_config_path, urls, release_patches, target_package, target_name, ignore_packages
+        )
 
     repo_url = info.get("repo_url")
     if not repo_url:
-        return None, None, False, None, None
+        return None, None, False, None, None, []
 
     branch = info.get("branch", "main")
     file_path = info.get("file_path", "patches-list.json")
     url = f"https://raw.githubusercontent.com/{repo_url}/{branch}/{file_path}"
-    return abs_config_path, url, release_patches, target_package, target_name
+    return abs_config_path, url, release_patches, target_package, target_name, ignore_packages
 
 
 def load_ecosystems():
@@ -90,15 +93,15 @@ def load_ecosystems():
             with open(repo_map_path, "r", encoding="utf-8") as file_obj:
                 repo_map = json.load(file_obj)
             for name, info in repo_map.items():
-                abs_path, url, is_rel, tgt_pkg, tgt_name = _parse_repo_info(
-                    name, info, repo_root
-                )
+                parsed = _parse_repo_info(name, info, repo_root)
+                abs_path, url, is_rel, tgt_pkg, tgt_name, ignore_pkgs = parsed
                 if abs_path and url:
                     ecosystems[abs_path] = {
                         "url": url,
                         "release_patches": is_rel,
                         "target_package": tgt_pkg,
                         "target_name": tgt_name,
+                        "ignore_packages": ignore_pkgs,
                     }
         except (OSError, json.JSONDecodeError) as err:
             print(f"Failed to load repo_map.json: {err}")
@@ -116,6 +119,7 @@ def load_ecosystems():
                 "release_patches": False,
                 "target_package": None,
                 "target_name": None,
+                "ignore_packages": [],
             },
             os.path.join(repo_root, "ecosystem/kveld9.json"): {
                 "url": (
@@ -125,6 +129,7 @@ def load_ecosystems():
                 "release_patches": False,
                 "target_package": None,
                 "target_name": None,
+                "ignore_packages": [],
             },
         }
     return ecosystems
@@ -513,7 +518,9 @@ def _build_new_app_config(pkg_info):
     return config
 
 
-def _process_existing_apps(app_configs, stable_pkgs, skip_patches=False):
+def _process_existing_apps(
+    app_configs, stable_pkgs, skip_patches=False, ignore_packages=None
+):
     """Update existing apps, remove missing ones, add new packages.
 
     Returns (changed, removed_app_keys, added_apps) where added_apps maps
@@ -523,6 +530,10 @@ def _process_existing_apps(app_configs, stable_pkgs, skip_patches=False):
     if not stable_pkgs:
         print("    -> WARNING: upstream returned no packages; skipping.")
         return False, [], {}
+
+    if ignore_packages:
+        for pkg in ignore_packages:
+            stable_pkgs.pop(pkg, None)
 
     existing_count = sum(
         1 for cfg in app_configs.values()
@@ -663,12 +674,207 @@ def _remove_app_from_yaml(ecosystem_name, app_key):
     return False
 
 
+def _migrate_to_text_input(ecosystem_name, yaml_path):
+    """Convert a checkbox-style workflow to a text-input workflow."""
+    with open(yaml_path, "r", encoding="utf-8") as file_obj:
+        content = file_obj.read()
+
+    name_match = re.search(r"^name:\s*(.*)$", content, re.MULTILINE)
+    workflow_name = name_match.group(1) if name_match else f"{ecosystem_name} Patcher"
+
+    call_patcher_match = re.search(r"^  call-patcher:", content, re.MULTILINE)
+    if not call_patcher_match:
+        return False
+    call_patcher_block = content[call_patcher_match.start():]
+
+    new_yaml = f"""---
+name: {workflow_name}
+
+"on":
+  workflow_dispatch:
+    inputs:
+      apps_to_patch:
+        description: >-
+          Type "all" to follow config/apps-{ecosystem_name}.toml,
+          or type the name of a specific app (eg: 1weather,3way)
+        required: true
+        type: string
+        default: 'all'
+      architecture:
+        description: 'Target Architecture'
+        required: true
+        type: choice
+        default: 'arm64-v8a'
+        options: [arm64-v8a, armeabi-v7a, x86_64, x86, universal]
+      version_selection:
+        description: 'App Version Selection'
+        required: true
+        type: choice
+        default: 'Latest Recommended'
+        options: [Latest Recommended, Beta, Custom]
+      custom_version:
+        description: 'Custom App Version'
+        required: false
+        default: ''
+      download_source:
+        description: 'Download Source'
+        required: true
+        type: choice
+        default: 'default'
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+      continue_on_error:
+        description: 'Debug: Continue on patch error'
+        required: true
+        type: boolean
+        default: false
+      cli_track:
+        description: 'Morphe CLI Track'
+        required: true
+        type: choice
+        default: 'Stable'
+        options: [Stable, Pre-release, Custom]
+      custom_cli_version:
+        description: 'Custom CLI Version (e.g. v1.16.0)'
+        required: false
+        default: ''
+      patches_track:
+        description: 'Ecosystem Patches Track'
+        required: true
+        type: choice
+        default: 'Stable'
+        options: [Stable, Pre-release, Custom Local]
+      upload_github_release:
+        description: 'Upload to GitHub Release'
+        required: true
+        type: boolean
+        default: true
+      upload_huggingface:
+        description: 'Upload to HuggingFace Dataset'
+        required: false
+        type: boolean
+        default: false
+      send_to_telegram:
+        description: 'Send to Telegram'
+        required: true
+        type: boolean
+        default: false
+
+permissions: {{}}
+
+jobs:
+  prepare-apps:
+    runs-on: ubuntu-latest
+    outputs:
+      selected: ${{{{ steps.build-list.outputs.apps }}}}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Validate and Normalize App List
+        id: build-list
+        env:
+          APPS_RAW: ${{{{ inputs.apps_to_patch }}}}
+        run: |
+          set -euo pipefail
+
+          ECO="{ecosystem_name}"
+          CONFIG="ecosystem/${{ECO}}.json"
+          TOML_CONFIG="config/apps-${{ECO}}.toml"
+
+          if [ ! -f "$CONFIG" ]; then
+            echo "::error::Config not found: $CONFIG"
+            exit 1
+          fi
+
+          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          import os, json, sys
+
+          try:
+              import tomllib
+          except ImportError:
+              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              sys.exit(1)
+
+          eco = os.environ['ECO_NAME']
+          config_path = os.environ['CONFIG_PATH']
+          toml_path = os.environ['TOML_PATH']
+          raw_input = os.environ.get('APPS_RAW', '').strip()
+
+          with open(config_path) as f:
+              valid_apps = json.load(f)[eco]['apps']
+
+          selected = []
+
+          if raw_input.lower() == 'all':
+              print('[INFO] Mode: Reading from config/apps.toml', file=sys.stderr)
+              if not os.path.exists(toml_path):
+                  print(f'::error::TOML file not found: {{toml_path}}', file=sys.stderr)
+                  sys.exit(1)
+
+              with open(toml_path, 'rb') as f:
+                  toml_data = tomllib.load(f)
+
+              apps_dict = toml_data.get('apps', {{}})
+              selected = [k for k, v in apps_dict.items() if v is True]
+
+              if not selected:
+                  print('::error::No apps enabled in apps.toml', file=sys.stderr)
+                  sys.exit(1)
+
+          else:
+              print('[INFO] Mode: Manual Input', file=sys.stderr)
+              selected = [a.strip() for a in raw_input.split(',') if a.strip()]
+
+          invalid = [app for app in selected if app not in valid_apps]
+          if invalid:
+              print(f'::error::The following apps were not found in {{config_path}}: {{invalid}}', file=sys.stderr)
+              print('Valid apps:', file=sys.stderr)
+              for v in sorted(valid_apps):
+                  print(f'  - {{v}}', file=sys.stderr)
+              sys.exit(1)
+
+          print(','.join(selected))
+          ")
+
+          if [ -z "$SELECTED" ]; then
+            echo "::error::No apps selected."
+            exit 1
+          fi
+
+          echo "Apps to patch: $SELECTED"
+
+          {{
+            echo "apps<<EOF"
+            echo "$SELECTED"
+            echo "EOF"
+          }} >> "$GITHUB_OUTPUT"
+
+{call_patcher_block}"""
+
+    with open(yaml_path, "w", encoding="utf-8") as file_obj:
+        file_obj.write(new_yaml)
+    print(f"    -> Migrated {ecosystem_name} to text-input YAML (exceeded 15 app checkboxes)")
+    return True
+
+
 def _add_app_to_yaml(ecosystem_name, app_key):
     """Insert a per-app input/env/if-block into a checkbox-style workflow."""
     yaml_path = os.path.join(
         _get_repo_root(), ".github", "workflows", f"{ecosystem_name}-patcher.yml"
     )
     if not os.path.exists(yaml_path):
+        print(f"    -> WARNING: {yaml_path} not found. If this ecosystem uses a matrix workflow, update manually.")
         return False
     try:
         with open(yaml_path, "r", encoding="utf-8") as file_obj:
@@ -684,9 +890,9 @@ def _add_app_to_yaml(ecosystem_name, app_key):
 
     existing_inputs = len(re.findall(r"^ {6}app_", content, re.MULTILINE))
     if existing_inputs >= MAX_YAML_INPUTS:
-        print(f"    -> WARNING: {ecosystem_name} already has {existing_inputs} YAML inputs. "
-              "Skipping insertion to prevent exceeding GitHub's 25-input limit. "
-              "Consider migrating to text-input mode (e.g. apps_to_patch).")
+        if _migrate_to_text_input(ecosystem_name, yaml_path):
+            return True
+        print(f"    -> WARNING: Failed to migrate {ecosystem_name} to text-input YAML.")
         return False
 
     newline = "\r\n" if "\r\n" in content else "\n"
@@ -768,7 +974,6 @@ def _rebuild_toml_index(lines):
         if not stripped or stripped.startswith("#"):
             continue
 
-        # Strip inline comments to accurately detect section headers
         section_name = stripped.split("#", 1)[0].strip()
         if section_name.startswith("["):
             if section_name == "[apps]":
@@ -862,7 +1067,7 @@ def _update_apps_toml(toml_path, added_apps, removed_apps):
     return True
 
 
-def update_config(config_path, stable_data):
+def update_config(config_path, stable_data, ignore_packages=None):
     """Update a single config file based on patches-list data."""
     if stable_data is None:
         print(f"  -> Skipping {config_path} due to missing data.")
@@ -890,7 +1095,7 @@ def update_config(config_path, stable_data):
     skip_patches = stable_data.get("is_plain_list", False)
 
     changed, removed_apps, added_apps = _process_existing_apps(
-        app_configs, stable_pkgs, skip_patches
+        app_configs, stable_pkgs, skip_patches, ignore_packages
     )
     if changed and (added_apps or removed_apps):
         config[root_key]["apps"] = dict(sorted(app_configs.items()))
@@ -933,11 +1138,14 @@ def main():
     for config_path, info in ecosystems.items():
         stable_data = _process_ecosystem(config_path, info)
         if stable_data is not None:
-            fetched_ecosystems.append((config_path, stable_data))
+            fetched_ecosystems.append((config_path, stable_data, info))
 
     any_change = False
-    for config_path, stable_data in fetched_ecosystems:
-        changed, removed_apps, added_apps = update_config(config_path, stable_data)
+    for config_path, stable_data, info in fetched_ecosystems:
+        ignore_pkgs = info.get("ignore_packages", [])
+        changed, removed_apps, added_apps = update_config(
+            config_path, stable_data, ignore_pkgs
+        )
         if not changed:
             continue
         any_change = True
