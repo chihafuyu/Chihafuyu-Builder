@@ -1,0 +1,6 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"samsung-gallery" = true
+"samsung-keyboard" = true

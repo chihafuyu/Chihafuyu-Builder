@@ -4,66 +4,13 @@ name: 👑 Legendsciber Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_age_of_war_2:
-        description: 'Patch age-of-war-2'
+      apps_to_patch:
+        description: >-
+          Type "all" to follow config/apps-legendsciber.toml,
+          or type the name of a specific app (eg: 1weather,3way)
         required: true
-        type: boolean
-        default: false
-      app_dan_the_man:
-        description: 'Patch dan-the-man'
-        required: true
-        type: boolean
-        default: false
-      app_extreme_car_driving_simulator:
-        description: 'Patch extreme-car-driving-simulator'
-        required: true
-        type: boolean
-        default: false
-      app_hill_climb_racing:
-        description: 'Patch hill-climb-racing'
-        required: true
-        type: boolean
-        default: false
-      app_hungry_shark_evolution:
-        description: 'Patch hungry-shark-evolution'
-        required: true
-        type: boolean
-        default: false
-      app_red_ball_4:
-        description: 'Patch red-ball-4'
-        required: true
-        type: boolean
-        default: false
-      app_smash_hit:
-        description: 'Patch smash-hit'
-        required: true
-        type: boolean
-        default: false
-      app_solar_smash:
-        description: 'Patch solar-smash'
-        required: true
-        type: boolean
-        default: false
-      app_subway_surfers:
-        description: 'Patch subway-surfers'
-        required: true
-        type: boolean
-        default: false
-      app_temple_run_2:
-        description: 'Patch temple-run-2'
-        required: true
-        type: boolean
-        default: false
-      app_zen_pinball:
-        description: 'Patch zen-pinball'
-        required: true
-        type: boolean
-        default: false
-      app_zombie_tsunami:
-        description: 'Patch zombie-tsunami'
-        required: true
-        type: boolean
-        default: false
+        type: string
+        default: 'all'
       architecture:
         description: 'Target Architecture'
         required: true
@@ -118,6 +65,11 @@ name: 👑 Legendsciber Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      upload_huggingface:
+        description: 'Upload to HuggingFace Dataset'
+        required: false
+        type: boolean
+        default: false
       send_to_telegram:
         description: 'Send to Telegram'
         required: true
@@ -131,68 +83,92 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
-    env:
-      APP_AGE_OF_WAR_2: ${{ inputs.app_age_of_war_2 }}
-      APP_DAN_THE_MAN: ${{ inputs.app_dan_the_man }}
-      APP_EXTREME_CAR: ${{ inputs.app_extreme_car_driving_simulator }}
-      APP_HILL_CLIMB: ${{ inputs.app_hill_climb_racing }}
-      APP_HUNGRY_SHARK: ${{ inputs.app_hungry_shark_evolution }}
-      APP_RED_BALL_4: ${{ inputs.app_red_ball_4 }}
-      APP_SMASH_HIT: ${{ inputs.app_smash_hit }}
-      APP_SOLAR_SMASH: ${{ inputs.app_solar_smash }}
-      APP_SUBWAY_SURFERS: ${{ inputs.app_subway_surfers }}
-      APP_TEMPLE_RUN_2: ${{ inputs.app_temple_run_2 }}
-      APP_ZEN_PINBALL: ${{ inputs.app_zen_pinball }}
-      APP_ZOMBIE_TSUNAMI: ${{ inputs.app_zombie_tsunami }}
     steps:
-      - id: build-list
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Validate and Normalize App List
+        id: build-list
+        env:
+          APPS_RAW: ${{ inputs.apps_to_patch }}
+          ECO_NAME: "legendsciber"
         run: |
           set -euo pipefail
-          LIST=""
-          if [[ "$APP_AGE_OF_WAR_2" == "true" ]]; then
-            LIST="$LIST,age-of-war-2"
-          fi
-          if [[ "$APP_DAN_THE_MAN" == "true" ]]; then
-            LIST="$LIST,dan-the-man"
-          fi
-          if [[ "$APP_EXTREME_CAR" == "true" ]]; then
-            LIST="$LIST,extreme-car-driving-simulator"
-          fi
-          if [[ "$APP_HILL_CLIMB" == "true" ]]; then
-            LIST="$LIST,hill-climb-racing"
-          fi
-          if [[ "$APP_HUNGRY_SHARK" == "true" ]]; then
-            LIST="$LIST,hungry-shark-evolution"
-          fi
-          if [[ "$APP_RED_BALL_4" == "true" ]]; then
-            LIST="$LIST,red-ball-4"
-          fi
-          if [[ "$APP_SMASH_HIT" == "true" ]]; then
-            LIST="$LIST,smash-hit"
-          fi
-          if [[ "$APP_SOLAR_SMASH" == "true" ]]; then
-            LIST="$LIST,solar-smash"
-          fi
-          if [[ "$APP_SUBWAY_SURFERS" == "true" ]]; then
-            LIST="$LIST,subway-surfers"
-          fi
-          if [[ "$APP_TEMPLE_RUN_2" == "true" ]]; then
-            LIST="$LIST,temple-run-2"
-          fi
-          if [[ "$APP_ZEN_PINBALL" == "true" ]]; then
-            LIST="$LIST,zen-pinball"
-          fi
-          if [[ "$APP_ZOMBIE_TSUNAMI" == "true" ]]; then
-            LIST="$LIST,zombie-tsunami"
-          fi
-          LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then
-            echo "::error::No applications selected!"
+
+          ECO="$ECO_NAME"
+          CONFIG="ecosystem/${ECO}.json"
+          TOML_CONFIG="config/apps-${ECO}.toml"
+
+          if [ ! -f "$CONFIG" ]; then
+            echo "::error::Config not found: $CONFIG"
             exit 1
           fi
+
+          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          import os, json, sys
+
+          try:
+              import tomllib
+          except ImportError:
+              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              sys.exit(1)
+
+          eco = os.environ['ECO_NAME']
+          config_path = os.environ['CONFIG_PATH']
+          toml_path = os.environ['TOML_PATH']
+          raw_input = os.environ.get('APPS_RAW', '').strip()
+
+          with open(config_path) as f:
+              valid_apps = json.load(f)[eco]['apps']
+
+          selected = []
+
+          if raw_input.lower() == 'all':
+              print('[INFO] Mode: Reading from config/apps.toml', file=sys.stderr)
+              if not os.path.exists(toml_path):
+                  print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
+                  sys.exit(1)
+
+              with open(toml_path, 'rb') as f:
+                  toml_data = tomllib.load(f)
+
+              apps_dict = toml_data.get('apps', {})
+              selected = [k for k, v in apps_dict.items() if v is True]
+
+              if not selected:
+                  print('::error::No apps enabled in apps.toml', file=sys.stderr)
+                  sys.exit(1)
+
+          else:
+              print('[INFO] Mode: Manual Input', file=sys.stderr)
+              selected = [a.strip() for a in raw_input.split(',') if a.strip()]
+
+          invalid = [app for app in selected if app not in valid_apps]
+          if invalid:
+              print(f'::error::The following apps were not found in {config_path}: {invalid}', file=sys.stderr)
+              print('Valid apps:', file=sys.stderr)
+              for v in sorted(valid_apps):
+                  print(f'  - {v}', file=sys.stderr)
+              sys.exit(1)
+
+          print(','.join(selected))
+          ")
+
+          if [ -z "$SELECTED" ]; then
+            echo "::error::No apps selected."
+            exit 1
+          fi
+
+          echo "Apps to patch: $SELECTED"
+
           {
             echo "apps<<EOF"
-            echo "$LIST"
+            echo "$SELECTED"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 

@@ -29,6 +29,41 @@ name: 🛠️ Kveld9-Extra Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_instagram:
+        description: 'Patch instagram'
+        required: true
+        type: boolean
+        default: true
+      app_x:
+        description: 'Patch x'
+        required: true
+        type: boolean
+        default: true
+      app_moovit:
+        description: 'Patch moovit'
+        required: true
+        type: boolean
+        default: true
+      app_sube:
+        description: 'Patch sube'
+        required: true
+        type: boolean
+        default: true
+      app_word:
+        description: 'Patch word'
+        required: true
+        type: boolean
+        default: true
+      app_xiaomi_earbuds:
+        description: 'Patch xiaomi-earbuds'
+        required: true
+        type: boolean
+        default: true
+      app_ibispaint_x:
+        description: 'Patch ibispaint-x'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -102,6 +137,13 @@ jobs:
       APP_NOKOPRINT: ${{ inputs.app_nokoprint }}
       APP_POWERPOINT: ${{ inputs.app_powerpoint }}
       APP_SD_MAID_SE: ${{ inputs.app_sd_maid_se }}
+      APP_INSTAGRAM: ${{ inputs.app_instagram }}
+      APP_X: ${{ inputs.app_x }}
+      APP_MOOVIT: ${{ inputs.app_moovit }}
+      APP_SUBE: ${{ inputs.app_sube }}
+      APP_WORD: ${{ inputs.app_word }}
+      APP_XIAOMI_EARBUDS: ${{ inputs.app_xiaomi_earbuds }}
+      APP_IBISPAINT_X: ${{ inputs.app_ibispaint_x }}
     steps:
       - id: build-list
         run: |
@@ -121,6 +163,27 @@ jobs:
           fi
           if [[ "$APP_SD_MAID_SE" == "true" ]]; then
             LIST="$LIST,sd-maid-se"
+          fi
+          if [[ "$APP_INSTAGRAM" == "true" ]]; then
+            LIST="$LIST,instagram"
+          fi
+          if [[ "$APP_X" == "true" ]]; then
+            LIST="$LIST,x"
+          fi
+          if [[ "$APP_MOOVIT" == "true" ]]; then
+            LIST="$LIST,moovit"
+          fi
+          if [[ "$APP_SUBE" == "true" ]]; then
+            LIST="$LIST,sube"
+          fi
+          if [[ "$APP_WORD" == "true" ]]; then
+            LIST="$LIST,word"
+          fi
+          if [[ "$APP_XIAOMI_EARBUDS" == "true" ]]; then
+            LIST="$LIST,xiaomi-earbuds"
+          fi
+          if [[ "$APP_IBISPAINT_X" == "true" ]]; then
+            LIST="$LIST,ibispaint-x"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

@@ -1,6 +1,72 @@
 {
     "De-Vanced": {
         "apps": {
+            "amazon-music": {
+                "package": "com.amazon.mp3",
+                "search_term": "Amazon Music",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "amazon-shopping": {
+                "package": "com.amazon.mShop.android.shopping",
+                "search_term": "Amazon Shopping",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "angulus": {
+                "package": "com.drinkplusplus.angulus",
+                "search_term": "Angulus",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "bandcamp": {
+                "package": "com.bandcamp.android",
+                "search_term": "Bandcamp",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "cricbuzz": {
+                "package": "com.cricbuzz.android",
+                "search_term": "Cricbuzz",
+                "stable": [
+                    "6.24.01"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "disney": {
+                "package": "com.disney.disneyplus",
+                "search_term": "Disney+",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "facebook": {
                 "package": "com.facebook.katana",
                 "search_term": "Facebook",
@@ -15,6 +81,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "force_bundle": true
+            },
+            "gmx-mail": {
+                "package": "de.gmx.mobile.android.mail",
+                "search_term": "GMX Mail",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "google-photos": {
                 "package": "com.google.android.apps.photos",
@@ -35,6 +112,146 @@
                         "enabled": false
                     }
                 }
+            },
+            "google-recorder": {
+                "package": "com.google.android.apps.recorder",
+                "search_term": "Google Recorder",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "hex-editor": {
+                "package": "com.myprog.hexedit",
+                "search_term": "Hex Editor",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "icon-pack-studio": {
+                "package": "ginlemon.iconpackstudio",
+                "search_term": "Icon Pack Studio",
+                "stable": [
+                    "2.2 build 016"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "irplus": {
+                "package": "net.binarymode.android.irplus",
+                "search_term": "irplus",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "letterboxd": {
+                "package": "com.letterboxd.letterboxd",
+                "search_term": "Letterboxd",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "messenger": {
+                "package": "com.facebook.orca",
+                "search_term": "Messenger",
+                "stable": [
+                    "573.0.0.44.88"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Spoof package version": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "armeabi-v7a": "344611781",
+                    "arm64-v8a": "344611864"
+                }
+            },
+            "microsoft-lens": {
+                "package": "com.microsoft.office.officelens",
+                "search_term": "Microsoft Lens",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "nothing-x": {
+                "package": "com.nothing.smartcenter",
+                "search_term": "Nothing X",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "nu-nl": {
+                "package": "nl.sanomamedia.android.nu",
+                "search_term": "NU.nl",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "peacock-tv": {
+                "package": "com.peacocktv.peacockandroid",
+                "search_term": "Peacock TV",
+                "stable": [
+                    "7.9.21"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "photomath": {
+                "package": "com.microblink.photomath",
+                "search_term": "Photomath",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "photoshop-mix": {
+                "package": "com.adobe.photoshopmix",
+                "search_term": "Photoshop Mix",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "pixiv": {
                 "package": "jp.pxv.android",
@@ -57,6 +274,36 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "twitch": {
+                "package": "tv.twitch.android.app",
+                "search_term": "Twitch",
+                "stable": [
+                    "25.3.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Debug mode": {
+                        "enabled": false
+                    }
+                }
+            },
+            "viber": {
+                "package": "com.viber.voip",
+                "search_term": "Viber",
+                "stable": [
+                    "26.1.2.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Hide navigation buttons": {
+                        "enabled": false
+                    }
+                }
             }
         }
     }

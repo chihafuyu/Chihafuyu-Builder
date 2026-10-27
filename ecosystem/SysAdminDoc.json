@@ -157,6 +157,33 @@
                     }
                 }
             },
+            "telegram": {
+                "package": "org.telegram.messenger",
+                "search_term": "Telegram",
+                "stable": [
+                    "13.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Black and white launch logo": {
+                        "enabled": false
+                    },
+                    "HushTelegram icon and name": {
+                        "enabled": false
+                    },
+                    "Use registered Maps API key": {
+                        "enabled": false
+                    },
+                    "Use registered Telegram API credentials": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "72291"
+                }
+            },
             "telegram-web": {
                 "package": "org.telegram.messenger.web",
                 "search_term": "Telegram Web",

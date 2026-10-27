@@ -1,0 +1,17 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"android-proxy-server" = true
+"audiorelay" = true
+"camera-fv-5-lite" = true
+"chatboost" = true
+"cinema-fv-5-lite" = true
+"collage-maker-photofancie" = true
+"medibang-paint" = true
+"paletta" = true
+"pixel-studio" = true
+"sketchbook" = true
+"super-proxy" = true
+"timestamp-camera-enterprise-free" = true
+"udisc" = true

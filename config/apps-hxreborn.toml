@@ -1,0 +1,25 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"acalendar" = true
+"alpinequest" = true
+"anytracker" = true
+"arc-player" = true
+"athan" = true
+"atlomaps" = true
+"atvtools" = true
+"audiobook-unlimited-for-kindle" = true
+"automatag" = true
+"bereal" = true
+"blockit" = true
+"cast-plug-in-for-musicolet" = true
+"castle-for-tv" = true
+"clink" = true
+"clone-app" = true
+"coddy" = true
+"desh-telugu-keyboard" = true
+"iototoy" = true
+"monet-launcher" = true
+"pleco" = true
+"vpn-india" = true

@@ -1,0 +1,8 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"climb" = true
+"cubex-solver" = true
+"oddmar" = true
+"plants-vs-zombies-free" = true

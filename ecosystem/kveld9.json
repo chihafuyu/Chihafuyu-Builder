@@ -24,6 +24,30 @@
                     }
                 }
             },
+            "gboard-lite": {
+                "package": "com.google.android.inputmethod.latin",
+                "search_term": "Gboard Lite",
+                "stable": [
+                    "18.5.1.993608717-lite_beta-arm64-v8a"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Disable Play Services": {
+                        "enabled": false
+                    },
+                    "Offline Only": {
+                        "enabled": false
+                    },
+                    "Remove Permissions": {
+                        "enabled": false
+                    },
+                    "Stop Background Sync": {
+                        "enabled": false
+                    }
+                }
+            },
             "tiktok-global": {
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok Global",

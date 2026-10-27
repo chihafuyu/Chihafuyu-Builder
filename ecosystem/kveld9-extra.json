@@ -49,6 +49,49 @@
                     }
                 }
             },
+            "ibispaint-x": {
+                "package": "jp.ne.ibis.ibispaintx.app",
+                "search_term": "IbisPaint X",
+                "stable": [
+                    "14.1.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "instagram": {
+                "package": "com.instagram.android",
+                "search_term": "Instagram",
+                "stable": [
+                    "447.0.0.55.81"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "AR Effects Slimmer": {
+                        "enabled": false
+                    },
+                    "Block Crash & Diagnostics": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "moovit": {
+                "package": "com.tranzmate",
+                "search_term": "Moovit",
+                "stable": [
+                    "5.203.0.1812"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
             "nokoprint": {
                 "package": "com.nokoprint",
                 "search_term": "NokoPrint",
@@ -62,7 +105,8 @@
                 "strip": true,
                 "force_arch": "universal",
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "powerpoint": {
                 "package": "com.microsoft.office.powerpoint",
@@ -97,6 +141,75 @@
                     "universal": "12L+"
                 },
                 "options_override": {}
+            },
+            "sube": {
+                "package": "com.sube.app",
+                "search_term": "SUBE",
+                "stable": [
+                    "2.7.25"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Bypass SUBE NFC antenna check": {
+                        "enabled": false
+                    },
+                    "Cut Firebase Entirely": {
+                        "enabled": false
+                    },
+                    "Cut Firebase Manifest": {
+                        "enabled": false
+                    },
+                    "SUBE Telemetry Manifest Purge": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "word": {
+                "package": "com.microsoft.office.word",
+                "search_term": "Word",
+                "stable": [
+                    "16.0.20527.20034"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "x": {
+                "package": "com.twitter.android",
+                "search_term": "X",
+                "stable": [
+                    "12.37.2-prod.01"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Background Slimmer": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "xiaomi-earbuds": {
+                "package": "com.mi.earphone",
+                "search_term": "Xiaomi Earbuds",
+                "stable": [
+                    "1.38.0i"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Offline Only": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
             }
         }
     }

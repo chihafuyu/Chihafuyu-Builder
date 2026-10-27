@@ -1,0 +1,33 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"adobe-acrobat" = true
+"agama-car-launcher" = true
+"at4k-launcher" = true
+"autozen" = true
+"blockerhero" = true
+"cashew" = true
+"chatboost" = true
+"collectr" = true
+"essence" = true
+"google-phone" = true
+"hevy" = true
+"i-am-sober" = true
+"microsoft-swiftkey" = true
+"mixel" = true
+"moneta" = true
+"money-manager" = true
+"moovit" = true
+"quizlet" = true
+"replaio" = true
+"rumble" = true
+"sofascore" = true
+"stash" = true
+"symfonium" = true
+"teach-me-anatomy" = true
+"todoist" = true
+"tracked" = true
+"tumblr" = true
+"twitch" = true
+"wanderlog" = true

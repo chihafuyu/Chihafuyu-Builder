@@ -1,0 +1,11 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"atm-fee-saver" = true
+"automate" = true
+"autosync" = true
+"blockerx" = true
+"inshorts" = true
+"sky-tonight" = true
+"ufo-vpn" = true

@@ -1,0 +1,11 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"ibispaint-x" = true
+"instagram" = true
+"moovit" = true
+"sube" = true
+"word" = true
+"x" = true
+"xiaomi-earbuds" = true

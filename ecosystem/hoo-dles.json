@@ -18,6 +18,39 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "alltrails": {
+                "package": "com.alltrails.alltrails",
+                "search_term": "AllTrails",
+                "stable": [
+                    "26.3.20"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "asl-bloom": {
+                "package": "com.toleio.us",
+                "search_term": "ASL Bloom",
+                "stable": [
+                    "1.36.67"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "avocards": {
+                "package": "com.avocards",
+                "search_term": "Avocards",
+                "stable": [
+                    "3.0.18"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "bend": {
                 "package": "com.bowerydigital.bend",
                 "search_term": "Bend",
@@ -30,11 +63,55 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "bunpo": {
+                "package": "com.bunpoapp",
+                "search_term": "Bunpo",
+                "stable": [
+                    "3.23.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "busuu": {
+                "package": "com.busuu.android.enc",
+                "search_term": "Busuu",
+                "stable": [
+                    "32.44.1(1717099)"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "cake": {
+                "package": "me.mycake",
+                "search_term": "Cake",
+                "stable": [
+                    "6.4.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "camscanner": {
                 "package": "com.intsig.camscanner",
                 "search_term": "CamScanner",
                 "stable": [
                     "7.20.0.2606230000"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "daily-pocket": {
+                "package": "kr.co.yjteam.dailypay",
+                "search_term": "Daily Pocket",
+                "stable": [
+                    "6.0.7"
                 ],
                 "beta": [],
                 "strip": true,
@@ -62,6 +139,72 @@
                     }
                 }
             },
+            "eggbun": {
+                "package": "kr.eggbun.eggconvo",
+                "search_term": "Eggbun",
+                "stable": [
+                    "4.12.19"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fotmob": {
+                "package": "com.mobilefootie.wc2010",
+                "search_term": "FotMob",
+                "stable": [
+                    "238.17666.20260928"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "github": {
+                "package": "com.github.android",
+                "search_term": "GitHub",
+                "stable": [
+                    "1.271.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "goodreads": {
+                "package": "com.goodreads",
+                "search_term": "Goodreads",
+                "stable": [
+                    "2.75.0 Build 3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "google-news": {
+                "package": "com.google.android.apps.magazines",
+                "search_term": "Google News",
+                "stable": [
+                    "5.161.0.931240252"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "hellochinese": {
+                "package": "com.hellochinese",
+                "search_term": "HelloChinese",
+                "stable": [
+                    "7.11.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "ibispaint": {
                 "package": "jp.ne.ibis.ibispaintx.app",
                 "search_term": "ibis Paint X",
@@ -73,6 +216,17 @@
                 ],
                 "strip": true,
                 "force_arch": "arm64-v8a",
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "icon-packer": {
+                "package": "cn.ommiao.iconpacker",
+                "search_term": "Icon Packer",
+                "stable": [
+                    "1.21.0-release"
+                ],
+                "beta": [],
+                "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
@@ -93,11 +247,132 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "ling": {
+                "package": "com.simyasolutions.ling.universal",
+                "search_term": "Ling",
+                "stable": [
+                    "8.9.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "lingodeer": {
+                "package": "com.lingodeer",
+                "search_term": "Lingodeer",
+                "stable": [
+                    "2.99.413"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "lingory": {
+                "package": "org.languageapp.lingory",
+                "search_term": "Lingory",
+                "stable": [
+                    "1.2.75"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "lyfta": {
+                "package": "com.lyfta",
+                "search_term": "Lyfta",
+                "stable": [
+                    "1.599"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "macrofactor": {
+                "package": "com.sbs.diet",
+                "search_term": "MacroFactor",
+                "stable": [
+                    "5.7.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "macrofactor-workouts": {
+                "package": "com.sbs.train",
+                "search_term": "MacroFactor Workouts",
+                "stable": [
+                    "1.2.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "meme-generator": {
+                "package": "com.zombodroid.MemeGenerator",
+                "search_term": "Meme Generator",
+                "stable": [
+                    "4.6826"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "merriam-webster": {
+                "package": "com.merriamwebster",
+                "search_term": "Merriam-Webster",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "mimo": {
                 "package": "com.getmimo",
                 "search_term": "Mimo",
                 "stable": [
                     "9.30"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "mirinae": {
+                "package": "com.mirinae.mirinae",
+                "search_term": "Mirinae",
+                "stable": [
+                    "2.2.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "myexpenses": {
+                "package": "org.totschnig.myexpenses",
+                "search_term": "MyExpenses",
+                "stable": [
+                    "4.1.1.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "myfitnesspal": {
+                "package": "com.myfitnesspal.android",
+                "search_term": "MyFitnessPal",
+                "stable": [
+                    "26.31.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -115,11 +390,99 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "nomone-desktop": {
+                "package": "nom.vrd",
+                "search_term": "NOMone Desktop",
+                "stable": [
+                    "1.9.3-storage"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "nova-launcher": {
+                "package": "com.teslacoilsw.launcher",
+                "search_term": "Nova Launcher",
+                "stable": [
+                    "88600 (8.8.6)"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pandora": {
+                "package": "com.pandora.android",
+                "search_term": "Pandora",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "podcast-addict": {
+                "package": "com.bambuna.podcastaddict",
+                "search_term": "Podcast Addict",
+                "stable": [
+                    "2026.10.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "prime-video": {
+                "package": "com.amazon.avod.thirdpartyclient",
+                "search_term": "Prime Video",
+                "stable": [
+                    "3.0.470.1047"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "proton-vpn": {
+                "package": "ch.protonvpn.android",
+                "search_term": "Proton VPN",
+                "stable": [
+                    "5.20.57.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "pydroid3": {
                 "package": "ru.iiec.pydroid3",
                 "search_term": "Pydroid 3",
                 "stable": [
                     "8.3_arm64"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "rp-hypertrophy": {
+                "package": "com.rp.hypertrophy",
+                "search_term": "RP Hypertrophy",
+                "stable": [
+                    "1.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "showly": {
+                "package": "com.michaldrabik.showly2",
+                "search_term": "Showly",
+                "stable": [
+                    "3.70.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -148,11 +511,114 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "snorelab": {
+                "package": "com.snorelab.app",
+                "search_term": "SnoreLab",
+                "stable": [
+                    "2.27.3.6291"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "sofascore": {
+                "package": "com.sofascore.results",
+                "search_term": "Sofascore",
+                "stable": [
+                    "26.08.18"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "solid-explorer": {
+                "package": "pl.solidexplorer2",
+                "search_term": "Solid Explorer",
+                "stable": [
+                    "3.6.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "soundcloud": {
+                "package": "com.soundcloud.android",
+                "search_term": "SoundCloud",
+                "stable": [
+                    "2026.08.26-release"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "AMOLED dark theme": {
+                        "enabled": false
+                    }
+                }
+            },
+            "superchinese": {
+                "package": "com.superchinese",
+                "search_term": "SuperChinese",
+                "stable": [
+                    "6.8.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "ttmik-stories": {
+                "package": "app.ttmikstories.android",
+                "search_term": "TTMIK Stories",
+                "stable": [
+                    "1.16.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "ventusky": {
+                "package": "cz.ackee.ventusky",
+                "search_term": "Ventusky",
+                "stable": [
+                    "53.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "wallcraft": {
+                "package": "com.wallpaperscraft.wallpaper",
+                "search_term": "Wallcraft",
+                "stable": [
+                    "3.61.01"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "windy": {
                 "package": "com.windyty.android",
                 "search_term": "Windy.com",
                 "stable": [
                     "51.0.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "world-map-quiz": {
+                "package": "com.qbis.guessthecountry",
+                "search_term": "World Map Quiz",
+                "stable": [
+                    "3.34.2"
                 ],
                 "beta": [],
                 "strip": true,
