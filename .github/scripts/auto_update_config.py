@@ -785,10 +785,11 @@ jobs:
         id: build-list
         env:
           APPS_RAW: ${{{{ inputs.apps_to_patch }}}}
+          ECO_NAME: "{ecosystem_name}"
         run: |
           set -euo pipefail
 
-          ECO="{ecosystem_name}"
+          ECO="$ECO_NAME"
           CONFIG="ecosystem/${{ECO}}.json"
           TOML_CONFIG="config/apps-${{ECO}}.toml"
 
