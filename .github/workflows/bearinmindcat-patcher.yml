@@ -19,6 +19,16 @@ name: 🐻 Bearinmindcat Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_samsung_keyboard:
+        description: 'Patch samsung-keyboard'
+        required: true
+        type: boolean
+        default: true
+      app_samsung_gallery:
+        description: 'Patch samsung-gallery'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -90,6 +100,8 @@ jobs:
       APP_ALLTRAILS: ${{ inputs.app_alltrails }}
       APP_GOOGLE_MAPS: ${{ inputs.app_google_maps }}
       APP_WAZE: ${{ inputs.app_waze }}
+      APP_SAMSUNG_KEYBOARD: ${{ inputs.app_samsung_keyboard }}
+      APP_SAMSUNG_GALLERY: ${{ inputs.app_samsung_gallery }}
     steps:
       - id: build-list
         run: |
@@ -103,6 +115,12 @@ jobs:
           fi
           if [[ "$APP_WAZE" == "true" ]]; then
             LIST="$LIST,waze"
+          fi
+          if [[ "$APP_SAMSUNG_KEYBOARD" == "true" ]]; then
+            LIST="$LIST,samsung-keyboard"
+          fi
+          if [[ "$APP_SAMSUNG_GALLERY" == "true" ]]; then
+            LIST="$LIST,samsung-gallery"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

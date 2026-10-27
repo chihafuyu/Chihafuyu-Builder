@@ -9,6 +9,56 @@ name: 🖨️ Aidan Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_sidelineswap:
+        description: 'Patch sidelineswap'
+        required: true
+        type: boolean
+        default: true
+      app_aftership:
+        description: 'Patch aftership'
+        required: true
+        type: boolean
+        default: true
+      app_blackjack:
+        description: 'Patch blackjack'
+        required: true
+        type: boolean
+        default: true
+      app_sezzle:
+        description: 'Patch sezzle'
+        required: true
+        type: boolean
+        default: true
+      app_365_pay:
+        description: 'Patch 365-pay'
+        required: true
+        type: boolean
+        default: true
+      app_fizz:
+        description: 'Patch fizz'
+        required: true
+        type: boolean
+        default: true
+      app_geocaching:
+        description: 'Patch geocaching'
+        required: true
+        type: boolean
+        default: true
+      app_nhl:
+        description: 'Patch nhl'
+        required: true
+        type: boolean
+        default: true
+      app_canvas_student:
+        description: 'Patch canvas-student'
+        required: true
+        type: boolean
+        default: true
+      app_navigate360_student:
+        description: 'Patch navigate360-student'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -78,6 +128,16 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_ADOBE_SCAN: ${{ inputs.app_adobe_scan }}
+      APP_SIDELINESWAP: ${{ inputs.app_sidelineswap }}
+      APP_AFTERSHIP: ${{ inputs.app_aftership }}
+      APP_BLACKJACK: ${{ inputs.app_blackjack }}
+      APP_SEZZLE: ${{ inputs.app_sezzle }}
+      APP_365_PAY: ${{ inputs.app_365_pay }}
+      APP_FIZZ: ${{ inputs.app_fizz }}
+      APP_GEOCACHING: ${{ inputs.app_geocaching }}
+      APP_NHL: ${{ inputs.app_nhl }}
+      APP_CANVAS_STUDENT: ${{ inputs.app_canvas_student }}
+      APP_NAVIGATE360_STUDENT: ${{ inputs.app_navigate360_student }}
     steps:
       - id: build-list
         run: |
@@ -85,6 +145,36 @@ jobs:
           LIST=""
           if [[ "$APP_ADOBE_SCAN" == "true" ]]; then
             LIST="$LIST,adobe-scan"
+          fi
+          if [[ "$APP_SIDELINESWAP" == "true" ]]; then
+            LIST="$LIST,sidelineswap"
+          fi
+          if [[ "$APP_AFTERSHIP" == "true" ]]; then
+            LIST="$LIST,aftership"
+          fi
+          if [[ "$APP_BLACKJACK" == "true" ]]; then
+            LIST="$LIST,blackjack"
+          fi
+          if [[ "$APP_SEZZLE" == "true" ]]; then
+            LIST="$LIST,sezzle"
+          fi
+          if [[ "$APP_365_PAY" == "true" ]]; then
+            LIST="$LIST,365-pay"
+          fi
+          if [[ "$APP_FIZZ" == "true" ]]; then
+            LIST="$LIST,fizz"
+          fi
+          if [[ "$APP_GEOCACHING" == "true" ]]; then
+            LIST="$LIST,geocaching"
+          fi
+          if [[ "$APP_NHL" == "true" ]]; then
+            LIST="$LIST,nhl"
+          fi
+          if [[ "$APP_CANVAS_STUDENT" == "true" ]]; then
+            LIST="$LIST,canvas-student"
+          fi
+          if [[ "$APP_NAVIGATE360_STUDENT" == "true" ]]; then
+            LIST="$LIST,navigate360-student"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

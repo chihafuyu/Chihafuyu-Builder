@@ -12,11 +12,65 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "climb": {
+                "package": "com.IvanAF.ClimbAMIYPfree",
+                "search_term": "Climb!",
+                "stable": [
+                    "6.0.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Free in-app purchases": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "cubex-solver": {
+                "package": "diozz.cubex",
+                "search_term": "CubeX Solver",
+                "stable": [
+                    "4.1.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "hunter-assassin": {
                 "package": "com.rubygames.assassin",
                 "search_term": "Hunter Assassin",
                 "stable": [
                     "2.044"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "oddmar": {
+                "package": "com.mobge.Oddmar",
+                "search_term": "Oddmar",
+                "stable": [
+                    "0.111"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Free in-app purchases": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "plants-vs-zombies-free": {
+                "package": "com.ea.game.pvzfree_row",
+                "search_term": "Plants vs. Zombies FREE",
+                "stable": [
+                    "3.16.0"
                 ],
                 "beta": [],
                 "strip": true,

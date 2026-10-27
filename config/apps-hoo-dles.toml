@@ -1,0 +1,46 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"alltrails" = true
+"asl-bloom" = true
+"avocards" = true
+"bunpo" = true
+"busuu" = true
+"cake" = true
+"daily-pocket" = true
+"eggbun" = true
+"fotmob" = true
+"github" = true
+"goodreads" = true
+"google-news" = true
+"hellochinese" = true
+"icon-packer" = true
+"ling" = true
+"lingodeer" = true
+"lingory" = true
+"lyfta" = true
+"macrofactor" = true
+"macrofactor-workouts" = true
+"meme-generator" = true
+"merriam-webster" = false
+"mirinae" = true
+"myexpenses" = true
+"myfitnesspal" = true
+"nomone-desktop" = true
+"nova-launcher" = true
+"pandora" = false
+"podcast-addict" = true
+"prime-video" = true
+"proton-vpn" = true
+"rp-hypertrophy" = true
+"showly" = true
+"snorelab" = true
+"sofascore" = true
+"solid-explorer" = true
+"soundcloud" = true
+"superchinese" = true
+"ttmik-stories" = true
+"ventusky" = true
+"wallcraft" = true
+"world-map-quiz" = true

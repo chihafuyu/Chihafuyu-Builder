@@ -1,0 +1,38 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"20-minutes-till-dawn" = true
+"adda247" = true
+"aliens-drive-me-crazy" = true
+"big-hunter" = true
+"burrito-bison-launcha-libre" = true
+"crash-of-cars" = true
+"dan-the-man" = true
+"dead-target-offline-games-3d" = true
+"document-scanner" = true
+"dr-driving" = true
+"fancy-pants-adventures" = true
+"freejobalert" = true
+"fruit-ninja-free" = true
+"grimvalor" = true
+"haak" = true
+"head-basketball" = true
+"head-soccer" = true
+"into-the-dead" = true
+"lemmings-puzzle-survival" = true
+"lumina-walls" = true
+"missiles" = true
+"only-one" = true
+"progressbar95" = true
+"rodeo-stampede-sky-zoo-safari" = true
+"shooty-skies" = true
+"smash-hit" = true
+"swamp-attack" = true
+"swamp-attack-2" = true
+"swordigo" = true
+"tentacle-wars" = true
+"traffic-racer" = true
+"truecloud" = true
+"vector" = true
+"vita-mahjong" = true

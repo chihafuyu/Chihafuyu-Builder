@@ -23,6 +23,54 @@
                     "tablet"
                 ]
             },
+            "espn-android-tv": {
+                "package": "com.espn.score_center",
+                "search_term": "ESPN Android TV",
+                "stable": [
+                    "6.11.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Clone ESPN": {
+                        "enabled": false
+                    }
+                }
+            },
+            "f1-tv-android-tv": {
+                "package": "com.formulaone.production",
+                "search_term": "F1 TV Android TV",
+                "stable": [
+                    "3.0.49.4-SP166.4.1-release-R54.2-tv"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fawesome-movies-tv-android-tv": {
+                "package": "com.future.moviesByFawesomeAndroidTV",
+                "search_term": "Fawesome Movies & TV (Android TV)",
+                "stable": [
+                    "20.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fox-one-android-tv": {
+                "package": "com.fox.foxone",
+                "search_term": "Fox One Android TV",
+                "stable": [
+                    "1.9.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "hbo-max": {
                 "package": "com.wbd.hbomax",
                 "search_term": "HBO Max",
@@ -37,6 +85,17 @@
                         "enabled": false
                     }
                 }
+            },
+            "mlb-tv-android-tv": {
+                "package": "com.bamnetworks.mobile.android.gameday.atbat",
+                "search_term": "MLB.tv Android TV",
+                "stable": [
+                    "26.8.1.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "netflix": {
                 "package": "com.netflix.ninja",
@@ -117,6 +176,28 @@
                         "enabled": false
                     }
                 }
+            },
+            "raiplay-android-tv": {
+                "package": "it.rainet.androidtv",
+                "search_term": "RaiPlay Android TV",
+                "stable": [
+                    "5.0.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "rt-player-android-tv": {
+                "package": "com.twentyfouri.tvbridge.rte",
+                "search_term": "RTÉ Player Android TV",
+                "stable": [
+                    "3.160.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "tubi": {
                 "package": "com.tubitv",

@@ -1,0 +1,14 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"365-pay" = true
+"aftership" = true
+"blackjack" = true
+"canvas-student" = true
+"fizz" = true
+"geocaching" = true
+"navigate360-student" = true
+"nhl" = true
+"sezzle" = true
+"sidelineswap" = true

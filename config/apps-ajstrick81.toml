@@ -1,0 +1,11 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"espn-android-tv" = true
+"f1-tv-android-tv" = true
+"fawesome-movies-tv-android-tv" = true
+"fox-one-android-tv" = true
+"mlb-tv-android-tv" = true
+"raiplay-android-tv" = true
+"rt-player-android-tv" = true

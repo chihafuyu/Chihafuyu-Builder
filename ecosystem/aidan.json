@@ -1,6 +1,22 @@
 {
     "aidan": {
         "apps": {
+            "365-pay": {
+                "package": "com.avinside",
+                "search_term": "365 Pay",
+                "stable": [
+                    "10.2605.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Unlock Developer Tools": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
             "adobe-scan": {
                 "package": "com.adobe.scan.android",
                 "search_term": "Adobe Scan",
@@ -18,6 +34,158 @@
                         "enabled": false
                     },
                     "Use System Font": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "aftership": {
+                "package": "com.aftership.AfterShip",
+                "search_term": "AfterShip",
+                "stable": [
+                    "5.25.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Custom Google Maps API Key": {
+                        "enabled": false
+                    },
+                    "Hide Broken Tracking Map": {
+                        "enabled": false
+                    }
+                }
+            },
+            "blackjack": {
+                "package": "com.tripledot.blackjack",
+                "search_term": "Blackjack",
+                "stable": [
+                    "2.22.09"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "canvas-student": {
+                "package": "com.instructure.candroid",
+                "search_term": "Canvas Student",
+                "stable": [
+                    "8.10.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "fizz": {
+                "package": "com.ashtoncofer.Buzz",
+                "search_term": "Fizz",
+                "stable": [
+                    "1.54.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Enable Developer Settings": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "geocaching": {
+                "package": "com.groundspeak.geocaching.intro",
+                "search_term": "Geocaching",
+                "stable": [
+                    "10.21.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Enable Developer Tools and Feature Flags": {
+                        "enabled": false
+                    },
+                    "Unlock Experimental Features": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "navigate360-student": {
+                "package": "com.eab.se",
+                "search_term": "Navigate360 Student",
+                "stable": [
+                    "26.19.22"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "nhl": {
+                "package": "com.nhl.gc1112.free",
+                "search_term": "NHL",
+                "stable": [
+                    "17.0.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Unlock Hidden Features": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "sezzle": {
+                "package": "com.sezzle.sezzlemobile",
+                "search_term": "Sezzle",
+                "stable": [
+                    "5.3.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Enable App Debugging": {
+                        "enabled": false
+                    },
+                    "Hide Sezzle Mobile": {
+                        "enabled": false
+                    },
+                    "Remove Sezzle Subscriptions": {
+                        "enabled": false
+                    },
+                    "Unlock Developer Settings": {
+                        "enabled": false
+                    },
+                    "Unlock Receipt Scanner": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "sidelineswap": {
+                "package": "com.sidelineswap.android",
+                "search_term": "SidelineSwap",
+                "stable": [
+                    "1.52.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "AMOLED Theme": {
+                        "enabled": false
+                    },
+                    "Change Brand Color": {
                         "enabled": false
                     }
                 },

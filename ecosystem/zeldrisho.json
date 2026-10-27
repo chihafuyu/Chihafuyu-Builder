@@ -1,6 +1,25 @@
 {
     "zeldrisho": {
         "apps": {
+            "threads": {
+                "package": "com.instagram.barcelona",
+                "search_term": "Threads",
+                "stable": [
+                    "449.0.0.54.82"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Change app name": {
+                        "enabled": false
+                    },
+                    "Change package name": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
             "zalo": {
                 "package": "com.zing.zalo",
                 "search_term": "Zalo",

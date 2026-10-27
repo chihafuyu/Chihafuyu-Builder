@@ -1,0 +1,25 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"amazon-music" = false
+"amazon-shopping" = false
+"angulus" = false
+"bandcamp" = false
+"cricbuzz" = true
+"disney" = false
+"gmx-mail" = false
+"google-recorder" = false
+"hex-editor" = false
+"icon-pack-studio" = true
+"irplus" = false
+"letterboxd" = false
+"messenger" = true
+"microsoft-lens" = false
+"nothing-x" = false
+"nu-nl" = false
+"peacock-tv" = true
+"photomath" = false
+"photoshop-mix" = false
+"twitch" = true
+"viber" = true

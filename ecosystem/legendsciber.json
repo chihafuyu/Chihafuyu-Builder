@@ -12,11 +12,33 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "aphelion": {
+                "package": "com.wave.aphelion",
+                "search_term": "Aphelion",
+                "stable": [
+                    "0.5.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "dan-the-man": {
                 "package": "com.halfbrick.dantheman",
                 "search_term": "Dan The Man",
                 "stable": [
                     "1.14.05"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "death-rover": {
+                "package": "com.tranquility.colony",
+                "search_term": "Death Rover",
+                "stable": [
+                    "2.7.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -65,6 +87,28 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "key-mapper": {
+                "package": "io.github.sds100.keymapper",
+                "search_term": "Key Mapper",
+                "stable": [
+                    "4.5.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "new-star-soccer": {
+                "package": "com.newstargames.newstarsoccer",
+                "search_term": "New Star Soccer",
+                "stable": [
+                    "4.32"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "red-ball-4": {
                 "package": "com.FDGEntertainment.redball4.gp",
                 "search_term": "Red Ball 4",
@@ -76,11 +120,33 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "sling-drift": {
+                "package": "com.rubygames.slingdrift",
+                "search_term": "Sling Drift",
+                "stable": [
+                    "5.13.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "smash-hit": {
                 "package": "com.mediocre.smashhit",
                 "search_term": "Smash Hit",
                 "stable": [
                     "1.5.14"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "soccer-star": {
+                "package": "com.soccer.score.star",
+                "search_term": "Soccer Star",
+                "stable": [
+                    "0.3.88"
                 ],
                 "beta": [],
                 "strip": true,
@@ -114,6 +180,17 @@
                 "search_term": "Temple Run 2",
                 "stable": [
                     "1.136.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "toolbox-for-minecraft-pe": {
+                "package": "io.mrarm.mctoolbox",
+                "search_term": "Toolbox for Minecraft PE",
+                "stable": [
+                    "5.4.58"
                 ],
                 "beta": [],
                 "strip": true,

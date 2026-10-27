@@ -1,6 +1,42 @@
 {
     "byehi98": {
         "apps": {
+            "20-minutes-till-dawn": {
+                "package": "com.Flanne.MinutesTillDawn.roguelike.shooting.fr.gp",
+                "search_term": "20 Minutes Till Dawn",
+                "stable": [
+                    "8.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "adda247": {
+                "package": "com.adda247.app",
+                "search_term": "Adda247",
+                "stable": [
+                    "12.7.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "aliens-drive-me-crazy": {
+                "package": "com.rebeltwins.aliensdrivemecrazy",
+                "search_term": "Aliens Drive Me Crazy",
+                "stable": [
+                    "3.2.10"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
             "altos-adventure": {
                 "package": "com.noodlecake.altosadventure",
                 "search_term": "Alto's Adventure",
@@ -10,13 +46,50 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "altos-odyssey": {
                 "package": "com.noodlecake.altosodyssey",
                 "search_term": "Alto's Odyssey",
                 "stable": [
                     "1.0.42"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "big-hunter": {
+                "package": "com.kakarod.bighunter",
+                "search_term": "Big Hunter",
+                "stable": [
+                    "3.1.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "burrito-bison-launcha-libre": {
+                "package": "com.kongregate.mobile.burritobison3.google",
+                "search_term": "Burrito Bison: Launcha Libre",
+                "stable": [
+                    "3.75"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "crash-of-cars": {
+                "package": "com.notdoppler.crashofcars",
+                "search_term": "Crash of Cars",
+                "stable": [
+                    "1.9.36"
                 ],
                 "beta": [],
                 "strip": true,
@@ -32,7 +105,32 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
+            },
+            "dan-the-man": {
+                "package": "com.halfbrick.dantheman",
+                "search_term": "Dan the Man",
+                "stable": [
+                    "1.14.06"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "dead-target-offline-games-3d": {
+                "package": "com.vng.g6.a.zombie",
+                "search_term": "Dead Target: Offline Games 3D",
+                "stable": [
+                    "4.185.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
             },
             "dead-trigger": {
                 "package": "com.madfingergames.deadtrigger",
@@ -50,6 +148,18 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "document-scanner": {
+                "package": "com.cv.docscanner",
+                "search_term": "Document Scanner",
+                "stable": [
+                    "6.9.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
             "doodle-jump": {
                 "package": "com.lima.doodlejump",
                 "search_term": "Doodle Jump",
@@ -61,11 +171,108 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "dr-driving": {
+                "package": "com.ansangha.drdriving",
+                "search_term": "Dr. Driving",
+                "stable": [
+                    "1.73"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
             "earn-to-die-2": {
                 "package": "com.notdoppler.earntodie2",
                 "search_term": "Earn to Die 2",
                 "stable": [
                     "1.5.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fancy-pants-adventures": {
+                "package": "com.overthetopgames.fancypants",
+                "search_term": "Fancy Pants Adventures",
+                "stable": [
+                    "1.0.30"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "freejobalert": {
+                "package": "com.freejobalert",
+                "search_term": "FreeJobAlert",
+                "stable": [
+                    "1.0.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "fruit-ninja-free": {
+                "package": "com.halfbrick.fruitninjafree",
+                "search_term": "Fruit Ninja (Free)",
+                "stable": [
+                    "3.97.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "88485200",
+                    "armeabi-v7a": "88485200"
+                },
+                "force_bundle": true
+            },
+            "grimvalor": {
+                "package": "com.direlight.grimvalor",
+                "search_term": "Grimvalor",
+                "stable": [
+                    "1.2.13"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "haak": {
+                "package": "com.blingame.haaktestb",
+                "search_term": "HAAK",
+                "stable": [
+                    "1.4.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "head-basketball": {
+                "package": "com.dnddream.HeadBasketball",
+                "search_term": "Head Basketball",
+                "stable": [
+                    "4.6.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "head-soccer": {
+                "package": "com.dnddream.headsoccer.android",
+                "search_term": "Head Soccer",
+                "stable": [
+                    "7.1.8"
                 ],
                 "beta": [],
                 "strip": true,
@@ -81,7 +288,8 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "injustice-gods-among-us": {
                 "package": "com.wb.goog.injustice",
@@ -92,7 +300,20 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
+            },
+            "into-the-dead": {
+                "package": "com.sidheinteractive.sif.DR",
+                "search_term": "Into the Dead",
+                "stable": [
+                    "2.9.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
             },
             "into-the-dead-2": {
                 "package": "com.pikpok.dr2.play",
@@ -103,7 +324,8 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "jetpack-joyride": {
                 "package": "com.halfbrick.jetpackjoyride",
@@ -114,18 +336,56 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
-            "plants-vs-zombies-free": {
-                "package": "com.ea.game.pvzfree_row",
-                "search_term": "Plants vs. Zombies FREE",
+            "lemmings-puzzle-survival": {
+                "package": "com.sadpuppy.lemmings",
+                "search_term": "Lemmings: Puzzle Survival",
                 "stable": [
-                    "3.18.0"
+                    "9.4.4"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
+            },
+            "lumina-walls": {
+                "package": "com.lumina.wallpapers",
+                "search_term": "Lumina Walls",
+                "stable": [
+                    "1.0.2.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "missiles": {
+                "package": "pl.macaque.Missiles",
+                "search_term": "Missiles",
+                "stable": [
+                    "1.41"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "only-one": {
+                "package": "com.rebelbinary.onlyone",
+                "search_term": "Only One",
+                "stable": [
+                    "1.3052"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
             },
             "plague-inc": {
                 "package": "com.miniclip.plagueinc",
@@ -136,13 +396,97 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
+            },
+            "plants-vs-zombies-free": {
+                "package": "com.ea.game.pvzfree_row",
+                "search_term": "Plants vs. Zombies FREE",
+                "stable": [
+                    "3.18.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
             },
             "prince-of-persia-the-lost-crown": {
                 "package": "com.ubisoft.princeofpersia.thelostcrown.mobile.action.adventure.platform",
                 "search_term": "Prince of Persia: The Lost Crown",
                 "stable": [
                     "1.1.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "progressbar95": {
+                "package": "com.spookyhousestudios.progressbar95",
+                "search_term": "Progressbar95",
+                "stable": [
+                    "1.1111"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "rodeo-stampede-sky-zoo-safari": {
+                "package": "com.yodo1.rodeo.safari",
+                "search_term": "Rodeo Stampede: Sky Zoo Safari",
+                "stable": [
+                    "4.26.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "shooty-skies": {
+                "package": "com.mightygamesgroup.shootyskies",
+                "search_term": "Shooty Skies",
+                "stable": [
+                    "3.441.100103"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "smash-hit": {
+                "package": "com.mediocre.smashhit",
+                "search_term": "Smash Hit",
+                "stable": [
+                    "1.5.14"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "swamp-attack": {
+                "package": "com.outfit7.movingeye.swampattack",
+                "search_term": "Swamp Attack",
+                "stable": [
+                    "4.8.8.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "swamp-attack-2": {
+                "package": "com.hyperdotstudios.swampattack2",
+                "search_term": "Swamp Attack 2",
+                "stable": [
+                    "1.3.10"
                 ],
                 "beta": [],
                 "strip": true,
@@ -161,6 +505,41 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "swordigo": {
+                "package": "com.touchfoo.swordigo",
+                "search_term": "Swordigo",
+                "stable": [
+                    "1.4.13"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "tentacle-wars": {
+                "package": "com.fdgentertainment.tentaclewars.gp.free",
+                "search_term": "Tentacle Wars",
+                "stable": [
+                    "2.1.27"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "traffic-racer": {
+                "package": "com.skgames.trafficracer",
+                "search_term": "Traffic Racer",
+                "stable": [
+                    "4.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
             "traffic-rider": {
                 "package": "com.skgames.trafficrider",
                 "search_term": "Traffic Rider",
@@ -170,7 +549,43 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "truecloud": {
+                "package": "com.generalcomp.truecloud",
+                "search_term": "TrueCloud",
+                "stable": [
+                    "4.6.5.13"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "vector": {
+                "package": "com.nekki.vector",
+                "search_term": "Vector",
+                "stable": [
+                    "2.10.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "vita-mahjong": {
+                "package": "com.vitastudio.mahjong",
+                "search_term": "Vita Mahjong",
+                "stable": [
+                    "3.43.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
             }
         }
     }

@@ -1,0 +1,11 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"aphelion" = true
+"death-rover" = true
+"key-mapper" = true
+"new-star-soccer" = true
+"sling-drift" = true
+"soccer-star" = true
+"toolbox-for-minecraft-pe" = true

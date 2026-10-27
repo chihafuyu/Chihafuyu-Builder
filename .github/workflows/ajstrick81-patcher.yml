@@ -4,61 +4,18 @@ name: 📺 Ajstrick81 Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_disneyplus:
-        description: 'Patch disneyplus'
+      apps_to_patch:
+        description: >-
+          Type "all" to follow config/apps-ajstrick81.toml,
+          or type the name of a specific app (eg: 1weather,3way)
         required: true
-        type: boolean
-        default: false
-      app_prime_video:
-        description: 'Patch prime-video'
-        required: true
-        type: boolean
-        default: false
-      app_netflix:
-        description: 'Patch netflix'
-        required: true
-        type: boolean
-        default: false
-      app_hbo_max:
-        description: 'Patch hbo-max'
-        required: true
-        type: boolean
-        default: false
-      app_peacock:
-        description: 'Patch peacock'
-        required: true
-        type: boolean
-        default: false
-      app_tubi:
-        description: 'Patch tubi'
-        required: true
-        type: boolean
-        default: false
-      app_vix:
-        description: 'Patch vix'
-        required: true
-        type: boolean
-        default: false
-      app_pluto_tv:
-        description: 'Patch pluto-tv'
-        required: true
-        type: boolean
-        default: false
-      app_paramount_plus:
-        description: 'Patch paramount-plus'
-        required: true
-        type: boolean
-        default: false
-      app_twitch:
-        description: 'Patch twitch'
-        required: true
-        type: boolean
-        default: false
+        type: string
+        default: 'all'
       architecture:
         description: 'Target Architecture'
         required: true
         type: choice
-        default: 'armeabi-v7a'
+        default: 'arm64-v8a'
         options: [arm64-v8a, armeabi-v7a, x86_64, x86, universal]
       version_selection:
         description: 'App Version Selection'
@@ -108,6 +65,11 @@ name: 📺 Ajstrick81 Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      upload_huggingface:
+        description: 'Upload to HuggingFace Dataset'
+        required: false
+        type: boolean
+        default: false
       send_to_telegram:
         description: 'Send to Telegram'
         required: true
@@ -121,60 +83,92 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
-    env:
-      APP_DISNEYPLUS: ${{ inputs.app_disneyplus }}
-      APP_PRIME_VIDEO: ${{ inputs.app_prime_video }}
-      APP_NETFLIX: ${{ inputs.app_netflix }}
-      APP_HBO_MAX: ${{ inputs.app_hbo_max }}
-      APP_PEACOCK: ${{ inputs.app_peacock }}
-      APP_TUBI: ${{ inputs.app_tubi }}
-      APP_VIX: ${{ inputs.app_vix }}
-      APP_PLUTO_TV: ${{ inputs.app_pluto_tv }}
-      APP_PARAMOUNT_PLUS: ${{ inputs.app_paramount_plus }}
-      APP_TWITCH: ${{ inputs.app_twitch }}
     steps:
-      - id: build-list
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Validate and Normalize App List
+        id: build-list
+        env:
+          APPS_RAW: ${{ inputs.apps_to_patch }}
+          ECO_NAME: "ajstrick81"
         run: |
           set -euo pipefail
-          LIST=""
-          if [[ "$APP_DISNEYPLUS" == "true" ]]; then
-            LIST="$LIST,disneyplus"
-          fi
-          if [[ "$APP_PRIME_VIDEO" == "true" ]]; then
-            LIST="$LIST,prime-video"
-          fi
-          if [[ "$APP_NETFLIX" == "true" ]]; then
-            LIST="$LIST,netflix"
-          fi
-          if [[ "$APP_HBO_MAX" == "true" ]]; then
-            LIST="$LIST,hbo-max"
-          fi
-          if [[ "$APP_PEACOCK" == "true" ]]; then
-            LIST="$LIST,peacock"
-          fi
-          if [[ "$APP_TUBI" == "true" ]]; then
-            LIST="$LIST,tubi"
-          fi
-          if [[ "$APP_VIX" == "true" ]]; then
-            LIST="$LIST,vix"
-          fi
-          if [[ "$APP_PLUTO_TV" == "true" ]]; then
-            LIST="$LIST,pluto-tv"
-          fi
-          if [[ "$APP_PARAMOUNT_PLUS" == "true" ]]; then
-            LIST="$LIST,paramount-plus"
-          fi
-          if [[ "$APP_TWITCH" == "true" ]]; then
-            LIST="$LIST,twitch"
-          fi
-          LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then
-            echo "::error::No applications selected!"
+
+          ECO="$ECO_NAME"
+          CONFIG="ecosystem/${ECO}.json"
+          TOML_CONFIG="config/apps-${ECO}.toml"
+
+          if [ ! -f "$CONFIG" ]; then
+            echo "::error::Config not found: $CONFIG"
             exit 1
           fi
+
+          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          import os, json, sys
+
+          try:
+              import tomllib
+          except ImportError:
+              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              sys.exit(1)
+
+          eco = os.environ['ECO_NAME']
+          config_path = os.environ['CONFIG_PATH']
+          toml_path = os.environ['TOML_PATH']
+          raw_input = os.environ.get('APPS_RAW', '').strip()
+
+          with open(config_path) as f:
+              valid_apps = json.load(f)[eco]['apps']
+
+          selected = []
+
+          if raw_input.lower() == 'all':
+              print('[INFO] Mode: Reading from config/apps.toml', file=sys.stderr)
+              if not os.path.exists(toml_path):
+                  print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
+                  sys.exit(1)
+
+              with open(toml_path, 'rb') as f:
+                  toml_data = tomllib.load(f)
+
+              apps_dict = toml_data.get('apps', {})
+              selected = [k for k, v in apps_dict.items() if v is True]
+
+              if not selected:
+                  print('::error::No apps enabled in apps.toml', file=sys.stderr)
+                  sys.exit(1)
+
+          else:
+              print('[INFO] Mode: Manual Input', file=sys.stderr)
+              selected = [a.strip() for a in raw_input.split(',') if a.strip()]
+
+          invalid = [app for app in selected if app not in valid_apps]
+          if invalid:
+              print(f'::error::The following apps were not found in {config_path}: {invalid}', file=sys.stderr)
+              print('Valid apps:', file=sys.stderr)
+              for v in sorted(valid_apps):
+                  print(f'  - {v}', file=sys.stderr)
+              sys.exit(1)
+
+          print(','.join(selected))
+          ")
+
+          if [ -z "$SELECTED" ]; then
+            echo "::error::No apps selected."
+            exit 1
+          fi
+
+          echo "Apps to patch: $SELECTED"
+
           {
             echo "apps<<EOF"
-            echo "$LIST"
+            echo "$SELECTED"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 

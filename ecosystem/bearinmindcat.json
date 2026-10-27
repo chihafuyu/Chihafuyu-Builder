@@ -32,6 +32,35 @@
                     }
                 }
             },
+            "samsung-gallery": {
+                "package": "com.sec.android.gallery3d",
+                "search_term": "Samsung Gallery",
+                "stable": [
+                    "15.9.01.7"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-keyboard": {
+                "package": "com.samsung.android.honeyboard",
+                "search_term": "Samsung Keyboard",
+                "stable": [
+                    "5.9.40.75"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Always incognito": {
+                        "enabled": false
+                    },
+                    "Remove internet permission": {
+                        "enabled": false
+                    }
+                }
+            },
             "waze": {
                 "package": "com.waze",
                 "search_term": "Waze",

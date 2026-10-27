@@ -27,6 +27,39 @@
                     }
                 }
             },
+            "com-ovz-carscanner": {
+                "package": "com.ovz.carscanner",
+                "search_term": "com.ovz.carscanner",
+                "stable": [
+                    "2.1.50"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "com-pinterest": {
+                "package": "com.pinterest",
+                "search_term": "com.pinterest",
+                "stable": [
+                    "14.41.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "com-xinesoft-notifications": {
+                "package": "com.xinesoft.notifications",
+                "search_term": "com.xinesoft.notifications",
+                "stable": [
+                    "1.11.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "image-date-fixer": {
                 "package": "eu.duong.imagedatefixer",
                 "search_term": "Image & Video Date Fixer",
@@ -44,6 +77,35 @@
                     "x86": "31000010"
                 },
                 "force_bundle": true
+            },
+            "instagram": {
+                "package": "com.instagram.android",
+                "search_term": "Instagram",
+                "stable": [
+                    "439.0.0.37.89"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "384510827"
+                },
+                "force_bundle": true
+            },
+            "instagram-instants": {
+                "package": "com.instagram.moonshot",
+                "search_term": "Instagram Instants",
+                "stable": [
+                    "444.0.0.45.108"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "44501396"
+                }
             },
             "native-camera": {
                 "package": "com.rawcam.app",

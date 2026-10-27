@@ -14,6 +14,11 @@ name: 🌐 Dh6k Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_brave_browser:
+        description: 'Patch brave-browser'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -84,6 +89,7 @@ jobs:
     env:
       APP_QUETTA_BROWSER: ${{ inputs.app_quetta_browser }}
       APP_QUETTA_BROWSER_OFFICIAL: ${{ inputs.app_quetta_browser_official }}
+      APP_BRAVE_BROWSER: ${{ inputs.app_brave_browser }}
     steps:
       - id: build-list
         run: |
@@ -94,6 +100,9 @@ jobs:
           fi
           if [[ "$APP_QUETTA_BROWSER_OFFICIAL" == "true" ]]; then
             LIST="$LIST,quetta-browser-official"
+          fi
+          if [[ "$APP_BRAVE_BROWSER" == "true" ]]; then
+            LIST="$LIST,brave-browser"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

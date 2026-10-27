@@ -1,6 +1,17 @@
 {
     "kiraio-moe": {
         "apps": {
+            "android-proxy-server": {
+                "package": "cn.adonet.proxyevery",
+                "search_term": "Android Proxy Server",
+                "stable": [
+                    "9.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "atomic": {
                 "package": "com.jlindemann.science",
                 "search_term": "Atomic",
@@ -14,11 +25,66 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "audiorelay": {
+                "package": "com.azefsw.audioconnect",
+                "search_term": "AudioRelay",
+                "stable": [
+                    "0.26.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "boorusama": {
                 "package": "com.degenk.boorusama",
                 "search_term": "Boorusama",
                 "stable": [
                     "4.5.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "camera-fv-5-lite": {
+                "package": "com.flavionet.android.camera.lite",
+                "search_term": "Camera FV-5 Lite",
+                "stable": [
+                    "5.4.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "chatboost": {
+                "package": "studio.muggle.chatboost",
+                "search_term": "ChatBoost",
+                "stable": [
+                    "3.24.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "cinema-fv-5-lite": {
+                "package": "com.flavionet.android.cinema.lite",
+                "search_term": "Cinema FV-5 Lite",
+                "stable": [
+                    "2.2.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "collage-maker-photofancie": {
+                "package": "com.surmin.photofancie.lite",
+                "search_term": "Collage Maker - PhotoFancie",
+                "stable": [
+                    "5.8.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -112,11 +178,48 @@
                     }
                 }
             },
+            "medibang-paint": {
+                "package": "com.medibang.android.paint.tablet",
+                "search_term": "MediBang Paint",
+                "stable": [
+                    "28.24"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Disable Analytics": {
+                        "enabled": false
+                    }
+                }
+            },
             "nekopoi": {
                 "package": "com.kcstream.cing",
                 "search_term": "Nekopoi",
                 "stable": [
                     "2.5.3-build01"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "paletta": {
+                "package": "com.medibang.android.medibangpro",
+                "search_term": "Paletta",
+                "stable": [
+                    "4.11"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pixel-studio": {
+                "package": "com.PixelStudio",
+                "search_term": "Pixel Studio",
+                "stable": [
+                    "5.51"
                 ],
                 "beta": [],
                 "strip": true,
@@ -134,11 +237,55 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "sketchbook": {
+                "package": "com.adsk.sketchbook",
+                "search_term": "Sketchbook",
+                "stable": [
+                    "6.2.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "super-proxy": {
+                "package": "com.scheler.superproxy",
+                "search_term": "Super Proxy",
+                "stable": [
+                    "3.2.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "timestamp-camera": {
                 "package": "com.jeyluta.timestampcamerafree",
                 "search_term": "Timestamp Camera",
                 "stable": [
                     "1.252"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "timestamp-camera-enterprise-free": {
+                "package": "com.jeyluta.timestampcamerafreeent",
+                "search_term": "Timestamp Camera Enterprise Free",
+                "stable": [
+                    "1.237"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "udisc": {
+                "package": "com.regasoftware.udisc",
+                "search_term": "UDisc",
+                "stable": [
+                    "24.1.2"
                 ],
                 "beta": [],
                 "strip": true,

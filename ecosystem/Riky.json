@@ -13,6 +13,21 @@
                 "options_override": {},
                 "force_bundle": true
             },
+            "capcut": {
+                "package": "com.lemon.lvoverseas",
+                "search_term": "CapCut",
+                "stable": [
+                    "9.0.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "CapCut network tunnel": {
+                        "enabled": false
+                    }
+                }
+            },
             "electron": {
                 "package": "com.mahersafadi.electron",
                 "search_term": "Electron",
@@ -22,7 +37,43 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "komoot": {
+                "package": "de.komoot.android",
+                "search_term": "Komoot",
+                "stable": [
+                    "2026.41.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "tramonto-alba-phototime": {
+                "package": "pl.guteklabs.phototime",
+                "search_term": "Tramonto & Alba: PhotoTime",
+                "stable": [
+                    "8.2.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "vn": {
+                "package": "com.frontrow.vlog",
+                "search_term": "VN",
+                "stable": [
+                    "2.22.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
             }
         }
     }

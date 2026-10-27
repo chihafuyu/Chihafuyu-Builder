@@ -9,6 +9,11 @@ name: ⚔️ Zeldrisho Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_threads:
+        description: 'Patch threads'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -78,6 +83,7 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_ZALO: ${{ inputs.app_zalo }}
+      APP_THREADS: ${{ inputs.app_threads }}
     steps:
       - id: build-list
         run: |
@@ -85,6 +91,9 @@ jobs:
           LIST=""
           if [[ "$APP_ZALO" == "true" ]]; then
             LIST="$LIST,zalo"
+          fi
+          if [[ "$APP_THREADS" == "true" ]]; then
+            LIST="$LIST,threads"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

@@ -1,11 +1,1012 @@
 {
     "satanmerde": {
         "apps": {
+            "alltrails": {
+                "package": "com.alltrails.alltrails",
+                "search_term": "AllTrails",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "alto-s-adventure": {
+                "package": "com.noodlecake.altosadventure",
+                "search_term": "Alto's Adventure",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "angry-birds-classic": {
+                "package": "com.rovio.baba",
+                "search_term": "Angry Birds Classic",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "bandlab": {
+                "package": "com.bandlab.bandlab",
+                "search_term": "BandLab",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "beach-buggy-racing": {
+                "package": "com.vectorunit.cobalt.googleplay",
+                "search_term": "Beach Buggy Racing",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "bitwarden": {
+                "package": "com.x8bit.bitwarden",
+                "search_term": "Bitwarden",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "brave-browser": {
+                "package": "com.brave.browser",
+                "search_term": "Brave Browser",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "camscanner": {
+                "package": "com.intsig.camscanner",
+                "search_term": "CamScanner",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "canva": {
+                "package": "com.canva.editor",
+                "search_term": "Canva",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "chatgpt": {
+                "package": "com.openai.chatgpt",
+                "search_term": "ChatGPT",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "claude": {
+                "package": "com.anthropic.claude",
+                "search_term": "Claude",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "crossy-road": {
+                "package": "com.yodo1.crossyroad",
+                "search_term": "Crossy Road",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "cut-the-rope": {
+                "package": "com.zeptolab.ctr.ads",
+                "search_term": "Cut the Rope",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "dan-the-man": {
+                "package": "com.halfbrick.dantheman",
+                "search_term": "Dan The Man",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "deepl": {
+                "package": "com.deepl.mobile.android",
+                "search_term": "DeepL",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "doodle-jump": {
+                "package": "com.lima.doodlejump",
+                "search_term": "Doodle Jump",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "duolingo": {
+                "package": "com.duolingo",
+                "search_term": "Duolingo",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "euria": {
+                "package": "com.infomaniak.euria",
+                "search_term": "Euria",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fctv33-mobile": {
+                "package": "com.fctv77.app",
+                "search_term": "FCTV33 (Mobile)",
+                "stable": [
+                    "3.0.323"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fctv33-tv": {
+                "package": "com.fctv77.tv",
+                "search_term": "FCTV33 (TV)",
+                "stable": [
+                    "3.0.323"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "firefox": {
+                "package": "org.mozilla.firefox",
+                "search_term": "Firefox",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "flightradar24": {
+                "package": "com.flightradar24free",
+                "search_term": "Flightradar24",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fossify-phone": {
+                "package": "org.fossify.phone",
+                "search_term": "Fossify Phone",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "free-fire": {
+                "package": "com.dts.freefireth",
+                "search_term": "Free Fire",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "free-fire-max": {
+                "package": "com.dts.freefiremax",
+                "search_term": "Free Fire MAX",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fruit-ninja": {
+                "package": "com.halfbrick.fruitninja",
+                "search_term": "Fruit Ninja",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "geometry-dash": {
+                "package": "com.robtopx.geometryjump",
+                "search_term": "Geometry Dash",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "google-drive": {
+                "package": "com.google.android.apps.docs",
+                "search_term": "Google Drive",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "google-gemini": {
+                "package": "com.google.android.apps.bard",
+                "search_term": "Google Gemini",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "google-maps": {
+                "package": "com.google.android.apps.maps",
+                "search_term": "Google Maps",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "google-photos": {
+                "package": "com.google.android.apps.photos",
+                "search_term": "Google Photos",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "hill-climb-racing": {
+                "package": "com.fingersoft.hillclimb",
+                "search_term": "Hill Climb Racing",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "hungry-shark-evolution": {
+                "package": "com.fgol.HungrySharkEvolution",
+                "search_term": "Hungry Shark Evolution",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "hungry-shark-heroes": {
+                "package": "com.ubisoft.hungrysharkheroes",
+                "search_term": "Hungry Shark Heroes",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "hungry-shark-world": {
                 "package": "com.ubisoft.hungrysharkworld",
                 "search_term": "Hungry Shark World",
                 "stable": [
                     "8.1.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "instagram": {
+                "package": "com.instagram.android",
+                "search_term": "Instagram",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "jetpack-joyride": {
+                "package": "com.halfbrick.jetpackjoyride",
+                "search_term": "Jetpack Joyride",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "mega": {
+                "package": "mega.privacy.android.app",
+                "search_term": "MEGA",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "memrise": {
+                "package": "com.memrise.android.memrisecompanion",
+                "search_term": "Memrise",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "moises": {
+                "package": "ai.moises",
+                "search_term": "Moises",
+                "stable": [
+                    "2.72.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "movix": {
+                "package": "com.movix.app",
+                "search_term": "Movix",
+                "stable": [
+                    "2.6.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "mx-player": {
+                "package": "com.mxtech.videoplayer.ad",
+                "search_term": "MX Player",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "nextcloud": {
+                "package": "org.nextcloud.client",
+                "search_term": "Nextcloud",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "peak": {
+                "package": "com.brainbow.peak.app",
+                "search_term": "Peak",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "perplexity": {
+                "package": "ai.perplexity.app.android",
+                "search_term": "Perplexity",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "photomath": {
+                "package": "com.microblink.photomath",
+                "search_term": "Photomath",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "picturethis": {
+                "package": "cn.danatech.xingseus",
+                "search_term": "PictureThis",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "pinterest": {
+                "package": "com.pinterest",
+                "search_term": "Pinterest",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "plague-inc": {
+                "package": "com.miniclip.plagueinc",
+                "search_term": "Plague Inc.",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "plague-inc-ndemic": {
+                "package": "com.ndemiccreations.plagueinc",
+                "search_term": "Plague Inc. (Ndemic)",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "plants-vs-zombies": {
+                "package": "com.ea.game.pvzfree_row",
+                "search_term": "Plants vs. Zombies",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "proton-drive": {
+                "package": "me.proton.android.drive",
+                "search_term": "Proton Drive",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "proton-mail": {
+                "package": "ch.protonmail.android",
+                "search_term": "Proton Mail",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "proton-pass": {
+                "package": "proton.android.pass",
+                "search_term": "Proton Pass",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "proton-vpn": {
+                "package": "ch.protonvpn.android",
+                "search_term": "Proton VPN",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "rbtv-rblive-mobile": {
+                "package": "com.rblive.app",
+                "search_term": "RBTV+ / RBLive (Mobile)",
+                "stable": [
+                    "3.0.323"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "rbtv-rblive-tv": {
+                "package": "com.rblive.tv",
+                "search_term": "RBTV+ / RBLive (TV)",
+                "stable": [
+                    "3.0.323"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "reddit": {
+                "package": "com.reddit.frontpage",
+                "search_term": "Reddit",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "robbery-bob": {
+                "package": "com.chillingo.robberybobfree.android.row",
+                "search_term": "Robbery Bob",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "session": {
+                "package": "network.loki.messenger",
+                "search_term": "Session",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "shades-shadow-fight-roguelike": {
+                "package": "com.nekki.shadowfight.shades",
+                "search_term": "Shades: Shadow Fight Roguelike",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "shadow-fight-2": {
+                "package": "com.nekki.shadowfight",
+                "search_term": "Shadow Fight 2",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "shadow-fight-2-special-edition": {
+                "package": "com.nekki.shadowfight2.specialedition",
+                "search_term": "Shadow Fight 2 Special Edition",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "shadow-fight-3": {
+                "package": "com.nekki.shadowfight3",
+                "search_term": "Shadow Fight 3",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "shadow-fight-4-arena": {
+                "package": "com.nekki.shadowfightarena",
+                "search_term": "Shadow Fight 4: Arena",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "shazam": {
+                "package": "com.shazam.android",
+                "search_term": "Shazam",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "signal": {
+                "package": "org.thoughtcrime.securesms",
+                "search_term": "Signal",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "silt": {
+                "package": "com.snapbreak.silt",
+                "search_term": "Silt",
+                "stable": [
+                    "1.0.10"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "simplex-chat": {
+                "package": "chat.simplex.app",
+                "search_term": "SimpleX Chat",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "snapchat": {
+                "package": "com.snapchat.android",
+                "search_term": "Snapchat",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "soundcloud": {
+                "package": "com.soundcloud.android",
+                "search_term": "SoundCloud",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "speedtest": {
+                "package": "org.zwanoo.android.speedtest",
+                "search_term": "Speedtest",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "stellarium-mobile": {
+                "package": "com.noctuasoftware.stellarium_free",
+                "search_term": "Stellarium Mobile",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "stellarium-mobile-alt": {
+                "package": "com.noctuasoftware.stellarium",
+                "search_term": "Stellarium Mobile (Alt)",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "strava": {
+                "package": "com.strava",
+                "search_term": "Strava",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "subway-surfers": {
+                "package": "com.kiloo.subwaysurf",
+                "search_term": "Subway Surfers",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "telegram": {
+                "package": "org.telegram.messenger",
+                "search_term": "Telegram",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "temple-run-2": {
+                "package": "com.imangi.templerun2",
+                "search_term": "Temple Run 2",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "terabox": {
+                "package": "com.dubox.drive",
+                "search_term": "TeraBox",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "truecaller": {
+                "package": "com.truecaller",
+                "search_term": "Truecaller",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "turbo-vpn": {
+                "package": "free.vpn.unblock.proxy.turbovpn",
+                "search_term": "Turbo VPN",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "tuta-mail": {
+                "package": "de.tutao.tutanota",
+                "search_term": "Tuta Mail",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "twitch": {
+                "package": "tv.twitch.android.app",
+                "search_term": "Twitch",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "undercover": {
+                "package": "com.yanstarstudio.joss.undercover",
+                "search_term": "Undercover",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "vector-2": {
+                "package": "com.nekki.vector2",
+                "search_term": "Vector 2",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "vlc": {
+                "package": "org.videolan.vlc",
+                "search_term": "VLC",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "vpn-lat": {
+                "package": "com.vpn.lat",
+                "search_term": "VPN.lat",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "waze": {
+                "package": "com.waze",
+                "search_term": "Waze",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "windscribe": {
+                "package": "com.windscribe.vpn",
+                "search_term": "Windscribe",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "windy-com": {
+                "package": "com.windyty.android",
+                "search_term": "Windy.com",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "world-map-quiz": {
+                "package": "com.qbis.guessthecountry",
+                "search_term": "World Map Quiz",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "youtube": {
+                "package": "com.google.android.youtube",
+                "search_term": "YouTube",
+                "stable": [
+                    "Any"
                 ],
                 "beta": [],
                 "strip": true,

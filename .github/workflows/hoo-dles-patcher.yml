@@ -4,81 +4,13 @@ name: 🍜 Hoo-dles Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_adguard:
-        description: 'Patch adguard'
+      apps_to_patch:
+        description: >-
+          Type "all" to follow config/apps-hoo-dles.toml,
+          or type the name of a specific app (eg: 1weather,3way)
         required: true
-        type: boolean
-        default: false
-      app_bend:
-        description: 'Patch bend'
-        required: true
-        type: boolean
-        default: false
-      app_camscanner:
-        description: 'Patch camscanner'
-        required: true
-        type: boolean
-        default: false
-      app_duolingo:
-        description: 'Patch duolingo'
-        required: true
-        type: boolean
-        default: false
-      app_ibispaint:
-        description: 'Patch ibispaint'
-        required: true
-        type: boolean
-        default: false
-      app_lightroom_mobile:
-        description: 'Patch lightroom-mobile'
-        required: true
-        type: boolean
-        default: false
-      app_mimo:
-        description: 'Patch mimo'
-        required: true
-        type: boolean
-        default: false
-      app_niagara_launcher:
-        description: 'Patch niagara-launcher'
-        required: true
-        type: boolean
-        default: false
-      app_pydroid3:
-        description: 'Patch pydroid3'
-        required: true
-        type: boolean
-        default: false
-      app_sleep_as_android:
-        description: 'Patch sleep-as-android'
-        required: true
-        type: boolean
-        default: false
-      app_smart_launcher:
-        description: 'Patch smart-launcher'
-        required: true
-        type: boolean
-        default: false
-      app_windy:
-        description: 'Patch windy'
-        required: true
-        type: boolean
-        default: false
-      app_wps:
-        description: 'Patch wps'
-        required: true
-        type: boolean
-        default: false
-      app_xodo:
-        description: 'Patch xodo'
-        required: true
-        type: boolean
-        default: false
-      app_xrecorder:
-        description: 'Patch xrecorder'
-        required: true
-        type: boolean
-        default: false
+        type: string
+        default: 'all'
       architecture:
         description: 'Target Architecture'
         required: true
@@ -133,6 +65,11 @@ name: 🍜 Hoo-dles Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      upload_huggingface:
+        description: 'Upload to HuggingFace Dataset'
+        required: false
+        type: boolean
+        default: false
       send_to_telegram:
         description: 'Send to Telegram'
         required: true
@@ -146,80 +83,92 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
-    env:
-      APP_ADGUARD: ${{ inputs.app_adguard }}
-      APP_BEND: ${{ inputs.app_bend }}
-      APP_CAMSCANNER: ${{ inputs.app_camscanner }}
-      APP_DUOLINGO: ${{ inputs.app_duolingo }}
-      APP_IBISPAINT: ${{ inputs.app_ibispaint }}
-      APP_LIGHTROOM_MOBILE: ${{ inputs.app_lightroom_mobile }}
-      APP_MIMO: ${{ inputs.app_mimo }}
-      APP_NIAGARA_LAUNCHER: ${{ inputs.app_niagara_launcher }}
-      APP_PYDROID3: ${{ inputs.app_pydroid3 }}
-      APP_SLEEP_AS_ANDROID: ${{ inputs.app_sleep_as_android }}
-      APP_SMART_LAUNCHER: ${{ inputs.app_smart_launcher }}
-      APP_WINDY: ${{ inputs.app_windy }}
-      APP_WPS: ${{ inputs.app_wps }}
-      APP_XODO: ${{ inputs.app_xodo }}
-      APP_XRECORDER: ${{ inputs.app_xrecorder }}
     steps:
-      - id: build-list
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Validate and Normalize App List
+        id: build-list
+        env:
+          APPS_RAW: ${{ inputs.apps_to_patch }}
+          ECO_NAME: "hoo-dles"
         run: |
           set -euo pipefail
-          LIST=""
-          if [[ "$APP_ADGUARD" == "true" ]]; then
-            LIST="$LIST,adguard"
-          fi
-          if [[ "$APP_BEND" == "true" ]]; then
-            LIST="$LIST,bend"
-          fi
-          if [[ "$APP_CAMSCANNER" == "true" ]]; then
-            LIST="$LIST,camscanner"
-          fi
-          if [[ "$APP_DUOLINGO" == "true" ]]; then
-            LIST="$LIST,duolingo"
-          fi
-          if [[ "$APP_IBISPAINT" == "true" ]]; then
-            LIST="$LIST,ibispaint"
-          fi
-          if [[ "$APP_LIGHTROOM_MOBILE" == "true" ]]; then
-            LIST="$LIST,lightroom-mobile"
-          fi
-          if [[ "$APP_MIMO" == "true" ]]; then
-            LIST="$LIST,mimo"
-          fi
-          if [[ "$APP_NIAGARA_LAUNCHER" == "true" ]]; then
-            LIST="$LIST,niagara-launcher"
-          fi
-          if [[ "$APP_PYDROID3" == "true" ]]; then
-            LIST="$LIST,pydroid3"
-          fi
-          if [[ "$APP_SLEEP_AS_ANDROID" == "true" ]]; then
-            LIST="$LIST,sleep-as-android"
-          fi
-          if [[ "$APP_SMART_LAUNCHER" == "true" ]]; then
-            LIST="$LIST,smart-launcher"
-          fi
-          if [[ "$APP_WINDY" == "true" ]]; then
-            LIST="$LIST,windy"
-          fi
-          if [[ "$APP_WPS" == "true" ]]; then
-            LIST="$LIST,wps"
-          fi
-          if [[ "$APP_XODO" == "true" ]]; then
-            LIST="$LIST,xodo"
-          fi
-          if [[ "$APP_XRECORDER" == "true" ]]; then
-            LIST="$LIST,xrecorder"
-          fi
-          LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then
-            echo "::error::No applications selected!"
+
+          ECO="$ECO_NAME"
+          CONFIG="ecosystem/${ECO}.json"
+          TOML_CONFIG="config/apps-${ECO}.toml"
+
+          if [ ! -f "$CONFIG" ]; then
+            echo "::error::Config not found: $CONFIG"
             exit 1
           fi
+
+          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          import os, json, sys
+
+          try:
+              import tomllib
+          except ImportError:
+              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              sys.exit(1)
+
+          eco = os.environ['ECO_NAME']
+          config_path = os.environ['CONFIG_PATH']
+          toml_path = os.environ['TOML_PATH']
+          raw_input = os.environ.get('APPS_RAW', '').strip()
+
+          with open(config_path) as f:
+              valid_apps = json.load(f)[eco]['apps']
+
+          selected = []
+
+          if raw_input.lower() == 'all':
+              print('[INFO] Mode: Reading from config/apps.toml', file=sys.stderr)
+              if not os.path.exists(toml_path):
+                  print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
+                  sys.exit(1)
+
+              with open(toml_path, 'rb') as f:
+                  toml_data = tomllib.load(f)
+
+              apps_dict = toml_data.get('apps', {})
+              selected = [k for k, v in apps_dict.items() if v is True]
+
+              if not selected:
+                  print('::error::No apps enabled in apps.toml', file=sys.stderr)
+                  sys.exit(1)
+
+          else:
+              print('[INFO] Mode: Manual Input', file=sys.stderr)
+              selected = [a.strip() for a in raw_input.split(',') if a.strip()]
+
+          invalid = [app for app in selected if app not in valid_apps]
+          if invalid:
+              print(f'::error::The following apps were not found in {config_path}: {invalid}', file=sys.stderr)
+              print('Valid apps:', file=sys.stderr)
+              for v in sorted(valid_apps):
+                  print(f'  - {v}', file=sys.stderr)
+              sys.exit(1)
+
+          print(','.join(selected))
+          ")
+
+          if [ -z "$SELECTED" ]; then
+            echo "::error::No apps selected."
+            exit 1
+          fi
+
+          echo "Apps to patch: $SELECTED"
+
           {
             echo "apps<<EOF"
-            echo "$LIST"
+            echo "$SELECTED"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 

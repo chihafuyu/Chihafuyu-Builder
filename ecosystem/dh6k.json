@@ -1,6 +1,27 @@
 {
     "dh6k": {
         "apps": {
+            "brave-browser": {
+                "package": "com.brave.browser",
+                "search_term": "Brave Browser",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Brave AMOLED theme": {
+                        "enabled": false
+                    },
+                    "Brave NTP four-column tiles": {
+                        "enabled": false
+                    },
+                    "Custom NTP wallpaper": {
+                        "enabled": false
+                    }
+                }
+            },
             "quetta-browser": {
                 "package": "net.quetta.browser",
                 "search_term": "Quetta Browser",

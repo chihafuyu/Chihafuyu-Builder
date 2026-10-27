@@ -1,0 +1,9 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"com-ovz-carscanner" = true
+"com-pinterest" = true
+"com-xinesoft-notifications" = true
+"instagram" = true
+"instagram-instants" = true
