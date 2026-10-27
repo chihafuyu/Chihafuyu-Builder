@@ -691,7 +691,7 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         return False
 
     original_content = content
-    
+
     # Anchor strictly to 6-space indentation for GitHub Action inputs
     arch_pattern = re.compile(r"^ {6}architecture:\r?\n", re.MULTILINE)
     match = arch_pattern.search(content)
