@@ -18,6 +18,9 @@
                     },
                     "Remove Extra Languages": {
                         "enabled": false
+                    },
+                    "Custom Brave theme": {
+                        "enabled": false
                     }
                 }
             },
@@ -26,7 +29,7 @@
                 "search_term": "TikTok Global",
                 "description": "Any TikTok version (Global nodpi APK)",
                 "stable": [
-                    "47.4.3"
+                    "47.5.3"
                 ],
                 "beta": [],
                 "version_codes": {
@@ -101,6 +104,12 @@
                         "enabled": false
                     },
                     "Video Fit Mode": {
+                        "enabled": false
+                    },
+                    "Disable QUIC": {
+                        "enabled": false
+                    },
+                    "Show Exact Counts": {
                         "enabled": false
                     }
                 }

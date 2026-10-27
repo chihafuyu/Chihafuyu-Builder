@@ -9,11 +9,6 @@ name: 🛠️ Kveld9-Extra Ecosystem Patcher
         required: true
         type: boolean
         default: true
-      app_copilot:
-        description: 'Patch microsoft-copilot'
-        required: true
-        type: boolean
-        default: true
       app_hevy:
         description: 'Patch hevy'
         required: true
@@ -103,7 +98,6 @@ jobs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
       APP_CAPCUT: ${{ inputs.app_capcut }}
-      APP_COPILOT: ${{ inputs.app_copilot }}
       APP_HEVY: ${{ inputs.app_hevy }}
       APP_NOKOPRINT: ${{ inputs.app_nokoprint }}
       APP_POWERPOINT: ${{ inputs.app_powerpoint }}
@@ -115,9 +109,6 @@ jobs:
           LIST=""
           if [[ "$APP_CAPCUT" == "true" ]]; then
             LIST="$LIST,capcut"
-          fi
-          if [[ "$APP_COPILOT" == "true" ]]; then
-            LIST="$LIST,copilot"
           fi
           if [[ "$APP_HEVY" == "true" ]]; then
             LIST="$LIST,hevy"
