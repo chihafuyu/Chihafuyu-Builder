@@ -26,8 +26,10 @@ FORCE_BUNDLE_APK_TYPES = frozenset({
     "APKM", "APKS", "XAPK", "APKS_REQUIRED", "XAPK_REQUIRED",
 })
 
-# Matches apps.toml entries like: "1weather" = true
-APPS_TOML_ENTRY_RE = re.compile(r'^"([^"]+)"\s*=\s*(true|false)')
+# Matches apps.toml entries like: "1weather" = true OR 1weather = true
+APPS_TOML_ENTRY_RE = re.compile(
+    r'^(?:"([^"]+)"|([a-zA-Z0-9_-]+))\s*=\s*(true|false)'
+)
 
 # Collapses non-alphanumeric runs for app key slugification.
 SLUG_PATTERN = re.compile(r"[^a-z0-9]+")
@@ -681,9 +683,11 @@ def _add_app_to_yaml(ecosystem_name, app_key):
               "no per-app YAML entry needed.")
         return False
 
+    newline = "\r\n" if "\r\n" in content else "\n"
     input_name = "app_" + app_key.lower().replace("-", "_").replace(".", "_")
     env_var = "APP_" + app_key.upper().replace("-", "_").replace(".", "_")
-    if f"\n      {input_name}:" in content:
+
+    if re.search(rf"\n[ \t]+{input_name}:", content):
         return False
 
     original_content = content
@@ -693,11 +697,11 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         return False
 
     input_block = (
-        f"      {input_name}:\n"
-        f"        description: 'Patch {app_key}'\n"
-        f"        required: true\n"
-        f"        type: boolean\n"
-        f"        default: true\n"
+        f"      {input_name}:{newline}"
+        f"        description: 'Patch {app_key}'{newline}"
+        f"        required: true{newline}"
+        f"        type: boolean{newline}"
+        f"        default: true{newline}"
     )
     content = content[:match.start()] + input_block + content[match.start():]
 
@@ -714,7 +718,7 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         return False
 
     insert_pos = env_match.end(2)
-    env_line = f"      {env_var}: ${{{{ inputs.{input_name} }}}}\n"
+    env_line = f"      {env_var}: ${{{{ inputs.{input_name} }}}}{newline}"
     content = content[:insert_pos] + env_line + content[insert_pos:]
 
     list_pattern = re.compile(r'^[ \t]+LIST="\$\{LIST#,}"\r?\n', re.MULTILINE)
@@ -725,9 +729,9 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         return False
 
     if_block = (
-        f'          if [[ "${env_var}" == "true" ]]; then\n'
-        f'            LIST="$LIST,{app_key}"\n'
-        f"          fi\n"
+        f'          if [[ "${env_var}" == "true" ]]; then{newline}'
+        f'            LIST="$LIST,{app_key}"{newline}'
+        f"          fi{newline}"
     )
     content = content[:list_match.start()] + if_block + content[list_match.start():]
 
@@ -768,7 +772,9 @@ def _rebuild_toml_index(lines):
         if in_apps_section:
             match = APPS_TOML_ENTRY_RE.match(stripped)
             if match:
-                entries[match.group(1)] = i
+                # group(1) is quoted key, group(2) is unquoted key
+                key = match.group(1) or match.group(2)
+                entries[key] = i
     return header_idx, entries
 
 
