@@ -112,7 +112,7 @@ jobs:
 
       - name: Maximize Runner Disk Space
         id: disk_cleanup
-        uses: justinthelaw/maximize-github-runner-space@master
+        uses: justinthelaw/maximize-github-runner-space@main
         with:
           cleanup-profile: 'max'
           skip-components: 'java,docker-engine'
