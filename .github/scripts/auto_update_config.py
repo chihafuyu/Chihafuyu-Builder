@@ -754,13 +754,17 @@ def _rebuild_toml_index(lines):
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
-        if stripped.startswith("["):
-            if stripped == "[apps]":
+
+        # Strip inline comments to accurately detect section headers
+        section_name = stripped.split("#", 1)[0].strip()
+        if section_name.startswith("["):
+            if section_name == "[apps]":
                 header_idx = i
                 in_apps_section = True
             else:
                 in_apps_section = False
             continue
+
         if in_apps_section:
             match = APPS_TOML_ENTRY_RE.match(stripped)
             if match:
