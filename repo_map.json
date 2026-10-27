@@ -119,7 +119,8 @@
         "file_path": "patches-list.json",
         "config_path": "ecosystem/piko-newx.json",
         "target_package": "com.twitter.android",
-        "target_name": "X (Twitter)"
+        "target_name": "X (Twitter)",
+        "ignore_packages": ["com.instagram.android"]
     },
     "plyrs1": {
         "repo_url": "Plyrs1/morphe-patches"

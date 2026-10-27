@@ -86,7 +86,7 @@
                 "version_codes": {
                     "universal": "711105310",
                     "arm64-v8a": "711105310",
-                    "x86_64": "711105310"
+                    "x86-64": "711105310"
                 },
                 "strip": true,
                 "force_bundle": true,
