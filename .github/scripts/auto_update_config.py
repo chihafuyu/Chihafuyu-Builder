@@ -3,6 +3,7 @@ Auto-update ecosystem configs from patches-list.json or bundle metadata.
 Run by GitHub Actions to create a Pull Request.
 """
 
+import hashlib
 import json
 import os
 import re
@@ -26,9 +27,9 @@ FORCE_BUNDLE_APK_TYPES = frozenset({
     "APKM", "APKS", "XAPK", "APKS_REQUIRED", "XAPK_REQUIRED",
 })
 
-# Matches apps.toml entries like: "1weather" = true OR 1weather = true
+# Matches TOML entries with double quotes, single quotes, or no quotes
 APPS_TOML_ENTRY_RE = re.compile(
-    r'^(?:"([^"]+)"|([a-zA-Z0-9_-]+))\s*=\s*(true|false)'
+    r'^(?:"([^"]+)"|\'([^\']+)\'|([a-zA-Z0-9_-]+))\s*=\s*(true|false)'
 )
 
 # Collapses non-alphanumeric runs for app key slugification.
@@ -478,7 +479,11 @@ def _unique_app_key(pkg_info, taken_keys):
         candidate = f"{base}-{i}"
         if candidate not in taken_keys:
             return candidate
-    return ""
+
+    # Fallback for extreme collisions
+    pkg = str(pkg_info.get("package") or base)
+    pkg_hash = hashlib.md5(pkg.encode()).hexdigest()[:6]
+    return f"{base}-{pkg_hash}"
 
 
 def _build_new_app_config(pkg_info):
@@ -776,8 +781,8 @@ def _rebuild_toml_index(lines):
         if in_apps_section:
             match = APPS_TOML_ENTRY_RE.match(stripped)
             if match:
-                # group(1) is quoted key, group(2) is unquoted key
-                key = match.group(1) or match.group(2)
+                # group(1) is double-quoted, group(2) is single-quoted, group(3) is unquoted
+                key = match.group(1) or match.group(2) or match.group(3)
                 entries[key] = i
     return header_idx, entries
 
@@ -811,7 +816,7 @@ def _update_apps_toml(toml_path, added_apps, removed_apps):
         if app_key not in entries:
             continue
         del lines[entries[app_key]]
-        print(f"    -> Removed '{app_key}' from config/apps.toml")
+        print(f"    -> Removed '{app_key}' from {os.path.basename(toml_path)}")
         changed = True
         header_idx, entries = _rebuild_toml_index(lines)
 
@@ -837,7 +842,7 @@ def _update_apps_toml(toml_path, added_apps, removed_apps):
             lines[insert_idx - 1] += "\n"
 
         lines.insert(insert_idx, new_line)
-        print(f"    -> Added '{app_key}' to config/apps.toml (enabled: {flag})")
+        print(f"    -> Added '{app_key}' to {os.path.basename(toml_path)} (enabled: {flag})")
         changed = True
         header_idx, entries = _rebuild_toml_index(lines)
 
@@ -945,8 +950,17 @@ def main():
             if _add_app_to_yaml(eco_name, app_key):
                 any_change = True
 
-        if eco_name == "hxreborn":
-            toml_path = os.path.join(_get_repo_root(), "config", "apps.toml")
+        # Dynamic TOML discovery for future scalability
+        toml_path = os.path.join(_get_repo_root(), "config", f"apps-{eco_name}.toml")
+        if not os.path.exists(toml_path):
+            # Fallback to legacy single TOML file if it exists
+            legacy_path = os.path.join(_get_repo_root(), "config", "apps.toml")
+            if os.path.exists(legacy_path):
+                toml_path = legacy_path
+            else:
+                toml_path = None
+
+        if toml_path:
             if _update_apps_toml(toml_path, added_apps, removed_apps):
                 any_change = True
 
