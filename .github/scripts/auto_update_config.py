@@ -22,7 +22,6 @@ PRE_STAGE_RE = re.compile(
     r"(?<![a-z])(dev|alpha|preview|pre|beta|rc)(?![a-z])", re.IGNORECASE
 )
 
-# Container types that require force_bundle=True in ecosystem configs.
 FORCE_BUNDLE_APK_TYPES = frozenset({
     "APKM", "APKS", "XAPK", "APKS_REQUIRED", "XAPK_REQUIRED",
 })
@@ -32,8 +31,10 @@ APPS_TOML_ENTRY_RE = re.compile(
     r'^(?:"([^"]+)"|\'([^\']+)\'|([a-zA-Z0-9_-]+))\s*=\s*(true|false)'
 )
 
-# Collapses non-alphanumeric runs for app key slugification.
 SLUG_PATTERN = re.compile(r"[^a-z0-9]+")
+
+# GitHub caps workflow_dispatch at 25 inputs; 15 leaves room for standard inputs
+MAX_YAML_INPUTS = 15
 
 
 def _get_repo_root() -> str:
@@ -480,7 +481,6 @@ def _unique_app_key(pkg_info, taken_keys):
         if candidate not in taken_keys:
             return candidate
 
-    # Fallback for extreme collisions
     pkg = str(pkg_info.get("package") or base)
     pkg_hash = hashlib.md5(pkg.encode()).hexdigest()[:6]
     return f"{base}-{pkg_hash}"
@@ -619,7 +619,6 @@ def _remove_app_from_yaml(ecosystem_name, app_key):
     with open(yaml_path, "r", encoding="utf-8") as file_obj:
         content = file_obj.read()
 
-    # Text-input workflows (e.g. hxreborn) do not declare per-app entries.
     if "apps_to_patch:" in content:
         return False
 
@@ -665,12 +664,7 @@ def _remove_app_from_yaml(ecosystem_name, app_key):
 
 
 def _add_app_to_yaml(ecosystem_name, app_key):
-    """Insert a per-app input/env/if-block into a checkbox-style workflow.
-
-    Text-input workflows (like hxreborn) return False because they do not
-    declare one checkbox per app; their app list lives in the ecosystem
-    JSON and (optionally) config/apps.toml.
-    """
+    """Insert a per-app input/env/if-block into a checkbox-style workflow."""
     yaml_path = os.path.join(
         _get_repo_root(), ".github", "workflows", f"{ecosystem_name}-patcher.yml"
     )
@@ -688,6 +682,13 @@ def _add_app_to_yaml(ecosystem_name, app_key):
               "no per-app YAML entry needed.")
         return False
 
+    existing_inputs = len(re.findall(r"^ {6}app_", content, re.MULTILINE))
+    if existing_inputs >= MAX_YAML_INPUTS:
+        print(f"    -> WARNING: {ecosystem_name} already has {existing_inputs} YAML inputs. "
+              "Skipping insertion to prevent exceeding GitHub's 25-input limit. "
+              "Consider migrating to text-input mode (e.g. apps_to_patch).")
+        return False
+
     newline = "\r\n" if "\r\n" in content else "\n"
     input_name = "app_" + app_key.lower().replace("-", "_").replace(".", "_")
     env_var = "APP_" + app_key.upper().replace("-", "_").replace(".", "_")
@@ -697,7 +698,6 @@ def _add_app_to_yaml(ecosystem_name, app_key):
 
     original_content = content
 
-    # Anchor strictly to 6-space indentation for GitHub Action inputs
     arch_pattern = re.compile(r"^ {6}architecture:\r?\n", re.MULTILINE)
     match = arch_pattern.search(content)
     if not match:
@@ -781,21 +781,26 @@ def _rebuild_toml_index(lines):
         if in_apps_section:
             match = APPS_TOML_ENTRY_RE.match(stripped)
             if match:
-                # group(1) is double-quoted, group(2) is single-quoted, group(3) is unquoted
                 key = match.group(1) or match.group(2) or match.group(3)
                 entries[key] = i
     return header_idx, entries
 
 
 def _update_apps_toml(toml_path, added_apps, removed_apps):
-    """Add or remove apps in config/apps.toml while preserving structure.
-
-    added_apps is a dict mapping app_key -> enabled_default (bool). New
-    entries are inserted alphabetically and preserve the surrounding
-    comments and [apps] section header.
-    """
+    """Add or remove apps in config/apps-[eco].toml while preserving structure."""
     if not os.path.exists(toml_path):
-        return False
+        try:
+            os.makedirs(os.path.dirname(toml_path), exist_ok=True)
+            with open(toml_path, "w", encoding="utf-8") as file_obj:
+                file_obj.write(
+                    "# Application Configuration\n"
+                    "# Change to `true` to patch, `false` to skip.\n\n"
+                    "[apps]\n"
+                )
+        except OSError as err:
+            print(f"    -> Failed to create {toml_path}: {err}")
+            return False
+
     if not added_apps and not removed_apps:
         return False
 
@@ -837,7 +842,6 @@ def _update_apps_toml(toml_path, added_apps, removed_apps):
             else:
                 insert_idx = header_idx + 1
 
-        # Ensure valid TOML syntax by adding a newline if missing on the preceding line
         if insert_idx > 0 and not lines[insert_idx - 1].endswith("\n"):
             lines[insert_idx - 1] += "\n"
 
@@ -859,11 +863,7 @@ def _update_apps_toml(toml_path, added_apps, removed_apps):
 
 
 def update_config(config_path, stable_data):
-    """Update a single config file based on patches-list data.
-
-    Returns (changed, removed_apps, added_apps). added_apps is a dict
-    mapping app_key -> enabled_default for apps newly detected upstream.
-    """
+    """Update a single config file based on patches-list data."""
     if stable_data is None:
         print(f"  -> Skipping {config_path} due to missing data.")
         return False, [], {}
@@ -950,17 +950,8 @@ def main():
             if _add_app_to_yaml(eco_name, app_key):
                 any_change = True
 
-        # Dynamic TOML discovery for future scalability
         toml_path = os.path.join(_get_repo_root(), "config", f"apps-{eco_name}.toml")
-        if not os.path.exists(toml_path):
-            # Fallback to legacy single TOML file if it exists
-            legacy_path = os.path.join(_get_repo_root(), "config", "apps.toml")
-            if os.path.exists(legacy_path):
-                toml_path = legacy_path
-            else:
-                toml_path = None
-
-        if toml_path:
+        if added_apps or removed_apps:
             if _update_apps_toml(toml_path, added_apps, removed_apps):
                 any_change = True
 
