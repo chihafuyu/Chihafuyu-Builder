@@ -335,6 +335,7 @@ def _process_package(pkg_data, pkg, patch_name, default_enabled):
         return
     if pkg_name not in pkg_data:
         pkg_data[pkg_name] = {
+            "package": pkg_name,
             "name": pkg.get("name") or pkg_name,
             "all_targets": [],
             "patches": {},
@@ -707,20 +708,28 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         re.MULTILINE,
     )
     env_match = env_pattern.search(content)
-    if env_match:
-        insert_pos = env_match.end(2)
-        env_line = f"      {env_var}: ${{{{ inputs.{input_name} }}}}\n"
-        content = content[:insert_pos] + env_line + content[insert_pos:]
+    if not env_match:
+        print("    -> WARNING: Failed to locate env block in YAML; "
+              "aborting to prevent partial updates.")
+        return False
+
+    insert_pos = env_match.end(2)
+    env_line = f"      {env_var}: ${{{{ inputs.{input_name} }}}}\n"
+    content = content[:insert_pos] + env_line + content[insert_pos:]
 
     list_pattern = re.compile(r'^[ \t]+LIST="\$\{LIST#,}"\r?\n', re.MULTILINE)
     list_match = list_pattern.search(content)
-    if list_match:
-        if_block = (
-            f'          if [[ "${env_var}" == "true" ]]; then\n'
-            f'            LIST="$LIST,{app_key}"\n'
-            f"          fi\n"
-        )
-        content = content[:list_match.start()] + if_block + content[list_match.start():]
+    if not list_match:
+        print("    -> WARNING: Failed to locate LIST append block in YAML; "
+              "aborting to prevent partial updates.")
+        return False
+
+    if_block = (
+        f'          if [[ "${env_var}" == "true" ]]; then\n'
+        f'            LIST="$LIST,{app_key}"\n'
+        f"          fi\n"
+    )
+    content = content[:list_match.start()] + if_block + content[list_match.start():]
 
     if content == original_content:
         return False
@@ -740,7 +749,7 @@ def _rebuild_toml_index(lines):
     header_idx = None
     entries = {}
     in_apps_section = False
-    
+
     for i, line in enumerate(lines):
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
@@ -808,6 +817,10 @@ def _update_apps_toml(toml_path, added_apps, removed_apps):
                 insert_idx = entries[max(entries, key=entries.get)] + 1
             else:
                 insert_idx = header_idx + 1
+
+        # Ensure valid TOML syntax by adding a newline if missing on the preceding line
+        if insert_idx > 0 and not lines[insert_idx - 1].endswith("\n"):
+            lines[insert_idx - 1] += "\n"
 
         lines.insert(insert_idx, new_line)
         print(f"    -> Added '{app_key}' to config/apps.toml (enabled: {flag})")
