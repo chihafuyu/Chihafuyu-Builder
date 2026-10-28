@@ -223,7 +223,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Playback speed controls": {
+                        "enabled": false
+                    }
+                },
                 "apkm_include": [
                     "android tv"
                 ],

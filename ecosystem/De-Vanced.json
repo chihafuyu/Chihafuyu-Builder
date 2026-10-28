@@ -5,12 +5,13 @@
                 "package": "com.amazon.mp3",
                 "search_term": "Amazon Music",
                 "stable": [
-                    "Any"
+                    "2.36.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "amazon-shopping": {
                 "package": "com.amazon.mShop.android.shopping",

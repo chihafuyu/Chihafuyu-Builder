@@ -72,6 +72,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "sound-assistant": {
+                "package": "com.samsung.android.soundassistant",
+                "search_term": "Sound Assistant",
+                "stable": [
+                    "8.1.00.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "waze": {
                 "package": "com.waze",
                 "search_term": "Waze",

@@ -720,7 +720,7 @@
                 "package": "com.shazam.android",
                 "search_term": "Shazam",
                 "stable": [
-                    "Any"
+                    "16.63.0-261008"
                 ],
                 "beta": [],
                 "strip": true,
