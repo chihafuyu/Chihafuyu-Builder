@@ -320,17 +320,17 @@
                 "package": "com.outscar.bd.bongcal",
                 "search_term": "Bangla Calendar",
                 "stable": [
-                    "3.0.01c"
+                    "3.0.01e"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "302400127",
-                    "armeabi-v7a": "302400127",
-                    "x86-64": "302400127",
-                    "x86": "302400127"
+                    "arm64-v8a": "302400131",
+                    "armeabi-v7a": "302400131",
+                    "x86-64": "302400131",
+                    "x86": "302400131"
                 },
                 "force_bundle": true
             },
@@ -360,17 +360,17 @@
                 "package": "ipnossoft.rma.free",
                 "search_term": "BetterSleep",
                 "stable": [
-                    "26.17"
+                    "26.18"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "26910",
-                    "armeabi-v7a": "26910",
-                    "x86-64": "26910",
-                    "x86": "26910"
+                    "arm64-v8a": "27058",
+                    "armeabi-v7a": "27058",
+                    "x86-64": "27058",
+                    "x86": "27058"
                 },
                 "force_bundle": true
             },
@@ -432,17 +432,17 @@
                 "package": "im.thebot.messenger",
                 "search_term": "botim",
                 "stable": [
-                    "4.19.1"
+                    "4.20.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "7132",
-                    "armeabi-v7a": "7132",
-                    "x86-64": "7132",
-                    "x86": "7132"
+                    "arm64-v8a": "7150",
+                    "armeabi-v7a": "7150",
+                    "x86-64": "7150",
+                    "x86": "7150"
                 },
                 "force_bundle": true
             },
@@ -603,6 +603,24 @@
                     "armeabi-v7a": "152",
                     "x86-64": "152",
                     "x86": "152"
+                },
+                "force_bundle": true
+            },
+            "connected2-me": {
+                "package": "com.connected2.ozzy.c2m",
+                "search_term": "Connected2.me",
+                "stable": [
+                    "3.396"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "1822300993",
+                    "armeabi-v7a": "1822300993",
+                    "x86-64": "1822300993",
+                    "x86": "1822300993"
                 },
                 "force_bundle": true
             },
@@ -1590,7 +1608,7 @@
                 "package": "ai.perplexity.app.android",
                 "search_term": "Perplexity",
                 "stable": [
-                    "2.101.0"
+                    "2.102.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1601,10 +1619,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "260665",
-                    "armeabi-v7a": "260665",
-                    "x86-64": "260665",
-                    "x86": "260665"
+                    "arm64-v8a": "260671",
+                    "armeabi-v7a": "260671",
+                    "x86-64": "260671",
+                    "x86": "260671"
                 },
                 "force_bundle": true
             },
@@ -1612,17 +1630,17 @@
                 "package": "photo.editor.photoeditor.photoeditorpro",
                 "search_term": "Photo Editor Pro",
                 "stable": [
-                    "1.802.266"
+                    "1.811.267"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "266201",
-                    "armeabi-v7a": "266201",
-                    "x86-64": "266201",
-                    "x86": "266201"
+                    "arm64-v8a": "267100",
+                    "armeabi-v7a": "267100",
+                    "x86-64": "267100",
+                    "x86": "267100"
                 },
                 "force_bundle": true
             },
@@ -1971,17 +1989,17 @@
                 "package": "io.raindrop.raindropio",
                 "search_term": "Raindrop.io",
                 "stable": [
-                    "4.8.0"
+                    "4.8.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "8699017",
-                    "armeabi-v7a": "8699017",
-                    "x86-64": "8699017",
-                    "x86": "8699017"
+                    "arm64-v8a": "8699018",
+                    "armeabi-v7a": "8699018",
+                    "x86-64": "8699018",
+                    "x86": "8699018"
                 },
                 "force_bundle": true
             },
@@ -2459,17 +2477,17 @@
                 "package": "com.stresscodes.wallp",
                 "search_term": "WalP",
                 "stable": [
-                    "10.2.3"
+                    "10.2.4"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "170",
-                    "armeabi-v7a": "170",
-                    "x86-64": "170",
-                    "x86": "170"
+                    "arm64-v8a": "172",
+                    "armeabi-v7a": "172",
+                    "x86-64": "172",
+                    "x86": "172"
                 },
                 "force_bundle": true
             },
