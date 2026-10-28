@@ -30,14 +30,14 @@
                 "package": "com.instagram.android",
                 "search_term": "Instagram",
                 "stable": [
-                    "452.1.0.53.64"
+                    "453.0.0.55.79"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "385811006",
-                    "armeabi-v7a": "385811005",
-                    "x86": "385811007",
-                    "x86-64": "385811008"
+                    "arm64-v8a": "385914283",
+                    "armeabi-v7a": "385914282",
+                    "x86": "385914284",
+                    "x86-64": "385914285"
                 },
                 "force_bundle": true,
                 "strip": true,
