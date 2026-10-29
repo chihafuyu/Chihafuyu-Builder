@@ -64,7 +64,7 @@
                 "package": "com.facebook.orca",
                 "search_term": "Messenger",
                 "stable": [
-                    "584.1.0.61.98"
+                    "585.0.0.53.94"
                 ],
                 "version_codes": {
                     "arm64-v8a": "346814894"
@@ -83,6 +83,9 @@
                         "enabled": true
                     },
                     "Custom launcher icon": {
+                        "enabled": false
+                    },
+                    "GmsCore support": {
                         "enabled": false
                     }
                 }

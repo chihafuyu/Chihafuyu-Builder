@@ -2057,6 +2057,24 @@
                 },
                 "force_bundle": true
             },
+            "resprite": {
+                "package": "com.fengeon.resprite_desktop",
+                "search_term": "Resprite",
+                "stable": [
+                    "1.32.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "302",
+                    "armeabi-v7a": "302",
+                    "x86-64": "302",
+                    "x86": "302"
+                },
+                "force_bundle": true
+            },
             "ringtone-maker": {
                 "package": "ringtonemaker.musiccutter.customringtones.freeringtonemaker",
                 "search_term": "Ringtone Maker",
