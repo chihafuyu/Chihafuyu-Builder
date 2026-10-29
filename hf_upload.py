@@ -36,11 +36,11 @@ def main() -> None:
     api = HfApi(token=hf_token)
 
     for apk in apk_files:
-        print(f"[INFO] Uploading {apk.name}...")
+        print(f"[INFO] Uploading {apk.name} to {ecosystem}/ folder...")
         try:
             api.upload_file(
                 path_or_fileobj=str(apk),
-                path_in_repo=apk.name,
+                path_in_repo=f"{ecosystem}/{apk.name}",
                 repo_id=hf_dataset,
                 repo_type="dataset",
                 commit_message=f"chore: upload {apk.name} from {ecosystem}"
