@@ -5,7 +5,7 @@
                 "package": "com.kick.mobile",
                 "search_term": "Kick",
                 "stable": [
-                    "40.32.5"
+                    "40.33.0"
                 ],
                 "beta": [],
                 "version_codes": {
@@ -80,7 +80,7 @@
                 "package": "tv.twitch.android.app",
                 "search_term": "Twitch",
                 "stable": [
-                    "31.7.0"
+                    "31.8.0"
                 ],
                 "beta": [],
                 "version_codes": {
