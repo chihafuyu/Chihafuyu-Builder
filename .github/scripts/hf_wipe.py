@@ -24,17 +24,25 @@ def main() -> None:
             print(f"[WARN] Dataset {hf_dataset} is already empty. Nothing to wipe.")
             return
 
-        print(f"[INFO] Found {len(files)} files. Proceeding with deletion...")
+        # Keep repository metadata files
+        excluded_files = {"README.md", ".gitattributes"}
+        files_to_delete = [f for f in files if f not in excluded_files]
 
-        # Delete all files and folders recursively
+        if not files_to_delete:
+            print("[WARN] No files to delete after exclusions. Skipping.")
+            return
+
+        print(f"[INFO] Found {len(files_to_delete)} files to delete. Proceeding...")
+
+        # Delete specific files
         api.delete_files(
             repo_id=hf_dataset,
-            delete_patterns=["*"],
+            delete_patterns=files_to_delete,
             repo_type="dataset",
             commit_message="chore: wipe out entire dataset via automated workflow"
         )
         print("[SUCCESS] Successfully wiped out all files from the dataset.")
-    except Exception as err:
+    except Exception as err:  # pylint: disable=broad-exception-caught
         print(f"[FATAL] Failed to wipe dataset: {err}")
         sys.exit(1)
 
