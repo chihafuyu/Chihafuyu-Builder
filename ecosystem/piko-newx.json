@@ -35,15 +35,6 @@
                     },
                     "NewX: Hide post dividers": {
                         "enabled": false
-                    },
-                    "Bring back twitter": {
-                        "enabled": false
-                    },
-                    "Dynamic color": {
-                        "enabled": false
-                    },
-                    "Export all activities": {
-                        "enabled": false
                     }
                 },
                 "force_bundle": true
