@@ -5,7 +5,7 @@
                 "package": "com.twitter.android",
                 "search_term": "X",
                 "stable": [
-                    "12.37.2-prod.01"
+                    "12.39.0-alpha.03"
                 ],
                 "beta": [],
                 "version_codes": {

@@ -83,6 +83,9 @@
                 "options_override": {
                     "HBO Max - Block SSAI Ad Origins": {
                         "enabled": false
+                    },
+                    "HBO Max - Playback Speed": {
+                        "enabled": false
                     }
                 }
             },
@@ -145,7 +148,7 @@
                 "package": "tv.pluto.android",
                 "search_term": "Pluto TV",
                 "stable": [
-                    "5.66.0-leanback"
+                    "17.2.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -181,12 +184,16 @@
                 "package": "it.rainet.androidtv",
                 "search_term": "RaiPlay Android TV",
                 "stable": [
-                    "5.0.0"
+                    "5.0.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Enable WebView debugging": {
+                        "enabled": false
+                    }
+                }
             },
             "rt-player-android-tv": {
                 "package": "com.twentyfouri.tvbridge.rte",
@@ -241,6 +248,17 @@
                 "search_term": "ViX",
                 "stable": [
                     "4.51.0_tv"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "xumo-play-android-tv": {
+                "package": "com.xumo.xumo.tv",
+                "search_term": "Xumo Play Android TV",
+                "stable": [
+                    "4.9.147"
                 ],
                 "beta": [],
                 "strip": true,
