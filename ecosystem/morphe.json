@@ -8,7 +8,7 @@
                     "2026.24.0"
                 ],
                 "beta": [
-                    "2026.43.0"
+                    "2026.44.0"
                 ],
                 "version_codes": {
                     "universal": "12L+"
@@ -29,7 +29,7 @@
                 "package": "com.google.android.youtube",
                 "search_term": "YouTube",
                 "stable": [
-                    "21.23.492"
+                    "21.30.216"
                 ],
                 "beta": [
                     "21.43.523"

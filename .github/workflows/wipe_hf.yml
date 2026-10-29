@@ -1,0 +1,39 @@
+---
+name: 🗑️ Wipe HuggingFace Dataset
+
+"on":
+  workflow_dispatch:
+    inputs:
+      confirm_wipe:
+        description: 'Type "WIPE" to confirm deletion of all files'
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  wipe-dataset:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm_wipe == 'WIPE'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Install Dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install huggingface_hub
+
+      - name: Execute Wipe Script
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
+        run: |
+          set -euo pipefail
+          python .github/scripts/hf_wipe.py
