@@ -5,7 +5,7 @@
                 "package": "com.Flanne.MinutesTillDawn.roguelike.shooting.fr.gp",
                 "search_term": "20 Minutes Till Dawn",
                 "stable": [
-                    "8.6"
+                    "8.7"
                 ],
                 "beta": [],
                 "strip": true,
@@ -100,7 +100,7 @@
                 "package": "com.yodo1.crossyroad",
                 "search_term": "Crossy Road",
                 "stable": [
-                    "7.14.0"
+                    "7.14.2"
                 ],
                 "beta": [],
                 "strip": true,
@@ -112,7 +112,7 @@
                 "package": "com.halfbrick.dantheman",
                 "search_term": "Dan the Man",
                 "stable": [
-                    "1.14.06"
+                    "1.14.10"
                 ],
                 "beta": [],
                 "strip": true,
@@ -272,18 +272,19 @@
                 "package": "com.dnddream.headsoccer.android",
                 "search_term": "Head Soccer",
                 "stable": [
-                    "7.1.8"
+                    "7.1.10"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "hill-climb-racing": {
                 "package": "com.fingersoft.hillclimb",
                 "search_term": "Hill Climb Racing",
                 "stable": [
-                    "1.72.2"
+                    "1.73.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -331,7 +332,7 @@
                 "package": "com.halfbrick.jetpackjoyride",
                 "search_term": "Jetpack Joyride",
                 "stable": [
-                    "1.104.1"
+                    "1.104.2"
                 ],
                 "beta": [],
                 "strip": true,
@@ -343,7 +344,7 @@
                 "package": "com.sadpuppy.lemmings",
                 "search_term": "Lemmings: Puzzle Survival",
                 "stable": [
-                    "9.4.4"
+                    "9.5.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -356,6 +357,18 @@
                 "search_term": "Lumina Walls",
                 "stable": [
                     "1.0.2.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "magic-survival": {
+                "package": "com.vkslrzm.Zombie",
+                "search_term": "Magic Survival",
+                "stable": [
+                    "0.9941"
                 ],
                 "beta": [],
                 "strip": true,
@@ -474,7 +487,7 @@
                 "package": "com.outfit7.movingeye.swampattack",
                 "search_term": "Swamp Attack",
                 "stable": [
-                    "4.8.8.0"
+                    "4.8.9.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -579,7 +592,7 @@
                 "package": "com.vitastudio.mahjong",
                 "search_term": "Vita Mahjong",
                 "stable": [
-                    "3.43.0"
+                    "3.44.1"
                 ],
                 "beta": [],
                 "strip": true,

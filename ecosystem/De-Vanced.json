@@ -5,7 +5,7 @@
                 "package": "com.amazon.mp3",
                 "search_term": "Amazon Music",
                 "stable": [
-                    "2.36.1"
+                    "26.36.1"
                 ],
                 "beta": [],
                 "strip": true,
