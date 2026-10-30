@@ -385,7 +385,7 @@ def _extract_pkg_data(patches_data, ignore_patches=None):
         if not isinstance(patch, dict):
             continue
         patch_name = patch.get("name")
-        
+
         if patch_name in ignore_set:
             print(f"    -> Ignoring excluded patch: {patch_name}")
             continue
