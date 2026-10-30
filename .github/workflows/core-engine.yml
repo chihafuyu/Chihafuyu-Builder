@@ -110,19 +110,25 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
-      - name: Maximize Runner Disk Space
-        id: disk_cleanup
-        uses: justinthelaw/maximize-github-runner-space@main
-        with:
-          cleanup-profile: 'max'
-          skip-components: 'java,docker-engine,gh-cli'
+      - name: Disk Space Report (Before)
+        run: df -h
 
-      - name: Show Disk Space Reclaimed
-        run: |
-          echo "=== DISK SPACE REPORT ==="
-          echo "Available Before: ${{ steps.disk_cleanup.outputs.available-bytes-before }} bytes"
-          echo "Available After: ${{ steps.disk_cleanup.outputs.available-bytes-after }} bytes"
-          echo "Total Space Freed: ${{ steps.disk_cleanup.outputs.reclaimed-bytes }} bytes"
+      - name: Maximize Runner Disk Space
+        uses: endersonmenezes/free-disk-space@v4
+        with:
+          remove_android: true
+          remove_dotnet: true
+          remove_haskell: true
+          remove_tool_cache: true
+          remove_swap: true
+          remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* *llvm* mysql* dotnet-sdk-*"
+          remove_packages_one_command: true
+          remove_folders: "/usr/share/az* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell /usr/local/aws-cli /usr/local/aws-sam-cli /usr/share/gradle /opt/pipx"
+          rm_cmd: "rmz"
+          rmz_version: "3.2.0"
+
+      - name: Disk Space Report (After)
+        run: df -h
 
       - name: Initialize Java JDK
         uses: actions/setup-java@v6.1.0
