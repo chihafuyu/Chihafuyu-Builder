@@ -120,7 +120,12 @@
         "config_path": "ecosystem/piko-newx.json",
         "target_package": "com.twitter.android",
         "target_name": "X (Twitter)",
-        "ignore_packages": ["com.instagram.android"]
+        "ignore_packages": ["com.instagram.android"],
+        "ignore_patches": [
+            "Bring back twitter",
+            "Dynamic color",
+            "Export all activities"
+        ]
     },
     "plyrs1": {
         "repo_url": "Plyrs1/morphe-patches"

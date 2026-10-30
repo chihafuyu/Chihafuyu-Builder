@@ -60,6 +60,7 @@ def _parse_repo_info(name, info, repo_root):
     target_package = info.get("target_package")
     target_name = info.get("target_name")
     ignore_packages = info.get("ignore_packages", [])
+    ignore_patches = info.get("ignore_patches", [])
 
     if "aggregate_repos" in info:
         urls = [
@@ -67,17 +68,21 @@ def _parse_repo_info(name, info, repo_root):
             for repo in info["aggregate_repos"]
         ]
         return (
-            abs_config_path, urls, release_patches, target_package, target_name, ignore_packages
+            abs_config_path, urls, release_patches, target_package, target_name,
+            ignore_packages, ignore_patches
         )
 
     repo_url = info.get("repo_url")
     if not repo_url:
-        return None, None, False, None, None, []
+        return None, None, False, None, None, [], []
 
     branch = info.get("branch", "main")
     file_path = info.get("file_path", "patches-list.json")
     url = f"https://raw.githubusercontent.com/{repo_url}/{branch}/{file_path}"
-    return abs_config_path, url, release_patches, target_package, target_name, ignore_packages
+    return (
+        abs_config_path, url, release_patches, target_package, target_name,
+        ignore_packages, ignore_patches
+    )
 
 
 def load_ecosystems():
@@ -94,7 +99,7 @@ def load_ecosystems():
                 repo_map = json.load(file_obj)
             for name, info in repo_map.items():
                 parsed = _parse_repo_info(name, info, repo_root)
-                abs_path, url, is_rel, tgt_pkg, tgt_name, ignore_pkgs = parsed
+                abs_path, url, is_rel, tgt_pkg, tgt_name, ignore_pkgs, ignore_pts = parsed
                 if abs_path and url:
                     ecosystems[abs_path] = {
                         "url": url,
@@ -102,6 +107,7 @@ def load_ecosystems():
                         "target_package": tgt_pkg,
                         "target_name": tgt_name,
                         "ignore_packages": ignore_pkgs,
+                        "ignore_patches": ignore_pts,
                     }
         except (OSError, json.JSONDecodeError) as err:
             print(f"Failed to load repo_map.json: {err}")
@@ -120,6 +126,7 @@ def load_ecosystems():
                 "target_package": None,
                 "target_name": None,
                 "ignore_packages": [],
+                "ignore_patches": [],
             },
             os.path.join(repo_root, "ecosystem/kveld9.json"): {
                 "url": (
@@ -130,6 +137,7 @@ def load_ecosystems():
                 "target_package": None,
                 "target_name": None,
                 "ignore_packages": [],
+                "ignore_patches": [],
             },
         }
     return ecosystems
@@ -365,15 +373,23 @@ def _process_package(pkg_data, pkg, patch_name, default_enabled):
             pkg_data[pkg_name]["all_targets"].append(target)
 
 
-def _extract_pkg_data(patches_data):
+def _extract_pkg_data(patches_data, ignore_patches=None):
     """Extract package data and compatible patches from patches list."""
     pkg_data = {}
     if not patches_data:
         return pkg_data
+
+    ignore_set = set(ignore_patches or [])
+
     for patch in patches_data.get("patches") or []:
         if not isinstance(patch, dict):
             continue
         patch_name = patch.get("name")
+        
+        if patch_name in ignore_set:
+            print(f"    -> Ignoring excluded patch: {patch_name}")
+            continue
+
         default_enabled = patch.get("default", patch.get("use", False))
         packages = _parse_patch_packages(patch)
         for pkg in packages:
@@ -1068,7 +1084,7 @@ def _update_apps_toml(toml_path, added_apps, removed_apps):
     return True
 
 
-def update_config(config_path, stable_data, ignore_packages=None):
+def update_config(config_path, stable_data, ignore_packages=None, ignore_patches=None):
     """Update a single config file based on patches-list data."""
     if stable_data is None:
         print(f"  -> Skipping {config_path} due to missing data.")
@@ -1092,7 +1108,7 @@ def update_config(config_path, stable_data, ignore_packages=None):
         app_configs = {}
         config[root_key]["apps"] = app_configs
 
-    stable_pkgs = _extract_pkg_data(stable_data)
+    stable_pkgs = _extract_pkg_data(stable_data, ignore_patches)
     skip_patches = stable_data.get("is_plain_list", False)
 
     changed, removed_apps, added_apps = _process_existing_apps(
@@ -1144,8 +1160,9 @@ def main():
     any_change = False
     for config_path, stable_data, info in fetched_ecosystems:
         ignore_pkgs = info.get("ignore_packages", [])
+        ignore_pts = info.get("ignore_patches", [])
         changed, removed_apps, added_apps = update_config(
-            config_path, stable_data, ignore_pkgs
+            config_path, stable_data, ignore_pkgs, ignore_pts
         )
         if not changed:
             continue

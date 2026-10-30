@@ -42,7 +42,7 @@ def main() -> None:
             commit_message="chore: wipe out entire dataset via automated workflow"
         )
         print("[SUCCESS] Successfully wiped out all files from the dataset.")
-    except Exception as err:  # pylint: disable=broad-exception-caught
+    except Exception as err:
         print(f"[FATAL] Failed to wipe dataset: {err}")
         sys.exit(1)
 
