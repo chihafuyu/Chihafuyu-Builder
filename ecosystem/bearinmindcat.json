@@ -29,6 +29,27 @@
                     },
                     "Add original microG support": {
                         "enabled": false
+                    },
+                    "Follow playing media": {
+                        "enabled": false
+                    }
+                }
+            },
+            "pdfcraft": {
+                "package": "io.github.artcraftandroid.pdfcraft",
+                "search_term": "PdfCraft",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Change app name": {
+                        "enabled": false
+                    },
+                    "Custom icon": {
+                        "enabled": false
                     }
                 }
             },

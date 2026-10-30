@@ -39,6 +39,11 @@ name: 🐻 Bearinmindcat Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_pdfcraft:
+        description: 'Patch pdfcraft'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -114,6 +119,7 @@ jobs:
       APP_SAMSUNG_GALLERY: ${{ inputs.app_samsung_gallery }}
       APP_SAMSUNG_NOTES: ${{ inputs.app_samsung_notes }}
       APP_SOUND_ASSISTANT: ${{ inputs.app_sound_assistant }}
+      APP_PDFCRAFT: ${{ inputs.app_pdfcraft }}
     steps:
       - id: build-list
         run: |
@@ -139,6 +145,9 @@ jobs:
           fi
           if [[ "$APP_SOUND_ASSISTANT" == "true" ]]; then
             LIST="$LIST,sound-assistant"
+          fi
+          if [[ "$APP_PDFCRAFT" == "true" ]]; then
+            LIST="$LIST,pdfcraft"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
