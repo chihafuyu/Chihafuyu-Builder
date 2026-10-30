@@ -5,11 +5,11 @@
                 "package": "com.facebook.katana",
                 "search_term": "Facebook",
                 "stable": [
-                    "584.0.0.51.56"
+                    "585.0.0.47.54"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "475817393",
-                    "armeabi-v7a": "475817404"
+                    "arm64-v8a": "476015655",
+                    "armeabi-v7a": "476015543"
                 },
                 "force_bundle": true,
                 "strip": true,
@@ -30,14 +30,13 @@
                 "package": "com.instagram.android",
                 "search_term": "Instagram",
                 "stable": [
-                    "453.0.0.55.79"
+                    "453.0.0.57.79"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "385914283",
-                    "armeabi-v7a": "385914282",
-                    "x86": "385914284",
-                    "x86-64": "385914285"
+                    "arm64-v8a": "385914557",
+                    "armeabi-v7a": "385914556",
+                    "x86": "385914558"
                 },
                 "force_bundle": true,
                 "strip": true,
