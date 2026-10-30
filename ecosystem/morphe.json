@@ -5,7 +5,7 @@
                 "package": "com.reddit.frontpage",
                 "search_term": "Reddit",
                 "stable": [
-                    "2026.24.0"
+                    "2026.40.0"
                 ],
                 "beta": [
                     "2026.44.0"

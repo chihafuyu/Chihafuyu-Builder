@@ -5,7 +5,7 @@
                 "package": "com.instagram.barcelona",
                 "search_term": "Threads",
                 "stable": [
-                    "449.0.0.54.82"
+                    "453.0.0.56.79"
                 ],
                 "beta": [],
                 "strip": true,
@@ -24,11 +24,11 @@
                 "package": "com.zing.zalo",
                 "search_term": "Zalo",
                 "stable": [
-                    "26.08.01"
+                    "26.10.02"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "260801903"
+                    "arm64-v8a": "261002903"
                 },
                 "strip": true,
                 "force_bundle": true,
@@ -44,6 +44,9 @@
                         "enabled": false
                     },
                     "Enable Google Drive photo backup": {
+                        "enabled": false
+                    },
+                    "Enable stranger notifications": {
                         "enabled": false
                     }
                 }

@@ -2,6 +2,7 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
+"pdfcraft" = false
 "samsung-gallery" = true
 "samsung-keyboard" = true
 "samsung-notes" = true

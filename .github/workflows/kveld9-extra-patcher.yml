@@ -19,11 +19,6 @@ name: 🛠️ Kveld9-Extra Ecosystem Patcher
         required: true
         type: boolean
         default: false
-      app_powerpoint:
-        description: 'Patch powerpoint'
-        required: true
-        type: boolean
-        default: false
       app_sd_maid_se:
         description: 'Patch sd-maid-se'
         required: true
@@ -46,11 +41,6 @@ name: 🛠️ Kveld9-Extra Ecosystem Patcher
         default: true
       app_sube:
         description: 'Patch sube'
-        required: true
-        type: boolean
-        default: true
-      app_word:
-        description: 'Patch word'
         required: true
         type: boolean
         default: true
@@ -135,13 +125,11 @@ jobs:
       APP_CAPCUT: ${{ inputs.app_capcut }}
       APP_HEVY: ${{ inputs.app_hevy }}
       APP_NOKOPRINT: ${{ inputs.app_nokoprint }}
-      APP_POWERPOINT: ${{ inputs.app_powerpoint }}
       APP_SD_MAID_SE: ${{ inputs.app_sd_maid_se }}
       APP_INSTAGRAM: ${{ inputs.app_instagram }}
       APP_X: ${{ inputs.app_x }}
       APP_MOOVIT: ${{ inputs.app_moovit }}
       APP_SUBE: ${{ inputs.app_sube }}
-      APP_WORD: ${{ inputs.app_word }}
       APP_XIAOMI_EARBUDS: ${{ inputs.app_xiaomi_earbuds }}
       APP_IBISPAINT_X: ${{ inputs.app_ibispaint_x }}
     steps:
@@ -158,9 +146,6 @@ jobs:
           if [[ "$APP_NOKOPRINT" == "true" ]]; then
             LIST="$LIST,nokoprint"
           fi
-          if [[ "$APP_POWERPOINT" == "true" ]]; then
-            LIST="$LIST,powerpoint"
-          fi
           if [[ "$APP_SD_MAID_SE" == "true" ]]; then
             LIST="$LIST,sd-maid-se"
           fi
@@ -175,9 +160,6 @@ jobs:
           fi
           if [[ "$APP_SUBE" == "true" ]]; then
             LIST="$LIST,sube"
-          fi
-          if [[ "$APP_WORD" == "true" ]]; then
-            LIST="$LIST,word"
           fi
           if [[ "$APP_XIAOMI_EARBUDS" == "true" ]]; then
             LIST="$LIST,xiaomi-earbuds"

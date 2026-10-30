@@ -108,22 +108,6 @@
                 "options_override": {},
                 "force_bundle": true
             },
-            "powerpoint": {
-                "package": "com.microsoft.office.powerpoint",
-                "search_term": "Microsoft PowerPoint",
-                "stable": [
-                    "16.0.20527.20034"
-                ],
-                "beta": [],
-                "strip": true,
-                "force_bundle": true,
-                "archive_id": "ZeNiX",
-                "options_override": {
-                    "PowerPoint Companion Native Slimmer": {
-                        "enabled": false
-                    }
-                }
-            },
             "sd-maid-se": {
                 "package": "eu.darken.sdmse",
                 "search_term": "SD Maid SE",
@@ -165,18 +149,6 @@
                         "enabled": false
                     }
                 },
-                "force_bundle": true
-            },
-            "word": {
-                "package": "com.microsoft.office.word",
-                "search_term": "Word",
-                "stable": [
-                    "16.0.20527.20034"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
                 "force_bundle": true
             },
             "x": {
