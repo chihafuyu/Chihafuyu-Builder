@@ -386,6 +386,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "imdb": {
+                "package": "com.imdb.mobile",
+                "search_term": "IMDb",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "instagram": {
                 "package": "com.instagram.android",
                 "search_term": "Instagram",
@@ -400,6 +411,17 @@
             "jetpack-joyride": {
                 "package": "com.halfbrick.jetpackjoyride",
                 "search_term": "Jetpack Joyride",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "letterboxd": {
+                "package": "com.letterboxd.letterboxd",
+                "search_term": "Letterboxd",
                 "stable": [
                     "Any"
                 ],
@@ -598,6 +620,17 @@
             "proton-vpn": {
                 "package": "ch.protonvpn.android",
                 "search_term": "Proton VPN",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "quizlet": {
+                "package": "com.quizlet",
+                "search_term": "Quizlet",
                 "stable": [
                     "Any"
                 ],
@@ -873,6 +906,17 @@
             "truecaller": {
                 "package": "com.truecaller",
                 "search_term": "Truecaller",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "tumblr": {
+                "package": "com.tumblr",
+                "search_term": "Tumblr",
                 "stable": [
                     "Any"
                 ],
