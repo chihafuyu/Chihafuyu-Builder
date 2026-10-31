@@ -86,6 +86,9 @@
                     },
                     "HBO Max - Playback Speed": {
                         "enabled": false
+                    },
+                    "HBO Max - Remove Ad Periods (keep 5.1)": {
+                        "enabled": false
                     }
                 }
             },
