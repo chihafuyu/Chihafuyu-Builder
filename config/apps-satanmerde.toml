@@ -36,8 +36,10 @@
 "hill-climb-racing" = false
 "hungry-shark-evolution" = false
 "hungry-shark-heroes" = false
+"imdb" = false
 "instagram" = false
 "jetpack-joyride" = false
+"letterboxd" = false
 "mega" = false
 "memrise" = false
 "moises" = true
@@ -56,6 +58,7 @@
 "proton-mail" = false
 "proton-pass" = false
 "proton-vpn" = false
+"quizlet" = false
 "rbtv-rblive-mobile" = true
 "rbtv-rblive-tv" = true
 "reddit" = false
@@ -81,6 +84,7 @@
 "temple-run-2" = false
 "terabox" = false
 "truecaller" = false
+"tumblr" = false
 "turbo-vpn" = false
 "tuta-mail" = false
 "twitch" = false
