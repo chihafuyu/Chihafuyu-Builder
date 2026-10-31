@@ -141,11 +141,11 @@
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
                 "stable": [
-                    "14.41.0"
+                    "14.42.0"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "14418010"
+                    "arm64-v8a": "14428010"
                 },
                 "strip": true,
                 "force_bundle": false,
@@ -217,7 +217,7 @@
                 "package": "com.instagram.barcelona",
                 "search_term": "Threads",
                 "stable": [
-                    "452.0.0.50.64"
+                    "453.0.0.56.79"
                 ],
                 "beta": [],
                 "version_codes": {

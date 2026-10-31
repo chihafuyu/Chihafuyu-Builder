@@ -392,6 +392,23 @@
                 },
                 "force_bundle": true
             },
+            "biwenger": {
+                "package": "com.biwenger.app",
+                "search_term": "Biwenger",
+                "stable": [
+                    "4.0.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "237",
+                    "armeabi-v7a": "237",
+                    "x86-64": "237",
+                    "x86": "237"
+                }
+            },
             "blockit": {
                 "package": "com.hypenet.focused",
                 "search_term": "blockit",
@@ -1204,6 +1221,23 @@
                 },
                 "force_bundle": true
             },
+            "mbc-shahid": {
+                "package": "net.mbc.shahid",
+                "search_term": "MBC Shahid",
+                "stable": [
+                    "8.11.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "4464",
+                    "armeabi-v7a": "4464",
+                    "x86-64": "4464",
+                    "x86": "4464"
+                }
+            },
             "medicneet": {
                 "package": "com.halalfire.medicneet",
                 "search_term": "MedicNEET",
@@ -1843,17 +1877,17 @@
                 "package": "ch.protonvpn.android",
                 "search_term": "Proton VPN",
                 "stable": [
-                    "5.20.98.0"
+                    "5.21.9.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "605209800",
-                    "armeabi-v7a": "605209800",
-                    "x86-64": "605209800",
-                    "x86": "605209800"
+                    "arm64-v8a": "605210900",
+                    "armeabi-v7a": "605210900",
+                    "x86-64": "605210900",
+                    "x86": "605210900"
                 },
                 "force_bundle": true
             },
@@ -1861,17 +1895,17 @@
                 "package": "com.psiphon3.subscription",
                 "search_term": "Psiphon",
                 "stable": [
-                    "2.5.11"
+                    "2.5.13"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "506",
-                    "armeabi-v7a": "506",
-                    "x86-64": "506",
-                    "x86": "506"
+                    "arm64-v8a": "509",
+                    "armeabi-v7a": "509",
+                    "x86-64": "509",
+                    "x86": "509"
                 },
                 "force_bundle": true
             },
@@ -2072,6 +2106,24 @@
                     "armeabi-v7a": "302",
                     "x86-64": "302",
                     "x86": "302"
+                },
+                "force_bundle": true
+            },
+            "ridmik-keyboard": {
+                "package": "ridmik.keyboard",
+                "search_term": "Ridmik Keyboard",
+                "stable": [
+                    "19.1.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "329",
+                    "armeabi-v7a": "329",
+                    "x86-64": "329",
+                    "x86": "329"
                 },
                 "force_bundle": true
             },
@@ -2319,6 +2371,24 @@
                     "x86": "1284284"
                 }
             },
+            "transparent-clock-weather": {
+                "package": "com.droid27.transparentclockweather",
+                "search_term": "Transparent clock & weather",
+                "stable": [
+                    "9.18.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "1431",
+                    "armeabi-v7a": "1431",
+                    "x86-64": "1431",
+                    "x86": "1431"
+                },
+                "force_bundle": true
+            },
             "u-dictionary": {
                 "package": "com.youdao.hindict",
                 "search_term": "U Dictionary",
@@ -2509,6 +2579,24 @@
                 },
                 "force_bundle": true
             },
+            "watch-it": {
+                "package": "com.watchit.vod",
+                "search_term": "WATCH IT",
+                "stable": [
+                    "5.26.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "1028",
+                    "armeabi-v7a": "1028",
+                    "x86-64": "1028",
+                    "x86": "1028"
+                },
+                "force_bundle": true
+            },
             "wattpad": {
                 "package": "wp.wattpad",
                 "search_term": "Wattpad",
@@ -2524,6 +2612,24 @@
                     "armeabi-v7a": "3836",
                     "x86-64": "3836",
                     "x86": "3836"
+                },
+                "force_bundle": true
+            },
+            "weather24": {
+                "package": "com.wetter.androidclient",
+                "search_term": "weather24",
+                "stable": [
+                    "2.78.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "1515278101",
+                    "armeabi-v7a": "1515278101",
+                    "x86-64": "1515278101",
+                    "x86": "1515278101"
                 },
                 "force_bundle": true
             },
