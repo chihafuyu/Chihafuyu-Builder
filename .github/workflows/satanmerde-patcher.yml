@@ -129,7 +129,7 @@ jobs:
           selected = []
 
           if raw_input.lower() == 'all':
-              print('[INFO] Mode: Reading from config/apps.toml', file=sys.stderr)
+              print(f'[INFO] Mode: Reading from {toml_path}', file=sys.stderr)
               if not os.path.exists(toml_path):
                   print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
                   sys.exit(1)
@@ -141,7 +141,7 @@ jobs:
               selected = [k for k, v in apps_dict.items() if v is True]
 
               if not selected:
-                  print('::error::No apps enabled in apps.toml', file=sys.stderr)
+                  print(f'::error::No apps enabled in {toml_path}', file=sys.stderr)
                   sys.exit(1)
 
           else:

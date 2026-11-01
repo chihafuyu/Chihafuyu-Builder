@@ -108,7 +108,6 @@ jobs:
             exit 1
           fi
 
-          # Application selection logic via Python (supports TOML & validation)
           SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
           import os, json, sys
 
@@ -123,14 +122,13 @@ jobs:
           toml_path = os.environ['TOML_PATH']
           raw_input = os.environ.get('APPS_RAW', '').strip()
 
-          # Load ecosystem JSON
           with open(config_path) as f:
               valid_apps = json.load(f)[eco]['apps']
 
           selected = []
 
           if raw_input.lower() == 'all':
-              print('[INFO] Mode: Reading from config/apps.toml', file=sys.stderr)
+              print(f'[INFO] Mode: Reading from {toml_path}', file=sys.stderr)
               if not os.path.exists(toml_path):
                   print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
                   sys.exit(1)
@@ -142,14 +140,13 @@ jobs:
               selected = [k for k, v in apps_dict.items() if v is True]
 
               if not selected:
-                  print('::error::No apps enabled in apps.toml', file=sys.stderr)
+                  print(f'::error::No apps enabled in {toml_path}', file=sys.stderr)
                   sys.exit(1)
 
           else:
               print('[INFO] Mode: Manual Input', file=sys.stderr)
               selected = [a.strip() for a in raw_input.split(',') if a.strip()]
 
-          # Validation against the JSON ecosystem
           invalid = [app for app in selected if app not in valid_apps]
           if invalid:
               print(f'::error::The following apps were not found in {config_path}: {invalid}', file=sys.stderr)
