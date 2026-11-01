@@ -4,6 +4,14 @@
 [apps]
 "alltrails" = true
 "google-maps" = true
+"honor-calculator" = true
+"honor-calendar" = true
+"honor-clock" = true
+"honor-compass" = true
+"honor-files" = true
+"honor-notes" = true
+"honor-recorder" = true
+"honor-video-player" = true
 "nothing-gallery" = false
 "nothing-recorder" = false
 "pdfcraft" = false
