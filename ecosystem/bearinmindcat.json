@@ -303,6 +303,72 @@
                     }
                 },
                 "force_bundle": true
+            },
+            "xiaomi-compass": {
+                "package": "com.miui.compass",
+                "search_term": "Xiaomi Compass",
+                "stable": [
+                    "17.1.4.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "xiaomi-gallery": {
+                "package": "com.miui.gallery",
+                "search_term": "Xiaomi Gallery",
+                "stable": [
+                    "4.3.1.15-global"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "xiaomi-notes": {
+                "package": "com.miui.notes",
+                "search_term": "Xiaomi Notes",
+                "stable": [
+                    "3.2.7.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "xiaomi-recorder": {
+                "package": "com.android.soundrecorder",
+                "search_term": "Xiaomi Recorder",
+                "stable": [
+                    "7.7.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "xiaomi-scanner": {
+                "package": "com.xiaomi.scanner",
+                "search_term": "Xiaomi Scanner",
+                "stable": [
+                    "15.9.78"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "xiaomi-weather": {
+                "package": "com.miui.weather2",
+                "search_term": "Xiaomi Weather",
+                "stable": [
+                    "G-17.0.3.26"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }
