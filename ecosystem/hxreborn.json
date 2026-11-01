@@ -169,6 +169,24 @@
                 },
                 "force_bundle": true
             },
+            "apna-tunnel-lite": {
+                "package": "com.apnatunnel.lite",
+                "search_term": "APNA Tunnel Lite",
+                "stable": [
+                    "APNA"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "51",
+                    "armeabi-v7a": "51",
+                    "x86-64": "51",
+                    "x86": "51"
+                },
+                "force_bundle": true
+            },
             "arc-player": {
                 "package": "com.videoplayer.arcplayer",
                 "search_term": "Arc Player",
@@ -266,17 +284,17 @@
                 "package": "com.oneletters.audiobooksai",
                 "search_term": "Audiobook Unlimited for Kindle",
                 "stable": [
-                    "1.7.23"
+                    "1.7.24"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "196",
-                    "armeabi-v7a": "196",
-                    "x86-64": "196",
-                    "x86": "196"
+                    "arm64-v8a": "199",
+                    "armeabi-v7a": "199",
+                    "x86-64": "199",
+                    "x86": "199"
                 },
                 "force_bundle": true
             },
@@ -1696,6 +1714,24 @@
                 },
                 "force_bundle": true
             },
+            "pixlr": {
+                "package": "com.pixlr.express",
+                "search_term": "Pixlr",
+                "stable": [
+                    "3.9.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "39300",
+                    "armeabi-v7a": "39300",
+                    "x86-64": "39300",
+                    "x86": "39300"
+                },
+                "force_bundle": true
+            },
             "pleco": {
                 "package": "com.pleco.chinesesystem",
                 "search_term": "Pleco",
@@ -1842,17 +1878,17 @@
                 "package": "ch.protonmail.android",
                 "search_term": "Proton Mail",
                 "stable": [
-                    "7.11.11"
+                    "7.11.12"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "18326",
-                    "armeabi-v7a": "18326",
-                    "x86-64": "18326",
-                    "x86": "18326"
+                    "arm64-v8a": "18327",
+                    "armeabi-v7a": "18327",
+                    "x86-64": "18327",
+                    "x86": "18327"
                 }
             },
             "proton-pass": {
@@ -1913,7 +1949,7 @@
                 "package": "com.cardfeed.video_public",
                 "search_term": "Public",
                 "stable": [
-                    "3.3.4"
+                    "3.3.8"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1924,10 +1960,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "9070834",
-                    "armeabi-v7a": "9070834",
-                    "x86-64": "9070834",
-                    "x86": "9070834"
+                    "arm64-v8a": "9070838",
+                    "armeabi-v7a": "9070838",
+                    "x86-64": "9070838",
+                    "x86": "9070838"
                 },
                 "force_bundle": true
             },
@@ -2517,17 +2553,17 @@
                 "package": "com.free.vpn.super.hotspot.open",
                 "search_term": "VPN Super Unlimited Proxy",
                 "stable": [
-                    "2.34.1"
+                    "2.35.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "23401",
-                    "armeabi-v7a": "23401",
-                    "x86-64": "23401",
-                    "x86": "23401"
+                    "arm64-v8a": "23500",
+                    "armeabi-v7a": "23500",
+                    "x86-64": "23500",
+                    "x86": "23500"
                 },
                 "force_bundle": true
             },
