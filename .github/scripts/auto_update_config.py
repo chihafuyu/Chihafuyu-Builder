@@ -33,6 +33,12 @@ APPS_TOML_ENTRY_RE = re.compile(
 
 SLUG_PATTERN = re.compile(r"[^a-z0-9]+")
 
+TOML_HEADER = (
+    "# Application Configuration\n"
+    "# Change to `true` to patch, `false` to skip.\n\n"
+    "[apps]\n"
+)
+
 # GitHub caps workflow_dispatch at 25 inputs. Standard patcher inputs
 # consume ~10 slots, so 15 checkboxes is the effective limit. Reaching
 # 16 apps triggers the checkbox-to-text migration and TOML generation.
@@ -352,27 +358,22 @@ def _process_package(pkg_data, pkg, patch_name, default_enabled):
     pkg_name = pkg.get("packageName")
     if not pkg_name:
         return
-    if pkg_name not in pkg_data:
-        pkg_data[pkg_name] = {
-            "package": pkg_name,
-            "name": pkg.get("name") or pkg_name,
-            "all_targets": [],
-            "patches": {},
-            "apk_file_type": pkg.get("apkFileType"),
-        }
+    entry = pkg_data.setdefault(pkg_name, {
+        "package": pkg_name,
+        "name": pkg.get("name") or pkg_name,
+        "all_targets": [],
+        "patches": {},
+        "apk_file_type": pkg.get("apkFileType"),
+    })
     if patch_name:
-        pkg_data[pkg_name]["patches"][patch_name] = default_enabled
+        entry["patches"][patch_name] = default_enabled
 
-    valid_targets = []
-    for t in pkg.get("targets") or []:
-        if not isinstance(t, dict):
+    for target in pkg.get("targets") or []:
+        if not isinstance(target, dict):
             continue
-        is_exp = t.get("isExperimental", t.get("experimental", False))
-        if not is_exp:
-            valid_targets.append(t)
-    for target in valid_targets:
-        if target not in pkg_data[pkg_name]["all_targets"]:
-            pkg_data[pkg_name]["all_targets"].append(target)
+        is_exp = target.get("isExperimental", target.get("experimental", False))
+        if not is_exp and target not in entry["all_targets"]:
+            entry["all_targets"].append(target)
 
 
 def _extract_pkg_data(patches_data, ignore_patches=None):
@@ -428,15 +429,13 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
             local_opt = options[patch_name]
             if isinstance(local_opt, dict) and local_opt.get("enabled") is False:
                 continue
-            print(f"    -> Removing redundant patch '{patch_name}' "
-                  f"(now default: true upstream) from '{app_key}'.")
+            print(f"    -> Removing redundant patch '{patch_name}' (now default: true upstream) from '{app_key}'.")
             del options[patch_name]
             changed = True
 
     for patch_name, default_val in sorted(compatible_patches.items()):
         if patch_name not in options and default_val is False:
-            print(f"    -> Adding new patch '{patch_name}' "
-                  f"to '{app_key}' (enabled: false).")
+            print(f"    -> Adding new patch '{patch_name}' to '{app_key}' (enabled: false).")
             options[patch_name] = {"enabled": False}
             changed = True
     return changed
@@ -458,13 +457,11 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     if old_stable and isinstance(old_stable, list) and len(old_stable) > 0:
         old_version = str(old_stable[0])
         if _parse_version_key(old_version) > _parse_version_key(new_version):
-            print(f"    -> Skipping downgrade for '{app_key}': "
-                  f"{old_version} -> {new_version}.")
+            print(f"    -> Skipping downgrade for '{app_key}': {old_version} -> {new_version}.")
             return changed
 
     if app_cfg.get("stable") != target_list:
-        print(f"    -> Updating stable version of '{app_key}' "
-              f"from {app_cfg.get('stable')} to {target_list}.")
+        print(f"    -> Updating stable version of '{app_key}' from {app_cfg.get('stable')} to {target_list}.")
         app_cfg["stable"] = target_list
         changed = True
 
@@ -494,9 +491,7 @@ def _slugify_app_name(name, package):
 
 def _unique_app_key(pkg_info, taken_keys):
     """Returns a unique app key, appending a numeric suffix on collision."""
-    base = _slugify_app_name(
-        pkg_info.get("name") or "", pkg_info.get("package") or ""
-    )
+    base = _slugify_app_name(pkg_info.get("name") or "", pkg_info.get("package") or "")
     if base not in taken_keys:
         return base
     for i in range(2, 100):
@@ -515,9 +510,8 @@ def _build_new_app_config(pkg_info):
     version = str(latest.get("version") or "").strip()
     vcodes = _normalize_vcodes(latest.get("versionCodes"))
     options = {
-        patch_name: {"enabled": False}
-        for patch_name, default_val in sorted(pkg_info["patches"].items())
-        if default_val is False
+        name: {"enabled": False}
+        for name, val in sorted(pkg_info["patches"].items()) if val is False
     }
     config = {
         "package": pkg_info["package"],
@@ -560,14 +554,12 @@ def _process_existing_apps(
     if existing_count >= 5:
         missing_count = sum(
             1 for cfg in app_configs.values()
-            if isinstance(cfg, dict)
-            and cfg.get("package")
+            if isinstance(cfg, dict) and cfg.get("package")
             and cfg["package"] not in stable_pkgs
         )
         if missing_count > existing_count // 2:
-            print(f"    -> WARNING: {missing_count}/{existing_count} apps "
-                  "missing from upstream (>50% threshold); skipping ecosystem "
-                  "to prevent accidental mass deletion.")
+            print(f"    -> WARNING: {missing_count}/{existing_count} apps missing from upstream "
+                  "(>50% threshold); skipping ecosystem to prevent accidental mass deletion.")
             return False, [], {}
 
     changed = False
@@ -591,9 +583,8 @@ def _process_existing_apps(
         pkg_info = stable_pkgs[pkg_name]
         if _update_app_version(app_key, app_cfg, pkg_info):
             changed = True
-        if not skip_patches:
-            if _sync_app_patches(app_cfg, pkg_info["patches"], app_key):
-                changed = True
+        if not skip_patches and _sync_app_patches(app_cfg, pkg_info["patches"], app_key):
+            changed = True
 
     added_apps = {}
     for pkg_name, pkg_info in stable_pkgs.items():
@@ -601,17 +592,14 @@ def _process_existing_apps(
             continue
         latest = pkg_info.get("latest_target")
         if not latest:
-            print(f"    -> Skipping new package {pkg_name}: "
-                  "no non-experimental version targets.")
+            print(f"    -> Skipping new package {pkg_name}: no non-experimental version targets.")
             continue
         new_key = _unique_app_key(pkg_info, set(app_configs.keys()))
         if not new_key:
-            print(f"    -> Skipping new package {pkg_name}: "
-                  "could not derive a unique app key.")
+            print(f"    -> Skipping new package {pkg_name}: could not derive a unique app key.")
             continue
         concrete_version = bool(str(latest.get("version") or "").strip())
-        print(f"    -> Adding new app '{new_key}' for {pkg_name} "
-              f"(enabled default: {concrete_version}).")
+        print(f"    -> Adding new app '{new_key}' for {pkg_name} (enabled default: {concrete_version}).")
         app_configs[new_key] = _build_new_app_config(pkg_info)
         added_apps[new_key] = concrete_version
         changed = True
@@ -638,59 +626,57 @@ def _write_config_atomic(config_path, config):
         return False
 
 
-def _count_apps_in_config(config_path, eco_name):
-    """Count app entries declared in an ecosystem config file."""
+def _extract_apps_or_none(config_path, eco_name):
+    """Load the apps dict from an ecosystem config, or (None, err) on failure.
+
+    Returns (apps, None) on success, (None, exception) on read/parse error,
+    and (None, None) when the config shape is unexpected.
+    """
     try:
         with open(config_path, "r", encoding="utf-8") as file_obj:
             config = json.load(file_obj)
-    except (OSError, json.JSONDecodeError):
-        return 0
+    except (OSError, json.JSONDecodeError) as err:
+        return None, err
     if not isinstance(config, dict):
-        return 0
+        return None, None
     eco_data = config.get(eco_name)
     if not isinstance(eco_data, dict):
-        return 0
+        return None, None
     apps = eco_data.get("apps")
-    return len(apps) if isinstance(apps, dict) else 0
+    return (apps, None) if isinstance(apps, dict) else (None, None)
+
+
+def _count_apps_in_config(config_path, eco_name):
+    """Count app entries declared in an ecosystem config file."""
+    apps, _ = _extract_apps_or_none(config_path, eco_name)
+    return len(apps) if apps else 0
 
 
 def _create_full_toml(toml_path, config_path, eco_name):
     """Create a new apps.toml populated from the current config apps."""
     if os.path.exists(toml_path):
         return False
-    try:
-        with open(config_path, "r", encoding="utf-8") as file_obj:
-            config = json.load(file_obj)
-    except (OSError, json.JSONDecodeError) as err:
+    apps, err = _extract_apps_or_none(config_path, eco_name)
+    if err:
         print(f"    -> Failed to read config for TOML creation: {err}")
         return False
-    if not isinstance(config, dict):
+    if not isinstance(apps, dict):
         return False
-    eco_data = config.get(eco_name)
-    if not isinstance(eco_data, dict):
-        return False
-    apps = eco_data.get("apps")
-    if not isinstance(apps, dict) or not apps:
+    if not apps:
         return False
 
     try:
         os.makedirs(os.path.dirname(toml_path), exist_ok=True)
         with open(toml_path, "w", encoding="utf-8") as file_obj:
-            file_obj.write(
-                "# Application Configuration\n"
-                "# Change to `true` to patch, `false` to skip.\n\n"
-                "[apps]\n"
-            )
-            for app_key in sorted(apps.keys()):
-                app_cfg = apps[app_key]
+            file_obj.write(TOML_HEADER)
+            for app_key, app_cfg in sorted(apps.items()):
                 if not isinstance(app_cfg, dict):
                     continue
                 stable = app_cfg.get("stable") or []
                 first = stable[0] if isinstance(stable, list) and stable else ""
                 flag = "true" if first and first != "Any" else "false"
                 file_obj.write(f'"{app_key}" = {flag}\n')
-        print(f"    -> Created {os.path.basename(toml_path)} "
-              f"with {len(apps)} apps")
+        print(f"    -> Created {os.path.basename(toml_path)} with {len(apps)} apps")
         return True
     except OSError as err:
         print(f"    -> Failed to create {toml_path}: {err}")
@@ -967,8 +953,7 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         return False
 
     if "apps_to_patch:" in content:
-        print(f"    -> {ecosystem_name} uses text input; "
-              "no per-app YAML entry needed.")
+        print(f"    -> {ecosystem_name} uses text input; no per-app YAML entry needed.")
         return False
 
     existing_inputs = len(re.findall(r"^ {6}app_", content, re.MULTILINE))
@@ -1011,8 +996,7 @@ def _add_app_to_yaml(ecosystem_name, app_key):
     )
     env_match = env_pattern.search(content)
     if not env_match:
-        print("    -> WARNING: Failed to locate env block in YAML; "
-              "aborting to prevent partial updates.")
+        print("    -> WARNING: Failed to locate env block in YAML; aborting to prevent partial updates.")
         return False
 
     insert_pos = env_match.end(2)
@@ -1022,8 +1006,7 @@ def _add_app_to_yaml(ecosystem_name, app_key):
     list_pattern = re.compile(r'^[ \t]+LIST="\$\{LIST#,}"\r?\n', re.MULTILINE)
     list_match = list_pattern.search(content)
     if not list_match:
-        print("    -> WARNING: Failed to locate LIST append block in YAML; "
-              "aborting to prevent partial updates.")
+        print("    -> WARNING: Failed to locate LIST append block in YAML; aborting to prevent partial updates.")
         return False
 
     if_block = (
@@ -1080,11 +1063,7 @@ def _update_apps_toml(toml_path, added_apps, removed_apps):
         try:
             os.makedirs(os.path.dirname(toml_path), exist_ok=True)
             with open(toml_path, "w", encoding="utf-8") as file_obj:
-                file_obj.write(
-                    "# Application Configuration\n"
-                    "# Change to `true` to patch, `false` to skip.\n\n"
-                    "[apps]\n"
-                )
+                file_obj.write(TOML_HEADER)
         except OSError as err:
             print(f"    -> Failed to create {toml_path}: {err}")
             return False
@@ -1208,8 +1187,7 @@ def _process_ecosystem(config_path, ecosystem_info):
         target_name=ecosystem_info.get("target_name"),
     )
     if stable_data is None:
-        print(f"Skipping '{config_path}': Failed to fetch or parse upstream "
-              "data (see error above).")
+        print(f"Skipping '{config_path}': Failed to fetch or parse upstream data (see error above).")
         return None
     return stable_data
 
@@ -1242,15 +1220,14 @@ def main():
             if _add_app_to_yaml(eco_name, app_key):
                 any_change = True
 
-        toml_path = os.path.join(
-            _get_repo_root(), "config", f"apps-{eco_name}.toml"
-        )
+        toml_path = os.path.join(_get_repo_root(), "config", f"apps-{eco_name}.toml")
         app_count = _count_apps_in_config(config_path, eco_name)
 
         if not os.path.exists(toml_path):
-            if app_count > MAX_YAML_INPUTS:
-                if _create_full_toml(toml_path, config_path, eco_name):
-                    any_change = True
+            if app_count > MAX_YAML_INPUTS and _create_full_toml(
+                toml_path, config_path, eco_name
+            ):
+                any_change = True
         elif added_apps or removed_apps:
             if _update_apps_toml(toml_path, added_apps, removed_apps):
                 any_change = True
