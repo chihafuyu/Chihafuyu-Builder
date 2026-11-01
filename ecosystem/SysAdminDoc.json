@@ -89,54 +89,6 @@
                     }
                 }
             },
-            "pinedrama": {
-                "package": "com.ss.android.ttmd.video",
-                "search_term": "PineDrama - Short Dramas",
-                "stable": [
-                    "47.5.3"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {
-                    "Block P2P video relay": {
-                        "enabled": false
-                    },
-                    "Change app name": {
-                        "enabled": false
-                    },
-                    "Feature Gate Recorder": {
-                        "enabled": false
-                    },
-                    "Hide Play Store update offer": {
-                        "enabled": false
-                    },
-                    "Look like the store app": {
-                        "enabled": false
-                    },
-                    "Network request report": {
-                        "enabled": false
-                    },
-                    "Region spoof": {
-                        "enabled": false
-                    },
-                    "Remove unused language packs": {
-                        "enabled": false
-                    },
-                    "Skip first-launch setup": {
-                        "enabled": false
-                    },
-                    "Trust user certificates": {
-                        "enabled": false
-                    }
-                },
-                "version_codes": {
-                    "arm64-v8a": "2024705030",
-                    "armeabi-v7a": "2024705030",
-                    "x86": "2024705030",
-                    "x86-64": "2024705030"
-                }
-            },
             "pinterest": {
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
