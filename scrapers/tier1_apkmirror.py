@@ -303,11 +303,8 @@ class ApkmirrorScraper(BaseScraper):
         ]))
 
     def _find_release(self, ctx: Context) -> str | None:
-        base_ver = (
-            ctx.target_ver.split("-")[0]
-            if "-" in ctx.target_ver and ctx.target_ver[:1].isdigit()
-            else ctx.target_ver
-        )
+        ver_match = re.search(r"(v?\d+(?:\.\d+)+)", ctx.target_ver, re.IGNORECASE)
+        base_ver = ver_match.group(1) if ver_match else ctx.target_ver
 
         queries = self._get_search_queries(ctx, base_ver)
         exc_kws, inc_kws = self._get_filter_kws(ctx)
