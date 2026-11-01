@@ -2,22 +2,25 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
-"pdfcraft" = true
-"samsung-calculator" = true
-"samsung-calendar" = true
-"samsung-clock" = true
-"samsung-contacts" = true
-"samsung-gallery" = true
-"samsung-health-monitor" = true
-"samsung-keyboard" = true
-"samsung-messages" = true
-"samsung-modes-and-routines" = true
-"samsung-music" = true
-"samsung-my-files" = true
-"samsung-notes" = true
-"samsung-photo-editor" = true
-"samsung-reminder" = true
-"samsung-video-player" = true
-"samsung-voice-recorder" = true
+"alltrails" = true
+"google-maps" = true
+"pdfcraft" = false
+"samsung-calculator" = false
+"samsung-calendar" = false
+"samsung-clock" = false
+"samsung-contacts" = false
+"samsung-gallery" = false
+"samsung-health-monitor" = false
+"samsung-keyboard" = false
+"samsung-messages" = false
+"samsung-modes-and-routines" = false
+"samsung-music" = false
+"samsung-my-files" = false
+"samsung-notes" = false
+"samsung-photo-editor" = false
+"samsung-reminder" = false
+"samsung-video-player" = false
+"samsung-voice-recorder" = false
 "samsung-weather" = true
-"sound-assistant" = true
+"sound-assistant" = false
+"waze" = true

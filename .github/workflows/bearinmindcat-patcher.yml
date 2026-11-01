@@ -7,7 +7,7 @@ name: 🐻 Bearinmindcat Ecosystem Patcher
       apps_to_patch:
         description: >-
           Type "all" to follow config/apps-bearinmindcat.toml,
-          or type the name of a specific app (eg: 1weather,3way)
+          or type the name of a specific app (eg: alltrails,google-maps,waze)
         required: true
         type: string
         default: 'all'
@@ -193,6 +193,8 @@ jobs:
       API_HASH: ${{ secrets.API_HASH }}
       SESSION_STRING: ${{ secrets.SESSION_STRING }}
       CHAT_ID: ${{ secrets.CHAT_ID }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
     with:
       ecosystem: "bearinmindcat"
       apps: ${{ needs.prepare-apps.outputs.selected }}
@@ -207,5 +209,6 @@ jobs:
       repo_url: "bearinmindcat/morphe-patches"
       custom_patch_filename: "bearinmindcat-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
+      upload_huggingface: ${{ inputs.upload_huggingface }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: "bearinmindcat"

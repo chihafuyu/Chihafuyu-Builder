@@ -2,4 +2,6 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
+"brave-browser" = true
 "gboard-lite" = true
+"tiktok-global" = false

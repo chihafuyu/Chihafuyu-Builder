@@ -101,7 +101,7 @@ jobs:
 
           ECO="hxreborn"
           CONFIG="ecosystem/${ECO}.json"
-          TOML_CONFIG="config/apps.toml"
+          TOML_CONFIG="config/apps-hxreborn.toml"
 
           if [ ! -f "$CONFIG" ]; then
             echo "::error::Config not found: $CONFIG"
