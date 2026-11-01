@@ -53,11 +53,66 @@
                     }
                 }
             },
+            "samsung-calculator": {
+                "package": "com.sec.android.app.popupcalculator",
+                "search_term": "Samsung Calculator",
+                "stable": [
+                    "12.4.00.13"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-calendar": {
+                "package": "com.samsung.android.calendar",
+                "search_term": "Samsung Calendar",
+                "stable": [
+                    "12.8.01.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-clock": {
+                "package": "com.sec.android.app.clockpackage",
+                "search_term": "Samsung Clock",
+                "stable": [
+                    "12.4.02.38"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-contacts": {
+                "package": "com.samsung.android.app.contacts",
+                "search_term": "Samsung Contacts",
+                "stable": [
+                    "16.3.00.87"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "samsung-gallery": {
                 "package": "com.sec.android.gallery3d",
                 "search_term": "Samsung Gallery",
                 "stable": [
                     "15.9.01.7"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-health-monitor": {
+                "package": "com.samsung.android.shealthmonitor",
+                "search_term": "Samsung Health Monitor",
+                "stable": [
+                    "1.5.3.011"
                 ],
                 "beta": [],
                 "strip": true,
@@ -82,11 +137,110 @@
                     }
                 }
             },
+            "samsung-messages": {
+                "package": "com.samsung.android.messaging",
+                "search_term": "Samsung Messages",
+                "stable": [
+                    "16.3.21.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-modes-and-routines": {
+                "package": "com.samsung.android.app.routines",
+                "search_term": "Samsung Modes and Routines",
+                "stable": [
+                    "5.1.03.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-music": {
+                "package": "com.sec.android.app.music",
+                "search_term": "Samsung Music",
+                "stable": [
+                    "16.2.45.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-my-files": {
+                "package": "com.sec.android.app.myfiles",
+                "search_term": "Samsung My Files",
+                "stable": [
+                    "15.2.03.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "samsung-notes": {
                 "package": "com.samsung.android.app.notes",
                 "search_term": "Samsung Notes",
                 "stable": [
                     "4.4.48.15"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-photo-editor": {
+                "package": "com.sec.android.mimage.photoretouching",
+                "search_term": "Samsung Photo Editor",
+                "stable": [
+                    "3.9.04.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-reminder": {
+                "package": "com.samsung.android.app.reminder",
+                "search_term": "Samsung Reminder",
+                "stable": [
+                    "12.8.00.62"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-video-player": {
+                "package": "com.samsung.android.video",
+                "search_term": "Samsung Video Player",
+                "stable": [
+                    "7.3.47.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-voice-recorder": {
+                "package": "com.sec.android.app.voicenote",
+                "search_term": "Samsung Voice Recorder",
+                "stable": [
+                    "21.5.91.33"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-weather": {
+                "package": "com.sec.android.daemonapp",
+                "search_term": "Samsung Weather",
+                "stable": [
+                    "1.7.30.50"
                 ],
                 "beta": [],
                 "strip": true,

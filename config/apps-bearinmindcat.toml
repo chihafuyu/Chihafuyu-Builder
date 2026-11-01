@@ -3,7 +3,21 @@
 
 [apps]
 "pdfcraft" = true
+"samsung-calculator" = true
+"samsung-calendar" = true
+"samsung-clock" = true
+"samsung-contacts" = true
 "samsung-gallery" = true
+"samsung-health-monitor" = true
 "samsung-keyboard" = true
+"samsung-messages" = true
+"samsung-modes-and-routines" = true
+"samsung-music" = true
+"samsung-my-files" = true
 "samsung-notes" = true
+"samsung-photo-editor" = true
+"samsung-reminder" = true
+"samsung-video-player" = true
+"samsung-voice-recorder" = true
+"samsung-weather" = true
 "sound-assistant" = true

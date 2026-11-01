@@ -4,46 +4,13 @@ name: 🐻 Bearinmindcat Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_alltrails:
-        description: 'Patch alltrails'
+      apps_to_patch:
+        description: >-
+          Type "all" to follow config/apps-bearinmindcat.toml,
+          or type the name of a specific app (eg: 1weather,3way)
         required: true
-        type: boolean
-        default: true
-      app_google_maps:
-        description: 'Patch google-maps'
-        required: true
-        type: boolean
-        default: true
-      app_waze:
-        description: 'Patch waze'
-        required: true
-        type: boolean
-        default: true
-      app_samsung_keyboard:
-        description: 'Patch samsung-keyboard'
-        required: true
-        type: boolean
-        default: true
-      app_samsung_gallery:
-        description: 'Patch samsung-gallery'
-        required: true
-        type: boolean
-        default: true
-      app_samsung_notes:
-        description: 'Patch samsung-notes'
-        required: true
-        type: boolean
-        default: true
-      app_sound_assistant:
-        description: 'Patch sound-assistant'
-        required: true
-        type: boolean
-        default: true
-      app_pdfcraft:
-        description: 'Patch pdfcraft'
-        required: true
-        type: boolean
-        default: true
+        type: string
+        default: 'all'
       architecture:
         description: 'Target Architecture'
         required: true
@@ -98,6 +65,11 @@ name: 🐻 Bearinmindcat Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      upload_huggingface:
+        description: 'Upload to HuggingFace Dataset'
+        required: false
+        type: boolean
+        default: false
       send_to_telegram:
         description: 'Send to Telegram'
         required: true
@@ -111,52 +83,92 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
-    env:
-      APP_ALLTRAILS: ${{ inputs.app_alltrails }}
-      APP_GOOGLE_MAPS: ${{ inputs.app_google_maps }}
-      APP_WAZE: ${{ inputs.app_waze }}
-      APP_SAMSUNG_KEYBOARD: ${{ inputs.app_samsung_keyboard }}
-      APP_SAMSUNG_GALLERY: ${{ inputs.app_samsung_gallery }}
-      APP_SAMSUNG_NOTES: ${{ inputs.app_samsung_notes }}
-      APP_SOUND_ASSISTANT: ${{ inputs.app_sound_assistant }}
-      APP_PDFCRAFT: ${{ inputs.app_pdfcraft }}
     steps:
-      - id: build-list
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Validate and Normalize App List
+        id: build-list
+        env:
+          APPS_RAW: ${{ inputs.apps_to_patch }}
+          ECO_NAME: "bearinmindcat"
         run: |
           set -euo pipefail
-          LIST=""
-          if [[ "$APP_ALLTRAILS" == "true" ]]; then
-            LIST="$LIST,alltrails"
-          fi
-          if [[ "$APP_GOOGLE_MAPS" == "true" ]]; then
-            LIST="$LIST,google-maps"
-          fi
-          if [[ "$APP_WAZE" == "true" ]]; then
-            LIST="$LIST,waze"
-          fi
-          if [[ "$APP_SAMSUNG_KEYBOARD" == "true" ]]; then
-            LIST="$LIST,samsung-keyboard"
-          fi
-          if [[ "$APP_SAMSUNG_GALLERY" == "true" ]]; then
-            LIST="$LIST,samsung-gallery"
-          fi
-          if [[ "$APP_SAMSUNG_NOTES" == "true" ]]; then
-            LIST="$LIST,samsung-notes"
-          fi
-          if [[ "$APP_SOUND_ASSISTANT" == "true" ]]; then
-            LIST="$LIST,sound-assistant"
-          fi
-          if [[ "$APP_PDFCRAFT" == "true" ]]; then
-            LIST="$LIST,pdfcraft"
-          fi
-          LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then
-            echo "::error::No applications selected!"
+
+          ECO="$ECO_NAME"
+          CONFIG="ecosystem/${ECO}.json"
+          TOML_CONFIG="config/apps-${ECO}.toml"
+
+          if [ ! -f "$CONFIG" ]; then
+            echo "::error::Config not found: $CONFIG"
             exit 1
           fi
+
+          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          import os, json, sys
+
+          try:
+              import tomllib
+          except ImportError:
+              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              sys.exit(1)
+
+          eco = os.environ['ECO_NAME']
+          config_path = os.environ['CONFIG_PATH']
+          toml_path = os.environ['TOML_PATH']
+          raw_input = os.environ.get('APPS_RAW', '').strip()
+
+          with open(config_path) as f:
+              valid_apps = json.load(f)[eco]['apps']
+
+          selected = []
+
+          if raw_input.lower() == 'all':
+              print('[INFO] Mode: Reading from config/apps.toml', file=sys.stderr)
+              if not os.path.exists(toml_path):
+                  print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
+                  sys.exit(1)
+
+              with open(toml_path, 'rb') as f:
+                  toml_data = tomllib.load(f)
+
+              apps_dict = toml_data.get('apps', {})
+              selected = [k for k, v in apps_dict.items() if v is True]
+
+              if not selected:
+                  print('::error::No apps enabled in apps.toml', file=sys.stderr)
+                  sys.exit(1)
+
+          else:
+              print('[INFO] Mode: Manual Input', file=sys.stderr)
+              selected = [a.strip() for a in raw_input.split(',') if a.strip()]
+
+          invalid = [app for app in selected if app not in valid_apps]
+          if invalid:
+              print(f'::error::The following apps were not found in {config_path}: {invalid}', file=sys.stderr)
+              print('Valid apps:', file=sys.stderr)
+              for v in sorted(valid_apps):
+                  print(f'  - {v}', file=sys.stderr)
+              sys.exit(1)
+
+          print(','.join(selected))
+          ")
+
+          if [ -z "$SELECTED" ]; then
+            echo "::error::No apps selected."
+            exit 1
+          fi
+
+          echo "Apps to patch: $SELECTED"
+
           {
             echo "apps<<EOF"
-            echo "$LIST"
+            echo "$SELECTED"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
