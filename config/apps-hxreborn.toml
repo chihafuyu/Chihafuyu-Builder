@@ -11,7 +11,8 @@
 "aloa" = false
 "alpinequest" = false
 "anytracker" = false
-"arc-player" = true
+"apna-tunnel-lite" = false
+"arc-player" = false
 "athan" = true
 "atlomaps" = false
 "atvtools" = false
@@ -95,6 +96,7 @@
 "perplexity" = false
 "photo-editor-pro" = true
 "photone" = false
+"pixlr" = true
 "pleco" = false
 "pocket-whip" = false
 "poe" = false

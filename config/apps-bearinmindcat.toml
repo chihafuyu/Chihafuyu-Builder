@@ -4,6 +4,8 @@
 [apps]
 "alltrails" = true
 "google-maps" = true
+"nothing-gallery" = false
+"nothing-recorder" = false
 "pdfcraft" = false
 "samsung-calculator" = false
 "samsung-calendar" = false
@@ -24,9 +26,12 @@
 "samsung-weather" = true
 "sound-assistant" = false
 "waze" = true
+"xiaomi-calendar" = false
 "xiaomi-compass" = false
 "xiaomi-gallery" = false
+"xiaomi-gallery-editor" = false
 "xiaomi-notes" = false
 "xiaomi-recorder" = false
 "xiaomi-scanner" = false
+"xiaomi-screen-recorder" = false
 "xiaomi-weather" = false
