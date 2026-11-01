@@ -33,7 +33,9 @@ APPS_TOML_ENTRY_RE = re.compile(
 
 SLUG_PATTERN = re.compile(r"[^a-z0-9]+")
 
-# GitHub caps workflow_dispatch at 25 inputs; 15 leaves room for standard inputs
+# GitHub caps workflow_dispatch at 25 inputs. Standard patcher inputs
+# consume ~10 slots, so 15 checkboxes is the effective limit. Reaching
+# 16 apps triggers the checkbox-to-text migration and TOML generation.
 MAX_YAML_INPUTS = 15
 
 
@@ -636,6 +638,70 @@ def _write_config_atomic(config_path, config):
         return False
 
 
+def _count_apps_in_config(config_path, eco_name):
+    """Count app entries declared in an ecosystem config file."""
+    try:
+        with open(config_path, "r", encoding="utf-8") as file_obj:
+            config = json.load(file_obj)
+    except (OSError, json.JSONDecodeError):
+        return 0
+    if not isinstance(config, dict):
+        return 0
+    eco_data = config.get(eco_name)
+    if not isinstance(eco_data, dict):
+        return 0
+    apps = eco_data.get("apps")
+    return len(apps) if isinstance(apps, dict) else 0
+
+
+def _create_full_toml(toml_path, config_path, eco_name):
+    """Create a new apps.toml populated from the current config apps."""
+    if os.path.exists(toml_path):
+        return False
+    try:
+        with open(config_path, "r", encoding="utf-8") as file_obj:
+            config = json.load(file_obj)
+    except (OSError, json.JSONDecodeError) as err:
+        print(f"    -> Failed to read config for TOML creation: {err}")
+        return False
+    if not isinstance(config, dict):
+        return False
+    eco_data = config.get(eco_name)
+    if not isinstance(eco_data, dict):
+        return False
+    apps = eco_data.get("apps")
+    if not isinstance(apps, dict) or not apps:
+        return False
+
+    try:
+        os.makedirs(os.path.dirname(toml_path), exist_ok=True)
+        with open(toml_path, "w", encoding="utf-8") as file_obj:
+            file_obj.write(
+                "# Application Configuration\n"
+                "# Change to `true` to patch, `false` to skip.\n\n"
+                "[apps]\n"
+            )
+            for app_key in sorted(apps.keys()):
+                app_cfg = apps[app_key]
+                if not isinstance(app_cfg, dict):
+                    continue
+                stable = app_cfg.get("stable") or []
+                first = stable[0] if isinstance(stable, list) and stable else ""
+                flag = "true" if first and first != "Any" else "false"
+                file_obj.write(f'"{app_key}" = {flag}\n')
+        print(f"    -> Created {os.path.basename(toml_path)} "
+              f"with {len(apps)} apps")
+        return True
+    except OSError as err:
+        print(f"    -> Failed to create {toml_path}: {err}")
+        if os.path.exists(toml_path):
+            try:
+                os.remove(toml_path)
+            except OSError:
+                pass
+        return False
+
+
 def _remove_app_from_yaml(ecosystem_name, app_key):
     """Precisely remove an app's input, env, and if-block from the workflow YAML."""
     yaml_path = os.path.join(
@@ -1176,8 +1242,16 @@ def main():
             if _add_app_to_yaml(eco_name, app_key):
                 any_change = True
 
-        toml_path = os.path.join(_get_repo_root(), "config", f"apps-{eco_name}.toml")
-        if added_apps or removed_apps:
+        toml_path = os.path.join(
+            _get_repo_root(), "config", f"apps-{eco_name}.toml"
+        )
+        app_count = _count_apps_in_config(config_path, eco_name)
+
+        if not os.path.exists(toml_path):
+            if app_count > MAX_YAML_INPUTS:
+                if _create_full_toml(toml_path, config_path, eco_name):
+                    any_change = True
+        elif added_apps or removed_apps:
             if _update_apps_toml(toml_path, added_apps, removed_apps):
                 any_change = True
 
