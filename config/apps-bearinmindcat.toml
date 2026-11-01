@@ -24,9 +24,9 @@
 "samsung-weather" = true
 "sound-assistant" = false
 "waze" = true
-"xiaomi-compass" = true
-"xiaomi-gallery" = true
-"xiaomi-notes" = true
-"xiaomi-recorder" = true
-"xiaomi-scanner" = true
-"xiaomi-weather" = true
+"xiaomi-compass" = false
+"xiaomi-gallery" = false
+"xiaomi-notes" = false
+"xiaomi-recorder" = false
+"xiaomi-scanner" = false
+"xiaomi-weather" = false
