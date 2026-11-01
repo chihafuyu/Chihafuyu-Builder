@@ -4,8 +4,8 @@
 [apps]
 "alltrails" = true
 "google-maps" = true
-"nothing-gallery" = true
-"nothing-recorder" = true
+"nothing-gallery" = false
+"nothing-recorder" = false
 "pdfcraft" = false
 "samsung-calculator" = false
 "samsung-calendar" = false
