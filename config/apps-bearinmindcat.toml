@@ -26,12 +26,12 @@
 "samsung-weather" = true
 "sound-assistant" = false
 "waze" = true
-"xiaomi-calendar" = true
+"xiaomi-calendar" = false
 "xiaomi-compass" = false
 "xiaomi-gallery" = false
-"xiaomi-gallery-editor" = true
+"xiaomi-gallery-editor" = false
 "xiaomi-notes" = false
 "xiaomi-recorder" = false
 "xiaomi-scanner" = false
-"xiaomi-screen-recorder" = true
+"xiaomi-screen-recorder" = false
 "xiaomi-weather" = false
