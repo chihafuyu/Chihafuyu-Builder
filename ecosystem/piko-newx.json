@@ -5,9 +5,11 @@
                 "package": "com.twitter.android",
                 "search_term": "X",
                 "stable": [
-                    "12.39.0-alpha.03"
+                    "12.39.0-prod.01"
                 ],
-                "beta": [],
+                "beta": [
+                    "12.40.0-alpha.01"
+                ],
                 "version_codes": {
                     "universal": "12L+",
                     "arm64-v8a": "12L+",
