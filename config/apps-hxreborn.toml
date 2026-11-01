@@ -11,8 +11,8 @@
 "aloa" = false
 "alpinequest" = false
 "anytracker" = false
-"apna-tunnel-lite" = true
-"arc-player" = true
+"apna-tunnel-lite" = false
+"arc-player" = false
 "athan" = true
 "atlomaps" = false
 "atvtools" = false
