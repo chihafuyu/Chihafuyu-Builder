@@ -123,6 +123,28 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "lg-health": {
+                "package": "com.lge.lifetracker",
+                "search_term": "LG Health",
+                "stable": [
+                    "5.60.16"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "lg-quickmemo": {
+                "package": "com.lge.qmemoplus",
+                "search_term": "LG QuickMemo+",
+                "stable": [
+                    "10.0.30"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "nothing-gallery": {
                 "package": "com.nothing.gallery",
                 "search_term": "Nothing Gallery",
@@ -162,6 +184,17 @@
                         "enabled": false
                     }
                 }
+            },
+            "redmagic-game-space": {
+                "package": "cn.nubia.gamelauncher",
+                "search_term": "RedMagic Game Space",
+                "stable": [
+                    "15.0.000.001.2512060958"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "samsung-calculator": {
                 "package": "com.sec.android.app.popupcalculator",
