@@ -192,7 +192,7 @@
                 "package": "com.microsoft.office.officelens",
                 "search_term": "Microsoft Lens",
                 "stable": [
-                    "Any"
+                    "16.0.19628.20008"
                 ],
                 "beta": [],
                 "strip": true,
@@ -258,7 +258,7 @@
                 "package": "jp.pxv.android",
                 "search_term": "Pixiv",
                 "stable": [
-                    "6.196.0"
+                    "6.202.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -275,21 +275,6 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
-            },
-            "twitch": {
-                "package": "tv.twitch.android.app",
-                "search_term": "Twitch",
-                "stable": [
-                    "25.3.0"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {
-                    "Debug mode": {
-                        "enabled": false
-                    }
-                }
             },
             "viber": {
                 "package": "com.viber.voip",
