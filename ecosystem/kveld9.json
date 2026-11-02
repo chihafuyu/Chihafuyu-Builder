@@ -5,7 +5,7 @@
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
                 "stable": [
-                    "1.98.60"
+                    "1.98.63"
                 ],
                 "beta": [],
                 "strip": true,
@@ -13,13 +13,16 @@
                 "github_asset": "Bravemonoarm64.apk",
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Remove Extra Files": {
-                        "enabled": false
-                    },
                     "Remove Extra Languages": {
                         "enabled": false
                     },
                     "Custom Brave theme": {
+                        "enabled": false
+                    },
+                    "Custom NTP wallpaper": {
+                        "enabled": false
+                    },
+                    "Remove Unused AI & VPN": {
                         "enabled": false
                     }
                 }
@@ -53,7 +56,7 @@
                 "search_term": "TikTok Global",
                 "description": "Any TikTok version (Global nodpi APK)",
                 "stable": [
-                    "47.5.3"
+                    "47.6.3"
                 ],
                 "beta": [],
                 "version_codes": {
@@ -137,6 +140,52 @@
                         "enabled": false
                     }
                 }
+            },
+            "tiktok-lite": {
+                "package": "com.tiktok.lite.go",
+                "search_term": "TikTok Lite",
+                "stable": [
+                    "47.5.52"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Camera & Microphone Indicator": {
+                        "enabled": false
+                    },
+                    "Disable History Recording": {
+                        "enabled": false
+                    },
+                    "Disable Push Notifications": {
+                        "enabled": false
+                    },
+                    "Disable QUIC": {
+                        "enabled": false
+                    },
+                    "Playback & Display Governor": {
+                        "enabled": false
+                    },
+                    "Remember Clear Display": {
+                        "enabled": false
+                    },
+                    "Remember Playback Speed": {
+                        "enabled": false
+                    },
+                    "SIM Region Selector": {
+                        "enabled": false
+                    },
+                    "Show Exact Counts": {
+                        "enabled": false
+                    },
+                    "Stop Video Looping": {
+                        "enabled": false
+                    },
+                    "Strip Sensitive Permissions": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
             }
         }
     }

@@ -19,6 +19,11 @@ name: 🦁 Kveld9 Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_tiktok_lite:
+        description: 'Patch tiktok-lite'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -90,6 +95,7 @@ jobs:
       APP_BRAVE_BROWSER: ${{ inputs.app_brave_browser }}
       APP_TIKTOK_GLOBAL: ${{ inputs.app_tiktok_global }}
       APP_GBOARD_LITE: ${{ inputs.app_gboard_lite }}
+      APP_TIKTOK_LITE: ${{ inputs.app_tiktok_lite }}
     steps:
       - id: build-list
         run: |
@@ -103,6 +109,9 @@ jobs:
           fi
           if [[ "$APP_GBOARD_LITE" == "true" ]]; then
             LIST="$LIST,gboard-lite"
+          fi
+          if [[ "$APP_TIKTOK_LITE" == "true" ]]; then
+            LIST="$LIST,tiktok-lite"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
