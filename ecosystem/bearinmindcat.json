@@ -123,6 +123,28 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "lg-health": {
+                "package": "com.lge.lifetracker",
+                "search_term": "LG Health",
+                "stable": [
+                    "5.60.16"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "lg-quickmemo": {
+                "package": "com.lge.qmemoplus",
+                "search_term": "LG QuickMemo+",
+                "stable": [
+                    "10.0.30"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "nothing-gallery": {
                 "package": "com.nothing.gallery",
                 "search_term": "Nothing Gallery",
@@ -139,6 +161,105 @@
                 "search_term": "Nothing Recorder",
                 "stable": [
                     "4.0.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "oneplus-calculator": {
+                "package": "com.oneplus.calculator",
+                "search_term": "OnePlus Calculator",
+                "stable": [
+                    "17.0.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "oneplus-clock": {
+                "package": "com.oneplus.deskclock",
+                "search_term": "OnePlus Clock",
+                "stable": [
+                    "16.19.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "oneplus-compass": {
+                "package": "com.coloros.compass2",
+                "search_term": "OnePlus Compass",
+                "stable": [
+                    "17.0.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "oneplus-my-files": {
+                "package": "com.oneplus.filemanager",
+                "search_term": "OnePlus My Files",
+                "stable": [
+                    "16.12.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "oneplus-notes": {
+                "package": "com.oneplus.note",
+                "search_term": "OnePlus Notes",
+                "stable": [
+                    "16.6.14"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "oneplus-photos": {
+                "package": "com.oneplus.gallery",
+                "search_term": "OnePlus Photos",
+                "stable": [
+                    "16.45.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "oneplus-recorder": {
+                "package": "com.oneplus.soundrecorder",
+                "search_term": "OnePlus Recorder",
+                "stable": [
+                    "16.17.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "oneplus-screen-recording": {
+                "package": "com.oplus.screenrecorder",
+                "search_term": "OnePlus Screen Recording",
+                "stable": [
+                    "16.5.12"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "oneplus-weather": {
+                "package": "net.oneplus.weather",
+                "search_term": "OnePlus Weather",
+                "stable": [
+                    "17.6.30"
                 ],
                 "beta": [],
                 "strip": true,
@@ -162,6 +283,17 @@
                         "enabled": false
                     }
                 }
+            },
+            "redmagic-game-space": {
+                "package": "cn.nubia.gamelauncher",
+                "search_term": "RedMagic Game Space",
+                "stable": [
+                    "15.0.000.001.2512060958"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "samsung-calculator": {
                 "package": "com.sec.android.app.popupcalculator",
