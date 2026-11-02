@@ -1,0 +1,25 @@
+{
+    "oxbow": {
+        "apps": {
+            "instagram": {
+                "package": "com.instagram.android",
+                "search_term": "Instagram",
+                "stable": [
+                    "453.0.0.55.79"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Clone": {
+                        "enabled": false
+                    },
+                    "Debug bridge": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            }
+        }
+    }
+}

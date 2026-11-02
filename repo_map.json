@@ -106,6 +106,9 @@
     "morphe": {
         "repo_url": "MorpheApp/morphe-patches"
     },
+    "oxbow": {
+        "repo_url": "aic0d3r/oxbow"
+    },
     "PathxmOp": {
         "repo_url": "PrathxmOp/Prathxm-Patches"
     },
