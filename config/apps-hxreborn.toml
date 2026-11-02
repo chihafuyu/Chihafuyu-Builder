@@ -28,7 +28,7 @@
 "blockit" = false
 "blurwall" = false
 "botim" = false
-"calcnote" = true
+"calcnote" = false
 "cast-plug-in-for-musicolet" = false
 "castle" = false
 "castle-for-tv" = false
@@ -66,7 +66,7 @@
 "kick" = false  # Note: "Any" version, may fail if there is no custom version.
 "klassik-radio" = false
 "lagguy-wallpapers" = false
-"led-blinker" = true
+"led-blinker" = false
 "lingodeer" = false
 "magic-earth" = false
 "may-beautiful-bullet-journal" = false
@@ -135,6 +135,7 @@
 "terabox" = true
 "trainline" = false
 "transparent-clock-weather" = false
+"tunneldoom-vpn" = false
 "u-dictionary" = false
 "uptcl" = false
 "usa-vpn" = false

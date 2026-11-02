@@ -356,7 +356,7 @@
                 "package": "com.bereal.ft",
                 "search_term": "BeReal",
                 "stable": [
-                    "3.97.1"
+                    "3.98.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -367,10 +367,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "3599414",
-                    "armeabi-v7a": "3599414",
-                    "x86-64": "3599414",
-                    "x86": "3599414"
+                    "arm64-v8a": "3600852",
+                    "armeabi-v7a": "3600852",
+                    "x86-64": "3600852",
+                    "x86": "3600852"
                 },
                 "force_bundle": true
             },
@@ -1540,7 +1540,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "308",
                     "armeabi-v7a": "308",
@@ -2422,6 +2426,24 @@
                     "armeabi-v7a": "1431",
                     "x86-64": "1431",
                     "x86": "1431"
+                },
+                "force_bundle": true
+            },
+            "tunneldoom-vpn": {
+                "package": "com.tunneldoom.http",
+                "search_term": "TunnelDOOM VPN",
+                "stable": [
+                    "4.3.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "430",
+                    "armeabi-v7a": "430",
+                    "x86-64": "430",
+                    "x86": "430"
                 },
                 "force_bundle": true
             },
