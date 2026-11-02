@@ -20,7 +20,7 @@ name: 🧰 SysAdminDoc Ecosystem Patcher
         type: boolean
         default: true
       app_pinedrama:
-        description: 'Patch HushPinedrama'
+        description: 'Patch HushPine'
         required: true
         type: boolean
         default: false
@@ -145,7 +145,7 @@ jobs:
             add_entry messenger HushMessenger hushmessenger hushmessenger-custom.mpp
           fi
           if [[ "$APP_PINEDRAMA" == "true" ]]; then
-            add_entry pinedrama HushFeed hushpinedrama hushfeed-custom.mpp
+            add_entry pinedrama HushPine hushpine hushpine-custom.mpp
           fi
           if [[ "$APP_PINTEREST" == "true" ]]; then
             add_entry pinterest HushPinterest hushpinterest hushpinterest-custom.mpp

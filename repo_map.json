@@ -57,6 +57,10 @@
         "repo_url": "SysAdminDoc/HushMessenger",
         "config_path": "ecosystem/hushmessenger.json"
     },
+    "hushpine": {
+        "repo_url": "SysAdminDoc/HushPine",
+        "config_path": "ecosystem/hushpine.json"
+    },
     "hushpinterest": {
         "repo_url": "SysAdminDoc/HushPinterest",
         "config_path": "ecosystem/hushpinterest.json"
