@@ -22,7 +22,8 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "angulus": {
                 "package": "com.drinkplusplus.angulus",

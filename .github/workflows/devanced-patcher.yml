@@ -4,26 +4,13 @@ name: 🔄 De-Vanced Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_facebook:
-        description: 'Patch facebook'
+      apps_to_patch:
+        description: >-
+          Type "all" to follow config/apps-De-Vanced.toml,
+          or type the name of a specific app (eg: facebook, google-photos)
         required: true
-        type: boolean
-        default: true
-      app_google_photos:
-        description: 'Patch google-photos'
-        required: true
-        type: boolean
-        default: true
-      app_pixiv:
-        description: 'Patch pixiv'
-        required: true
-        type: boolean
-        default: false
-      app_strava:
-        description: 'Patch strava'
-        required: true
-        type: boolean
-        default: false
+        type: string
+        default: 'all'
       architecture:
         description: 'Target Architecture'
         required: true
@@ -78,6 +65,11 @@ name: 🔄 De-Vanced Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      upload_huggingface:
+        description: 'Upload to HuggingFace Dataset'
+        required: false
+        type: boolean
+        default: false
       send_to_telegram:
         description: 'Send to Telegram'
         required: true
@@ -91,36 +83,92 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
-    env:
-      APP_FACEBOOK: ${{ inputs.app_facebook }}
-      APP_GOOGLE_PHOTOS: ${{ inputs.app_google_photos }}
-      APP_PIXIV: ${{ inputs.app_pixiv }}
-      APP_STRAVA: ${{ inputs.app_strava }}
     steps:
-      - id: build-list
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Validate and Normalize App List
+        id: build-list
+        env:
+          APPS_RAW: ${{ inputs.apps_to_patch }}
+          ECO_NAME: "De-Vanced"
         run: |
           set -euo pipefail
-          LIST=""
-          if [[ "$APP_FACEBOOK" == "true" ]]; then
-            LIST="$LIST,facebook"
-          fi
-          if [[ "$APP_GOOGLE_PHOTOS" == "true" ]]; then
-            LIST="$LIST,google-photos"
-          fi
-          if [[ "$APP_PIXIV" == "true" ]]; then
-            LIST="$LIST,pixiv"
-          fi
-          if [[ "$APP_STRAVA" == "true" ]]; then
-            LIST="$LIST,strava"
-          fi
-          LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then
-            echo "::error::No applications selected!"
+
+          ECO="$ECO_NAME"
+          CONFIG="ecosystem/${ECO}.json"
+          TOML_CONFIG="config/apps-${ECO}.toml"
+
+          if [ ! -f "$CONFIG" ]; then
+            echo "::error::Config not found: $CONFIG"
             exit 1
           fi
+
+          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          import os, json, sys
+
+          try:
+              import tomllib
+          except ImportError:
+              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              sys.exit(1)
+
+          eco = os.environ['ECO_NAME']
+          config_path = os.environ['CONFIG_PATH']
+          toml_path = os.environ['TOML_PATH']
+          raw_input = os.environ.get('APPS_RAW', '').strip()
+
+          with open(config_path) as f:
+              valid_apps = json.load(f)[eco]['apps']
+
+          selected = []
+
+          if raw_input.lower() == 'all':
+              print(f'[INFO] Mode: Reading from {toml_path}', file=sys.stderr)
+              if not os.path.exists(toml_path):
+                  print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
+                  sys.exit(1)
+
+              with open(toml_path, 'rb') as f:
+                  toml_data = tomllib.load(f)
+
+              apps_dict = toml_data.get('apps', {})
+              selected = [k for k, v in apps_dict.items() if v is True]
+
+              if not selected:
+                  print(f'::error::No apps enabled in {toml_path}', file=sys.stderr)
+                  sys.exit(1)
+
+          else:
+              print('[INFO] Mode: Manual Input', file=sys.stderr)
+              selected = [a.strip() for a in raw_input.split(',') if a.strip()]
+
+          invalid = [app for app in selected if app not in valid_apps]
+          if invalid:
+              print(f'::error::The following apps were not found in {config_path}: {invalid}', file=sys.stderr)
+              print('Valid apps:', file=sys.stderr)
+              for v in sorted(valid_apps):
+                  print(f'  - {v}', file=sys.stderr)
+              sys.exit(1)
+
+          print(','.join(selected))
+          ")
+
+          if [ -z "$SELECTED" ]; then
+            echo "::error::No apps selected."
+            exit 1
+          fi
+
+          echo "Apps to patch: $SELECTED"
+
           {
             echo "apps<<EOF"
-            echo "$LIST"
+            echo "$SELECTED"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -145,6 +193,8 @@ jobs:
       API_HASH: ${{ secrets.API_HASH }}
       SESSION_STRING: ${{ secrets.SESSION_STRING }}
       CHAT_ID: ${{ secrets.CHAT_ID }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
     with:
       ecosystem: "De-Vanced"
       apps: ${{ needs.prepare-apps.outputs.selected }}
@@ -159,5 +209,6 @@ jobs:
       repo_url: "RookieEnough/De-Vanced"
       custom_patch_filename: "De-Vanced-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
+      upload_huggingface: ${{ inputs.upload_huggingface }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: "De-Vanced"
