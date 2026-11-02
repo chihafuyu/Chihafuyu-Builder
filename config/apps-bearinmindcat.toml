@@ -12,9 +12,12 @@
 "honor-notes" = false
 "honor-recorder" = false
 "honor-video-player" = false
+"lg-health" = true
+"lg-quickmemo" = true
 "nothing-gallery" = false
 "nothing-recorder" = false
 "pdfcraft" = false
+"redmagic-game-space" = true
 "samsung-calculator" = false
 "samsung-calendar" = false
 "samsung-clock" = false
