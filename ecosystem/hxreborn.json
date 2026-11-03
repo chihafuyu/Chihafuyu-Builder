@@ -231,17 +231,17 @@
                 "package": "com.atlogis.atlomaps",
                 "search_term": "AtloMaps",
                 "stable": [
-                    "2.0.0"
+                    "2.0.2"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "174",
-                    "armeabi-v7a": "174",
-                    "x86-64": "174",
-                    "x86": "174"
+                    "arm64-v8a": "178",
+                    "armeabi-v7a": "178",
+                    "x86-64": "178",
+                    "x86": "178"
                 },
                 "force_bundle": true
             },
@@ -320,17 +320,17 @@
                 "package": "com.fillobotto.mp3tagger",
                 "search_term": "AutomaTag",
                 "stable": [
-                    "2.3.0.10"
+                    "2.3.0.14"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "797",
-                    "armeabi-v7a": "797",
-                    "x86-64": "797",
-                    "x86": "797"
+                    "arm64-v8a": "801",
+                    "armeabi-v7a": "801",
+                    "x86-64": "801",
+                    "x86": "801"
                 },
                 "force_bundle": true
             },
@@ -467,17 +467,17 @@
                 "package": "im.thebot.messenger",
                 "search_term": "botim",
                 "stable": [
-                    "4.20.1"
+                    "4.21.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "7150",
-                    "armeabi-v7a": "7150",
-                    "x86-64": "7150",
-                    "x86": "7150"
+                    "arm64-v8a": "7170",
+                    "armeabi-v7a": "7170",
+                    "x86-64": "7170",
+                    "x86": "7170"
                 },
                 "force_bundle": true
             },
@@ -627,17 +627,17 @@
                 "package": "tech.coddy.coddyapp",
                 "search_term": "Coddy",
                 "stable": [
-                    "2.2.9"
+                    "2.3.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "152",
-                    "armeabi-v7a": "152",
-                    "x86-64": "152",
-                    "x86": "152"
+                    "arm64-v8a": "153",
+                    "armeabi-v7a": "153",
+                    "x86-64": "153",
+                    "x86": "153"
                 },
                 "force_bundle": true
             },
@@ -972,7 +972,7 @@
                 "package": "com.imo.android.imoim",
                 "search_term": "imo",
                 "stable": [
-                    "2026.09.1051"
+                    "2026.10.1021"
                 ],
                 "beta": [],
                 "strip": true,
@@ -983,10 +983,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "26091051",
-                    "armeabi-v7a": "26091051",
-                    "x86-64": "26091051",
-                    "x86": "26091051"
+                    "arm64-v8a": "26101021",
+                    "armeabi-v7a": "26101021",
+                    "x86-64": "26101021",
+                    "x86": "26101021"
                 },
                 "force_bundle": true
             },
@@ -1101,17 +1101,17 @@
                 "package": "com.keepa.mobile",
                 "search_term": "Keepa",
                 "stable": [
-                    "6.5.1"
+                    "6.7.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "57461",
-                    "armeabi-v7a": "57461",
-                    "x86-64": "57461",
-                    "x86": "57461"
+                    "arm64-v8a": "58741",
+                    "armeabi-v7a": "58741",
+                    "x86-64": "58741",
+                    "x86": "58741"
                 },
                 "force_bundle": true
             },
@@ -1131,17 +1131,17 @@
                 "package": "de.klassikradio.app",
                 "search_term": "Klassik Radio+",
                 "stable": [
-                    "p5.12.0"
+                    "p5.12.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "50138",
-                    "armeabi-v7a": "50138",
-                    "x86-64": "50138",
-                    "x86": "50138"
+                    "arm64-v8a": "50141",
+                    "armeabi-v7a": "50141",
+                    "x86-64": "50141",
+                    "x86": "50141"
                 },
                 "force_bundle": true
             },
@@ -1405,18 +1405,36 @@
                 "package": "com.musixmatch.android.lyrify",
                 "search_term": "Musixmatch",
                 "stable": [
-                    "8.4.2"
+                    "8.5.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "version_codes": {
-                    "arm64-v8a": "2026061901",
-                    "armeabi-v7a": "2026061901",
-                    "x86-64": "2026061901",
-                    "x86": "2026061901"
+                    "arm64-v8a": "2026102201",
+                    "armeabi-v7a": "2026102201",
+                    "x86-64": "2026102201",
+                    "x86": "2026102201"
                 },
                 "archive_id": "ZeNiX",
                 "options_override": {},
+                "force_bundle": true
+            },
+            "muviz-widgets": {
+                "package": "com.sparkine.widgets",
+                "search_term": "Muviz Widgets",
+                "stable": [
+                    "1.1.5.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "29",
+                    "armeabi-v7a": "29",
+                    "x86-64": "29",
+                    "x86": "29"
+                },
                 "force_bundle": true
             },
             "my-apk": {
@@ -1628,17 +1646,17 @@
                 "package": "com.withopal.opal",
                 "search_term": "Opal",
                 "stable": [
-                    "4.16.0"
+                    "4.17.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "4016000",
-                    "armeabi-v7a": "4016000",
-                    "x86-64": "4016000",
-                    "x86": "4016000"
+                    "arm64-v8a": "4017000",
+                    "armeabi-v7a": "4017000",
+                    "x86-64": "4017000",
+                    "x86": "4017000"
                 },
                 "force_bundle": true
             },
@@ -1646,17 +1664,17 @@
                 "package": "com.lbrc.PeriodCalendar",
                 "search_term": "Period Tracker and Calendar",
                 "stable": [
-                    "13.4.0"
+                    "13.4.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "21304000",
-                    "armeabi-v7a": "21304000",
-                    "x86-64": "21304000",
-                    "x86": "21304000"
+                    "arm64-v8a": "21304010",
+                    "armeabi-v7a": "21304010",
+                    "x86-64": "21304010",
+                    "x86": "21304010"
                 },
                 "force_bundle": true
             },
@@ -2045,17 +2063,17 @@
                 "package": "com.radiojavan.androidradio",
                 "search_term": "Radio Javan",
                 "stable": [
-                    "11.22.1"
+                    "11.23.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "467",
-                    "armeabi-v7a": "467",
-                    "x86-64": "467",
-                    "x86": "467"
+                    "arm64-v8a": "470",
+                    "armeabi-v7a": "470",
+                    "x86-64": "470",
+                    "x86": "470"
                 },
                 "force_bundle": true
             },
@@ -2207,17 +2225,17 @@
                 "package": "app.rubberbands.fit",
                 "search_term": "Rubber Bands",
                 "stable": [
-                    "3.14"
+                    "3.16"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "300",
-                    "armeabi-v7a": "300",
-                    "x86-64": "300",
-                    "x86": "300"
+                    "arm64-v8a": "302",
+                    "armeabi-v7a": "302",
+                    "x86-64": "302",
+                    "x86": "302"
                 },
                 "force_bundle": true
             },
@@ -2398,17 +2416,17 @@
                 "package": "com.thetrainline",
                 "search_term": "Trainline",
                 "stable": [
-                    "438.1.0.184284"
+                    "439.0.0.184323"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "1284284",
-                    "armeabi-v7a": "1284284",
-                    "x86-64": "1284284",
-                    "x86": "1284284"
+                    "arm64-v8a": "1284323",
+                    "armeabi-v7a": "1284323",
+                    "x86-64": "1284323",
+                    "x86": "1284323"
                 }
             },
             "transparent-clock-weather": {
@@ -2451,17 +2469,17 @@
                 "package": "com.youdao.hindict",
                 "search_term": "U Dictionary",
                 "stable": [
-                    "6.7.5"
+                    "6.7.6"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "399",
-                    "armeabi-v7a": "399",
-                    "x86-64": "399",
-                    "x86": "399"
+                    "arm64-v8a": "403",
+                    "armeabi-v7a": "403",
+                    "x86-64": "403",
+                    "x86": "403"
                 }
             },
             "uptcl": {
@@ -2503,17 +2521,17 @@
                 "package": "com.viber.voip",
                 "search_term": "Viber",
                 "stable": [
-                    "29.2.0.0"
+                    "29.3.1.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "1290200",
-                    "armeabi-v7a": "1290200",
-                    "x86-64": "1290200",
-                    "x86": "1290200"
+                    "arm64-v8a": "1290301",
+                    "armeabi-v7a": "1290301",
+                    "x86-64": "1290301",
+                    "x86": "1290301"
                 },
                 "force_bundle": true
             },
@@ -2521,17 +2539,17 @@
                 "package": "videoeditor.videomaker.videoeditorforyoutube",
                 "search_term": "Video Editor",
                 "stable": [
-                    "1.621.196"
+                    "1.630.199"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "196",
-                    "armeabi-v7a": "196",
-                    "x86-64": "196",
-                    "x86": "196"
+                    "arm64-v8a": "199",
+                    "armeabi-v7a": "199",
+                    "x86-64": "199",
+                    "x86": "199"
                 },
                 "force_bundle": true
             },
@@ -2605,17 +2623,17 @@
                 "package": "com.wallmaa.minimal.wallpapers",
                 "search_term": "Wallmaa",
                 "stable": [
-                    "1.0.1"
+                    "1.0.4"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "22",
-                    "armeabi-v7a": "22",
-                    "x86-64": "22",
-                    "x86": "22"
+                    "arm64-v8a": "25",
+                    "armeabi-v7a": "25",
+                    "x86-64": "25",
+                    "x86": "25"
                 },
                 "force_bundle": true
             },
@@ -2641,17 +2659,17 @@
                 "package": "com.watchit.vod",
                 "search_term": "WATCH IT",
                 "stable": [
-                    "5.26.2"
+                    "5.30.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "1028",
-                    "armeabi-v7a": "1028",
-                    "x86-64": "1028",
-                    "x86": "1028"
+                    "arm64-v8a": "1037",
+                    "armeabi-v7a": "1037",
+                    "x86-64": "1037",
+                    "x86": "1037"
                 },
                 "force_bundle": true
             },
