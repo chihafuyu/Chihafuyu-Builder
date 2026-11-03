@@ -8,6 +8,9 @@
     "Akash-Sriram": {
         "repo_url": "Akash-Sriram/morphe-google-photos"
     },
+    "amfakh": {
+        "repo_url": "amfakh/fakh-patches"
+    },
     "andrewliang25": {
         "repo_url": "andrewliang25/morphe-patches"
     },
@@ -109,6 +112,9 @@
     },
     "morphe": {
         "repo_url": "MorpheApp/morphe-patches"
+    },
+    "ImNoammm": {
+        "repo_url": "ImNoammm/Noams-Morphe-Patches"
     },
     "oxbow": {
         "repo_url": "aic0d3r/oxbow"

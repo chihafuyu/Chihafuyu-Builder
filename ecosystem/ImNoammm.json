@@ -1,0 +1,73 @@
+{
+    "ImNoammm": {
+        "apps": {
+            "block-blast": {
+                "package": "com.block.juggle",
+                "search_term": "Block Blast",
+                "stable": [
+                    "10.8.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Block online access": {
+                        "enabled": false
+                    },
+                    "Debug log": {
+                        "enabled": false
+                    },
+                    "Disable screen shake": {
+                        "enabled": false
+                    },
+                    "Drag speed": {
+                        "enabled": false
+                    },
+                    "Login days": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "chess": {
+                "package": "com.chess",
+                "search_term": "Chess.com",
+                "stable": [
+                    "4.10.18-googleplay"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Clone Chess.com": {
+                        "enabled": false
+                    }
+                }
+            },
+            "gboard": {
+                "package": "com.google.android.inputmethod.latin",
+                "search_term": "Gboard",
+                "stable": [
+                    "18.2.4.969776716-release-arm64-v8a"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_arch": "arm64-v8a",
+                "force_bundle": true
+            },
+            "geocaching": {
+                "package": "com.groundspeak.geocaching.intro",
+                "search_term": "Geocaching",
+                "stable": [
+                    "10.21.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

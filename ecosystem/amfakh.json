@@ -1,0 +1,198 @@
+{
+    "amfakh": {
+        "apps": {
+            "bardi-smart-home": {
+                "package": "com.bardi.smart.home",
+                "search_term": "BARDI Smart Home",
+                "stable": [
+                    "1.5.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "49",
+                    "armeabi-v7a": "49",
+                    "x86": "49",
+                    "x86-64": "49"
+                },
+                "force_bundle": true
+            },
+            "dodo-music": {
+                "package": "com.dundunstudio.autoplay",
+                "search_term": "DoDo Music",
+                "stable": [
+                    "2.0.14"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "253",
+                    "armeabi-v7a": "253",
+                    "x86": "253",
+                    "x86-64": "253"
+                },
+                "force_bundle": true
+            },
+            "github": {
+                "package": "com.github.android",
+                "search_term": "GitHub",
+                "stable": [
+                    "1.282.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "idn": {
+                "package": "com.idntimes.idntimes",
+                "search_term": "IDN",
+                "stable": [
+                    "6.69.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "2303",
+                    "armeabi-v7a": "2303",
+                    "x86": "2303",
+                    "x86-64": "2303"
+                },
+                "force_bundle": true
+            },
+            "kompas": {
+                "package": "com.ertanto.kompas.official",
+                "search_term": "KOMPAS.com",
+                "stable": [
+                    "9.8.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "9008004",
+                    "armeabi-v7a": "9008004",
+                    "x86": "9008004",
+                    "x86-64": "9008004"
+                },
+                "force_bundle": true
+            },
+            "linkedin": {
+                "package": "com.linkedin.android",
+                "search_term": "LinkedIn",
+                "stable": [
+                    "4.1.1267"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    },
+                    "Material You": {
+                        "enabled": false
+                    },
+                    "Remove gaps and dividers": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "radio-indonesia": {
+                "package": "com.appmind.radios.id",
+                "search_term": "Radio Indonesia",
+                "stable": [
+                    "4.2.30"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "smart-life": {
+                "package": "com.tuya.smartlife",
+                "search_term": "Smart Life",
+                "stable": [
+                    "7.12.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "877",
+                    "armeabi-v7a": "877",
+                    "x86": "877",
+                    "x86-64": "877"
+                },
+                "force_bundle": true
+            },
+            "tuya-smart": {
+                "package": "com.tuya.smart",
+                "search_term": "Tuya Smart",
+                "stable": [
+                    "7.12.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "870",
+                    "armeabi-v7a": "870",
+                    "x86": "870",
+                    "x86-64": "870"
+                },
+                "force_bundle": true
+            },
+            "windy": {
+                "package": "com.windyty.android",
+                "search_term": "Windy",
+                "stable": [
+                    "51.3.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "5103023",
+                    "armeabi-v7a": "5103023",
+                    "x86": "5103023",
+                    "x86-64": "5103023"
+                },
+                "force_bundle": true
+            }
+        }
+    }
+}

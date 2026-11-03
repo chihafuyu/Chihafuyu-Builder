@@ -1,0 +1,171 @@
+---
+name: 🧙‍♂️ ImNoammm Ecosystem Patcher
+
+"on":
+  workflow_dispatch:
+    inputs:
+      app_block_blast:
+        description: 'Patch Block Blast'
+        required: true
+        type: boolean
+        default: true
+      app_chess:
+        description: 'Patch Chess.com'
+        required: true
+        type: boolean
+        default: true
+      app_gboard:
+        description: 'Patch Gboard'
+        required: true
+        type: boolean
+        default: false
+      app_geocaching:
+        description: 'Patch Geocaching'
+        required: true
+        type: boolean
+        default: false
+      architecture:
+        description: 'Target Architecture'
+        required: true
+        type: choice
+        default: 'arm64-v8a'
+        options: [arm64-v8a, armeabi-v7a, x86_64, x86, universal]
+      version_selection:
+        description: 'App Version Selection'
+        required: true
+        type: choice
+        default: 'Latest Recommended'
+        options: [Latest Recommended, Beta, Custom]
+      custom_version:
+        description: 'Custom App Version'
+        required: false
+        default: ''
+      download_source:
+        description: 'Download Source'
+        required: true
+        type: choice
+        default: 'default'
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+      continue_on_error:
+        description: 'Debug: Continue on patch error'
+        required: true
+        type: boolean
+        default: false
+      cli_track:
+        description: 'Morphe CLI Track'
+        required: true
+        type: choice
+        default: 'Stable'
+        options: [Stable, Pre-release, Custom]
+      custom_cli_version:
+        description: 'Custom CLI Version (e.g. v1.16.0)'
+        required: false
+        default: ''
+      patches_track:
+        description: 'Ecosystem Patches Track'
+        required: true
+        type: choice
+        default: 'Stable'
+        options: [Stable, Pre-release, Custom Local]
+      upload_github_release:
+        description: 'Upload to GitHub Release'
+        required: true
+        type: boolean
+        default: true
+      upload_huggingface:
+        description: 'Upload to HuggingFace Dataset'
+        required: false
+        type: boolean
+        default: false
+      send_to_telegram:
+        description: 'Send to Telegram'
+        required: true
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  prepare-apps:
+    runs-on: ubuntu-latest
+    outputs:
+      selected: ${{ steps.build-list.outputs.apps }}
+    env:
+      APP_BLOCK_BLAST: ${{ inputs.app_block_blast }}
+      APP_CHESS: ${{ inputs.app_chess }}
+      APP_GBOARD: ${{ inputs.app_gboard }}
+      APP_GEOCACHING: ${{ inputs.app_geocaching }}
+    steps:
+      - id: build-list
+        run: |
+          set -euo pipefail
+          LIST=""
+          if [[ "$APP_BLOCK_BLAST" == "true" ]]; then
+            LIST="$LIST,block-blast"
+          fi
+          if [[ "$APP_CHESS" == "true" ]]; then
+            LIST="$LIST,chess"
+          fi
+          if [[ "$APP_GBOARD" == "true" ]]; then
+            LIST="$LIST,gboard"
+          fi
+          if [[ "$APP_GEOCACHING" == "true" ]]; then
+            LIST="$LIST,geocaching"
+          fi
+          LIST="${LIST#,}"
+          if [[ -z "$LIST" ]]; then
+            echo "::error::No applications selected!"
+            exit 1
+          fi
+          {
+            echo "apps<<EOF"
+            echo "$LIST"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+  call-patcher:
+    needs: prepare-apps
+    permissions:
+      contents: write
+    uses: ./.github/workflows/core-engine.yml
+    secrets:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+      KEYSTORE_SIGNER_NAME: ${{ secrets.KEYSTORE_SIGNER_NAME }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      VT_API_KEY: ${{ secrets.VT_API_KEY }}
+      HA_API_KEY: ${{ secrets.HA_API_KEY }}
+      MD_API_KEY: ${{ secrets.MD_API_KEY }}
+      PLAY_EMAIL: ${{ secrets.PLAY_EMAIL }}
+      PLAY_AAS_TOKEN: ${{ secrets.PLAY_AAS_TOKEN }}
+      DEVICE_PROPERTIES_B64: ${{ secrets.DEVICE_PROPERTIES_B64 }}
+      API_ID: ${{ secrets.API_ID }}
+      API_HASH: ${{ secrets.API_HASH }}
+      SESSION_STRING: ${{ secrets.SESSION_STRING }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
+    with:
+      ecosystem: "ImNoammm"
+      apps: ${{ needs.prepare-apps.outputs.selected }}
+      architecture: ${{ inputs.architecture }}
+      version_selection: ${{ inputs.version_selection }}
+      custom_version: ${{ inputs.custom_version }}
+      download_source: ${{ inputs.download_source }}
+      continue_on_error: ${{ inputs.continue_on_error }}
+      cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
+      patches_track: ${{ inputs.patches_track }}
+      repo_url: "ImNoammm/Noams-Morphe-Patches"
+      custom_patch_filename: "ImNoammm-custom.mpp"
+      upload_github_release: ${{ inputs.upload_github_release }}
+      upload_huggingface: ${{ inputs.upload_huggingface }}
+      send_to_telegram: ${{ inputs.send_to_telegram }}
+      release_tag_prefix: "ImNoammm"
