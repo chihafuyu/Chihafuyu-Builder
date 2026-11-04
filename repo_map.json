@@ -107,8 +107,14 @@
     "legendsciber": {
         "repo_url": "legendsciber/morphe-patches"
     },
+    "lokesh-sparrow": {
+        "repo_url": "lokesh-sparrow/loki-patches"
+    },
     "MiguelNinja19": {
         "repo_url": "MiguelNinja19/miguel-morphe-patches"
+    },
+    "Mlkem": {
+        "repo_url": "Mlkem/Morphe"
     },
     "morphe": {
         "repo_url": "MorpheApp/morphe-patches"
@@ -172,6 +178,9 @@
             "SysAdminDoc/HushThreads",
             "SysAdminDoc/HushTumblr"
         ]
+    },
+    "toidicakhia": {
+        "repo_url": "toidicakhia/morphe-app-patches"
     },
     "venusisjaded": {
         "repo_url": "VenusIsJaded/Venus-Patches"

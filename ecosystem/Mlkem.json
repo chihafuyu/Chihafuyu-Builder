@@ -1,0 +1,72 @@
+{
+    "Mlkem": {
+        "apps": {
+            "music-league": {
+                "package": "com.musicleague.app",
+                "search_term": "Music League",
+                "stable": [
+                    "1.4.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Hermes hide ad promo surfaces": {
+                        "enabled": false
+                    }
+                }
+            },
+            "pushpress-members": {
+                "package": "com.pushpress.memberportal",
+                "search_term": "PushPress Members",
+                "stable": [
+                    "3.42.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "walmart-canada": {
+                "package": "ca.walmart.ecommerceapp",
+                "search_term": "Walmart Canada",
+                "stable": [
+                    "26.31"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Remove Shop — Canada": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "wongnai": {
+                "package": "com.wongnai.android",
+                "search_term": "Wongnai",
+                "stable": [
+                    "12.11.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "zoom-earth": {
+                "package": "com.neave.zoomearth",
+                "search_term": "Zoom Earth",
+                "stable": [
+                    "6.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            }
+        }
+    }
+}

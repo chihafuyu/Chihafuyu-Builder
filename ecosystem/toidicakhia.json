@@ -1,0 +1,126 @@
+{
+    "toidicakhia": {
+        "apps": {
+            "1-1-1-1": {
+                "package": "com.cloudflare.onedotonedotonedotone",
+                "search_term": "1.1.1.1",
+                "stable": [
+                    "6.38.11"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Disable SSL Pinning": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "5703",
+                    "armeabi-v7a": "5703",
+                    "x86-64": "5703",
+                    "x86": "5703"
+                },
+                "force_bundle": true
+            },
+            "ezviz": {
+                "package": "com.ezviz",
+                "search_term": "EZVIZ",
+                "stable": [
+                    "7.6.1.0824"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Bypass SSL pinning": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "1961",
+                    "armeabi-v7a": "1961",
+                    "x86-64": "1961",
+                    "x86": "1961"
+                },
+                "force_bundle": true
+            },
+            "http-sniffer": {
+                "package": "com.anetcapture.mock",
+                "search_term": "HTTP Sniffer",
+                "stable": [
+                    "2.5.2-ad_mob"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "170",
+                    "armeabi-v7a": "170",
+                    "x86-64": "170",
+                    "x86": "170"
+                },
+                "force_bundle": true
+            },
+            "netmonster": {
+                "package": "cz.mroczis.netmonster",
+                "search_term": "NetMonster",
+                "stable": [
+                    "4.0.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "277",
+                    "armeabi-v7a": "277",
+                    "x86-64": "277",
+                    "x86": "277"
+                },
+                "force_bundle": true
+            },
+            "terabox": {
+                "package": "com.dubox.drive",
+                "search_term": "TeraBox",
+                "stable": [
+                    "4.27.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Clone app": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "702",
+                    "armeabi-v7a": "702",
+                    "x86-64": "702",
+                    "x86": "702"
+                },
+                "force_bundle": true
+            },
+            "universal-copy": {
+                "package": "com.camel.corp.universalcopy",
+                "search_term": "Universal Copy",
+                "stable": [
+                    "7.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "104",
+                    "armeabi-v7a": "104",
+                    "x86-64": "104",
+                    "x86": "104"
+                },
+                "force_bundle": true
+            }
+        }
+    }
+}

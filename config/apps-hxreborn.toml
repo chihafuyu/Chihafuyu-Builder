@@ -69,7 +69,7 @@
 "lagguy-wallpapers" = false
 "led-blinker" = false
 "lingodeer" = false
-"magic-earth" = false
+"magic-earth" = true
 "may-beautiful-bullet-journal" = false
 "mbc-shahid" = false
 "medicneet" = false
@@ -79,10 +79,10 @@
 "moon-reader" = true
 "moviebox" = false
 "moviebox-tv" = false
-"musclewiki" = true
+"musclewiki" = false
 "musicolet" = true
 "musixmatch" = true
-"muviz-widgets" = true
+"muviz-widgets" = false
 "my-apk" = false
 "mymoveset" = false
 "myscript-math" = false
@@ -114,7 +114,7 @@
 "proton-vpn" = false
 "psiphon" = true
 "public" = false
-"pydroid-3" = false
+"pydroid-3" = true
 "qr-barcode-scanner" = false
 "quranify" = true
 "quick-cursor" = false

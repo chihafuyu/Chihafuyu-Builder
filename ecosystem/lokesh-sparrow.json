@@ -1,0 +1,27 @@
+{
+    "lokesh-sparrow": {
+        "apps": {
+            "linkedin": {
+                "package": "com.linkedin.android",
+                "search_term": "LinkedIn",
+                "stable": [
+                    "4.1.1261"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    },
+                    "Material You": {
+                        "enabled": false
+                    },
+                    "Remove gaps and dividers": {
+                        "enabled": false
+                    }
+                }
+            }
+        }
+    }
+}
