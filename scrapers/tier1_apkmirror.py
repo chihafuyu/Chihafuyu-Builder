@@ -183,11 +183,7 @@ class ApkmirrorScraper(BaseScraper):
         return list(dict.fromkeys(re.findall(r"\b\d{6,}\b", text)))
 
     def _safe_get(self, ctx: Context, url: str) -> Any | None:
-        """Fetches page source ensuring FlareSolverr resolves WAF challenges.
-
-        Logs each attempt with elapsed seconds so long-running Cloudflare
-        challenges are visible in CI instead of appearing as a hang.
-        """
+        """Fetches page source ensuring FlareSolverr resolves WAF challenges."""
         ctx.limiter.wait()
         time.sleep(random.uniform(2.5, 4.5))
 
@@ -597,6 +593,8 @@ class ApkmirrorScraper(BaseScraper):
 
         link = row.find("a", class_="accent_color")
         if not link:
+            link = row.find("a", href=re.compile(r"-release/"))
+        if not link:
             return None
 
         self._log_variant_codes(ctx, row, ver_code, is_bundle)
@@ -627,6 +625,8 @@ class ApkmirrorScraper(BaseScraper):
             }
             for row in rows:
                 link = row.find("a", class_="accent_color")
+                if not link:
+                    link = row.find("a", href=re.compile(r"-release/"))
                 if not link:
                     continue
 
