@@ -23,6 +23,9 @@
                     },
                     "Disable Play Store updates": {
                         "enabled": true
+                    },
+                    "GmsCore support": {
+                        "enabled": false
                     }
                 }
             }

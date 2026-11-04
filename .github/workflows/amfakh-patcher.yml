@@ -54,6 +54,16 @@ name: 🕌 Amfakh Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_cnn_indonesia:
+        description: 'Patch cnn-indonesia'
+        required: true
+        type: boolean
+        default: true
+      app_detikcom:
+        description: 'Patch detikcom'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -137,6 +147,8 @@ jobs:
       APP_SMART_LIFE: ${{ inputs.app_smart_life }}
       APP_TUYA_SMART: ${{ inputs.app_tuya_smart }}
       APP_WINDY: ${{ inputs.app_windy }}
+      APP_CNN_INDONESIA: ${{ inputs.app_cnn_indonesia }}
+      APP_DETIKCOM: ${{ inputs.app_detikcom }}
     steps:
       - id: build-list
         run: |
@@ -171,6 +183,12 @@ jobs:
           fi
           if [[ "$APP_WINDY" == "true" ]]; then
             LIST="$LIST,windy"
+          fi
+          if [[ "$APP_CNN_INDONESIA" == "true" ]]; then
+            LIST="$LIST,cnn-indonesia"
+          fi
+          if [[ "$APP_DETIKCOM" == "true" ]]; then
+            LIST="$LIST,detikcom"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

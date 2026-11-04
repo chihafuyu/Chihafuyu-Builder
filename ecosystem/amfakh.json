@@ -23,6 +23,40 @@
                 },
                 "force_bundle": true
             },
+            "cnn-indonesia": {
+                "package": "com.cnn.indonesia",
+                "search_term": "CNN Indonesia",
+                "stable": [
+                    "2.50.7"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "209",
+                    "armeabi-v7a": "209",
+                    "x86-64": "209",
+                    "x86": "209"
+                }
+            },
+            "detikcom": {
+                "package": "org.detikcom.rss",
+                "search_term": "detikcom",
+                "stable": [
+                    "7.14.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "464",
+                    "armeabi-v7a": "464",
+                    "x86-64": "464",
+                    "x86": "464"
+                }
+            },
             "dodo-music": {
                 "package": "com.dundunstudio.autoplay",
                 "search_term": "DoDo Music",

@@ -23,6 +23,9 @@
                     },
                     "Disable Play Store updates": {
                         "enabled": true
+                    },
+                    "GmsCore support": {
+                        "enabled": false
                     }
                 }
             },
@@ -30,13 +33,14 @@
                 "package": "com.instagram.android",
                 "search_term": "Instagram",
                 "stable": [
-                    "453.0.0.57.79"
+                    "454.0.0.54.77"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "385914557",
-                    "armeabi-v7a": "385914556",
-                    "x86": "385914558"
+                    "arm64-v8a": "386014758",
+                    "armeabi-v7a": "386014757",
+                    "x86": "386014759",
+                    "x86-64": "386014760"
                 },
                 "force_bundle": true,
                 "strip": true,
@@ -63,7 +67,7 @@
                 "package": "com.facebook.orca",
                 "search_term": "Messenger",
                 "stable": [
-                    "585.0.0.53.94"
+                    "586.0.0.55.92"
                 ],
                 "version_codes": {
                     "arm64-v8a": "347015062"

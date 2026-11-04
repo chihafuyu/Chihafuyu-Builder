@@ -44,6 +44,7 @@
 "depthpix" = false
 "desh-telugu-keyboard" = false
 "devcheck" = true
+"duolingo" = true
 "dwg-fastview" = false
 "echo-equalizer" = false
 "echogram" = false
@@ -78,6 +79,7 @@
 "moon-reader" = true
 "moviebox" = false
 "moviebox-tv" = false
+"musclewiki" = true
 "musicolet" = true
 "musixmatch" = true
 "muviz-widgets" = true
@@ -93,6 +95,7 @@
 "notesnook" = true
 "one4home-launcher" = false
 "opal" = false
+"patreon" = true
 "period-tracker-and-calendar" = false
 "perplexity" = false
 "photo-editor-pro" = true

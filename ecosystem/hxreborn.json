@@ -769,6 +769,34 @@
                 },
                 "force_bundle": true
             },
+            "duolingo": {
+                "package": "com.duolingo",
+                "search_term": "Duolingo",
+                "stable": [
+                    "6.104.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Disable dynamic app icon": {
+                        "enabled": false
+                    },
+                    "Enable debug mode": {
+                        "enabled": false
+                    },
+                    "Unlimited RampUp time": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "2493",
+                    "armeabi-v7a": "2493",
+                    "x86-64": "2493",
+                    "x86": "2493"
+                },
+                "force_bundle": true
+            },
             "dwg-fastview": {
                 "package": "com.gstarmc.android",
                 "search_term": "DWG FastView",
@@ -1383,6 +1411,24 @@
                     "x86": "50040018"
                 }
             },
+            "musclewiki": {
+                "package": "com.musclewiki.macro",
+                "search_term": "MuscleWiki",
+                "stable": [
+                    "3.2.7"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "327001",
+                    "armeabi-v7a": "327001",
+                    "x86-64": "327001",
+                    "x86": "327001"
+                },
+                "force_bundle": true
+            },
             "musicolet": {
                 "package": "in.krosbits.musicolet",
                 "search_term": "Musicolet",
@@ -1657,6 +1703,28 @@
                     "armeabi-v7a": "4017000",
                     "x86-64": "4017000",
                     "x86": "4017000"
+                },
+                "force_bundle": true
+            },
+            "patreon": {
+                "package": "com.patreon.android",
+                "search_term": "Patreon",
+                "stable": [
+                    "126.44.0.13"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Hide navigation buttons": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "244013",
+                    "armeabi-v7a": "244013",
+                    "x86-64": "244013",
+                    "x86": "244013"
                 },
                 "force_bundle": true
             },
@@ -2045,17 +2113,17 @@
                 "package": "com.mchutov.Quranify",
                 "search_term": "Quranify",
                 "stable": [
-                    "2.2.91"
+                    "2.3.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "82",
-                    "armeabi-v7a": "82",
-                    "x86-64": "82",
-                    "x86": "82"
+                    "arm64-v8a": "84",
+                    "armeabi-v7a": "84",
+                    "x86-64": "84",
+                    "x86": "84"
                 },
                 "force_bundle": true
             },
@@ -2526,7 +2594,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "1290301",
                     "armeabi-v7a": "1290301",
