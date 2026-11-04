@@ -15,10 +15,10 @@
                 "force_bundle": false,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Custom Morphe branding": {
+                    "Official package name": {
                         "enabled": false
                     },
-                    "Official package name": {
+                    "Custom branding": {
                         "enabled": false
                     }
                 }
