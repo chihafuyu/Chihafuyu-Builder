@@ -73,7 +73,7 @@
                 "version_codes": {
                     "arm64-v8a": "31000010",
                     "armeabi-v7a": "31000010",
-                    "x86-64": "31000010",
+                    "x86_64": "31000010",
                     "x86": "31000010"
                 },
                 "force_bundle": true
@@ -136,9 +136,6 @@
                     "17.37.3"
                 ],
                 "beta": [],
-                "version_codes": {
-                    "arm64-v8a": "17370393"
-                },
                 "force_bundle": true,
                 "strip": true,
                 "archive_id": "ZeNiX",

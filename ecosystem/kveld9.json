@@ -58,10 +58,6 @@
                     "47.6.3"
                 ],
                 "beta": [],
-                "version_codes": {
-                    "universal": "2024701040",
-                    "arm64-v8a": "2024701040"
-                },
                 "strip": true,
                 "force_bundle": false,
                 "archive_id": "ZeNiX",

@@ -40,7 +40,7 @@
                     "arm64-v8a": "386014758",
                     "armeabi-v7a": "386014757",
                     "x86": "386014759",
-                    "x86-64": "386014760"
+                    "x86_64": "386014760"
                 },
                 "force_bundle": true,
                 "strip": true,
@@ -69,9 +69,6 @@
                 "stable": [
                     "586.0.0.55.92"
                 ],
-                "version_codes": {
-                    "arm64-v8a": "347015062"
-                },
                 "force_bundle": false,
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -138,7 +135,7 @@
                     "arm64-v8a": "2024705030",
                     "armeabi-v7a": "2024705030",
                     "x86": "2024705030",
-                    "x86-64": "2024705030"
+                    "x86_64": "2024705030"
                 },
                 "force_bundle": true
             },
@@ -146,11 +143,11 @@
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
                 "stable": [
-                    "14.42.0"
+                    "14.43.0"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "14428010"
+                    "arm64-v8a": "14438020"
                 },
                 "strip": true,
                 "force_bundle": false,
@@ -225,9 +222,6 @@
                     "454.0.0.54.79"
                 ],
                 "beta": [],
-                "version_codes": {
-                    "arm64-v8a": "512207626"
-                },
                 "strip": true,
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
@@ -321,21 +315,21 @@
                     "arm64-v8a": "2024706030",
                     "armeabi-v7a": "2024706030",
                     "x86": "2024706030",
-                    "x86-64": "2024706030"
+                    "x86_64": "2024706030"
                 }
             },
             "tumblr": {
                 "package": "com.tumblr",
                 "search_term": "Tumblr",
                 "stable": [
-                    "46.9.1.100"
+                    "47.0.0.108"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "1460901100",
-                    "armeabi-v7a": "1460901100",
-                    "x86": "1460901100",
-                    "x86-64": "1460901100"
+                    "arm64-v8a": "1470000108",
+                    "armeabi-v7a": "1470000108",
+                    "x86": "1470000108",
+                    "x86_64": "1470000108"
                 },
                 "strip": true,
                 "force_bundle": true,

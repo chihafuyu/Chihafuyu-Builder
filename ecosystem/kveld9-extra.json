@@ -8,9 +8,6 @@
                     "19.9.0"
                 ],
                 "beta": [],
-                "version_codes": {
-                    "universal": "19701600"
-                },
                 "force_bundle": false,
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -36,9 +33,6 @@
                     "3.2.2"
                 ],
                 "beta": [],
-                "version_codes": {
-                    "arm64-v8a": "3308730"
-                },
                 "strip": true,
                 "force_arch": "arm64-v8a",
                 "force_bundle": true,
@@ -99,9 +93,6 @@
                     "5.28.6"
                 ],
                 "beta": [],
-                "version_codes": {
-                    "universal": "318"
-                },
                 "strip": true,
                 "force_arch": "universal",
                 "archive_id": "ZeNiX",
@@ -121,9 +112,6 @@
                     "github"
                 ],
                 "force_arch": "universal",
-                "version_codes": {
-                    "universal": "12L+"
-                },
                 "options_override": {}
             },
             "sube": {
