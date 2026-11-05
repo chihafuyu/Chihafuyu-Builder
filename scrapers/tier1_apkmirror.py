@@ -33,6 +33,23 @@ def _short_url(url: str) -> str:
     return url[: URL_LOG_WIDTH - 3] + "..."
 
 
+def _resolve_ver_code(app_data: dict, arch: str) -> str | None:
+    """Returns the target version code, tolerating separator variants.
+
+    Patches-list sources use mixed separators (X86_64 vs x86-64) while
+    the workflow inputs and scraper lookups stay on the underscore form.
+    """
+    version_codes = app_data.get("version_codes") or {}
+    if not isinstance(version_codes, dict):
+        return None
+    candidates = (arch, arch.replace("_", "-"), arch.replace("-", "_"))
+    for key in candidates:
+        value = version_codes.get(key)
+        if value is not None:
+            return str(value)
+    return None
+
+
 @dataclass
 class _DummyResponse:
     """Mock requests.Response object for FlareSolverr HTML returns."""
@@ -494,7 +511,14 @@ class ApkmirrorScraper(BaseScraper):
         text = text.lower()
         target_arch = target_arch.lower()
 
-        if target_arch in text or "universal" in text or "noarch" in text:
+        target_forms = {
+            target_arch,
+            target_arch.replace("_", "-"),
+            target_arch.replace("-", "_"),
+        }
+        if any(form in text for form in target_forms):
+            return True
+        if "universal" in text or "noarch" in text:
             return True
 
         arch_list = (
@@ -703,7 +727,7 @@ class ApkmirrorScraper(BaseScraper):
     def scrape(self, ctx: Context) -> str | None:
         """Executes the scraping process from APKMirror."""
         print(f"[TIER 1] APKMirror: v{ctx.target_ver}", flush=True)
-        ver_code = ctx.app_data.get("version_codes", {}).get(ctx.arch)
+        ver_code = _resolve_ver_code(ctx.app_data, ctx.arch)
 
         self._log_target_info(ctx, ver_code)
 

@@ -44,6 +44,19 @@ TOML_HEADER = (
 # 16 apps triggers the checkbox-to-text migration and TOML generation.
 MAX_YAML_INPUTS = 15
 
+# Maps lowercased patches-list versionCodes keys to the canonical arch
+# identifiers used by the workflow inputs and scraper lookups.
+_ARCH_CANONICAL_FORM = {
+    "arm64_v8a": "arm64-v8a",
+    "arm64-v8a": "arm64-v8a",
+    "armeabi_v7a": "armeabi-v7a",
+    "armeabi-v7a": "armeabi-v7a",
+    "x86_64": "x86_64",
+    "x86-64": "x86_64",
+    "x86": "x86",
+    "universal": "universal",
+}
+
 
 def _get_repo_root() -> str:
     """Returns the absolute path to the repository root."""
@@ -275,12 +288,20 @@ def fetch_patches_list(
 
 
 def _normalize_vcodes(raw_vcodes):
-    """Normalize versionCodes and convert underscores to hyphens."""
+    """Normalize versionCodes keys to the scraper's canonical arch form.
+
+    Patches-list sources mix separators (ARM64_V8A, X86_64) while the
+    workflow inputs and scraper lookups use arm64-v8a and x86_64.
+    """
     if isinstance(raw_vcodes, dict):
-        return {
-            str(k).lower().replace("_", "-"): str(v)
-            for k, v in raw_vcodes.items() if v is not None
-        }
+        result = {}
+        for key, val in raw_vcodes.items():
+            if val is None:
+                continue
+            normalized = str(key).lower()
+            canonical = _ARCH_CANONICAL_FORM.get(normalized, normalized)
+            result[canonical] = str(val)
+        return result
     if isinstance(raw_vcodes, list):
         valid = [v for v in raw_vcodes if v is not None]
         if valid:
