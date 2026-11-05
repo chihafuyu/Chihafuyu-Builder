@@ -63,7 +63,10 @@ def load_config(ecosystem_name: str) -> dict[str, Any]:
 def download_apk(ctx: Context, args: Any) -> str | None:
     """Downloads target APK via fallback sources or primary scraper."""
     if not ctx.target_ver or ctx.target_ver.lower() == "any":
-        print(f"[ERROR] No concrete version defined ({ctx.target_ver!r}). Skipping.")
+        print(
+            f"[INFO] '{ctx.pkg}' resolves to 'Any'. Skipping (requires explicit version).",
+            flush=True,
+        )
         return None
 
     os.makedirs(ctx.pkg_dir, exist_ok=True)
@@ -348,7 +351,11 @@ def _generate_options_json(
     ]
     res = run_java_tool(cmd, tag=f"options-create ({app_name})")
 
-    if res is not None and res.returncode != 0:
+    if res is None:
+        print(f"[ERROR] options-create timed out for {app_name}.")
+        return None
+
+    if res.returncode != 0:
         err_out = (res.stderr or res.stdout or "").strip()[:1000]
         print(f"[WARN] CLI options-create failed (exit {res.returncode}): {err_out}")
 
@@ -381,6 +388,10 @@ def _resolve_target_version(app_data: dict, args: Any, custom_ver: str) -> str:
         else:
             stable_list = app_data.get("stable") or [t_ver]
             t_ver = stable_list[0] if stable_list else t_ver
+
+    # Sanitize spaces to prevent awkward filenames (e.g. "351.11 - Stable")
+    if t_ver and " " in t_ver:
+        t_ver = t_ver.replace(" ", "_")
 
     return t_ver
 

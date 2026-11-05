@@ -14,6 +14,26 @@ name: 🧩 Riky Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_capcut:
+        description: 'Patch capcut'
+        required: true
+        type: boolean
+        default: true
+      app_komoot:
+        description: 'Patch komoot'
+        required: true
+        type: boolean
+        default: true
+      app_tramonto_alba_phototime:
+        description: 'Patch tramonto-alba-phototime'
+        required: true
+        type: boolean
+        default: true
+      app_vn:
+        description: 'Patch vn'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -84,6 +104,10 @@ jobs:
     env:
       APP_3BMETEO: ${{ inputs.app_3bmeteo }}
       APP_ELECTRON: ${{ inputs.app_electron }}
+      APP_CAPCUT: ${{ inputs.app_capcut }}
+      APP_KOMOOT: ${{ inputs.app_komoot }}
+      APP_TRAMONTO_ALBA_PHOTOTIME: ${{ inputs.app_tramonto_alba_phototime }}
+      APP_VN: ${{ inputs.app_vn }}
     steps:
       - id: build-list
         run: |
@@ -94,6 +118,18 @@ jobs:
           fi
           if [[ "$APP_ELECTRON" == "true" ]]; then
             LIST="$LIST,electron"
+          fi
+          if [[ "$APP_CAPCUT" == "true" ]]; then
+            LIST="$LIST,capcut"
+          fi
+          if [[ "$APP_KOMOOT" == "true" ]]; then
+            LIST="$LIST,komoot"
+          fi
+          if [[ "$APP_TRAMONTO_ALBA_PHOTOTIME" == "true" ]]; then
+            LIST="$LIST,tramonto-alba-phototime"
+          fi
+          if [[ "$APP_VN" == "true" ]]; then
+            LIST="$LIST,vn"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
