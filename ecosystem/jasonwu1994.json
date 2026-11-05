@@ -7,9 +7,6 @@
                 "stable": [
                     "18.5.4.993608717-release-arm64-v8a"
                 ],
-                "version_codes": {
-                    "arm64-v8a": "176049702"
-                },
                 "beta": [],
                 "strip": true,
                 "force_arch": "arm64-v8a",

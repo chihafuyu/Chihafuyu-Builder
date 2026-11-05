@@ -8,9 +8,6 @@
                     "454.0.0.54.79"
                 ],
                 "beta": [],
-                "version_codes": {
-                    "arm64-v8a": "512207626"
-                },
                 "strip": true,
                 "force_bundle": true,
                 "archive_id": "ZeNiX",

@@ -10,10 +10,6 @@
                 "beta": [
                     "2026.44.0"
                 ],
-                "version_codes": {
-                    "universal": "2644081",
-                    "arm64-v8a": "2644081"
-                },
                 "strip": true,
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
@@ -35,9 +31,6 @@
                 "beta": [
                     "21.44.528-BETA"
                 ],
-                "version_codes": {
-                    "universal": "1561310187"
-                },
                 "strip": true,
                 "force_bundle": false,
                 "archive_id": "ZeNiX",
@@ -56,9 +49,6 @@
                 "beta": [
                     "9.44.52"
                 ],
-                "version_codes": {
-                    "arm64-v8a": "94452240"
-                },
                 "strip": true,
                 "force_bundle": false,
                 "archive_id": "ZeNiX",

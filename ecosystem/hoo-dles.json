@@ -11,7 +11,7 @@
                 "version_codes": {
                     "arm64-v8a": "42220003",
                     "armeabi-v7a": "42220003",
-                    "x86-64": "42220003",
+                    "x86_64": "42220003",
                     "x86": "42220003"
                 },
                 "strip": true,
@@ -237,11 +237,6 @@
                     "11.5.31"
                 ],
                 "beta": [],
-                "version_codes": {
-                    "universal": "711105310",
-                    "arm64-v8a": "711105310",
-                    "x86-64": "711105310"
-                },
                 "strip": true,
                 "force_bundle": true,
                 "archive_id": "ZeNiX",

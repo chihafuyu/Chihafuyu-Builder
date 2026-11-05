@@ -18,7 +18,7 @@
                 "version_codes": {
                     "arm64-v8a": "5703",
                     "armeabi-v7a": "5703",
-                    "x86-64": "5703",
+                    "x86_64": "5703",
                     "x86": "5703"
                 },
                 "force_bundle": true
@@ -40,7 +40,7 @@
                 "version_codes": {
                     "arm64-v8a": "1961",
                     "armeabi-v7a": "1961",
-                    "x86-64": "1961",
+                    "x86_64": "1961",
                     "x86": "1961"
                 },
                 "force_bundle": true
@@ -58,7 +58,7 @@
                 "version_codes": {
                     "arm64-v8a": "170",
                     "armeabi-v7a": "170",
-                    "x86-64": "170",
+                    "x86_64": "170",
                     "x86": "170"
                 },
                 "force_bundle": true
@@ -76,7 +76,7 @@
                 "version_codes": {
                     "arm64-v8a": "277",
                     "armeabi-v7a": "277",
-                    "x86-64": "277",
+                    "x86_64": "277",
                     "x86": "277"
                 },
                 "force_bundle": true
@@ -98,7 +98,7 @@
                 "version_codes": {
                     "arm64-v8a": "702",
                     "armeabi-v7a": "702",
-                    "x86-64": "702",
+                    "x86_64": "702",
                     "x86": "702"
                 },
                 "force_bundle": true
@@ -116,7 +116,7 @@
                 "version_codes": {
                     "arm64-v8a": "104",
                     "armeabi-v7a": "104",
-                    "x86-64": "104",
+                    "x86_64": "104",
                     "x86": "104"
                 },
                 "force_bundle": true

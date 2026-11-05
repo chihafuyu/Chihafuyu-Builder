@@ -123,6 +123,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "honor-weather": {
+                "package": "com.hihonor.android.totemweather",
+                "search_term": "Honor Weather",
+                "stable": [
+                    "18.1.2.311"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "lg-health": {
                 "package": "com.lge.lifetracker",
                 "search_term": "LG Health",
@@ -428,6 +439,17 @@
                 "search_term": "Samsung Notes",
                 "stable": [
                     "4.4.48.15"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-phone": {
+                "package": "com.samsung.android.dialer",
+                "search_term": "Samsung Phone",
+                "stable": [
+                    "16.3.52.1"
                 ],
                 "beta": [],
                 "strip": true,

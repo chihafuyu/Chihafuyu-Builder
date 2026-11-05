@@ -12,6 +12,7 @@
 "honor-notes" = false
 "honor-recorder" = false
 "honor-video-player" = false
+"honor-weather" = true
 "lg-health" = false
 "lg-quickmemo" = false
 "nothing-gallery" = false
@@ -39,6 +40,7 @@
 "samsung-music" = true
 "samsung-my-files" = false
 "samsung-notes" = false
+"samsung-phone" = true
 "samsung-photo-editor" = true
 "samsung-reminder" = false
 "samsung-video-player" = false

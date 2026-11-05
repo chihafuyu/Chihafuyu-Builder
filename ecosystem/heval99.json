@@ -5,7 +5,7 @@
                 "package": "com.scores365",
                 "search_term": "365Scores",
                 "stable": [
-                    "14.9.8"
+                    "15.0.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -19,10 +19,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "1498",
-                    "armeabi-v7a": "1498",
-                    "x86-64": "1498",
-                    "x86": "1498"
+                    "arm64-v8a": "1500",
+                    "armeabi-v7a": "1500",
+                    "x86_64": "1500",
+                    "x86": "1500"
                 },
                 "force_bundle": true
             },
@@ -39,7 +39,7 @@
                 "version_codes": {
                     "arm64-v8a": "905",
                     "armeabi-v7a": "905",
-                    "x86-64": "905",
+                    "x86_64": "905",
                     "x86": "905"
                 },
                 "force_bundle": true
@@ -57,7 +57,7 @@
                 "version_codes": {
                     "arm64-v8a": "297",
                     "armeabi-v7a": "297",
-                    "x86-64": "297",
+                    "x86_64": "297",
                     "x86": "297"
                 },
                 "force_bundle": true
@@ -75,7 +75,7 @@
                 "version_codes": {
                     "arm64-v8a": "70004221",
                     "armeabi-v7a": "70004221",
-                    "x86-64": "70004221",
+                    "x86_64": "70004221",
                     "x86": "70004221"
                 },
                 "force_bundle": true
@@ -93,7 +93,7 @@
                 "version_codes": {
                     "arm64-v8a": "200801029",
                     "armeabi-v7a": "200801029",
-                    "x86-64": "200801029",
+                    "x86_64": "200801029",
                     "x86": "200801029"
                 },
                 "force_bundle": true
@@ -111,7 +111,7 @@
                 "version_codes": {
                     "arm64-v8a": "10007111",
                     "armeabi-v7a": "10007111",
-                    "x86-64": "10007111",
+                    "x86_64": "10007111",
                     "x86": "10007111"
                 },
                 "force_bundle": true
@@ -120,17 +120,17 @@
                 "package": "com.resultadosfutbol.mobile",
                 "search_term": "BeSoccer",
                 "stable": [
-                    "6.7.0"
+                    "6.7.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "23005544",
-                    "armeabi-v7a": "23005544",
-                    "x86-64": "23005544",
-                    "x86": "23005544"
+                    "arm64-v8a": "23005545",
+                    "armeabi-v7a": "23005545",
+                    "x86_64": "23005545",
+                    "x86": "23005545"
                 },
                 "force_bundle": true
             },
@@ -147,7 +147,7 @@
                 "version_codes": {
                     "arm64-v8a": "74",
                     "armeabi-v7a": "74",
-                    "x86-64": "74",
+                    "x86_64": "74",
                     "x86": "74"
                 }
             },
@@ -168,7 +168,7 @@
                 "version_codes": {
                     "arm64-v8a": "54189",
                     "armeabi-v7a": "54189",
-                    "x86-64": "54189",
+                    "x86_64": "54189",
                     "x86": "54189"
                 },
                 "force_bundle": true
@@ -186,7 +186,7 @@
                 "version_codes": {
                     "arm64-v8a": "33215",
                     "armeabi-v7a": "33215",
-                    "x86-64": "33215",
+                    "x86_64": "33215",
                     "x86": "33215"
                 }
             },
@@ -203,7 +203,7 @@
                 "version_codes": {
                     "arm64-v8a": "48013",
                     "armeabi-v7a": "48013",
-                    "x86-64": "48013",
+                    "x86_64": "48013",
                     "x86": "48013"
                 },
                 "force_bundle": true
@@ -221,7 +221,7 @@
                 "version_codes": {
                     "arm64-v8a": "93",
                     "armeabi-v7a": "93",
-                    "x86-64": "93",
+                    "x86_64": "93",
                     "x86": "93"
                 }
             },
@@ -238,7 +238,7 @@
                 "version_codes": {
                     "arm64-v8a": "261",
                     "armeabi-v7a": "261",
-                    "x86-64": "261",
+                    "x86_64": "261",
                     "x86": "261"
                 },
                 "force_bundle": true
@@ -256,7 +256,7 @@
                 "version_codes": {
                     "arm64-v8a": "505",
                     "armeabi-v7a": "505",
-                    "x86-64": "505",
+                    "x86_64": "505",
                     "x86": "505"
                 },
                 "force_bundle": true
@@ -271,7 +271,7 @@
                 "version_codes": {
                     "arm64-v8a": "262",
                     "armeabi-v7a": "262",
-                    "x86-64": "262",
+                    "x86_64": "262",
                     "x86": "262"
                 },
                 "strip": true,
@@ -283,7 +283,7 @@
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
                 "stable": [
-                    "1.98.62"
+                    "1.98.63"
                 ],
                 "beta": [],
                 "strip": true,
@@ -296,6 +296,9 @@
                         "enabled": false
                     },
                     "Hide promotional prompts": {
+                        "enabled": false
+                    },
+                    "DNS filter": {
                         "enabled": false
                     }
                 },
@@ -314,7 +317,7 @@
                 "version_codes": {
                     "arm64-v8a": "539",
                     "armeabi-v7a": "539",
-                    "x86-64": "539",
+                    "x86_64": "539",
                     "x86": "539"
                 }
             },
@@ -331,7 +334,7 @@
                 "version_codes": {
                     "arm64-v8a": "255800",
                     "armeabi-v7a": "255800",
-                    "x86-64": "255800",
+                    "x86_64": "255800",
                     "x86": "255800"
                 },
                 "force_bundle": true
@@ -349,7 +352,7 @@
                 "version_codes": {
                     "arm64-v8a": "261014339",
                     "armeabi-v7a": "261014339",
-                    "x86-64": "261014339",
+                    "x86_64": "261014339",
                     "x86": "261014339"
                 },
                 "force_bundle": true
@@ -367,7 +370,7 @@
                 "version_codes": {
                     "arm64-v8a": "673",
                     "armeabi-v7a": "673",
-                    "x86-64": "673",
+                    "x86_64": "673",
                     "x86": "673"
                 },
                 "force_bundle": true
@@ -385,7 +388,7 @@
                 "version_codes": {
                     "arm64-v8a": "75",
                     "armeabi-v7a": "75",
-                    "x86-64": "75",
+                    "x86_64": "75",
                     "x86": "75"
                 }
             },
@@ -402,7 +405,7 @@
                 "version_codes": {
                     "arm64-v8a": "575",
                     "armeabi-v7a": "575",
-                    "x86-64": "575",
+                    "x86_64": "575",
                     "x86": "575"
                 }
             },
@@ -423,7 +426,7 @@
                 "version_codes": {
                     "arm64-v8a": "439000",
                     "armeabi-v7a": "439000",
-                    "x86-64": "439000",
+                    "x86_64": "439000",
                     "x86": "439000"
                 },
                 "force_bundle": true
@@ -432,17 +435,17 @@
                 "package": "com.duplila.screenshare",
                 "search_term": "Duplila",
                 "stable": [
-                    "5.3"
+                    "5.4"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "70",
-                    "armeabi-v7a": "70",
-                    "x86-64": "70",
-                    "x86": "70"
+                    "arm64-v8a": "71",
+                    "armeabi-v7a": "71",
+                    "x86_64": "71",
+                    "x86": "71"
                 },
                 "force_bundle": true
             },
@@ -466,7 +469,7 @@
                 "version_codes": {
                     "arm64-v8a": "11029",
                     "armeabi-v7a": "11029",
-                    "x86-64": "11029",
+                    "x86_64": "11029",
                     "x86": "11029"
                 },
                 "force_bundle": true
@@ -484,7 +487,7 @@
                 "version_codes": {
                     "arm64-v8a": "10571",
                     "armeabi-v7a": "10571",
-                    "x86-64": "10571",
+                    "x86_64": "10571",
                     "x86": "10571"
                 },
                 "force_bundle": true
@@ -506,7 +509,7 @@
                 "version_codes": {
                     "arm64-v8a": "113929",
                     "armeabi-v7a": "113929",
-                    "x86-64": "113929",
+                    "x86_64": "113929",
                     "x86": "113929"
                 },
                 "force_bundle": true
@@ -524,7 +527,7 @@
                 "version_codes": {
                     "arm64-v8a": "2339",
                     "armeabi-v7a": "2339",
-                    "x86-64": "2339",
+                    "x86_64": "2339",
                     "x86": "2339"
                 }
             },
@@ -532,7 +535,7 @@
                 "package": "org.mozilla.firefox",
                 "search_term": "Firefox",
                 "stable": [
-                    "158.0.2"
+                    "159.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -540,28 +543,35 @@
                 "options_override": {
                     "Keep background tabs loaded": {
                         "enabled": false
+                    },
+                    "DNS filter": {
+                        "enabled": false
                     }
                 },
                 "version_codes": {
-                    "x86-64": "2016191574",
-                    "arm64-v8a": "2016191570"
+                    "x86_64": "2016191886",
+                    "arm64-v8a": "2016191887"
                 }
             },
             "firefox-focus": {
                 "package": "org.mozilla.focus",
                 "search_term": "Firefox Focus",
                 "stable": [
-                    "158.0.2"
+                    "159.0.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "DNS filter": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
-                    "arm64-v8a": "402940253",
-                    "armeabi-v7a": "402940253",
-                    "x86-64": "402940253",
-                    "x86": "402940253"
+                    "arm64-v8a": "403061757",
+                    "armeabi-v7a": "403061757",
+                    "x86_64": "403061757",
+                    "x86": "403061757"
                 },
                 "force_bundle": true
             },
@@ -578,7 +588,7 @@
                 "version_codes": {
                     "arm64-v8a": "110137",
                     "armeabi-v7a": "110137",
-                    "x86-64": "110137",
+                    "x86_64": "110137",
                     "x86": "110137"
                 },
                 "force_bundle": true
@@ -596,7 +606,7 @@
                 "version_codes": {
                     "arm64-v8a": "411",
                     "armeabi-v7a": "411",
-                    "x86-64": "411",
+                    "x86_64": "411",
                     "x86": "411"
                 }
             },
@@ -604,7 +614,7 @@
                 "package": "eu.livesport.FlashScore_com",
                 "search_term": "Flashscore",
                 "stable": [
-                    "26.10.2"
+                    "26.11.4"
                 ],
                 "beta": [],
                 "strip": true,
@@ -615,10 +625,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "520",
-                    "armeabi-v7a": "520",
-                    "x86-64": "520",
-                    "x86": "520"
+                    "arm64-v8a": "525",
+                    "armeabi-v7a": "525",
+                    "x86_64": "525",
+                    "x86": "525"
                 },
                 "force_bundle": true
             },
@@ -639,7 +649,7 @@
                 "version_codes": {
                     "arm64-v8a": "731",
                     "armeabi-v7a": "731",
-                    "x86-64": "731",
+                    "x86_64": "731",
                     "x86": "731"
                 },
                 "force_bundle": true
@@ -648,7 +658,7 @@
                 "package": "com.mobilefootie.wc2010",
                 "search_term": "FotMob",
                 "stable": [
-                    "240.17974.20261023"
+                    "241.18134.20261030"
                 ],
                 "beta": [],
                 "strip": true,
@@ -665,13 +675,28 @@
                     },
                     "Use system font": {
                         "enabled": false
+                    },
+                    "Faster animations": {
+                        "enabled": false
+                    },
+                    "Hide competitions": {
+                        "enabled": false
+                    },
+                    "Hide countries": {
+                        "enabled": false
+                    },
+                    "Slower live refresh": {
+                        "enabled": false
+                    },
+                    "Turn off animations": {
+                        "enabled": false
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "17974",
-                    "armeabi-v7a": "17974",
-                    "x86-64": "17974",
-                    "x86": "17974"
+                    "arm64-v8a": "18134",
+                    "armeabi-v7a": "18134",
+                    "x86_64": "18134",
+                    "x86": "18134"
                 },
                 "force_bundle": true
             },
@@ -679,18 +704,40 @@
                 "package": "com.futbin",
                 "search_term": "Futbin",
                 "stable": [
-                    "27.08"
+                    "27.10"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "7008",
-                    "armeabi-v7a": "7008",
-                    "x86-64": "7008",
-                    "x86": "7008"
+                    "arm64-v8a": "7010",
+                    "armeabi-v7a": "7010",
+                    "x86_64": "7010",
+                    "x86": "7010"
                 }
+            },
+            "gps-map-camera-editor": {
+                "package": "com.gkfriend.gpsmapcameraeditor",
+                "search_term": "GPS Map Camera Editor",
+                "stable": [
+                    "1.0.31"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "89",
+                    "armeabi-v7a": "89",
+                    "x86_64": "89",
+                    "x86": "89"
+                },
+                "force_bundle": true
             },
             "hevy": {
                 "package": "com.hevy",
@@ -705,7 +752,7 @@
                 "version_codes": {
                     "arm64-v8a": "3403347",
                     "armeabi-v7a": "3403347",
-                    "x86-64": "3403347",
+                    "x86_64": "3403347",
                     "x86": "3403347"
                 },
                 "force_bundle": true
@@ -723,7 +770,7 @@
                 "version_codes": {
                     "arm64-v8a": "20214",
                     "armeabi-v7a": "20214",
-                    "x86-64": "20214",
+                    "x86_64": "20214",
                     "x86": "20214"
                 },
                 "force_bundle": true
@@ -741,7 +788,7 @@
                 "version_codes": {
                     "arm64-v8a": "239030",
                     "armeabi-v7a": "239030",
-                    "x86-64": "239030",
+                    "x86_64": "239030",
                     "x86": "239030"
                 }
             },
@@ -758,7 +805,7 @@
                 "version_codes": {
                     "arm64-v8a": "206",
                     "armeabi-v7a": "206",
-                    "x86-64": "206",
+                    "x86_64": "206",
                     "x86": "206"
                 },
                 "force_bundle": true
@@ -767,50 +814,32 @@
                 "package": "com.jetappfactory.jetaudio",
                 "search_term": "jetAudio",
                 "stable": [
-                    "13.1.2"
+                    "13.2.0"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "261320",
-                    "armeabi-v7a": "261320",
-                    "x86-64": "261320",
-                    "x86": "261320"
+                    "arm64-v8a": "261370",
+                    "armeabi-v7a": "261370",
+                    "x86_64": "261370",
+                    "x86": "261370"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
-                "force_bundle": true
-            },
-            "librepods": {
-                "package": "me.kavishdevar.librepods",
-                "search_term": "LibrePods",
-                "stable": [
-                    "1.0.4-play"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "version_codes": {
-                    "arm64-v8a": "100040301",
-                    "armeabi-v7a": "100040301",
-                    "x86-64": "100040301",
-                    "x86": "100040301"
-                },
                 "force_bundle": true
             },
             "librera": {
                 "package": "com.foobnix.pdf.reader",
                 "search_term": "Librera",
                 "stable": [
-                    "9.4.20"
+                    "10.0.22"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "7175",
-                    "armeabi-v7a": "7175",
-                    "x86-64": "7175",
-                    "x86": "7175"
+                    "arm64-v8a": "7536",
+                    "armeabi-v7a": "7536",
+                    "x86_64": "7536",
+                    "x86": "7536"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -829,7 +858,7 @@
                 "version_codes": {
                     "arm64-v8a": "2250",
                     "armeabi-v7a": "2250",
-                    "x86-64": "2250",
+                    "x86_64": "2250",
                     "x86": "2250"
                 }
             },
@@ -837,17 +866,17 @@
                 "package": "com.peter890331.luckyclick.app",
                 "search_term": "LuckyClick",
                 "stable": [
-                    "4.8"
+                    "2026/10/22"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "77",
-                    "armeabi-v7a": "77",
-                    "x86-64": "77",
-                    "x86": "77"
+                    "arm64-v8a": "100",
+                    "armeabi-v7a": "100",
+                    "x86_64": "100",
+                    "x86": "100"
                 },
                 "force_bundle": true
             },
@@ -855,17 +884,17 @@
                 "package": "com.mail.mobile.android.mail",
                 "search_term": "mail.com",
                 "stable": [
-                    "9.19.0"
+                    "9.20.2"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "405215",
-                    "armeabi-v7a": "405215",
-                    "x86-64": "405215",
-                    "x86": "405215"
+                    "arm64-v8a": "405218",
+                    "armeabi-v7a": "405218",
+                    "x86_64": "405218",
+                    "x86": "405218"
                 },
                 "force_bundle": true
             },
@@ -882,7 +911,7 @@
                 "version_codes": {
                     "arm64-v8a": "64",
                     "armeabi-v7a": "64",
-                    "x86-64": "64",
+                    "x86_64": "64",
                     "x86": "64"
                 },
                 "force_bundle": true
@@ -900,7 +929,7 @@
                 "version_codes": {
                     "arm64-v8a": "236",
                     "armeabi-v7a": "236",
-                    "x86-64": "236",
+                    "x86_64": "236",
                     "x86": "236"
                 },
                 "force_bundle": true
@@ -918,7 +947,7 @@
                 "version_codes": {
                     "arm64-v8a": "2229",
                     "armeabi-v7a": "2229",
-                    "x86-64": "2229",
+                    "x86_64": "2229",
                     "x86": "2229"
                 },
                 "force_bundle": true
@@ -933,7 +962,7 @@
                 "version_codes": {
                     "arm64-v8a": "1008000",
                     "armeabi-v7a": "1008000",
-                    "x86-64": "1008000",
+                    "x86_64": "1008000",
                     "x86": "1008000"
                 },
                 "strip": true,
@@ -945,17 +974,17 @@
                 "package": "com.myfitnesspal.android",
                 "search_term": "MyFitnessPal",
                 "stable": [
-                    "26.43.0"
+                    "26.44.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "51626",
-                    "armeabi-v7a": "51626",
-                    "x86-64": "51626",
-                    "x86": "51626"
+                    "arm64-v8a": "51651",
+                    "armeabi-v7a": "51651",
+                    "x86_64": "51651",
+                    "x86": "51651"
                 },
                 "force_bundle": true
             },
@@ -972,7 +1001,7 @@
                 "version_codes": {
                     "arm64-v8a": "57",
                     "armeabi-v7a": "57",
-                    "x86-64": "57",
+                    "x86_64": "57",
                     "x86": "57"
                 },
                 "force_bundle": true
@@ -981,17 +1010,17 @@
                 "package": "bitpit.launcher",
                 "search_term": "Niagara Launcher",
                 "stable": [
-                    "1.16.33"
+                    "1.16.35"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "1639",
-                    "armeabi-v7a": "1639",
-                    "x86-64": "1639",
-                    "x86": "1639"
+                    "arm64-v8a": "1641",
+                    "armeabi-v7a": "1641",
+                    "x86_64": "1641",
+                    "x86": "1641"
                 }
             },
             "notepad": {
@@ -1004,7 +1033,7 @@
                 "version_codes": {
                     "arm64-v8a": "19080",
                     "armeabi-v7a": "19080",
-                    "x86-64": "19080",
+                    "x86_64": "19080",
                     "x86": "19080"
                 },
                 "strip": true,
@@ -1025,7 +1054,7 @@
                 "version_codes": {
                     "arm64-v8a": "91",
                     "armeabi-v7a": "91",
-                    "x86-64": "91",
+                    "x86_64": "91",
                     "x86": "91"
                 },
                 "force_bundle": true
@@ -1034,17 +1063,17 @@
                 "package": "de.motain.iliga",
                 "search_term": "OneFootball",
                 "stable": [
-                    "15.147.0"
+                    "15.148.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "1045019512",
-                    "armeabi-v7a": "1045019512",
-                    "x86-64": "1045019512",
-                    "x86": "1045019512"
+                    "arm64-v8a": "1045029590",
+                    "armeabi-v7a": "1045029590",
+                    "x86_64": "1045029590",
+                    "x86": "1045029590"
                 },
                 "force_bundle": true
             },
@@ -1061,7 +1090,7 @@
                 "version_codes": {
                     "arm64-v8a": "5411",
                     "armeabi-v7a": "5411",
-                    "x86-64": "5411",
+                    "x86_64": "5411",
                     "x86": "5411"
                 },
                 "force_bundle": true
@@ -1079,7 +1108,7 @@
                 "version_codes": {
                     "arm64-v8a": "32101",
                     "armeabi-v7a": "32101",
-                    "x86-64": "32101",
+                    "x86_64": "32101",
                     "x86": "32101"
                 },
                 "force_bundle": true
@@ -1097,7 +1126,7 @@
                 "version_codes": {
                     "arm64-v8a": "57",
                     "armeabi-v7a": "57",
-                    "x86-64": "57",
+                    "x86_64": "57",
                     "x86": "57"
                 },
                 "force_bundle": true
@@ -1115,7 +1144,7 @@
                 "version_codes": {
                     "arm64-v8a": "260909124",
                     "armeabi-v7a": "260909124",
-                    "x86-64": "260909124",
+                    "x86_64": "260909124",
                     "x86": "260909124"
                 }
             },
@@ -1132,7 +1161,7 @@
                 "version_codes": {
                     "arm64-v8a": "271",
                     "armeabi-v7a": "271",
-                    "x86-64": "271",
+                    "x86_64": "271",
                     "x86": "271"
                 },
                 "force_bundle": true
@@ -1141,17 +1170,17 @@
                 "package": "com.rarecam.app",
                 "search_term": "RareCam",
                 "stable": [
-                    "1.0.92"
+                    "1.0.95"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "92",
-                    "armeabi-v7a": "92",
-                    "x86-64": "92",
-                    "x86": "92"
+                    "arm64-v8a": "95",
+                    "armeabi-v7a": "95",
+                    "x86_64": "95",
+                    "x86": "95"
                 },
                 "force_bundle": true
             },
@@ -1168,7 +1197,7 @@
                 "version_codes": {
                     "arm64-v8a": "440",
                     "armeabi-v7a": "440",
-                    "x86-64": "440",
+                    "x86_64": "440",
                     "x86": "440"
                 },
                 "force_bundle": true
@@ -1177,7 +1206,7 @@
                 "package": "com.shazam.android",
                 "search_term": "Shazam",
                 "stable": [
-                    "16.65.0-261022"
+                    "16.66.0-261029"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1188,10 +1217,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "1606500",
-                    "armeabi-v7a": "1606500",
-                    "x86-64": "1606500",
-                    "x86": "1606500"
+                    "arm64-v8a": "1606600",
+                    "armeabi-v7a": "1606600",
+                    "x86_64": "1606600",
+                    "x86": "1606600"
                 },
                 "force_bundle": true
             },
@@ -1208,7 +1237,7 @@
                 "version_codes": {
                     "arm64-v8a": "899",
                     "armeabi-v7a": "899",
-                    "x86-64": "899",
+                    "x86_64": "899",
                     "x86": "899"
                 },
                 "force_bundle": true
@@ -1217,17 +1246,17 @@
                 "package": "net.smartwod.timer",
                 "search_term": "SmartWOD Timer",
                 "stable": [
-                    "1.46.9"
+                    "1.47.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "10000399",
-                    "armeabi-v7a": "10000399",
-                    "x86-64": "10000399",
-                    "x86": "10000399"
+                    "arm64-v8a": "10000403",
+                    "armeabi-v7a": "10000403",
+                    "x86_64": "10000403",
+                    "x86": "10000403"
                 },
                 "force_bundle": true
             },
@@ -1235,7 +1264,7 @@
                 "package": "com.sofascore.results",
                 "search_term": "Sofascore",
                 "stable": [
-                    "26.10.19"
+                    "26.10.26"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1249,13 +1278,37 @@
                     },
                     "Spoof signature": {
                         "enabled": false
+                    },
+                    "Animation speed": {
+                        "enabled": false
+                    },
+                    "Hide AI insights": {
+                        "enabled": false
+                    },
+                    "Hide competitions": {
+                        "enabled": false
+                    },
+                    "Hide countries": {
+                        "enabled": false
+                    },
+                    "Hide match tabs": {
+                        "enabled": false
+                    },
+                    "Hide promo sections": {
+                        "enabled": false
+                    },
+                    "Hide sports": {
+                        "enabled": false
+                    },
+                    "Slower widget refresh": {
+                        "enabled": false
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "261019002",
-                    "armeabi-v7a": "261019002",
-                    "x86-64": "261019002",
-                    "x86": "261019002"
+                    "arm64-v8a": "261026004",
+                    "armeabi-v7a": "261026004",
+                    "x86_64": "261026004",
+                    "x86": "261026004"
                 },
                 "force_bundle": true
             },
@@ -1272,7 +1325,7 @@
                 "version_codes": {
                     "arm64-v8a": "21134",
                     "armeabi-v7a": "21134",
-                    "x86-64": "21134",
+                    "x86_64": "21134",
                     "x86": "21134"
                 }
             },
@@ -1287,10 +1340,10 @@
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "30533",
-                    "armeabi-v7a": "30533",
-                    "x86-64": "30533",
-                    "x86": "30533"
+                    "arm64-v8a": "30537",
+                    "armeabi-v7a": "30537",
+                    "x86_64": "30537",
+                    "x86": "30537"
                 },
                 "force_bundle": true
             },
@@ -1298,17 +1351,21 @@
                 "package": "net.dinglisch.android.taskerm",
                 "search_term": "Tasker",
                 "stable": [
-                    "6.6.20"
+                    "6.7.8"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
-                    "arm64-v8a": "5445",
-                    "armeabi-v7a": "5445",
-                    "x86-64": "5445",
-                    "x86": "5445"
+                    "arm64-v8a": "5454",
+                    "armeabi-v7a": "5454",
+                    "x86_64": "5454",
+                    "x86": "5454"
                 }
             },
             "taskito": {
@@ -1324,7 +1381,7 @@
                 "version_codes": {
                     "arm64-v8a": "1331",
                     "armeabi-v7a": "1331",
-                    "x86-64": "1331",
+                    "x86_64": "1331",
                     "x86": "1331"
                 }
             },
@@ -1338,7 +1395,7 @@
                 "version_codes": {
                     "arm64-v8a": "48761",
                     "armeabi-v7a": "48761",
-                    "x86-64": "48761",
+                    "x86_64": "48761",
                     "x86": "48761"
                 },
                 "strip": true,
@@ -1350,17 +1407,17 @@
                 "package": "com.guardian",
                 "search_term": "The Guardian",
                 "stable": [
-                    "6.239.23439"
+                    "6.241.23504"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "23439",
-                    "armeabi-v7a": "23439",
-                    "x86-64": "23439",
-                    "x86": "23439"
+                    "arm64-v8a": "23504",
+                    "armeabi-v7a": "23504",
+                    "x86_64": "23504",
+                    "x86": "23504"
                 },
                 "force_bundle": true
             },
@@ -1377,7 +1434,7 @@
                 "version_codes": {
                     "arm64-v8a": "700042675",
                     "armeabi-v7a": "700042675",
-                    "x86-64": "700042675",
+                    "x86_64": "700042675",
                     "x86": "700042675"
                 }
             },
@@ -1394,7 +1451,7 @@
                 "version_codes": {
                     "arm64-v8a": "584",
                     "armeabi-v7a": "584",
-                    "x86-64": "584",
+                    "x86_64": "584",
                     "x86": "584"
                 }
             },
@@ -1411,7 +1468,7 @@
                 "version_codes": {
                     "arm64-v8a": "2078",
                     "armeabi-v7a": "2078",
-                    "x86-64": "2078",
+                    "x86_64": "2078",
                     "x86": "2078"
                 },
                 "force_bundle": true
@@ -1420,14 +1477,14 @@
                 "package": "com.truecaller",
                 "search_term": "TrueCaller",
                 "stable": [
-                    "26.42.5"
+                    "26.43.5"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "2642005",
-                    "armeabi-v7a": "2642005",
-                    "x86-64": "2642005",
-                    "x86": "2642005"
+                    "arm64-v8a": "2643005",
+                    "armeabi-v7a": "2643005",
+                    "x86_64": "2643005",
+                    "x86": "2643005"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -1482,6 +1539,9 @@
                     },
                     "Swap call answer and decline buttons": {
                         "enabled": false
+                    },
+                    "Hide profile menu items": {
+                        "enabled": false
                     }
                 },
                 "force_bundle": true
@@ -1490,7 +1550,7 @@
                 "package": "app.expert.player",
                 "search_term": "TV Smarters Player Expert",
                 "stable": [
-                    "11.4.0"
+                    "11.6.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1501,10 +1561,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "311",
-                    "armeabi-v7a": "311",
-                    "x86-64": "311",
-                    "x86": "311"
+                    "arm64-v8a": "315",
+                    "armeabi-v7a": "315",
+                    "x86_64": "315",
+                    "x86": "315"
                 },
                 "force_bundle": true
             },
@@ -1518,7 +1578,7 @@
                 "version_codes": {
                     "arm64-v8a": "325001",
                     "armeabi-v7a": "325001",
-                    "x86-64": "325001",
+                    "x86_64": "325001",
                     "x86": "325001"
                 },
                 "strip": true,
@@ -1538,7 +1598,7 @@
                 "version_codes": {
                     "arm64-v8a": "360",
                     "armeabi-v7a": "360",
-                    "x86-64": "360",
+                    "x86_64": "360",
                     "x86": "360"
                 },
                 "force_bundle": true
@@ -1556,7 +1616,7 @@
                 "version_codes": {
                     "arm64-v8a": "678",
                     "armeabi-v7a": "678",
-                    "x86-64": "678",
+                    "x86_64": "678",
                     "x86": "678"
                 },
                 "force_bundle": true
@@ -1574,7 +1634,7 @@
                 "version_codes": {
                     "arm64-v8a": "20260823",
                     "armeabi-v7a": "20260823",
-                    "x86-64": "20260823",
+                    "x86_64": "20260823",
                     "x86": "20260823"
                 }
             },
@@ -1591,7 +1651,7 @@
                 "version_codes": {
                     "arm64-v8a": "2642010",
                     "armeabi-v7a": "2642010",
-                    "x86-64": "2642010",
+                    "x86_64": "2642010",
                     "x86": "2642010"
                 },
                 "force_bundle": true
@@ -1609,7 +1669,7 @@
                 "version_codes": {
                     "arm64-v8a": "2019070035",
                     "armeabi-v7a": "2019070035",
-                    "x86-64": "2019070035",
+                    "x86_64": "2019070035",
                     "x86": "2019070035"
                 }
             },
@@ -1617,17 +1677,17 @@
                 "package": "com.fyxtech.muslim",
                 "search_term": "WeMuslim",
                 "stable": [
-                    "3.5.4"
+                    "3.5.5"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "149",
-                    "armeabi-v7a": "149",
-                    "x86-64": "149",
-                    "x86": "149"
+                    "arm64-v8a": "151",
+                    "armeabi-v7a": "151",
+                    "x86_64": "151",
+                    "x86": "151"
                 },
                 "force_bundle": true
             },
@@ -1644,7 +1704,7 @@
                 "version_codes": {
                     "arm64-v8a": "139",
                     "armeabi-v7a": "139",
-                    "x86-64": "139",
+                    "x86_64": "139",
                     "x86": "139"
                 }
             },
@@ -1652,17 +1712,17 @@
                 "package": "com.yahoo.mobile.client.android.sportacular",
                 "search_term": "Yahoo Sports",
                 "stable": [
-                    "12.26.1"
+                    "12.27.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "11168590",
-                    "armeabi-v7a": "11168590",
-                    "x86-64": "11168590",
-                    "x86": "11168590"
+                    "arm64-v8a": "11168613",
+                    "armeabi-v7a": "11168613",
+                    "x86_64": "11168613",
+                    "x86": "11168613"
                 },
                 "force_bundle": true
             }

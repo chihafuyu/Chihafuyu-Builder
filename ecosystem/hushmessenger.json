@@ -7,9 +7,6 @@
                 "stable": [
                     "586.0.0.55.92"
                 ],
-                "version_codes": {
-                    "arm64-v8a": "347015062"
-                },
                 "force_bundle": false,
                 "strip": true,
                 "archive_id": "ZeNiX",
