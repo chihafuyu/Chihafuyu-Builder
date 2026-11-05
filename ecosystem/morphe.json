@@ -11,7 +11,8 @@
                     "2026.44.0"
                 ],
                 "version_codes": {
-                    "universal": "2644081"
+                    "universal": "2644081",
+                    "arm64-v8a": "2644081"
                 },
                 "strip": true,
                 "force_bundle": true,

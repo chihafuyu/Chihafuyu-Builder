@@ -16,7 +16,6 @@ from contextlib import ExitStack
 from typing import Any
 from urllib.parse import urlparse
 
-from scrapers import AVAILABLE_SCRAPERS
 from core.context import Context, RateLimiter
 from core.utils import (
     SUBPROCESS_TIMEOUT_SECONDS,
@@ -27,6 +26,7 @@ from core.utils import (
     run_java_tool,
     update_options_json,
 )
+from scrapers import AVAILABLE_SCRAPERS
 
 MAX_RUNTIME_SECONDS = 19800
 ECOSYSTEM_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
@@ -224,14 +224,24 @@ def _get_java_heap_size() -> str:
 def build_patch_command(
     args: Any, app_data: dict, paths: tuple, target_arch: str
 ) -> list[str]:
-    """Builds the CLI shell command including exclusive patch parameters."""
+    """Builds the CLI shell command including exclusive patch parameters.
+
+    Every path argument is normalized to an absolute path. Morphe Desktop
+    v2.0.0 stages the input bundle by creating a symlink to it inside its
+    temporary patching directory (morphe-data/tmp/patching-*), and POSIX
+    resolves a relative symlink target against the link's own directory
+    instead of our working directory. The staged link then ends up broken,
+    ApkMerger skips ZIP extraction and aborts the merge with
+    "FileNotFoundException: No such directory".
+    """
     heap_opt = _get_java_heap_size()
+    apk_path, options_path, out_path = (os.path.abspath(p) for p in paths)
 
     cmd = [
-        "java", heap_opt, "-jar", args.cli, "patch",
-        "--patches", args.patches,
-        "--options-file", paths[1],
-        "--out", paths[2],
+        "java", heap_opt, "-jar", os.path.abspath(args.cli), "patch",
+        "--patches", os.path.abspath(args.patches),
+        "--options-file", options_path,
+        "--out", out_path,
         "--bytecode-mode", "FULL",
     ]
     if args.version_selection.lower() in (
@@ -248,7 +258,7 @@ def build_patch_command(
 
     if args.keystore and args.ks_alias and args.ks_pass:
         cmd.extend([
-            "--keystore", args.keystore,
+            "--keystore", os.path.abspath(args.keystore),
             "--keystore-entry-alias", args.ks_alias,
             "--keystore-password", args.ks_pass,
             "--keystore-entry-password", args.ks_pass,
@@ -263,7 +273,7 @@ def build_patch_command(
         for patch_name in exc_list:
             cmd.extend(["-e", patch_name])
 
-    cmd.append(paths[0])
+    cmd.append(apk_path)
     return cmd
 
 
