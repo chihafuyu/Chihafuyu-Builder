@@ -3,7 +3,6 @@
 import random
 import re
 import time
-from dataclasses import dataclass
 from typing import Any
 from urllib.parse import quote_plus, urljoin, urlparse
 
@@ -33,26 +32,30 @@ def _short_url(url: str) -> str:
     return url[: URL_LOG_WIDTH - 3] + "..."
 
 
-@dataclass
-class _DummyResponse:
-    """Mock requests.Response object for FlareSolverr HTML returns."""
+def _resolve_ver_code(app_data: dict, arch: str) -> str | None:
+    """Returns the target version code, tolerating separator variants.
 
-    status_code: int
-    text: str
-    url: str
+    Patches-list sources use mixed separators (X86_64 vs x86-64) while
+    the workflow inputs and scraper lookups stay on the underscore form.
+    """
+    version_codes = app_data.get("version_codes") or {}
+    if not isinstance(version_codes, dict):
+        return None
+    candidates = (arch, arch.replace("_", "-"), arch.replace("-", "_"))
+    for key in candidates:
+        value = version_codes.get(key)
+        if value is not None:
+            return str(value)
+    return None
 
-    def raise_for_status(self) -> None:
-        """Raises stored HTTP error, if one occurred."""
-        if self.status_code >= 400:
-            raise requests.exceptions.HTTPError(
-                f"Error: {self.status_code}"
-            )
 
-    def __enter__(self) -> _DummyResponse:
-        return self
-
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        pass
+def _make_dummy_response(status_code: int, text: str, url: str) -> requests.Response:
+    """Constructs a real requests.Response object for FlareSolverr HTML returns."""
+    res = requests.Response()
+    res.status_code = status_code
+    res._content = text.encode("utf-8")  # pylint: disable=protected-access
+    res.url = url
+    return res
 
 
 class _FlareSolverrSession:
@@ -75,14 +78,14 @@ class _FlareSolverrSession:
         except (requests.exceptions.RequestException, ValueError):
             return ""
 
-    def get(self, *args: Any, **kwargs: Any) -> Any:
+    def get(self, *args: Any, **kwargs: Any) -> requests.Response:
         """Executes GET requests using the appropriate transport layer."""
         if kwargs.get("stream"):
             return self.session.get(*args, **kwargs)
 
         url = args[0] if args else kwargs.get("url")
         if not url:
-            return _DummyResponse(status_code=400, text="", url="")
+            return _make_dummy_response(status_code=400, text="", url="")
 
         raw_timeout = kwargs.get("timeout") or FETCH_TIMEOUT_SECONDS
         if isinstance(raw_timeout, (tuple, list)):
@@ -125,7 +128,7 @@ class _FlareSolverrSession:
                         {"User-Agent": solution["userAgent"]}
                     )
 
-                return _DummyResponse(
+                return _make_dummy_response(
                     status_code=200, text=html, url=solved_url
                 )
 
@@ -134,11 +137,11 @@ class _FlareSolverrSession:
                 f"[WARN] FlareSolverr returned error status: {err_msg}",
                 flush=True,
             )
-            return _DummyResponse(status_code=403, text="", url=url)
+            return _make_dummy_response(status_code=403, text="", url=url)
 
         except (requests.exceptions.RequestException, ValueError) as err:
             print(f"[WARN] FlareSolverr connection failed: {err}", flush=True)
-            return _DummyResponse(status_code=500, text="", url=url)
+            return _make_dummy_response(status_code=500, text="", url=url)
 
     def close(self) -> None:
         """Destroys proxy session and closes the native requests session."""
@@ -182,7 +185,7 @@ class ApkmirrorScraper(BaseScraper):
         """
         return list(dict.fromkeys(re.findall(r"\b\d{6,}\b", text)))
 
-    def _safe_get(self, ctx: Context, url: str) -> Any | None:
+    def _safe_get(self, ctx: Context, url: str) -> requests.Response | None:
         """Fetches page source ensuring FlareSolverr resolves WAF challenges."""
         ctx.limiter.wait()
         time.sleep(random.uniform(2.5, 4.5))
@@ -494,7 +497,14 @@ class ApkmirrorScraper(BaseScraper):
         text = text.lower()
         target_arch = target_arch.lower()
 
-        if target_arch in text or "universal" in text or "noarch" in text:
+        target_forms = {
+            target_arch,
+            target_arch.replace("_", "-"),
+            target_arch.replace("-", "_"),
+        }
+        if any(form in text for form in target_forms):
+            return True
+        if "universal" in text or "noarch" in text:
             return True
 
         arch_list = (
@@ -518,13 +528,14 @@ class ApkmirrorScraper(BaseScraper):
 
     @staticmethod
     def _is_bundle_row(row: Any) -> bool:
+        """Identifies APKM bundles strictly via APKMirror's badge elements."""
         badges = row.find_all(
             "span", class_=re.compile(r"badge", re.IGNORECASE)
         )
         for badge in badges:
             if "BUNDLE" in badge.text.upper() or "APKM" in badge.text.upper():
                 return True
-        return "bundle" in row.text.lower()
+        return False
 
     @staticmethod
     def _row_matches(
@@ -703,7 +714,7 @@ class ApkmirrorScraper(BaseScraper):
     def scrape(self, ctx: Context) -> str | None:
         """Executes the scraping process from APKMirror."""
         print(f"[TIER 1] APKMirror: v{ctx.target_ver}", flush=True)
-        ver_code = ctx.app_data.get("version_codes", {}).get(ctx.arch)
+        ver_code = _resolve_ver_code(ctx.app_data, ctx.arch)
 
         self._log_target_info(ctx, ver_code)
 

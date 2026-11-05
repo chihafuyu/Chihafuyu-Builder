@@ -6,8 +6,8 @@ from bs4 import BeautifulSoup
 import requests
 
 from core.context import Context
-from core.utils import download_file_stream
 from .base import BaseScraper
+from ._common import probe_and_download
 
 
 VALID_ARCH_MARKERS = ("universal", "noarch", "all")
@@ -72,7 +72,6 @@ class ArchiveScraper(BaseScraper):
             orig_ext = ".apk"
 
         out_path = ctx.get_out_path(orig_ext)
-        print("[INFO] Downloading from Archive...")
-        if download_file_stream(ctx.scraper, dl_link, out_path):
-            return out_path
-        return None
+        return probe_and_download(
+            ctx, dl_link, out_path, "Archive.org", skip_probe=True
+        )

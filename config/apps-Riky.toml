@@ -2,7 +2,9 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
+"3bmeteo" = true
 "capcut" = true
+"electron" = true
 "komoot" = true
 "tramonto-alba-phototime" = true
 "vn" = true

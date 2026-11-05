@@ -146,17 +146,6 @@ def _validate_download_url(url: str) -> None:
         raise ValueError(f"Unsupported download URL: {url!r}")
 
 
-def _is_waf_blocked(status_code: int, text: str) -> bool:
-    """Evaluates if the response was intercepted by a Web Application Firewall."""
-    if status_code in (429, 503):
-        return True
-    challenges = (
-        "just a moment", "cf-challenge", "challenge-platform", "attention required",
-        "checking your browser", "ddos-guard", "aptcha.execute", "enable javascript and cookies"
-    )
-    return any(c in text.lower() for c in challenges)
-
-
 def _check_virustotal(file_hash: str) -> bool | None:
     """Checks hash against VirusTotal.
 

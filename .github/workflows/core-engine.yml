@@ -212,6 +212,20 @@ jobs:
           sudo install -m 0755 apkeep /usr/local/bin/apkeep
           rm -f apkeep
 
+      - name: Verify Security Scanner Configuration
+        env:
+          VT_API_KEY: ${{ secrets.VT_API_KEY }}
+          HA_API_KEY: ${{ secrets.HA_API_KEY }}
+          MD_API_KEY: ${{ secrets.MD_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$VT_API_KEY" && -z "$HA_API_KEY" && -z "$MD_API_KEY" ]]; then
+            echo "::error::CRITICAL SECURITY RISK: No malware scanners configured."
+            echo "::error::At least one of VT_API_KEY, HA_API_KEY, or MD_API_KEY must be set in repository secrets."
+            exit 1
+          fi
+          echo "[INFO] Security scanner configuration validated. At least one scanner is active."
+
       - name: Fetch Environment Artifacts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

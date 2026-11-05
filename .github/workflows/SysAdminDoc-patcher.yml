@@ -29,8 +29,13 @@ name: 🧰 SysAdminDoc Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_telegram:
+        description: 'Patch HushTelegram (Mobile)'
+        required: true
+        type: boolean
+        default: false
       app_telegram_web:
-        description: 'Patch HushTelegram'
+        description: 'Patch HushTelegram (Web)'
         required: true
         type: boolean
         default: false
@@ -122,6 +127,7 @@ jobs:
       APP_MESSENGER: ${{ inputs.app_messenger }}
       APP_PINEDRAMA: ${{ inputs.app_pinedrama }}
       APP_PINTEREST: ${{ inputs.app_pinterest }}
+      APP_TELEGRAM: ${{ inputs.app_telegram }}
       APP_TELEGRAM_WEB: ${{ inputs.app_telegram_web }}
       APP_THREADS: ${{ inputs.app_threads }}
       APP_TIKTOK_GLOBAL: ${{ inputs.app_tiktok_global }}
@@ -149,6 +155,9 @@ jobs:
           fi
           if [[ "$APP_PINTEREST" == "true" ]]; then
             add_entry pinterest HushPinterest hushpinterest hushpinterest-custom.mpp
+          fi
+          if [[ "$APP_TELEGRAM" == "true" ]]; then
+            add_entry telegram HushTelegram hushtelegram hushtelegram-custom.mpp
           fi
           if [[ "$APP_TELEGRAM_WEB" == "true" ]]; then
             add_entry telegram-web HushTelegram hushtelegram hushtelegram-custom.mpp
