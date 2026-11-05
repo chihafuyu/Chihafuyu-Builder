@@ -2,11 +2,9 @@
 
 from urllib.parse import quote
 
-import requests
-
 from core.context import Context
-from core.utils import download_file_stream
 from .base import BaseScraper
+from ._common import probe_and_download
 
 
 DEFAULT_HF_USER = "chihafuyu"
@@ -49,22 +47,17 @@ class HuggingfaceScraper(BaseScraper):
             return None
 
         print(f"[TIER 0] HuggingFace: v{ctx.target_ver}")
-        ctx.limiter.wait()
 
         for ext in HF_EXTENSIONS:
             filename = f"{ctx.pkg}_{ctx.target_ver}{ext}"
             dl_link = self._build_url(hf_repo, filename)
             out_path = ctx.get_out_path(ext)
-            try:
-                res = ctx.scraper.head(dl_link, timeout=10, allow_redirects=True)
-            except requests.exceptions.RequestException as err:
-                print(f"[WARN] HF probe failed for {ext}: {err}")
-                continue
-            if res.status_code != 200:
-                continue
-            print("[INFO] Downloading from Vault...")
-            if download_file_stream(ctx.scraper, dl_link, out_path):
-                return out_path
+
+            result = probe_and_download(
+                ctx, dl_link, out_path, "HuggingFace Vault"
+            )
+            if result:
+                return result
 
         print(f"[WARN] Not found in '{hf_repo}'.")
         return None

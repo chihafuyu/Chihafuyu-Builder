@@ -2,11 +2,9 @@
 
 from urllib.parse import quote
 
-import requests
-
 from core.context import Context
-from core.utils import download_file_stream
 from .base import BaseScraper
+from ._common import probe_and_download
 
 
 class DirectScraper(BaseScraper):
@@ -30,18 +28,4 @@ class DirectScraper(BaseScraper):
         )
         out_path = ctx.get_out_path(".apk")
 
-        ctx.limiter.wait()
-        try:
-            res = ctx.scraper.head(dl_link, timeout=10, allow_redirects=True)
-        except requests.exceptions.RequestException as err:
-            print(f"[WARN] Direct link probe failed: {err}")
-            return None
-
-        if res.status_code != 200:
-            print(f"[WARN] Direct link returned HTTP {res.status_code}: {dl_link}")
-            return None
-
-        print("[INFO] Downloading from Direct URL...")
-        if download_file_stream(ctx.scraper, dl_link, out_path):
-            return out_path
-        return None
+        return probe_and_download(ctx, dl_link, out_path, "Direct URL")
