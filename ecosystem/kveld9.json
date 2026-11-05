@@ -54,7 +54,6 @@
             "tiktok-global": {
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok Global",
-                "description": "Any TikTok version (Global nodpi APK)",
                 "stable": [
                     "47.6.3"
                 ],

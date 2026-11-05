@@ -26,10 +26,6 @@ class RateLimiter:
             time.sleep(self.delay - elapsed)
         self.last_req = time.monotonic()
 
-    def reset(self) -> None:
-        """Clears the internal timer so the next wait() does not throttle."""
-        self.last_req = 0.0
-
 
 @dataclass
 class Context:
