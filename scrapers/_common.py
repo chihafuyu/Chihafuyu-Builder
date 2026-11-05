@@ -11,6 +11,7 @@ def probe_and_download(
     url: str,
     out_path: str,
     source_name: str,
+    *,
     allowed_statuses: tuple[int, ...] = (200,),
     skip_probe: bool = False,
     referer: str = "",
