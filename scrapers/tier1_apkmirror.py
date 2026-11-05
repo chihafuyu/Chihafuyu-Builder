@@ -3,7 +3,6 @@
 import random
 import re
 import time
-from dataclasses import dataclass
 from typing import Any
 from urllib.parse import quote_plus, urljoin, urlparse
 
@@ -50,26 +49,13 @@ def _resolve_ver_code(app_data: dict, arch: str) -> str | None:
     return None
 
 
-@dataclass
-class _DummyResponse:
-    """Mock requests.Response object for FlareSolverr HTML returns."""
-
-    status_code: int
-    text: str
-    url: str
-
-    def raise_for_status(self) -> None:
-        """Raises stored HTTP error, if one occurred."""
-        if self.status_code >= 400:
-            raise requests.exceptions.HTTPError(
-                f"Error: {self.status_code}"
-            )
-
-    def __enter__(self) -> _DummyResponse:
-        return self
-
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        pass
+def _make_dummy_response(status_code: int, text: str, url: str) -> requests.Response:
+    """Constructs a real requests.Response object for FlareSolverr HTML returns."""
+    res = requests.Response()
+    res.status_code = status_code
+    res._content = text.encode("utf-8")  # pylint: disable=protected-access
+    res.url = url
+    return res
 
 
 class _FlareSolverrSession:
@@ -92,14 +78,14 @@ class _FlareSolverrSession:
         except (requests.exceptions.RequestException, ValueError):
             return ""
 
-    def get(self, *args: Any, **kwargs: Any) -> Any:
+    def get(self, *args: Any, **kwargs: Any) -> requests.Response:
         """Executes GET requests using the appropriate transport layer."""
         if kwargs.get("stream"):
             return self.session.get(*args, **kwargs)
 
         url = args[0] if args else kwargs.get("url")
         if not url:
-            return _DummyResponse(status_code=400, text="", url="")
+            return _make_dummy_response(status_code=400, text="", url="")
 
         raw_timeout = kwargs.get("timeout") or FETCH_TIMEOUT_SECONDS
         if isinstance(raw_timeout, (tuple, list)):
@@ -142,7 +128,7 @@ class _FlareSolverrSession:
                         {"User-Agent": solution["userAgent"]}
                     )
 
-                return _DummyResponse(
+                return _make_dummy_response(
                     status_code=200, text=html, url=solved_url
                 )
 
@@ -151,11 +137,11 @@ class _FlareSolverrSession:
                 f"[WARN] FlareSolverr returned error status: {err_msg}",
                 flush=True,
             )
-            return _DummyResponse(status_code=403, text="", url=url)
+            return _make_dummy_response(status_code=403, text="", url=url)
 
         except (requests.exceptions.RequestException, ValueError) as err:
             print(f"[WARN] FlareSolverr connection failed: {err}", flush=True)
-            return _DummyResponse(status_code=500, text="", url=url)
+            return _make_dummy_response(status_code=500, text="", url=url)
 
     def close(self) -> None:
         """Destroys proxy session and closes the native requests session."""
@@ -199,7 +185,7 @@ class ApkmirrorScraper(BaseScraper):
         """
         return list(dict.fromkeys(re.findall(r"\b\d{6,}\b", text)))
 
-    def _safe_get(self, ctx: Context, url: str) -> Any | None:
+    def _safe_get(self, ctx: Context, url: str) -> requests.Response | None:
         """Fetches page source ensuring FlareSolverr resolves WAF challenges."""
         ctx.limiter.wait()
         time.sleep(random.uniform(2.5, 4.5))
@@ -542,13 +528,14 @@ class ApkmirrorScraper(BaseScraper):
 
     @staticmethod
     def _is_bundle_row(row: Any) -> bool:
+        """Identifies APKM bundles strictly via APKMirror's badge elements."""
         badges = row.find_all(
             "span", class_=re.compile(r"badge", re.IGNORECASE)
         )
         for badge in badges:
             if "BUNDLE" in badge.text.upper() or "APKM" in badge.text.upper():
                 return True
-        return "bundle" in row.text.lower()
+        return False
 
     @staticmethod
     def _row_matches(
