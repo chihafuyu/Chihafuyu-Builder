@@ -471,7 +471,9 @@ def _update_app_version(app_key, app_cfg, pkg_info):
     new_version = latest.get("version")
     if not new_version:
         return changed
-    new_vcodes = _normalize_vcodes(latest.get("versionCodes"))
+
+    latest_codes = latest.get("versionCodes")
+    new_vcodes = _normalize_vcodes(latest_codes)
     target_list = [str(new_version)]
 
     old_stable = app_cfg.get("stable", [])
@@ -486,7 +488,12 @@ def _update_app_version(app_key, app_cfg, pkg_info):
         app_cfg["stable"] = target_list
         changed = True
 
-    if new_vcodes and app_cfg.get("version_codes") != new_vcodes:
+    has_explicit_null = "versionCodes" in latest and latest_codes is None
+    if has_explicit_null and app_cfg.get("version_codes"):
+        print(f"    -> Clearing stale version_codes for '{app_key}' (upstream: null).")
+        app_cfg.pop("version_codes", None)
+        changed = True
+    elif new_vcodes and app_cfg.get("version_codes") != new_vcodes:
         print(f"    -> Updating version codes for '{app_key}'.")
         app_cfg["version_codes"] = new_vcodes
         changed = True
