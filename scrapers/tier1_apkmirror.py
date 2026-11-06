@@ -556,6 +556,15 @@ class ApkmirrorScraper(BaseScraper):
             return False
         if pass_idx in (1, 3) and ver_code and ver_code not in text:
             return False
+
+        target_android = str(ctx.app_data.get("apkm_android", "")).lower()
+        if target_android and target_android not in text:
+            return False
+
+        target_dpi = str(ctx.app_data.get("apkm_dpi", "")).lower()
+        if target_dpi and target_dpi not in text:
+            return False
+
         return ApkmirrorScraper._is_arch_match(
             text, ctx.arch.lower(), pass_idx
         )

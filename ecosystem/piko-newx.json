@@ -10,6 +10,15 @@
                 "beta": [
                     "12.40.0-alpha.01"
                 ],
+                "apkm_android": "12l+",
+                "preserve_version_codes": true,
+                "version_codes": {
+                    "arm64-v8a": "312401001",
+                    "armeabi-v7a": "312401001",
+                    "universal": "312401001",
+                    "x86_64": "312401001",
+                    "x86": "312401001"
+                },
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},

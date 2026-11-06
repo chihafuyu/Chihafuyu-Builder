@@ -192,7 +192,6 @@ def _build_bundle_patches(pkg_name, app_name, app_version):
                 "targets": [{
                     "version": app_version,
                     "isExperimental": False,
-                    "versionCodes": None,
                 }],
             }],
         }]
@@ -488,15 +487,23 @@ def _update_app_version(app_key, app_cfg, pkg_info):
         app_cfg["stable"] = target_list
         changed = True
 
-    has_explicit_null = "versionCodes" in latest and latest_codes is None
-    if has_explicit_null and app_cfg.get("version_codes"):
-        print(f"    -> Clearing stale version_codes for '{app_key}' (upstream: null).")
-        app_cfg.pop("version_codes", None)
-        changed = True
-    elif new_vcodes and app_cfg.get("version_codes") != new_vcodes:
-        print(f"    -> Updating version codes for '{app_key}'.")
-        app_cfg["version_codes"] = new_vcodes
-        changed = True
+    if app_cfg.get("preserve_version_codes"):
+        print(f"    -> Preserving local version_codes for '{app_key}' (flag is active).")
+    else:
+        has_explicit_null = "versionCodes" in latest and latest_codes is None
+
+        if has_explicit_null and app_cfg.get("version_codes"):
+            print(f"    -> Clearing stale version_codes for '{app_key}' (upstream: null).")
+            app_cfg.pop("version_codes", None)
+            changed = True
+
+        elif new_vcodes:
+            existing = app_cfg.get("version_codes") or {}
+            merged = {**existing, **new_vcodes}
+            if merged != existing:
+                print(f"    -> Updating/Merging version codes for '{app_key}'.")
+                app_cfg["version_codes"] = merged
+                changed = True
 
     apk_type = (pkg_info.get("apk_file_type") or "").upper()
     if apk_type in FORCE_BUNDLE_APK_TYPES and not app_cfg.get("force_bundle"):
