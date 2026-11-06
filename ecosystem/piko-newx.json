@@ -5,40 +5,14 @@
                 "package": "com.twitter.android",
                 "search_term": "X",
                 "stable": [
-                    "12.39.0-prod.01"
+                    "12.40.1-prod.01"
                 ],
                 "beta": [
                     "12.40.0-alpha.01"
                 ],
-                "version_codes": {
-                    "universal": "12L+",
-                    "arm64-v8a": "12L+",
-                    "armeabi-v7a": "12L+",
-                    "x86_64": "12L+",
-                    "x86": "12L+"
-                },
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {
-                    "NewX: Restore Twitter branding": {
-                        "enabled": false
-                    },
-                    "NewX: Browse tweet object": {
-                        "enabled": false
-                    },
-                    "NewX: Clone": {
-                        "enabled": false
-                    },
-                    "NewX: Log HLS audio renditions": {
-                        "enabled": false
-                    },
-                    "NewX: Server error logging": {
-                        "enabled": false
-                    },
-                    "NewX: Hide post dividers": {
-                        "enabled": false
-                    }
-                },
+                "options_override": {},
                 "force_bundle": true
             }
         }

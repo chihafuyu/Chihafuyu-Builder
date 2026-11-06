@@ -5,6 +5,7 @@
 "1weather" = true
 "3way" = false
 "acalendar" = true
+"aliexpress" = true
 "all-in-one-calculator" = true
 "all-video-player-app" = false
 "albo" = false
@@ -55,7 +56,10 @@
 "forusapp" = false
 "glass-widgets" = false
 "graph-messenger" = false
+"ground-news" = true
+"habitify" = true
 "hindu-calendar" = false
+"hypic" = true
 "imo" = false
 "internet-speed-meter-lite" = false
 "iototoy" = false
@@ -68,8 +72,10 @@
 "klassik-radio" = false
 "lagguy-wallpapers" = false
 "led-blinker" = false
+"liftoff" = true
 "lingodeer" = false
 "magic-earth" = true
+"mangatime" = true
 "may-beautiful-bullet-journal" = false
 "mbc-shahid" = false
 "medicneet" = false
@@ -137,10 +143,12 @@
 "sygic" = true
 "symfonium" = true
 "terabox" = true
+"tradingview" = true
 "trainline" = false
 "transparent-clock-weather" = false
 "tunneldoom-vpn" = false
 "u-dictionary" = false
+"ultimate-guitar" = true
 "uptcl" = false
 "usa-vpn" = false
 "viber" = false
@@ -154,6 +162,8 @@
 "watch-it" = false
 "wattpad" = true
 "weather24" = true
+"x-plore-file-manager" = true
+"xtream-player" = true
 "yanosik" = false
 "yi-iot" = false
 "yuka" = false

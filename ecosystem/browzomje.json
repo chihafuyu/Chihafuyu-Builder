@@ -16,7 +16,7 @@
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
                 "stable": [
-                    "14.39.0"
+                    "14.43.0"
                 ],
                 "beta": [],
                 "version_codes": {
@@ -25,7 +25,11 @@
                 "strip": true,
                 "force_bundle": false,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "GmsCore support for Pinterest": {
+                        "enabled": false
+                    }
+                }
             }
         }
     }

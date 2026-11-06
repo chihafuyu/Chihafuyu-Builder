@@ -61,7 +61,7 @@
                 "package": "com.dundunstudio.autoplay",
                 "search_term": "DoDo Music",
                 "stable": [
-                    "2.0.14"
+                    "2.0.17"
                 ],
                 "beta": [],
                 "strip": true,
@@ -72,10 +72,28 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "253",
-                    "armeabi-v7a": "253",
-                    "x86_64": "253",
-                    "x86": "253"
+                    "arm64-v8a": "256",
+                    "armeabi-v7a": "256",
+                    "x86_64": "256",
+                    "x86": "256"
+                },
+                "force_bundle": true
+            },
+            "flipside": {
+                "package": "com.dinoster.flipside",
+                "search_term": "FlipSide",
+                "stable": [
+                    "1.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "71",
+                    "armeabi-v7a": "71",
+                    "x86_64": "71",
+                    "x86": "71"
                 },
                 "force_bundle": true
             },
@@ -191,7 +209,7 @@
                 "package": "com.tuya.smart",
                 "search_term": "Tuya Smart",
                 "stable": [
-                    "7.12.3"
+                    "7.12.6"
                 ],
                 "beta": [],
                 "strip": true,
@@ -202,10 +220,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "870",
-                    "armeabi-v7a": "870",
-                    "x86_64": "870",
-                    "x86": "870"
+                    "arm64-v8a": "872",
+                    "armeabi-v7a": "872",
+                    "x86_64": "872",
+                    "x86": "872"
                 },
                 "force_bundle": true
             },
