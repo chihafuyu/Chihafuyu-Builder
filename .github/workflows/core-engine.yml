@@ -320,29 +320,32 @@ jobs:
               exit 1
             fi
 
-            echo "[INFO] Downloading artifact for run ID: $RUN_ID"
-            rm -rf temp-test-patches
-            mkdir -p temp-test-patches
-            retry gh run download "$RUN_ID" -R MorpheApp/morphe-patches -D temp-test-patches
-
-            # Try to find by extension first
-            MPP_FILE=$(find temp-test-patches -type f -name "*.mpp" | head -n 1)
-
-            # Fallback: Find the largest file (>5MB), assuming it's the .mpp bundle
-            if [ -z "$MPP_FILE" ]; then
-              MPP_FILE=$(find temp-test-patches -type f -size +5M | head -n 1)
+            echo "[INFO] Fetching artifact ID for run ID: $RUN_ID"
+            ARTIFACT_ID=$(gh api "repos/MorpheApp/morphe-patches/actions/runs/$RUN_ID/artifacts" --jq '.artifacts[] | select(.name | endswith(".mpp")) | .id' | head -n 1)
+            
+            if [ -z "$ARTIFACT_ID" ] || [ "$ARTIFACT_ID" == "null" ]; then
+              ARTIFACT_ID=$(gh api "repos/MorpheApp/morphe-patches/actions/runs/$RUN_ID/artifacts" --jq '.artifacts[0].id')
             fi
 
-            if [ -n "$MPP_FILE" ]; then
-              mv "$MPP_FILE" patches.mpp
-              rm -rf temp-test-patches
-              echo "PATCHES_VERSION=test-$RUN_ID" >> "$GITHUB_ENV"
-              echo "[INFO] Successfully fetched and renamed $MPP_FILE to patches.mpp"
-            else
-              echo "::error::Failed to locate .mpp file in downloaded artifacts."
-              find temp-test-patches -type f
+            if [ -z "$ARTIFACT_ID" ] || [ "$ARTIFACT_ID" == "null" ]; then
+              echo "::error::Failed to locate artifact for run ID $RUN_ID"
               exit 1
             fi
+
+            echo "[INFO] Downloading artifact $ARTIFACT_ID directly as patches.mpp..."
+            gh api \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2026-03-10" \
+              "repos/MorpheApp/morphe-patches/actions/artifacts/$ARTIFACT_ID/zip" \
+              --output patches.mpp
+
+            if [ ! -s patches.mpp ]; then
+              echo "::error::Downloaded patches.mpp is empty or failed."
+              exit 1
+            fi
+
+            echo "PATCHES_VERSION=test-$RUN_ID" >> "$GITHUB_ENV"
+            echo "[INFO] Successfully fetched patches.mpp without extraction"
 
           else
             if [[ "$INPUT_PATCHES_TRACK" == "Pre-release" ]]; then
