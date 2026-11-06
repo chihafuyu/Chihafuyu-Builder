@@ -14,7 +14,8 @@
 
 - 🤖 **Automated & Parallelized Workflow** — Trigger patching straight from GitHub Actions, with matrix concurrency scoping to prevent CI bottlenecks.
 - 🎛️ **Granular Dispatch Controls** — Patch specific apps or an entire ecosystem, then route output to GitHub Releases, a Telegram channel, or both.
-- 📥 **Multi-Tier Smart Downloader** — Aggressive fallback chain across Google Play Store, HuggingFace, Archive.org, APKMirror, APKPure, and direct GitHub Releases. Backed by a local **FlareSolverr Docker microservice** to seamlessly bypass Cloudflare WAF and Turnstile inside GitHub Actions.
+- 📥 **Multi-Tier Smart Downloader** — Aggressive fallback chain across Direct URLs, GitHub Releases, HuggingFace, APKMirror, Archive.org, APKPure, and Google Play Store. Backed by a local **FlareSolverr Docker microservice** to seamlessly bypass Cloudflare WAF and Turnstile inside GitHub Actions.
+- 🛡️ **Security Hardened** — Enforces strict HTTPS validation, fails fast if no malware scanners are configured, and runs third-party tools in a credential-free sandbox.
 - 📦 **Split/Bundle Support** — Pulls XAPK/APKM bundles when patches require them (e.g., Google apps), with dynamic segment matching for exact version accuracy.
 - ⚙️ **Dynamic Options Injection** — Generates and modifies `options.json` on the fly to apply custom patch preferences and locale stripping.
 - 📁 **Local Patch Support** — Use custom patch bundles directly from your repository.
@@ -80,6 +81,8 @@ Configure the following secrets at **Settings → Secrets and variables → Acti
 | `API_HASH` | Telegram API hash from my.telegram.org |
 | `SESSION_STRING` | Pyrogram session string from Step 3 |
 | `CHAT_ID` | Target Telegram channel/group ID or private invite link |
+
+> **⚠️ CRITICAL:** You **must** provide at least one of `VT_API_KEY`, `HA_API_KEY`, or `MD_API_KEY`. The pipeline will fail-fast and abort if no malware scanners are configured.
 
 ### 5. Customize Ecosystems
 

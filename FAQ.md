@@ -103,7 +103,7 @@ Yes — the patcher is fully modular. Add new apps by editing the appropriate ec
 - A `search_term` for the downloader
 - At least one entry under `stable` (or `beta`)
 
-The 9-tier smart downloader will attempt to fetch the APK from any of these sources in order: **Google Play Store, HuggingFace, Archive.org, APKMirror, APKPure, APKCombo, Aptoide, Uptodown, GitHub Releases**.
+The 7-tier smart downloader will attempt to fetch the APK from any of these sources in order: **Direct URL, GitHub Releases, HuggingFace, APKMirror, Archive.org, APKPure, and Google Play Store**.
 
 Once added, the app appears in the interactive menu and can be dispatched through GitHub Actions.
 
@@ -129,7 +129,7 @@ Patched Google apps require a **Google Play Services spoofing framework**. Witho
 
 ---
 
-## 7. Why did the workflow fail with `Version defined as 'Any'. Skipping.`?
+## 7. Why did the workflow skip an app with `[INFO] '{ctx.pkg}' resolves to 'Any'. Skipping (requires explicit version).`?
 
 Some apps (system apps, highly fragmented bundles, region-specific builds) are marked with `"stable": ["Any"]` in the JSON config because their versions vary too widely to pin. The automated scraper skips them by default to avoid downloading the wrong architecture.
 
@@ -143,7 +143,10 @@ some-app=1.2.3
 
 ## 8. What apps are supported in large ecosystems like `arandomhooman` and `rushiranpise`?
 
-Because these ecosystems track dozens of apps, the dispatch form uses a **text input** instead of individual checkboxes (to stay under GitHub Actions input limits). Type `all` in the **Apps to patch** field to process everything, or paste a comma-separated list of specific app keys.
+Because these ecosystems track dozens of apps, the dispatch form uses a **text input** instead of individual checkboxes (to stay under GitHub Actions input limits). 
+
+- Typing `all` in the **Apps to patch** field will read the `config/apps-{ecosystem}.toml` file and process every app marked as `true`.
+- To process specific apps without changing the TOML, paste a comma-separated list of specific app keys.
 
 **Example:**
 
