@@ -306,6 +306,36 @@ jobs:
             fi
             cp -- "$CUSTOM_PATCH" patches.mpp
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
+
+          elif [[ "$INPUT_PATCHES_TRACK" == "Test Artifact" ]]; then
+            if [[ "$INPUT_REPO_URL" != "MorpheApp/morphe-patches" ]]; then
+              echo "::error::Test Artifact is strictly reserved for the Morphe ecosystem."
+              exit 1
+            fi
+
+            echo "[INFO] Fetching latest Test Artifact from Morphe dev branch..."
+            RUN_ID=$(gh api "repos/MorpheApp/morphe-patches/actions/workflows/build_pull_request.yml/runs?status=success&branch=dev&per_page=1" --jq '.workflow_runs[0].id')
+            if [ -z "$RUN_ID" ] || [ "$RUN_ID" == "null" ]; then
+              echo "::error::No successful build found on dev branch."
+              exit 1
+            fi
+
+            echo "[INFO] Downloading artifact for run ID: $RUN_ID"
+            rm -rf temp-test-patches
+            mkdir -p temp-test-patches
+            retry gh run download "$RUN_ID" -R MorpheApp/morphe-patches -D temp-test-patches
+
+            MPP_FILE=$(find temp-test-patches -name "*.mpp" | head -n 1)
+            if [ -n "$MPP_FILE" ]; then
+              mv "$MPP_FILE" patches.mpp
+              rm -rf temp-test-patches
+              echo "PATCHES_VERSION=test-$RUN_ID" >> "$GITHUB_ENV"
+              echo "[INFO] Successfully fetched and renamed $MPP_FILE to patches.mpp"
+            else
+              echo "::error::Failed to locate .mpp file in downloaded artifacts."
+              exit 1
+            fi
+
           else
             if [[ "$INPUT_PATCHES_TRACK" == "Pre-release" ]]; then
               JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
@@ -367,6 +397,7 @@ jobs:
           if [[ "$INPUT_CLI_TRACK" == "Pre-release" || \
                 "$INPUT_PATCHES_TRACK" == "Pre-release" || \
                 "$INPUT_PATCHES_TRACK" == "Custom Local" || \
+                "$INPUT_PATCHES_TRACK" == "Test Artifact" || \
                 "$INPUT_VERSION_SELECTION" == "Beta" ]]; then
             echo "IS_PRERELEASE=true" >> "$GITHUB_ENV"
           else

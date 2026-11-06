@@ -67,7 +67,7 @@ name: 🌌 Morphe Ecosystem Patcher
         required: true
         type: choice
         default: 'Stable'
-        options: [Stable, Pre-release, Custom Local]
+        options: [Stable, Pre-release, Custom Local, Test Artifact]
       upload_github_release:
         description: 'Upload to GitHub Release'
         required: true
