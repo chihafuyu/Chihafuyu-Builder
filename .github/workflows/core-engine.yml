@@ -332,12 +332,13 @@ jobs:
               exit 1
             fi
 
-            echo "[INFO] Downloading artifact $ARTIFACT_ID directly as patches.mpp..."
-            gh api \
+            echo "[INFO] Downloading artifact $ARTIFACT_ID directly as patches.mpp via curl..."
+            curl -sL \
+              -H "Authorization: Bearer $GH_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               -H "X-GitHub-Api-Version: 2026-03-10" \
-              "repos/MorpheApp/morphe-patches/actions/artifacts/$ARTIFACT_ID/zip" \
-              --output patches.mpp
+              "https://api.github.com/repos/MorpheApp/morphe-patches/actions/artifacts/$ARTIFACT_ID/zip" \
+              -o patches.mpp
 
             if [ ! -s patches.mpp ]; then
               echo "::error::Downloaded patches.mpp is empty or failed."
