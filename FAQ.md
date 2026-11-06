@@ -143,7 +143,7 @@ some-app=1.2.3
 
 ## 8. What apps are supported in large ecosystems like `arandomhooman` and `rushiranpise`?
 
-Because these ecosystems track dozens of apps, the dispatch form uses a **text input** instead of individual checkboxes (to stay under GitHub Actions input limits). 
+Because these ecosystems track dozens of apps, the dispatch form uses a **text input** instead of individual checkboxes (to stay under GitHub Actions input limits).
 
 - Typing `all` in the **Apps to patch** field will read the `config/apps-{ecosystem}.toml` file and process every app marked as `true`.
 - To process specific apps without changing the TOML, paste a comma-separated list of specific app keys.

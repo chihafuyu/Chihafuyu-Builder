@@ -327,7 +327,7 @@ jobs:
 
             # Try to find by extension first
             MPP_FILE=$(find temp-test-patches -type f -name "*.mpp" | head -n 1)
-            
+
             # Fallback: Find the largest file (>5MB), assuming it's the .mpp bundle
             if [ -z "$MPP_FILE" ]; then
               MPP_FILE=$(find temp-test-patches -type f -size +5M | head -n 1)
