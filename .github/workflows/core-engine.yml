@@ -325,7 +325,7 @@ jobs:
             mkdir -p temp-test-patches
             retry gh run download "$RUN_ID" -R MorpheApp/morphe-patches -D temp-test-patches
 
-            MPP_FILE=$(find temp-test-patches -name "*.mpp" | head -n 1)
+            MPP_FILE=$(find temp-test-patches -type f -name "*.mpp" | head -n 1)
             if [ -n "$MPP_FILE" ]; then
               mv "$MPP_FILE" patches.mpp
               rm -rf temp-test-patches
