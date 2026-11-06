@@ -19,6 +19,9 @@
                     },
                     "Remove gaps and dividers": {
                         "enabled": false
+                    },
+                    "AMOLED black bars": {
+                        "enabled": false
                     }
                 }
             }
