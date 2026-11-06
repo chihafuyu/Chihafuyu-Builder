@@ -168,10 +168,10 @@
                     "Remove gaps and dividers": {
                         "enabled": false
                     },
-                    "Glass bottom bar": {
+                    "Pitch black": {
                         "enabled": false
                     },
-                    "Pitch black": {
+                    "Glass navigation bar": {
                         "enabled": false
                     }
                 },

@@ -13,6 +13,36 @@
                 "options_override": {},
                 "force_bundle": true
             },
+            "gmail": {
+                "package": "com.google.android.gm",
+                "search_term": "Gmail",
+                "stable": [
+                    "2026.11.02.1012472355.Release"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Add microG-RE support": {
+                        "enabled": false
+                    },
+                    "Black theme": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "good-lock": {
+                "package": "com.samsung.android.goodlock",
+                "search_term": "Good Lock",
+                "stable": [
+                    "3.0.16.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "google-maps": {
                 "package": "com.google.android.apps.maps",
                 "search_term": "Google Maps",
@@ -34,6 +64,17 @@
                         "enabled": false
                     }
                 }
+            },
+            "home-up": {
+                "package": "com.samsung.android.app.homestar",
+                "search_term": "Home Up",
+                "stable": [
+                    "18.0.00.24"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "honor-calculator": {
                 "package": "com.hihonor.calculator",
@@ -123,6 +164,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "honor-screen-recording": {
+                "package": "com.hihonor.screenrecorder",
+                "search_term": "Honor Screen recording",
+                "stable": [
+                    "14.0.1.181"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "honor-video-player": {
                 "package": "com.hihonor.hnvideoplayer",
                 "search_term": "Honor Video Player",
@@ -201,6 +253,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "nothing-screenshot": {
+                "package": "com.nothing.ntscreenshot",
+                "search_term": "Nothing Screenshot",
+                "stable": [
+                    "14.0.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "one-ui-home": {
                 "package": "com.sec.android.app.launcher",
                 "search_term": "One UI Home",
@@ -239,6 +302,17 @@
                 "search_term": "OnePlus Compass",
                 "stable": [
                     "17.0.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "oneplus-contacts": {
+                "package": "com.android.contacts",
+                "search_term": "OnePlus Contacts",
+                "stable": [
+                    "16.80.15"
                 ],
                 "beta": [],
                 "strip": true,
@@ -406,6 +480,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "samsung-email": {
+                "package": "com.samsung.android.email.provider",
+                "search_term": "Samsung Email",
+                "stable": [
+                    "6.2.13.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "samsung-gallery": {
                 "package": "com.sec.android.gallery3d",
                 "search_term": "Samsung Gallery",
@@ -415,7 +500,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Remove Google services": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-health": {
                 "package": "com.sec.android.app.shealth",
@@ -457,6 +546,9 @@
                         "enabled": false
                     },
                     "Remove internet permission": {
+                        "enabled": false
+                    },
+                    "Show GIFs in every region": {
                         "enabled": false
                     }
                 }
@@ -514,7 +606,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Samsung account sign-in": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-phone": {
                 "package": "com.samsung.android.dialer",
@@ -549,6 +645,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "samsung-screen-recorder": {
+                "package": "com.sec.app.screenrecorder",
+                "search_term": "Samsung Screen Recorder",
+                "stable": [
+                    "4.0.23"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "samsung-video-player": {
                 "package": "com.samsung.android.video",
                 "search_term": "Samsung Video Player",
@@ -576,6 +683,17 @@
                 "search_term": "Samsung Weather",
                 "stable": [
                     "1.7.30.50"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "sony-album": {
+                "package": "com.sonyericsson.album",
+                "search_term": "Sony Album",
+                "stable": [
+                    "9.9.A.0.20"
                 ],
                 "beta": [],
                 "strip": true,
@@ -635,9 +753,23 @@
                     },
                     "Bigger alert pins": {
                         "enabled": false
+                    },
+                    "Map theme": {
+                        "enabled": false
                     }
                 },
                 "force_bundle": true
+            },
+            "wonderland": {
+                "package": "com.samsung.android.wonderland.wallpaper",
+                "search_term": "Wonderland",
+                "stable": [
+                    "1.6.22"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "xiaomi-calendar": {
                 "package": "com.android.calendar",
@@ -732,6 +864,17 @@
                 "search_term": "Xiaomi Weather",
                 "stable": [
                     "G-17.0.3.26"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "xperia-home": {
+                "package": "com.sonymobile.launcher",
+                "search_term": "Xperia Home",
+                "stable": [
+                    "15"
                 ],
                 "beta": [],
                 "strip": true,

@@ -3,7 +3,10 @@
 
 [apps]
 "alltrails" = true
+"gmail" = false
+"good-lock" = false
 "google-maps" = true
+"home-up" = false
 "honor-calculator" = false
 "honor-calendar" = false
 "honor-clock" = false
@@ -12,6 +15,7 @@
 "honor-home" = false
 "honor-notes" = false
 "honor-recorder" = false
+"honor-screen-recording" = false
 "honor-video-player" = false
 "honor-weather" = false
 "lg-health" = false
@@ -19,10 +23,12 @@
 "nothing-gallery" = false
 "nothing-launcher" = false
 "nothing-recorder" = false
+"nothing-screenshot" = false
 "one-ui-home" = false
 "oneplus-calculator" = false
 "oneplus-clock" = false
 "oneplus-compass" = false
+"oneplus-contacts" = false
 "oneplus-launcher-oxygenos-11" = false
 "oneplus-my-files" = false
 "oneplus-notes" = false
@@ -37,6 +43,7 @@
 "samsung-calendar" = false
 "samsung-clock" = false
 "samsung-contacts" = false
+"samsung-email" = false
 "samsung-gallery" = true
 "samsung-health" = false
 "samsung-health-monitor" = false
@@ -49,11 +56,14 @@
 "samsung-phone" = false
 "samsung-photo-editor" = true
 "samsung-reminder" = false
+"samsung-screen-recorder" = false
 "samsung-video-player" = false
 "samsung-voice-recorder" = false
 "samsung-weather" = true
+"sony-album" = true
 "sound-assistant" = false
 "waze" = true
+"wonderland" = true
 "xiaomi-calendar" = false
 "xiaomi-compass" = false
 "xiaomi-gallery" = false
@@ -63,3 +73,4 @@
 "xiaomi-scanner" = false
 "xiaomi-screen-recorder" = false
 "xiaomi-weather" = false
+"xperia-home" = false
