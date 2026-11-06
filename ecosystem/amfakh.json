@@ -167,6 +167,12 @@
                     },
                     "Remove gaps and dividers": {
                         "enabled": false
+                    },
+                    "Glass bottom bar": {
+                        "enabled": false
+                    },
+                    "Pitch black": {
+                        "enabled": false
                     }
                 },
                 "force_bundle": true
