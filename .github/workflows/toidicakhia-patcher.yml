@@ -10,30 +10,35 @@ name: 🐉 Toidicakhia Ecosystem Patcher
         type: boolean
         default: true
       app_ezviz:
-        description: 'Patch EZVIZ'
+        description: 'Patch ezviz'
         required: true
         type: boolean
         default: true
       app_http_sniffer:
-        description: 'Patch HTTP Sniffer'
+        description: 'Patch http-niffer'
         required: true
         type: boolean
         default: true
       app_netmonster:
-        description: 'Patch NetMonster'
+        description: 'Patch netmonster'
         required: true
         type: boolean
         default: true
       app_terabox:
-        description: 'Patch TeraBox'
+        description: 'Patch terabox'
         required: true
         type: boolean
-        default: true
+        default: false
       app_universal_copy:
-        description: 'Patch Universal Copy'
+        description: 'Patch universal-copy'
         required: true
         type: boolean
         default: true
+      app_vtvgo:
+        description: 'Patch vtvgo'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -113,6 +118,7 @@ jobs:
       APP_NETMONSTER: ${{ inputs.app_netmonster }}
       APP_TERABOX: ${{ inputs.app_terabox }}
       APP_UNIVERSAL_COPY: ${{ inputs.app_universal_copy }}
+      APP_VTVGO: ${{ inputs.app_vtvgo }}
     steps:
       - id: build-list
         run: |
@@ -135,6 +141,9 @@ jobs:
           fi
           if [[ "$APP_UNIVERSAL_COPY" == "true" ]]; then
             LIST="$LIST,universal-copy"
+          fi
+          if [[ "$APP_VTVGO" == "true" ]]; then
+            LIST="$LIST,vtvgo"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
