@@ -22,6 +22,8 @@
 "claude" = false
 "cronometer" = false
 "crossy-road" = false
+"cryptomator" = true
+"cryptomator-freemium" = true
 "cut-the-rope" = false
 "dan-the-man" = false
 "deepl" = false
@@ -33,6 +35,7 @@
 "firefox" = false
 "flightradar24" = false
 "fossify-phone" = false
+"fotmob" = false
 "free-fire" = false
 "free-fire-max" = false
 "fruit-ninja" = false
@@ -50,6 +53,7 @@
 "imdb" = false
 "instagram" = false
 "jetpack-joyride" = false
+"jiohotstar" = true
 "letterboxd" = false
 "mathway" = false
 "mega" = false
@@ -59,7 +63,6 @@
 "money-manager" = false
 "moovit" = false
 "movix" = true
-"mt-manager" = false
 "mx-player" = false
 "myfitnesspal" = false
 "nextcloud" = false
@@ -104,6 +107,7 @@
 "telegram" = false
 "temple-run-2" = false
 "terabox" = false
+"the-athletic" = false
 "tidal" = false
 "todoist" = false
 "truecaller" = false

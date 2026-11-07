@@ -101,12 +101,16 @@
                 "package": "com.github.android",
                 "search_term": "GitHub",
                 "stable": [
-                    "1.282.0"
+                    "1.283.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Glass navigation bar": {
+                        "enabled": false
+                    }
+                },
                 "force_bundle": true
             },
             "idn": {
@@ -153,7 +157,7 @@
                 "package": "com.linkedin.android",
                 "search_term": "LinkedIn",
                 "stable": [
-                    "4.1.1269"
+                    "4.1.1270"
                 ],
                 "beta": [],
                 "strip": true,
