@@ -90,11 +90,7 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {
-                    "Clone app": {
-                        "enabled": false
-                    }
-                },
+                "options_override": {},
                 "version_codes": {
                     "arm64-v8a": "702",
                     "armeabi-v7a": "702",
@@ -107,17 +103,42 @@
                 "package": "com.camel.corp.universalcopy",
                 "search_term": "Universal Copy",
                 "stable": [
-                    "7.1.0"
+                    "7.2.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "104",
-                    "armeabi-v7a": "104",
-                    "x86_64": "104",
-                    "x86": "104"
+                    "arm64-v8a": "106",
+                    "armeabi-v7a": "106",
+                    "x86_64": "106",
+                    "x86": "106"
+                },
+                "force_bundle": true
+            },
+            "vtvgo": {
+                "package": "vn.vtv.vtvgo",
+                "search_term": "VTVGo",
+                "stable": [
+                    "12.11.05"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Remove Calendar Permissions": {
+                        "enabled": false
+                    },
+                    "Trust User Certificates": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "260933",
+                    "armeabi-v7a": "260933",
+                    "x86_64": "260933",
+                    "x86": "260933"
                 },
                 "force_bundle": true
             }

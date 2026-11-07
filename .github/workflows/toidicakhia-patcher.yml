@@ -34,6 +34,11 @@ name: 🐉 Toidicakhia Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_vtvgo:
+        description: 'Patch vtvgo'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -113,6 +118,7 @@ jobs:
       APP_NETMONSTER: ${{ inputs.app_netmonster }}
       APP_TERABOX: ${{ inputs.app_terabox }}
       APP_UNIVERSAL_COPY: ${{ inputs.app_universal_copy }}
+      APP_VTVGO: ${{ inputs.app_vtvgo }}
     steps:
       - id: build-list
         run: |
@@ -135,6 +141,9 @@ jobs:
           fi
           if [[ "$APP_UNIVERSAL_COPY" == "true" ]]; then
             LIST="$LIST,universal-copy"
+          fi
+          if [[ "$APP_VTVGO" == "true" ]]; then
+            LIST="$LIST,vtvgo"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

@@ -221,6 +221,28 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "cryptomator": {
+                "package": "org.cryptomator",
+                "search_term": "Cryptomator",
+                "stable": [
+                    "2.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "cryptomator-freemium": {
+                "package": "org.cryptomator.freemium",
+                "search_term": "Cryptomator (Freemium)",
+                "stable": [
+                    "2.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "cut-the-rope": {
                 "package": "com.zeptolab.ctr.ads",
                 "search_term": "Cut the Rope",
@@ -334,6 +356,17 @@
             "fossify-phone": {
                 "package": "org.fossify.phone",
                 "search_term": "Fossify Phone",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "fotmob": {
+                "package": "com.mobilefootie.wc2010",
+                "search_term": "FotMob",
                 "stable": [
                     "Any"
                 ],
@@ -540,6 +573,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "jiohotstar": {
+                "package": "in.startv.hotstar",
+                "search_term": "JioHotstar",
+                "stable": [
+                    "26.10.26.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "letterboxd": {
                 "package": "com.letterboxd.letterboxd",
                 "search_term": "Letterboxd",
@@ -566,7 +610,7 @@
                 "package": "mega.privacy.android.app",
                 "search_term": "MEGA",
                 "stable": [
-                    "Any"
+                    "16.14"
                 ],
                 "beta": [],
                 "strip": true,
@@ -633,17 +677,6 @@
                 "search_term": "Movix",
                 "stable": [
                     "2.6.5"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
-            "mt-manager": {
-                "package": "bin.mt.plus",
-                "search_term": "MT Manager",
-                "stable": [
-                    "Any"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1126,6 +1159,17 @@
             "terabox": {
                 "package": "com.dubox.drive",
                 "search_term": "TeraBox",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "the-athletic": {
+                "package": "com.theathletic",
+                "search_term": "The Athletic",
                 "stable": [
                     "Any"
                 ],

@@ -3,6 +3,7 @@
 
 [apps]
 "alltrails" = true
+"asus-launcher" = true
 "gmail" = false
 "good-lock" = false
 "google-maps" = true
@@ -18,17 +19,23 @@
 "honor-screen-recording" = false
 "honor-video-player" = false
 "honor-weather" = false
+"hyperos-launcher" = true
+"lg-gallery" = true
 "lg-health" = false
 "lg-quickmemo" = false
+"moto-app-launcher" = true
 "nothing-gallery" = false
 "nothing-launcher" = false
 "nothing-recorder" = false
 "nothing-screenshot" = false
+"one-hand-operation" = true
 "one-ui-home" = false
 "oneplus-calculator" = false
+"oneplus-camera" = false
 "oneplus-clock" = false
 "oneplus-compass" = false
 "oneplus-contacts" = false
+"oneplus-documents" = true
 "oneplus-launcher-oxygenos-11" = false
 "oneplus-my-files" = false
 "oneplus-notes" = false
@@ -41,6 +48,7 @@
 "redmagic-game-space" = false
 "samsung-calculator" = false
 "samsung-calendar" = false
+"samsung-capture" = true
 "samsung-clock" = false
 "samsung-contacts" = false
 "samsung-email" = false
@@ -61,6 +69,7 @@
 "samsung-voice-recorder" = false
 "samsung-weather" = true
 "sony-album" = true
+"sony-music" = true
 "sound-assistant" = false
 "waze" = true
 "wonderland" = true
@@ -74,3 +83,4 @@
 "xiaomi-screen-recorder" = false
 "xiaomi-weather" = false
 "xperia-home" = false
+"xperia-keyboard" = true
