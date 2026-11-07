@@ -3,7 +3,7 @@
 
 [apps]
 "alltrails" = true
-"asus-launcher" = true
+"asus-launcher" = false
 "gmail" = false
 "good-lock" = false
 "google-maps" = true
@@ -19,23 +19,23 @@
 "honor-screen-recording" = false
 "honor-video-player" = false
 "honor-weather" = false
-"hyperos-launcher" = true
-"lg-gallery" = true
+"hyperos-launcher" = false
+"lg-gallery" = false
 "lg-health" = false
 "lg-quickmemo" = false
-"moto-app-launcher" = true
+"moto-app-launcher" = false
 "nothing-gallery" = false
 "nothing-launcher" = false
 "nothing-recorder" = false
 "nothing-screenshot" = false
-"one-hand-operation" = true
+"one-hand-operation" = false
 "one-ui-home" = false
 "oneplus-calculator" = false
 "oneplus-camera" = false
 "oneplus-clock" = false
 "oneplus-compass" = false
 "oneplus-contacts" = false
-"oneplus-documents" = true
+"oneplus-documents" = false
 "oneplus-launcher-oxygenos-11" = false
 "oneplus-my-files" = false
 "oneplus-notes" = false
@@ -48,7 +48,7 @@
 "redmagic-game-space" = false
 "samsung-calculator" = false
 "samsung-calendar" = false
-"samsung-capture" = true
+"samsung-capture" = false
 "samsung-clock" = false
 "samsung-contacts" = false
 "samsung-email" = false

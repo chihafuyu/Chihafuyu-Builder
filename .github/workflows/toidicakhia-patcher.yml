@@ -10,27 +10,27 @@ name: 🐉 Toidicakhia Ecosystem Patcher
         type: boolean
         default: true
       app_ezviz:
-        description: 'Patch EZVIZ'
+        description: 'Patch ezviz'
         required: true
         type: boolean
         default: true
       app_http_sniffer:
-        description: 'Patch HTTP Sniffer'
+        description: 'Patch http-niffer'
         required: true
         type: boolean
         default: true
       app_netmonster:
-        description: 'Patch NetMonster'
+        description: 'Patch netmonster'
         required: true
         type: boolean
         default: true
       app_terabox:
-        description: 'Patch TeraBox'
+        description: 'Patch terabox'
         required: true
         type: boolean
-        default: true
+        default: false
       app_universal_copy:
-        description: 'Patch Universal Copy'
+        description: 'Patch universal-copy'
         required: true
         type: boolean
         default: true
@@ -38,7 +38,7 @@ name: 🐉 Toidicakhia Ecosystem Patcher
         description: 'Patch vtvgo'
         required: true
         type: boolean
-        default: true
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true

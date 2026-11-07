@@ -53,7 +53,7 @@
 "imdb" = false
 "instagram" = false
 "jetpack-joyride" = false
-"jiohotstar" = true
+"jiohotstar" = false
 "letterboxd" = false
 "mathway" = false
 "mega" = false
@@ -94,7 +94,7 @@
 "shadow-fight-4-arena" = false
 "shazam" = false
 "signal" = false
-"silt" = true
+"silt" = false
 "simplex-chat" = false
 "snapchat" = false
 "soundcloud" = false
