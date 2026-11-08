@@ -1,0 +1,43 @@
+# Application Configuration
+# Change to `false` to patch, `false` to skip.
+
+[apps]
+"adobe-lightroom" = false
+"adobe-photoshop" = true
+"adobe-premiere" = true
+"arc-player" = true
+"audio-editor" = false
+"calendar" = false
+"call-filter" = false
+"com-chenupt-money" = false
+"days-matter" = false
+"device-info" = true
+"dramabox" = false
+"dramawave" = false
+"finch" = false
+"huanxiu-sleep" = true
+"idrama" = false
+"inshot" = true
+"magovideo" = false
+"mixplorer" = false
+"music-pitcher-radio" = false
+"music-player" = false
+"my-diary" = false
+"my-drama" = false
+"nova-launcher" = false
+"photoapp" = false
+"polarr" = false
+"pou" = true
+"reelshort" = false
+"ringtone-maker-music-cutter" = false
+"screen-translate" = false
+"sideme" = false
+"sofascore" = false
+"telegram" = false
+"tiktok" = false
+"to-do-list" = false
+"trebedit" = false
+"vivacut" = false
+"voice-changer" = false
+"wearfit-pro" = false
+"whatsapp" = true

@@ -1,0 +1,213 @@
+---
+name: 💪 Mich111discord Ecosystem Patcher
+
+"on":
+  workflow_dispatch:
+    inputs:
+      apps_to_patch:
+        description: >-
+          Type "all" to follow config/apps.toml,
+          or type the name of a specific app (eg: 1weather,3way)
+        required: true
+        type: string
+        default: 'all'
+      architecture:
+        description: 'Target Architecture'
+        required: true
+        type: choice
+        default: 'arm64-v8a'
+        options: [arm64-v8a, armeabi-v7a, x86_64, x86, universal]
+      version_selection:
+        description: 'App Version Selection'
+        required: true
+        type: choice
+        default: 'Latest Recommended'
+        options: [Latest Recommended, Beta, Custom]
+      custom_version:
+        description: 'Custom App Version'
+        required: false
+        default: ''
+      download_source:
+        description: 'Download Source'
+        required: true
+        type: choice
+        default: 'default'
+        options:
+          - default
+          - google_play
+          - huggingface
+          - archive
+          - apkmirror
+          - apkpure
+      continue_on_error:
+        description: 'Debug: Continue on patch error'
+        required: true
+        type: boolean
+        default: false
+      cli_track:
+        description: 'Morphe CLI Track'
+        required: true
+        type: choice
+        default: 'Stable'
+        options: [Stable, Pre-release, Custom]
+      custom_cli_version:
+        description: 'Custom CLI Version (e.g. v1.16.0)'
+        required: false
+        default: ''
+      patches_track:
+        description: 'Ecosystem Patches Track'
+        required: true
+        type: choice
+        default: 'Stable'
+        options: [Stable, Pre-release, Custom Local]
+      upload_github_release:
+        description: 'Upload to GitHub Release'
+        required: true
+        type: boolean
+        default: true
+      upload_huggingface:
+        description: 'Upload to HuggingFace Dataset'
+        required: true
+        type: boolean
+        default: false
+      send_to_telegram:
+        description: 'Send to Telegram'
+        required: true
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  prepare-apps:
+    runs-on: ubuntu-latest
+    outputs:
+      selected: ${{ steps.build-list.outputs.apps }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Validate and Normalize App List
+        id: build-list
+        env:
+          APPS_RAW: ${{ inputs.apps_to_patch }}
+        run: |
+          set -euo pipefail
+
+          ECO="mich111discord"
+          CONFIG="ecosystem/${ECO}.json"
+          TOML_CONFIG="config/apps-mich111discord.toml"
+
+          if [ ! -f "$CONFIG" ]; then
+            echo "::error::Config not found: $CONFIG"
+            exit 1
+          fi
+
+          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          import os, json, sys
+
+          try:
+              import tomllib
+          except ImportError:
+              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              sys.exit(1)
+
+          eco = os.environ['ECO_NAME']
+          config_path = os.environ['CONFIG_PATH']
+          toml_path = os.environ['TOML_PATH']
+          raw_input = os.environ.get('APPS_RAW', '').strip()
+
+          with open(config_path) as f:
+              valid_apps = json.load(f)[eco]['apps']
+
+          selected = []
+
+          if raw_input.lower() == 'all':
+              print(f'[INFO] Mode: Reading from {toml_path}', file=sys.stderr)
+              if not os.path.exists(toml_path):
+                  print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
+                  sys.exit(1)
+
+              with open(toml_path, 'rb') as f:
+                  toml_data = tomllib.load(f)
+
+              apps_dict = toml_data.get('apps', {})
+              selected = [k for k, v in apps_dict.items() if v is True]
+
+              if not selected:
+                  print(f'::error::No apps enabled in {toml_path}', file=sys.stderr)
+                  sys.exit(1)
+
+          else:
+              print('[INFO] Mode: Manual Input', file=sys.stderr)
+              selected = [a.strip() for a in raw_input.split(',') if a.strip()]
+
+          invalid = [app for app in selected if app not in valid_apps]
+          if invalid:
+              print(f'::error::The following apps were not found in {config_path}: {invalid}', file=sys.stderr)
+              print('Valid apps:', file=sys.stderr)
+              for v in sorted(valid_apps):
+                  print(f'  - {v}', file=sys.stderr)
+              sys.exit(1)
+
+          print(','.join(selected))
+          ")
+
+          if [ -z "$SELECTED" ]; then
+            echo "::error::No apps selected."
+            exit 1
+          fi
+
+          echo "Apps to patch: $SELECTED"
+
+          {
+            echo "apps<<EOF"
+            echo "$SELECTED"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+  call-patcher:
+    needs: prepare-apps
+    permissions:
+      contents: write
+    uses: ./.github/workflows/core-engine.yml
+    secrets:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+      KEYSTORE_SIGNER_NAME: ${{ secrets.KEYSTORE_SIGNER_NAME }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      VT_API_KEY: ${{ secrets.VT_API_KEY }}
+      HA_API_KEY: ${{ secrets.HA_API_KEY }}
+      MD_API_KEY: ${{ secrets.MD_API_KEY }}
+      PLAY_EMAIL: ${{ secrets.PLAY_EMAIL }}
+      PLAY_AAS_TOKEN: ${{ secrets.PLAY_AAS_TOKEN }}
+      DEVICE_PROPERTIES_B64: ${{ secrets.DEVICE_PROPERTIES_B64 }}
+      API_ID: ${{ secrets.API_ID }}
+      API_HASH: ${{ secrets.API_HASH }}
+      SESSION_STRING: ${{ secrets.SESSION_STRING }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
+    with:
+      ecosystem: "mich111discord"
+      apps: ${{ needs.prepare-apps.outputs.selected }}
+      architecture: ${{ inputs.architecture }}
+      version_selection: ${{ inputs.version_selection }}
+      custom_version: ${{ inputs.custom_version }}
+      download_source: ${{ inputs.download_source }}
+      continue_on_error: ${{ inputs.continue_on_error }}
+      cli_track: ${{ inputs.cli_track }}
+      custom_cli_version: ${{ inputs.custom_cli_version }}
+      patches_track: ${{ inputs.patches_track }}
+      repo_url: "mich111discord/MightyMichs-Patches"
+      custom_patch_filename: "mich111discord-custom.mpp"
+      upload_github_release: ${{ inputs.upload_github_release }}
+      upload_huggingface: ${{ inputs.upload_huggingface }}
+      send_to_telegram: ${{ inputs.send_to_telegram }}
+      release_tag_prefix: "mich111discord"

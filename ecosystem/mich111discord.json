@@ -1,0 +1,474 @@
+{
+    "mich111discord": {
+        "apps": {
+            "adobe-lightroom": {
+                "package": "com.adobe.lrmobile",
+                "search_term": "Adobe Lightroom",
+                "stable": [
+                    "9.1.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "adobe-photoshop": {
+                "package": "com.adobe.photoshop.retail",
+                "search_term": "Adobe Photoshop",
+                "stable": [
+                    "1.7.0.2322"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "adobe-premiere": {
+                "package": "com.adobe.premiere",
+                "search_term": "Adobe Premiere",
+                "stable": [
+                    "26.5.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "arc-player": {
+                "package": "com.videoplayer.arcplayer",
+                "search_term": "Arc Player",
+                "stable": [
+                    "1.3.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "audio-editor": {
+                "package": "audioeditor.musiceditor.soundeditor.songeditor",
+                "search_term": "Audio Editor",
+                "stable": [
+                    "2.01.65.1014"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "calendar": {
+                "package": "calendar.agenda.calendarplanner.agendaplanner",
+                "search_term": "Calendar",
+                "stable": [
+                    "2.07.37.1026"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "call-filter": {
+                "package": "callfilter.app",
+                "search_term": "Call Filter",
+                "stable": [
+                    "1.50.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "com-chenupt-money": {
+                "package": "com.chenupt.money",
+                "search_term": "记账助手",
+                "stable": [
+                    "3.16.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "days-matter": {
+                "package": "com.clover.daysmatter",
+                "search_term": "Days Matter",
+                "stable": [
+                    "2.0.57"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "device-info": {
+                "package": "com.liuzh.deviceinfo",
+                "search_term": "Device Info",
+                "stable": [
+                    "v3.2.3.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "dramabox": {
+                "package": "com.storymatrix.drama",
+                "search_term": "DramaBox",
+                "stable": [
+                    "7.0.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "dramawave": {
+                "package": "com.dramawave.app",
+                "search_term": "DramaWave",
+                "stable": [
+                    "2.0.70"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "finch": {
+                "package": "com.finch.finch",
+                "search_term": "Finch",
+                "stable": [
+                    "3.73.235"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Disable telemetry": {
+                        "enabled": false
+                    }
+                }
+            },
+            "huanxiu-sleep": {
+                "package": "com.huanxiu.HXAweme",
+                "search_term": "Huanxiu Sleep",
+                "stable": [
+                    "3.14.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "idrama": {
+                "package": "com.gooddrama.idrama",
+                "search_term": "iDrama",
+                "stable": [
+                    "1.36.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "inshot": {
+                "package": "com.camerasideas.instashot",
+                "search_term": "InShot",
+                "stable": [
+                    "2.243.1555"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "magovideo": {
+                "package": "mobi.charmer.magovideo",
+                "search_term": "MagoVideo",
+                "stable": [
+                    "5.7.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "mixplorer": {
+                "package": "com.mixplorer",
+                "search_term": "MiXplorer",
+                "stable": [
+                    "6.71.15"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Disable signature verification": {
+                        "enabled": false
+                    },
+                    "Hide browser Download component": {
+                        "enabled": false
+                    },
+                    "Limit Copy to share menu": {
+                        "enabled": false
+                    },
+                    "Remove HTTP/HTTPS intent filters": {
+                        "enabled": false
+                    }
+                }
+            },
+            "music-pitcher-radio": {
+                "package": "com.appums.music_pitcher_radio",
+                "search_term": "Music Pitcher Radio",
+                "stable": [
+                    "1.43"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "music-player": {
+                "package": "mymusic.offlinemusicplayer.mp3player.playmusic",
+                "search_term": "Music Player",
+                "stable": [
+                    "1.02.170.1026"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "my-diary": {
+                "package": "mydiary.journal.diary.diarywithlock.diaryjournal.secretdiary",
+                "search_term": "My Diary",
+                "stable": [
+                    "1.04.19.1027"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "my-drama": {
+                "package": "com.dashdramas",
+                "search_term": "My Drama",
+                "stable": [
+                    "1.81.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "nova-launcher": {
+                "package": "com.teslacoilsw.launcher",
+                "search_term": "Nova Launcher",
+                "stable": [
+                    "8.8.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "photoapp": {
+                "package": "com.scaleup.photofx",
+                "search_term": "PhotoApp",
+                "stable": [
+                    "2.8.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "polarr": {
+                "package": "photo.editor.polarr",
+                "search_term": "Polarr",
+                "stable": [
+                    "6.12.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Unlock Premium (Experimental)": {
+                        "enabled": false
+                    }
+                }
+            },
+            "pou": {
+                "package": "me.pou.app",
+                "search_term": "Pou",
+                "stable": [
+                    "1.4.139"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "reelshort": {
+                "package": "com.newleaf.app.android.victor",
+                "search_term": "ReelShort",
+                "stable": [
+                    "4.2.20"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "ringtone-maker-music-cutter": {
+                "package": "ringtonemaker.musiccutter.customringtones.freeringtonemake",
+                "search_term": "Ringtone Maker: Music Cutter",
+                "stable": [
+                    "1.01.99.0909"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "screen-translate": {
+                "package": "com.spaceship.screen.textcopy",
+                "search_term": "Screen Translate",
+                "stable": [
+                    "v7.5.00112"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "sideme": {
+                "package": "com.sideme",
+                "search_term": "SideMe",
+                "stable": [
+                    "1.19.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Unlimited Energy": {
+                        "enabled": false
+                    }
+                }
+            },
+            "sofascore": {
+                "package": "com.sofascore.results",
+                "search_term": "SofaScore",
+                "stable": [
+                    "26.09.21"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Bypass Login Requirements": {
+                        "enabled": false
+                    },
+                    "Unlock Premium & Remove Ads": {
+                        "enabled": false
+                    }
+                }
+            },
+            "telegram": {
+                "package": "org.telegram.messenger",
+                "search_term": "Telegram",
+                "stable": [
+                    "12.10.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "tiktok": {
+                "package": "com.zhiliaoapp.musically",
+                "search_term": "TikTok",
+                "stable": [
+                    "47.4.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "to-do-list": {
+                "package": "todolist.scheduleplanner.dailyplanner.todo.reminders",
+                "search_term": "To-Do List",
+                "stable": [
+                    "1.03.41.1022"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "trebedit": {
+                "package": "com.teejay.trebedit",
+                "search_term": "TrebEdit",
+                "stable": [
+                    "3.6.7"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "vivacut": {
+                "package": "com.quvideo.vivacut",
+                "search_term": "VivaCut",
+                "stable": [
+                    "3.9.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "voice-changer": {
+                "package": "voicechanger.voiceeffects.soundeffects.voiceavatar",
+                "search_term": "Voice Changer",
+                "stable": [
+                    "1.02.112.1013"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "wearfit-pro": {
+                "package": "com.wakeup.howear",
+                "search_term": "Wearfit Pro",
+                "stable": [
+                    "5.5.83"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "whatsapp": {
+                "package": "com.whatsapp",
+                "search_term": "WhatsApp",
+                "stable": [
+                    "2.26.43.75"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "App icon": {
+                        "enabled": false
+                    },
+                    "Typing indicator": {
+                        "enabled": false
+                    }
+                }
+            }
+        }
+    }
+}

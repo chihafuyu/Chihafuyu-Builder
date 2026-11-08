@@ -110,6 +110,9 @@
     "lokesh-sparrow": {
         "repo_url": "lokesh-sparrow/loki-patches"
     },
+    "mich111discord": {
+        "repo_url": "mich111discord/MightyMichs-Patches"
+    },
     "MiguelNinja19": {
         "repo_url": "MiguelNinja19/miguel-morphe-patches"
     },
@@ -139,7 +142,9 @@
         "config_path": "ecosystem/piko-newx.json",
         "target_package": "com.twitter.android",
         "target_name": "X (Twitter)",
-        "ignore_packages": ["com.instagram.android"],
+        "ignore_packages": [
+            "com.instagram.android"
+        ],
         "ignore_patches": [
             "Bring back twitter",
             "Dynamic color",
