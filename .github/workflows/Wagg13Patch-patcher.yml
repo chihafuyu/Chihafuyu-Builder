@@ -59,6 +59,21 @@ name: 🩷 Wagg13Patch Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_com_instaprime_android:
+        description: 'Patch com-instaprime-android'
+        required: true
+        type: boolean
+        default: true
+      app_telegraph_graph_messenger:
+        description: 'Patch telegraph-graph-messenger'
+        required: true
+        type: boolean
+        default: true
+      app_icsee:
+        description: 'Patch icsee'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -143,6 +158,9 @@ jobs:
       APP_COM_OVZ_CARSCANNER: ${{ inputs.app_com_ovz_carscanner }}
       APP_COM_XINESOFT_NOTIFICATIONS: ${{ inputs.app_com_xinesoft_notifications }}
       APP_INSTAGRAM: ${{ inputs.app_instagram }}
+      APP_COM_INSTAPRIME_ANDROID: ${{ inputs.app_com_instaprime_android }}
+      APP_TELEGRAPH_GRAPH_MESSENGER: ${{ inputs.app_telegraph_graph_messenger }}
+      APP_ICSEE: ${{ inputs.app_icsee }}
     steps:
       - id: build-list
         run: |
@@ -180,6 +198,15 @@ jobs:
           fi
           if [[ "$APP_INSTAGRAM" == "true" ]]; then
             LIST="$LIST,instagram"
+          fi
+          if [[ "$APP_COM_INSTAPRIME_ANDROID" == "true" ]]; then
+            LIST="$LIST,com-instaprime-android"
+          fi
+          if [[ "$APP_TELEGRAPH_GRAPH_MESSENGER" == "true" ]]; then
+            LIST="$LIST,telegraph-graph-messenger"
+          fi
+          if [[ "$APP_ICSEE" == "true" ]]; then
+            LIST="$LIST,icsee"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

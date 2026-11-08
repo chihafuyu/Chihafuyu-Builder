@@ -1372,6 +1372,24 @@
                 },
                 "force_bundle": true
             },
+            "marks": {
+                "package": "com.scoremarks.marks",
+                "search_term": "MARKS",
+                "stable": [
+                    "2.0.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "119",
+                    "armeabi-v7a": "119",
+                    "x86_64": "119",
+                    "x86": "119"
+                },
+                "force_bundle": true
+            },
             "may-beautiful-bullet-journal": {
                 "package": "com.azeravn.bulletjournal",
                 "search_term": "May: Beautiful Bullet Journal",

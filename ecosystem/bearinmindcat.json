@@ -634,6 +634,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "samsung-internet": {
+                "package": "com.sec.android.app.sbrowser",
+                "search_term": "Samsung Internet",
+                "stable": [
+                    "31.0.0.79"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "samsung-keyboard": {
                 "package": "com.samsung.android.honeyboard",
                 "search_term": "Samsung Keyboard",

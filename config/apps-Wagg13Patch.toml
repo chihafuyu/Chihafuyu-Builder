@@ -4,12 +4,15 @@
 [apps]
 "bisbi" = true
 "buzzcast" = true
+"com-instaprime-android" = true
 "com-ovz-carscanner" = true
 "com-pinterest" = true
 "com-xinesoft-notifications" = true
+"icsee" = true
 "image-date-fixer" = true
 "instagram" = true
 "instagram-instants" = true
 "native-camera" = true
 "picsart" = true
+"telegraph-graph-messenger" = true
 "tinder" = true

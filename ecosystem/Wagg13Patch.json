@@ -27,6 +27,17 @@
                     }
                 }
             },
+            "com-instaprime-android": {
+                "package": "com.instaprime.android",
+                "search_term": "com.instaprime.android",
+                "stable": [
+                    "435.0.0.37.76"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "com-ovz-carscanner": {
                 "package": "com.ovz.carscanner",
                 "search_term": "com.ovz.carscanner",
@@ -60,6 +71,21 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "icsee": {
+                "package": "com.xm.csee",
+                "search_term": "iCSee",
+                "stable": [
+                    "7.9.5_G"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "79531"
+                },
+                "force_bundle": true
+            },
             "image-date-fixer": {
                 "package": "eu.duong.imagedatefixer",
                 "search_term": "Image & Video Date Fixer",
@@ -82,14 +108,14 @@
                 "package": "com.instagram.android",
                 "search_term": "Instagram",
                 "stable": [
-                    "439.0.0.37.89"
+                    "452.1.0.53.64"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "384510827"
+                    "arm64-v8a": "385811006"
                 },
                 "force_bundle": true
             },
@@ -97,14 +123,14 @@
                 "package": "com.instagram.moonshot",
                 "search_term": "Instagram Instants",
                 "stable": [
-                    "444.0.0.45.108"
+                    "451.0.0.53.106"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "44501396"
+                    "arm64-v8a": "45201468"
                 }
             },
             "native-camera": {
@@ -129,11 +155,22 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "telegraph-graph-messenger": {
+                "package": "ir.ilmili.telegraph",
+                "search_term": "Telegraph (Graph Messenger)",
+                "stable": [
+                    "13.0.2.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "tinder": {
                 "package": "com.tinder",
                 "search_term": "Tinder",
                 "stable": [
-                    "17.37.3"
+                    "17.41.0"
                 ],
                 "beta": [],
                 "force_bundle": true,
@@ -141,6 +178,15 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Spoof signature": {
+                        "enabled": false
+                    },
+                    "Tinder Disable Consent Prompt": {
+                        "enabled": false
+                    },
+                    "Tinder Disable Paywall Flow": {
+                        "enabled": false
+                    },
+                    "Tinder Disable Watch-an-Ad Sheet": {
                         "enabled": false
                     }
                 }

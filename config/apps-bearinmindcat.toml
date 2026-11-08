@@ -55,6 +55,7 @@
 "samsung-gallery" = true
 "samsung-health" = false
 "samsung-health-monitor" = false
+"samsung-internet" = true
 "samsung-keyboard" = true
 "samsung-messages" = false
 "samsung-modes-and-routines" = false
