@@ -26,6 +26,9 @@
                     },
                     "GmsCore support": {
                         "enabled": false
+                    },
+                    "Clone install under another package name": {
+                        "enabled": false
                     }
                 }
             },

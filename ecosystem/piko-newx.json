@@ -5,7 +5,7 @@
                 "package": "com.twitter.android",
                 "search_term": "X",
                 "stable": [
-                    "12.40.1-prod.01"
+                    "12.41.0-prod.01"
                 ],
                 "beta": [
                     "12.40.0-alpha.01"
