@@ -11,37 +11,6 @@ name: 🛡️ Code Audit (Linter & Security)
 permissions: {}
 
 jobs:
-  pylint:
-    name: 🐍 Pylint Check
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v7
-        with:
-          persist-credentials: false
-
-      - name: Set up Python
-        uses: actions/setup-python@v7.1.0
-        with:
-          python-version: '3.14'
-          cache: 'pip'
-
-      - name: Install Dependencies
-        run: |
-          set -euo pipefail
-          python -m pip install --upgrade pip
-          python -m pip install pylint kurigram TgCryptoRust
-          if [ -f requirements.txt ]; then
-            python -m pip install -r requirements.txt
-          fi
-
-      - name: Run Pylint
-        run: |
-          set -euo pipefail
-          git ls-files -z '*.py' | xargs -0 -r python -m pylint
-
   megalinter:
     name: 🔍 MegaLinter Check
     if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
@@ -62,9 +31,17 @@ jobs:
         env:
           VALIDATE_ALL_CODEBASE: 'true'
           FLAVOR_SUGGESTIONS: 'false'
+          LOG_LEVEL: 'INFO'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ENABLE_LINTERS: JSON_JSONLINT,YAML_YAMLLINT,ACTION_ACTIONLINT,MARKDOWN_MARKDOWNLINT,TOML_TAPLO
+          ENABLE_LINTERS: JSON_JSONLINT,YAML_YAMLLINT,ACTION_ACTIONLINT,MARKDOWN_MARKDOWNLINT,YAML_V8R,PYTHON_PYLINT
+          YAML_V8R_FILE_EXTENSIONS: '[".yml", ".yaml", ".toml"]'
           FILTER_REGEX_EXCLUDE: '(patches-list.*\.json|list_.*\.txt)'
+          PRE_COMMANDS: |
+            - command: |
+                pip install kurigram TgCryptoRust
+                if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+              venv: pylint
+              run_before_linters: true
 
   codeql:
     name: 🔒 CodeQL Security Scan
