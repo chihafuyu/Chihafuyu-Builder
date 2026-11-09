@@ -2,22 +2,22 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
-"age-of-war-2" = true
-"aphelion" = true
+"age-of-war-2" = false
+"aphelion" = false
 "dan-the-man" = true
 "death-rover" = true
 "extreme-car-driving-simulator" = true
 "hill-climb-racing" = true
 "hungry-shark-evolution" = true
-"key-mapper" = true
+"key-mapper" = false
 "new-star-soccer" = true
 "red-ball-4" = true
 "sling-drift" = true
 "smash-hit" = true
-"soccer-star" = true
+"soccer-star" = false
 "solar-smash" = true
 "subway-surfers" = true
 "temple-run-2" = true
-"toolbox-for-minecraft-pe" = true
+"toolbox-for-minecraft-pe" = false
 "zen-pinball" = true
 "zombie-tsunami" = true
