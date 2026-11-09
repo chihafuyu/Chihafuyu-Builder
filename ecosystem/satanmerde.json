@@ -582,7 +582,8 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
             },
             "letterboxd": {
                 "package": "com.letterboxd.letterboxd",
