@@ -5,7 +5,7 @@
                 "package": "org.telegram.messenger",
                 "search_term": "Telegram",
                 "stable": [
-                    "13.1.1"
+                    "13.2.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -25,18 +25,18 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "72371"
+                    "arm64-v8a": "72911"
                 }
             },
             "telegram-web": {
                 "package": "org.telegram.messenger.web",
                 "search_term": "Telegram Web",
                 "stable": [
-                    "13.1.0"
+                    "13.2.0"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "72299"
+                    "arm64-v8a": "72809"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",

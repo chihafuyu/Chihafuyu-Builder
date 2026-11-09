@@ -27,7 +27,7 @@
                 "package": "com.halfbrick.dantheman",
                 "search_term": "Dan The Man",
                 "stable": [
-                    "1.14.05"
+                    "1.14.11"
                 ],
                 "beta": [],
                 "strip": true,
@@ -60,7 +60,7 @@
                 "package": "com.fingersoft.hillclimb",
                 "search_term": "Hill Climb Racing",
                 "stable": [
-                    "1.72.2"
+                    "1.73.2"
                 ],
                 "beta": [],
                 "strip": true,
@@ -160,7 +160,7 @@
                 "package": "com.kiloo.subwaysurf",
                 "search_term": "Subway Surfers",
                 "stable": [
-                    "3.70.0"
+                    "3.71.0"
                 ],
                 "beta": [],
                 "strip": true,

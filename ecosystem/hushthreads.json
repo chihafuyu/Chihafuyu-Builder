@@ -20,6 +20,12 @@
                     },
                     "Trust user-added certificates": {
                         "enabled": false
+                    },
+                    "Change app name": {
+                        "enabled": false
+                    },
+                    "Change package name": {
+                        "enabled": false
                     }
                 }
             }
