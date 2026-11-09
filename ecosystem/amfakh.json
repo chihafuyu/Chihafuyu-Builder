@@ -131,6 +131,24 @@
                 },
                 "force_bundle": true
             },
+            "jira": {
+                "package": "com.atlassian.android.jira.core",
+                "search_term": "Jira",
+                "stable": [
+                    "2026.21.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "202616072",
+                    "armeabi-v7a": "202616072",
+                    "x86_64": "202616072",
+                    "x86": "202616072"
+                },
+                "force_bundle": true
+            },
             "kompas": {
                 "package": "com.ertanto.kompas.official",
                 "search_term": "KOMPAS.com",
@@ -169,13 +187,13 @@
                     "Material You": {
                         "enabled": false
                     },
-                    "Remove gaps and dividers": {
-                        "enabled": false
-                    },
                     "Pitch black": {
                         "enabled": false
                     },
                     "Glass navigation bar": {
+                        "enabled": false
+                    },
+                    "Hide gaps and dividers": {
                         "enabled": false
                     }
                 },

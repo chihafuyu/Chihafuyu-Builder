@@ -334,6 +334,23 @@
                 },
                 "force_bundle": true
             },
+            "audiomack": {
+                "package": "com.audiomack",
+                "search_term": "Audiomack",
+                "stable": [
+                    "8.11.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "33762",
+                    "armeabi-v7a": "33762",
+                    "x86_64": "33762",
+                    "x86": "33762"
+                }
+            },
             "automatag": {
                 "package": "com.fillobotto.mp3tagger",
                 "search_term": "AutomaTag",
@@ -1372,24 +1389,6 @@
                 },
                 "force_bundle": true
             },
-            "marks": {
-                "package": "com.scoremarks.marks",
-                "search_term": "MARKS",
-                "stable": [
-                    "2.0.8"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "version_codes": {
-                    "arm64-v8a": "119",
-                    "armeabi-v7a": "119",
-                    "x86_64": "119",
-                    "x86": "119"
-                },
-                "force_bundle": true
-            },
             "may-beautiful-bullet-journal": {
                 "package": "com.azeravn.bulletjournal",
                 "search_term": "May: Beautiful Bullet Journal",
@@ -2344,17 +2343,17 @@
                 "package": "com.realme.link",
                 "search_term": "Realme Link",
                 "stable": [
-                    "5.5.514.11421"
+                    "5.8.811.2814"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "530121",
-                    "armeabi-v7a": "530121",
-                    "x86_64": "530121",
-                    "x86": "530121"
+                    "arm64-v8a": "530214",
+                    "armeabi-v7a": "530214",
+                    "x86_64": "530214",
+                    "x86": "530214"
                 },
                 "force_bundle": true
             },
@@ -2773,6 +2772,9 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "GmsCore support": {
+                        "enabled": false
+                    },
+                    "Remove locked Plus items": {
                         "enabled": false
                     }
                 },

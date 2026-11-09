@@ -69,6 +69,11 @@ name: 🕌 Amfakh Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_jira:
+        description: 'Patch jira'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -157,6 +162,7 @@ jobs:
       APP_CNN_INDONESIA: ${{ inputs.app_cnn_indonesia }}
       APP_DETIKCOM: ${{ inputs.app_detikcom }}
       APP_FLIPSIDE: ${{ inputs.app_flipside }}
+      APP_JIRA: ${{ inputs.app_jira }}
     steps:
       - id: build-list
         run: |
@@ -200,6 +206,9 @@ jobs:
           fi
           if [[ "$APP_FLIPSIDE" == "true" ]]; then
             LIST="$LIST,flipside"
+          fi
+          if [[ "$APP_JIRA" == "true" ]]; then
+            LIST="$LIST,jira"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
