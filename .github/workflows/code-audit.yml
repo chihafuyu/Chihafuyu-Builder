@@ -36,7 +36,7 @@ jobs:
           ENABLE_LINTERS: JSON_JSONLINT,YAML_YAMLLINT,ACTION_ACTIONLINT,MARKDOWN_MARKDOWNLINT,YAML_V8R,PYTHON_PYLINT
           YAML_V8R_FILE_EXTENSIONS: '[".yml", ".yaml", ".toml"]'
           FILTER_REGEX_EXCLUDE: '(patches-list.*\.json|list_.*\.txt)'
-          PRE_COMMANDS: '[{"command": "pip install kurigram TgCryptoRust && if [ -f requirements.txt ]; then pip install -r requirements.txt; fi", "venv": "pylint", "run_before_linters": true}]'
+          PRE_COMMANDS: '[{"command": "pip install kurigram TgCryptoRust -r requirements.txt", "venv": "pylint", "run_before_linters": true}]'
 
   codeql:
     name: 🔒 CodeQL Security Scan
