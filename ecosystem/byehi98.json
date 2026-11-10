@@ -124,7 +124,7 @@
                 "package": "com.vng.g6.a.zombie",
                 "search_term": "Dead Target: Offline Games 3D",
                 "stable": [
-                    "4.185.0"
+                    "4.186.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -179,6 +179,17 @@
                 "options_override": {},
                 "force_bundle": true
             },
+            "dumbbell-workout-at-home": {
+                "package": "dumbbellworkout.dumbbellapp.homeworkout",
+                "search_term": "Dumbbell Workout at Home",
+                "stable": [
+                    "1.3.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "earn-to-die-2": {
                 "package": "com.notdoppler.earntodie2",
                 "search_term": "Earn to Die 2",
@@ -206,12 +217,25 @@
                 "package": "com.overthetopgames.fancypants",
                 "search_term": "Fancy Pants Adventures",
                 "stable": [
-                    "1.0.30"
+                    "1.0.48"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "force_bundle": true
+            },
+            "fr-legends": {
+                "package": "com.fengiiley.frlegends",
+                "search_term": "FR Legends",
+                "stable": [
+                    "0.4.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
             },
             "freejobalert": {
                 "package": "com.freejobalert",
@@ -352,7 +376,7 @@
                 "package": "com.sadpuppy.lemmings",
                 "search_term": "Lemmings: Puzzle Survival",
                 "stable": [
-                    "9.5.0"
+                    "9.5.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -388,7 +412,19 @@
                 "package": "pl.macaque.Missiles",
                 "search_term": "Missiles",
                 "stable": [
-                    "1.41"
+                    "1.42"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "off-the-road": {
+                "package": "com.dogbytegames.offtheroad",
+                "search_term": "Off The Road",
+                "stable": [
+                    "1.18.2"
                 ],
                 "beta": [],
                 "strip": true,
@@ -472,7 +508,7 @@
                 "package": "com.mightygamesgroup.shootyskies",
                 "search_term": "Shooty Skies",
                 "stable": [
-                    "3.441.100103"
+                    "3.441.100104"
                 ],
                 "beta": [],
                 "strip": true,
@@ -495,7 +531,7 @@
                 "package": "com.outfit7.movingeye.swampattack",
                 "search_term": "Swamp Attack",
                 "stable": [
-                    "4.8.9.0"
+                    "4.8.10.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -519,7 +555,7 @@
                 "package": "org.swiftapps.swiftbackup",
                 "search_term": "Swift Backup",
                 "stable": [
-                    "5.1.0"
+                    "5.1.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -542,6 +578,18 @@
                 "search_term": "Tentacle Wars",
                 "stable": [
                     "2.1.27"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
+            "tmnt-shredder-s-revenge": {
+                "package": "com.playdigious.tmnt",
+                "search_term": "TMNT: Shredder's Revenge",
+                "stable": [
+                    "1.2.20"
                 ],
                 "beta": [],
                 "strip": true,
@@ -600,7 +648,7 @@
                 "package": "com.vitastudio.mahjong",
                 "search_term": "Vita Mahjong",
                 "stable": [
-                    "3.45.0"
+                    "3.46.0"
                 ],
                 "beta": [],
                 "strip": true,

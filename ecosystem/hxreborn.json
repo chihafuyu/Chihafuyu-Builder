@@ -351,24 +351,6 @@
                     "x86": "33762"
                 }
             },
-            "automatag": {
-                "package": "com.fillobotto.mp3tagger",
-                "search_term": "AutomaTag",
-                "stable": [
-                    "2.3.0.14"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "version_codes": {
-                    "arm64-v8a": "801",
-                    "armeabi-v7a": "801",
-                    "x86_64": "801",
-                    "x86": "801"
-                },
-                "force_bundle": true
-            },
             "bangla-calendar": {
                 "package": "com.outscar.bd.bongcal",
                 "search_term": "Bangla Calendar",
@@ -883,17 +865,17 @@
                 "package": "com.liori.echogram",
                 "search_term": "Echogram",
                 "stable": [
-                    "1.0.7.0"
+                    "1.1.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "138",
-                    "armeabi-v7a": "138",
-                    "x86_64": "138",
-                    "x86": "138"
+                    "arm64-v8a": "143",
+                    "armeabi-v7a": "143",
+                    "x86_64": "143",
+                    "x86": "143"
                 },
                 "force_bundle": true
             },
@@ -950,6 +932,24 @@
                 },
                 "force_bundle": true
             },
+            "flights25": {
+                "package": "de.app.flighttracker",
+                "search_term": "Flights25",
+                "stable": [
+                    "1.4.7"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "82",
+                    "armeabi-v7a": "82",
+                    "x86_64": "82",
+                    "x86": "82"
+                },
+                "force_bundle": true
+            },
             "focusnow": {
                 "package": "com.ferdinandobermeier.focusmate",
                 "search_term": "FocusNow",
@@ -988,6 +988,24 @@
                     "x86_64": "99",
                     "x86": "99"
                 }
+            },
+            "freedom": {
+                "package": "to.freedom.android2",
+                "search_term": "Freedom",
+                "stable": [
+                    "7.18.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "9634",
+                    "armeabi-v7a": "9634",
+                    "x86_64": "9634",
+                    "x86": "9634"
+                },
+                "force_bundle": true
             },
             "glass-widgets": {
                 "package": "com.jndapp.glass.widgets",
@@ -2726,6 +2744,24 @@
                 },
                 "force_bundle": true
             },
+            "ultimea": {
+                "package": "com.dynanic.ultimea",
+                "search_term": "ULTIMEA",
+                "stable": [
+                    "1.4.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "495",
+                    "armeabi-v7a": "495",
+                    "x86_64": "495",
+                    "x86": "495"
+                },
+                "force_bundle": true
+            },
             "uptcl": {
                 "package": "com.ufoneselfcare",
                 "search_term": "UPTCL",
@@ -2844,17 +2880,17 @@
                 "package": "com.free.vpn.super.hotspot.open",
                 "search_term": "VPN Super Unlimited Proxy",
                 "stable": [
-                    "2.35.0"
+                    "2.36.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "23500",
-                    "armeabi-v7a": "23500",
-                    "x86_64": "23500",
-                    "x86": "23500"
+                    "arm64-v8a": "23600",
+                    "armeabi-v7a": "23600",
+                    "x86_64": "23600",
+                    "x86": "23600"
                 },
                 "force_bundle": true
             },

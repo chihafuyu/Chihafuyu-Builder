@@ -32,11 +32,11 @@
                 "package": "org.telegram.messenger.web",
                 "search_term": "Telegram Web",
                 "stable": [
-                    "13.2.0"
+                    "13.2.1"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "72809"
+                    "arm64-v8a": "72919"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",

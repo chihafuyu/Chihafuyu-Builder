@@ -21,7 +21,6 @@
 "audiobook-unlimited-for-kindle" = false
 "audiolab" = true
 "audiomack" = true
-"automatag" = false
 "bangla-calendar" = false
 "behisabi" = false
 "bereal" = false
@@ -54,8 +53,10 @@
 "etsy" = false
 "fast-stl-viewer" = false
 "fddb" = false
+"flights25" = true
 "focusnow" = false
 "forusapp" = false
+"freedom" = true
 "glass-widgets" = false
 "graph-messenger" = false
 "ground-news" = false
@@ -151,6 +152,7 @@
 "tunneldoom-vpn" = false
 "u-dictionary" = false
 "ultimate-guitar" = false
+"ultimea" = true
 "uptcl" = false
 "usa-vpn" = false
 "viber" = false
