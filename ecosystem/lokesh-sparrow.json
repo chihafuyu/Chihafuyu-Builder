@@ -22,6 +22,9 @@
                     },
                     "AMOLED black bars": {
                         "enabled": false
+                    },
+                    "Dark app icon": {
+                        "enabled": false
                     }
                 }
             }

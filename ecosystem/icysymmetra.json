@@ -5,7 +5,7 @@
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok",
                 "stable": [
-                    "46.2.3"
+                    "47.4.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -13,7 +13,67 @@
                 "options_override": {
                     "Diagnostic tools": {
                         "enabled": false
+                    },
+                    "AMOLED dark theme": {
+                        "enabled": false
+                    },
+                    "Accent color": {
+                        "enabled": false
+                    },
+                    "Block P2P video relay": {
+                        "enabled": false
+                    },
+                    "Change app name": {
+                        "enabled": false
+                    },
+                    "Custom launcher icon": {
+                        "enabled": false
+                    },
+                    "Feature Gate Recorder": {
+                        "enabled": false
+                    },
+                    "Hide Play Store update offer": {
+                        "enabled": false
+                    },
+                    "Hide the risk control CAPTCHA": {
+                        "enabled": false
+                    },
+                    "Look like the store app": {
+                        "enabled": false
+                    },
+                    "Network request report": {
+                        "enabled": false
+                    },
+                    "Region spoof": {
+                        "enabled": false
+                    },
+                    "Remove LIVE extras": {
+                        "enabled": false
+                    },
+                    "Remove card scanner assets": {
+                        "enabled": false
+                    },
+                    "Remove creation tools": {
+                        "enabled": false
+                    },
+                    "Remove unused language packs": {
+                        "enabled": false
+                    },
+                    "Run beside the store app": {
+                        "enabled": false
+                    },
+                    "Skip first-launch setup": {
+                        "enabled": false
+                    },
+                    "Trust user certificates": {
+                        "enabled": false
                     }
+                },
+                "version_codes": {
+                    "arm64-v8a": "2024704030",
+                    "armeabi-v7a": "2024704030",
+                    "x86": "2024704030",
+                    "x86_64": "2024704030"
                 }
             }
         }

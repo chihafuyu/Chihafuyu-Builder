@@ -250,12 +250,16 @@
                 "package": "com.univision.prendetv",
                 "search_term": "ViX",
                 "stable": [
-                    "4.51.0_tv"
+                    "4.52.0_tv"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Log player URLs (debug)": {
+                        "enabled": false
+                    }
+                }
             },
             "xumo-play-android-tv": {
                 "package": "com.xumo.xumo.tv",

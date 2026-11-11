@@ -16,9 +16,18 @@
                     },
                     "Change package name": {
                         "enabled": false
+                    },
+                    "Hide suggested accounts": {
+                        "enabled": false
                     }
                 },
-                "force_bundle": true
+                "force_bundle": true,
+                "version_codes": {
+                    "arm64-v8a": "512308696",
+                    "armeabi-v7a": "512308696",
+                    "x86_64": "512308696",
+                    "x86": "512308696"
+                }
             },
             "zalo": {
                 "package": "com.zing.zalo",
@@ -28,7 +37,10 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "261002903"
+                    "arm64-v8a": "261002903",
+                    "armeabi-v7a": "261002903",
+                    "x86_64": "261002903",
+                    "x86": "261002903"
                 },
                 "strip": true,
                 "force_bundle": true,
@@ -47,6 +59,12 @@
                         "enabled": false
                     },
                     "Enable stranger notifications": {
+                        "enabled": false
+                    },
+                    "AMOLED dark theme": {
+                        "enabled": false
+                    },
+                    "Change Zalo app icon": {
                         "enabled": false
                     }
                 }
