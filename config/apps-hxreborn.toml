@@ -56,7 +56,7 @@
 "flights25" = true
 "focusnow" = false
 "forusapp" = false
-"freedom" = true
+"freedom" = false
 "glass-widgets" = false
 "graph-messenger" = false
 "ground-news" = false
@@ -120,7 +120,7 @@
 "proton-lumo" = false
 "proton-mail" = false
 "proton-pass" = false
-"proton-vpn" = false
+"proton-vpn" = true
 "psiphon" = true
 "public" = false
 "pydroid-3" = true
@@ -152,7 +152,7 @@
 "tunneldoom-vpn" = false
 "u-dictionary" = false
 "ultimate-guitar" = false
-"ultimea" = true
+"ultimea" = false
 "uptcl" = false
 "usa-vpn" = false
 "viber" = false
