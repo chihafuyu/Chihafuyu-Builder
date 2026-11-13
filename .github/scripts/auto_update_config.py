@@ -818,6 +818,7 @@ name: {workflow_name}
       custom_version:
         description: 'Custom App Version'
         required: false
+        type: string
         default: ''
       download_source:
         description: 'Download Source'
@@ -845,6 +846,7 @@ name: {workflow_name}
       custom_cli_version:
         description: 'Custom CLI Version (e.g. v1.16.0)'
         required: false
+        type: string
         default: ''
       patches_track:
         description: 'Ecosystem Patches Track'
