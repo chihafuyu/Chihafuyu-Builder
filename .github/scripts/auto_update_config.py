@@ -40,9 +40,9 @@ TOML_HEADER = (
 )
 
 # GitHub caps workflow_dispatch at 25 inputs. Standard patcher inputs
-# consume ~10 slots, so 15 checkboxes is the effective limit. Reaching
-# 16 apps triggers the checkbox-to-text migration and TOML generation.
-MAX_YAML_INPUTS = 15
+# consume 11 slots, so 14 checkboxes is the effective limit. Reaching
+# 15 apps triggers the checkbox-to-text migration and TOML generation.
+MAX_YAML_INPUTS = 14
 
 # Maps lowercased patches-list versionCodes keys to the canonical arch
 # identifiers used by the workflow inputs and scraper lookups.
@@ -1243,29 +1243,41 @@ def main():
         changed, removed_apps, added_apps = update_config(
             config_path, stable_data, ignore_pkgs, ignore_pts
         )
-        if not changed:
-            continue
-        any_change = True
+
         eco_name = os.path.splitext(os.path.basename(config_path))[0]
-
-        for app_key in removed_apps:
-            if _remove_app_from_yaml(eco_name, app_key):
-                any_change = True
-        for app_key in added_apps:
-            if _add_app_to_yaml(eco_name, app_key):
-                any_change = True
-
-        toml_path = os.path.join(_get_repo_root(), "config", f"apps-{eco_name}.toml")
         app_count = _count_apps_in_config(config_path, eco_name)
+        yaml_path = os.path.join(_get_repo_root(), ".github", "workflows", f"{eco_name}-patcher.yml")
+        toml_path = os.path.join(_get_repo_root(), "config", f"apps-{eco_name}.toml")
 
-        if not os.path.exists(toml_path):
-            if app_count > MAX_YAML_INPUTS and _create_full_toml(
-                toml_path, config_path, eco_name
-            ):
-                any_change = True
-        elif added_apps or removed_apps:
-            if _update_apps_toml(toml_path, added_apps, removed_apps):
-                any_change = True
+        # Proactively recover broken workflows: enforce YAML migration if the limit is exceeded,
+        # even if no new apps were added in the current execution cycle.
+        if app_count > MAX_YAML_INPUTS and os.path.exists(yaml_path):
+            try:
+                with open(yaml_path, "r", encoding="utf-8") as yf:
+                    yaml_content = yf.read()
+
+                if "apps_to_patch:" not in yaml_content:
+                    print(f"  -> {eco_name} exceeds MAX_YAML_INPUTS. Forcing migration to text input.")
+                    if _migrate_to_text_input(eco_name, yaml_path):
+                        any_change = True
+            except OSError as err:
+                print(f"  -> Failed to read {yaml_path} for migration check: {err}")
+
+        # Synchronize TOML generation state
+        if app_count > MAX_YAML_INPUTS:
+            if not os.path.exists(toml_path):
+                if _create_full_toml(toml_path, config_path, eco_name):
+                    any_change = True
+            elif added_apps or removed_apps:
+                if _update_apps_toml(toml_path, added_apps, removed_apps):
+                    any_change = True
+
+        if changed:
+            any_change = True
+            for app_key in removed_apps:
+                _remove_app_from_yaml(eco_name, app_key)
+            for app_key in added_apps:
+                _add_app_to_yaml(eco_name, app_key)
 
     if not any_change:
         print("No updates found across all ecosystems.")
