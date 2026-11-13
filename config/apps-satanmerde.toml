@@ -55,14 +55,15 @@
 "jetpack-joyride" = false
 "jiohotstar" = false
 "letterboxd" = false
+"macrodroid" = true
 "mathway" = false
 "mega" = false
 "memrise" = false
 "microsoft-swiftkey" = false
-"moises" = true
+"moises" = false
 "money-manager" = false
 "moovit" = false
-"movix" = true
+"movix" = false
 "mx-player" = false
 "myfitnesspal" = false
 "nextcloud" = false
@@ -70,6 +71,7 @@
 "peak" = false
 "perplexity" = false
 "photomath" = false
+"picture-mushroom" = false
 "picturethis" = false
 "pinterest" = false
 "plague-inc" = false
@@ -82,8 +84,8 @@
 "proton-pass" = false
 "proton-vpn" = false
 "quizlet" = false
-"rbtv-rblive-mobile" = true
-"rbtv-rblive-tv" = true
+"rbtv-rblive-mobile" = false
+"rbtv-rblive-tv" = false
 "reddit" = false
 "robbery-bob" = false
 "session" = false
@@ -93,6 +95,7 @@
 "shadow-fight-3" = false
 "shadow-fight-4-arena" = false
 "shazam" = false
+"shroomid" = false
 "signal" = false
 "silt" = false
 "simplex-chat" = false

@@ -40,6 +40,24 @@
                     "x86": "209"
                 }
             },
+            "coverscreen-os": {
+                "package": "apps.ijp.coverscreenos",
+                "search_term": "CoverScreen OS",
+                "stable": [
+                    "CSOS_9.0.1_BETA"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "244",
+                    "armeabi-v7a": "244",
+                    "x86_64": "244",
+                    "x86": "244"
+                },
+                "force_bundle": true
+            },
             "detikcom": {
                 "package": "org.detikcom.rss",
                 "search_term": "detikcom",

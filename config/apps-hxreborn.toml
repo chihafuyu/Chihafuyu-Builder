@@ -74,6 +74,7 @@
 "kick" = false  # Note: "Any" version, may fail if there is no custom version.
 "klassik-radio" = false
 "lagguy-wallpapers" = false
+"launchbox" = false
 "led-blinker" = false
 "liftoff" = false
 "lingodeer" = false
@@ -102,6 +103,7 @@
 "network-analyzer" = false
 "notein" = false
 "notesnook" = true
+"ok" = false
 "one4home-launcher" = false
 "opal" = false
 "patreon" = false
@@ -167,6 +169,7 @@
 "wattpad" = true
 "weather24" = true
 "x-plore-file-manager" = true
+"xianyu" = false
 "xtream-player" = true
 "yanosik" = false
 "yi-iot" = false

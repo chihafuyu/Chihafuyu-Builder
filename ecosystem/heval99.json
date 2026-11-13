@@ -5,7 +5,7 @@
                 "package": "com.scores365",
                 "search_term": "365Scores",
                 "stable": [
-                    "15.0.0"
+                    "15.0.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -16,13 +16,22 @@
                     },
                     "Spoof signature": {
                         "enabled": false
+                    },
+                    "AMOLED black": {
+                        "enabled": false
+                    },
+                    "Hide competitions": {
+                        "enabled": false
+                    },
+                    "Hide countries": {
+                        "enabled": false
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "1500",
-                    "armeabi-v7a": "1500",
-                    "x86_64": "1500",
-                    "x86": "1500"
+                    "arm64-v8a": "1501",
+                    "armeabi-v7a": "1501",
+                    "x86_64": "1501",
+                    "x86": "1501"
                 },
                 "force_bundle": true
             },
@@ -30,17 +39,35 @@
                 "package": "com.football433",
                 "search_term": "433",
                 "stable": [
-                    "2.3.585"
+                    "2.3.608"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "905",
-                    "armeabi-v7a": "905",
-                    "x86_64": "905",
-                    "x86": "905"
+                    "arm64-v8a": "928",
+                    "armeabi-v7a": "928",
+                    "x86_64": "928",
+                    "x86": "928"
+                },
+                "force_bundle": true
+            },
+            "add-music": {
+                "package": "kgs.com.addmusictovideos",
+                "search_term": "Add Music",
+                "stable": [
+                    "9.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "122",
+                    "armeabi-v7a": "122",
+                    "x86_64": "122",
+                    "x86": "122"
                 },
                 "force_bundle": true
             },
@@ -80,6 +107,24 @@
                 },
                 "force_bundle": true
             },
+            "allente": {
+                "package": "com.canaldigital.go",
+                "search_term": "Allente",
+                "stable": [
+                    "6.2.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "1000006031",
+                    "armeabi-v7a": "1000006031",
+                    "x86_64": "1000006031",
+                    "x86": "1000006031"
+                },
+                "force_bundle": true
+            },
             "aqua-mail": {
                 "package": "org.kman.AquaMail",
                 "search_term": "Aqua Mail",
@@ -98,21 +143,56 @@
                 },
                 "force_bundle": true
             },
-            "bbc-news": {
-                "package": "bbc.mobile.news.ww",
-                "search_term": "BBC News",
+            "b-t": {
+                "package": "com.mecom.bt",
+                "search_term": "B.T.",
                 "stable": [
-                    "2026.9.1"
+                    "4.5.8"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "10007111",
-                    "armeabi-v7a": "10007111",
-                    "x86_64": "10007111",
-                    "x86": "10007111"
+                    "arm64-v8a": "117085",
+                    "armeabi-v7a": "117085",
+                    "x86_64": "117085",
+                    "x86": "117085"
+                }
+            },
+            "bbc-news": {
+                "package": "bbc.mobile.news.ww",
+                "search_term": "BBC News",
+                "stable": [
+                    "2026.10.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "10007113",
+                    "armeabi-v7a": "10007113",
+                    "x86_64": "10007113",
+                    "x86": "10007113"
+                },
+                "force_bundle": true
+            },
+            "berlingske": {
+                "package": "com.mecom.Berlingske",
+                "search_term": "Berlingske",
+                "stable": [
+                    "4.5.8"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "117085",
+                    "armeabi-v7a": "117085",
+                    "x86_64": "117085",
+                    "x86": "117085"
                 },
                 "force_bundle": true
             },
@@ -127,10 +207,10 @@
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "23005545",
-                    "armeabi-v7a": "23005545",
-                    "x86_64": "23005545",
-                    "x86": "23005545"
+                    "arm64-v8a": "23005546",
+                    "armeabi-v7a": "23005546",
+                    "x86_64": "23005546",
+                    "x86": "23005546"
                 },
                 "force_bundle": true
             },
@@ -173,38 +253,39 @@
                 },
                 "force_bundle": true
             },
-            "bluecoins": {
-                "package": "com.rammigsoftware.bluecoins",
-                "search_term": "Bluecoins",
+            "blockbuster": {
+                "package": "dk.tdc.blockbuster.nordic",
+                "search_term": "Blockbuster",
                 "stable": [
-                    "13.1.149"
+                    "7.1.27"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "33215",
-                    "armeabi-v7a": "33215",
-                    "x86_64": "33215",
-                    "x86": "33215"
-                }
+                    "arm64-v8a": "610000900",
+                    "armeabi-v7a": "610000900",
+                    "x86_64": "610000900",
+                    "x86": "610000900"
+                },
+                "force_bundle": true
             },
             "bluemail": {
                 "package": "me.bluemail.mail",
                 "search_term": "BlueMail",
                 "stable": [
-                    "2.2.418"
+                    "2.2.426"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "48013",
-                    "armeabi-v7a": "48013",
-                    "x86_64": "48013",
-                    "x86": "48013"
+                    "arm64-v8a": "48449",
+                    "armeabi-v7a": "48449",
+                    "x86_64": "48449",
+                    "x86": "48449"
                 },
                 "force_bundle": true
             },
@@ -283,7 +364,7 @@
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
                 "stable": [
-                    "1.98.63"
+                    "1.99.56"
                 ],
                 "beta": [],
                 "strip": true,
@@ -325,17 +406,17 @@
                 "package": "com.appgenix.bizcal",
                 "search_term": "Business Calendar 2",
                 "stable": [
-                    "2.55.8"
+                    "2.56.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "255800",
-                    "armeabi-v7a": "255800",
-                    "x86_64": "255800",
-                    "x86": "255800"
+                    "arm64-v8a": "256001",
+                    "armeabi-v7a": "256001",
+                    "x86_64": "256001",
+                    "x86": "256001"
                 },
                 "force_bundle": true
             },
@@ -361,17 +442,17 @@
                 "package": "in.cricketexchange.app.cricketexchange",
                 "search_term": "CREX",
                 "stable": [
-                    "26.10.09"
+                    "26.11.01"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "673",
-                    "armeabi-v7a": "673",
-                    "x86_64": "673",
-                    "x86": "673"
+                    "arm64-v8a": "674",
+                    "armeabi-v7a": "674",
+                    "x86_64": "674",
+                    "x86": "674"
                 },
                 "force_bundle": true
             },
@@ -413,7 +494,7 @@
                 "package": "dk.dr.webplayer",
                 "search_term": "DRTV",
                 "stable": [
-                    "4.39.0"
+                    "4.40.4"
                 ],
                 "beta": [],
                 "strip": true,
@@ -424,28 +505,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "439000",
-                    "armeabi-v7a": "439000",
-                    "x86_64": "439000",
-                    "x86": "439000"
-                },
-                "force_bundle": true
-            },
-            "duplila": {
-                "package": "com.duplila.screenshare",
-                "search_term": "Duplila",
-                "stable": [
-                    "5.4"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "version_codes": {
-                    "arm64-v8a": "71",
-                    "armeabi-v7a": "71",
-                    "x86_64": "71",
-                    "x86": "71"
+                    "arm64-v8a": "440400",
+                    "armeabi-v7a": "440400",
+                    "x86_64": "440400",
+                    "x86": "440400"
                 },
                 "force_bundle": true
             },
@@ -453,7 +516,7 @@
                 "package": "easy.launcher",
                 "search_term": "Easy Homescreen",
                 "stable": [
-                    "1.10.29"
+                    "1.10.31"
                 ],
                 "beta": [],
                 "strip": true,
@@ -467,10 +530,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "11029",
-                    "armeabi-v7a": "11029",
-                    "x86_64": "11029",
-                    "x86": "11029"
+                    "arm64-v8a": "11031",
+                    "armeabi-v7a": "11031",
+                    "x86_64": "11031",
+                    "x86": "11031"
                 },
                 "force_bundle": true
             },
@@ -492,11 +555,29 @@
                 },
                 "force_bundle": true
             },
+            "ekstra-bladet": {
+                "package": "dk.ekstrabladet.breakingnews",
+                "search_term": "Ekstra Bladet",
+                "stable": [
+                    "2026.09.20"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "90318107",
+                    "armeabi-v7a": "90318107",
+                    "x86_64": "90318107",
+                    "x86": "90318107"
+                },
+                "force_bundle": true
+            },
             "eurosport": {
                 "package": "com.eurosport",
                 "search_term": "Eurosport",
                 "stable": [
-                    "8.34.1"
+                    "8.35.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -507,10 +588,28 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "113929",
-                    "armeabi-v7a": "113929",
-                    "x86_64": "113929",
-                    "x86": "113929"
+                    "arm64-v8a": "114066",
+                    "armeabi-v7a": "114066",
+                    "x86_64": "114066",
+                    "x86": "114066"
+                },
+                "force_bundle": true
+            },
+            "ex-file-manager": {
+                "package": "com.ace.ex.file.manager",
+                "search_term": "EX File Manager",
+                "stable": [
+                    "1.6.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "51",
+                    "armeabi-v7a": "51",
+                    "x86_64": "51",
+                    "x86": "51"
                 },
                 "force_bundle": true
             },
@@ -535,7 +634,7 @@
                 "package": "org.mozilla.firefox",
                 "search_term": "Firefox",
                 "stable": [
-                    "159.0"
+                    "159.0.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -549,8 +648,8 @@
                     }
                 },
                 "version_codes": {
-                    "x86_64": "2016191886",
-                    "arm64-v8a": "2016191887"
+                    "x86_64": "2016193998",
+                    "arm64-v8a": "2016193999"
                 }
             },
             "firefox-focus": {
@@ -597,24 +696,24 @@
                 "package": "com.gregacucnik.fishingpoints",
                 "search_term": "Fishing Points",
                 "stable": [
-                    "4.8.0"
+                    "4.8.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "411",
-                    "armeabi-v7a": "411",
-                    "x86_64": "411",
-                    "x86": "411"
+                    "arm64-v8a": "412",
+                    "armeabi-v7a": "412",
+                    "x86_64": "412",
+                    "x86": "412"
                 }
             },
             "flashscore": {
                 "package": "eu.livesport.FlashScore_com",
                 "search_term": "Flashscore",
                 "stable": [
-                    "26.11.4"
+                    "26.11.6"
                 ],
                 "beta": [],
                 "strip": true,
@@ -622,13 +721,28 @@
                 "options_override": {
                     "Hide betting content": {
                         "enabled": false
+                    },
+                    "Animation speed": {
+                        "enabled": false
+                    },
+                    "Block marketing notifications": {
+                        "enabled": false
+                    },
+                    "Force edge-to-edge": {
+                        "enabled": false
+                    },
+                    "Spoof signature": {
+                        "enabled": false
+                    },
+                    "Use system font": {
+                        "enabled": false
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "525",
-                    "armeabi-v7a": "525",
-                    "x86_64": "525",
-                    "x86": "525"
+                    "arm64-v8a": "527",
+                    "armeabi-v7a": "527",
+                    "x86_64": "527",
+                    "x86": "527"
                 },
                 "force_bundle": true
             },
@@ -690,6 +804,9 @@
                     },
                     "Turn off animations": {
                         "enabled": false
+                    },
+                    "AMOLED black": {
+                        "enabled": false
                     }
                 },
                 "version_codes": {
@@ -704,24 +821,42 @@
                 "package": "com.futbin",
                 "search_term": "Futbin",
                 "stable": [
-                    "27.10"
+                    "27.13"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "7010",
-                    "armeabi-v7a": "7010",
-                    "x86_64": "7010",
-                    "x86": "7010"
+                    "arm64-v8a": "7013",
+                    "armeabi-v7a": "7013",
+                    "x86_64": "7013",
+                    "x86": "7013"
                 }
+            },
+            "fyens-stiftstidende": {
+                "package": "dk.fyensstifts.areader",
+                "search_term": "Fyens Stiftstidende",
+                "stable": [
+                    "15.32"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "2012312710",
+                    "armeabi-v7a": "2012312710",
+                    "x86_64": "2012312710",
+                    "x86": "2012312710"
+                },
+                "force_bundle": true
             },
             "gps-map-camera-editor": {
                 "package": "com.gkfriend.gpsmapcameraeditor",
                 "search_term": "GPS Map Camera Editor",
                 "stable": [
-                    "1.0.31"
+                    "1.0.32"
                 ],
                 "beta": [],
                 "strip": true,
@@ -732,10 +867,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "89",
-                    "armeabi-v7a": "89",
-                    "x86_64": "89",
-                    "x86": "89"
+                    "arm64-v8a": "90",
+                    "armeabi-v7a": "90",
+                    "x86_64": "90",
+                    "x86": "90"
                 },
                 "force_bundle": true
             },
@@ -743,17 +878,17 @@
                 "package": "com.hevy",
                 "search_term": "Hevy",
                 "stable": [
-                    "3.2.4"
+                    "3.2.6"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "3403347",
-                    "armeabi-v7a": "3403347",
-                    "x86_64": "3403347",
-                    "x86": "3403347"
+                    "arm64-v8a": "3440487",
+                    "armeabi-v7a": "3440487",
+                    "x86_64": "3440487",
+                    "x86": "3440487"
                 },
                 "force_bundle": true
             },
@@ -761,17 +896,17 @@
                 "package": "projekt.launcher",
                 "search_term": "Hyperion Launcher",
                 "stable": [
-                    "2.2.14"
+                    "2.2.16"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "20214",
-                    "armeabi-v7a": "20214",
-                    "x86_64": "20214",
-                    "x86": "20214"
+                    "arm64-v8a": "20216",
+                    "armeabi-v7a": "20216",
+                    "x86_64": "20216",
+                    "x86": "20216"
                 },
                 "force_bundle": true
             },
@@ -779,17 +914,17 @@
                 "package": "cc.dreamspark.intervaltimer",
                 "search_term": "Interval Timer",
                 "stable": [
-                    "2.3.30"
+                    "2.3.31"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "239030",
-                    "armeabi-v7a": "239030",
-                    "x86_64": "239030",
-                    "x86": "239030"
+                    "arm64-v8a": "239031",
+                    "armeabi-v7a": "239031",
+                    "x86_64": "239031",
+                    "x86": "239031"
                 }
             },
             "ircode-finder": {
@@ -828,18 +963,54 @@
                 "options_override": {},
                 "force_bundle": true
             },
+            "jydskevestkysten": {
+                "package": "dk.jydskevestkystenmain.areader",
+                "search_term": "JydskeVestkysten",
+                "stable": [
+                    "15.32"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "2012312710",
+                    "armeabi-v7a": "2012312710",
+                    "x86_64": "2012312710",
+                    "x86": "2012312710"
+                },
+                "force_bundle": true
+            },
+            "jyllands-posten": {
+                "package": "dk.jyllandsposten.jp",
+                "search_term": "Jyllands Posten",
+                "stable": [
+                    "2026.10.15"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "90353255",
+                    "armeabi-v7a": "90353255",
+                    "x86_64": "90353255",
+                    "x86": "90353255"
+                },
+                "force_bundle": true
+            },
             "librera": {
                 "package": "com.foobnix.pdf.reader",
                 "search_term": "Librera",
                 "stable": [
-                    "10.0.22"
+                    "10.0.31"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "7536",
-                    "armeabi-v7a": "7536",
-                    "x86_64": "7536",
-                    "x86": "7536"
+                    "arm64-v8a": "7572",
+                    "armeabi-v7a": "7572",
+                    "x86_64": "7572",
+                    "x86": "7572"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -849,36 +1020,18 @@
                 "package": "com.livescore",
                 "search_term": "Livescore",
                 "stable": [
-                    "10.4"
+                    "10.4.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "2250",
-                    "armeabi-v7a": "2250",
-                    "x86_64": "2250",
-                    "x86": "2250"
+                    "arm64-v8a": "2260",
+                    "armeabi-v7a": "2260",
+                    "x86_64": "2260",
+                    "x86": "2260"
                 }
-            },
-            "luckyclick": {
-                "package": "com.peter890331.luckyclick.app",
-                "search_term": "LuckyClick",
-                "stable": [
-                    "2026/10/22"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "version_codes": {
-                    "arm64-v8a": "100",
-                    "armeabi-v7a": "100",
-                    "x86_64": "100",
-                    "x86": "100"
-                },
-                "force_bundle": true
             },
             "mail-com": {
                 "package": "com.mail.mobile.android.mail",
@@ -902,17 +1055,17 @@
                 "package": "app.pinya.mango",
                 "search_term": "Mango Launcher",
                 "stable": [
-                    "1.64"
+                    "1.67"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "64",
-                    "armeabi-v7a": "64",
-                    "x86_64": "64",
-                    "x86": "64"
+                    "arm64-v8a": "67",
+                    "armeabi-v7a": "67",
+                    "x86_64": "67",
+                    "x86": "67"
                 },
                 "force_bundle": true
             },
@@ -974,17 +1127,17 @@
                 "package": "com.myfitnesspal.android",
                 "search_term": "MyFitnessPal",
                 "stable": [
-                    "26.44.0"
+                    "26.45.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "51651",
-                    "armeabi-v7a": "51651",
-                    "x86_64": "51651",
-                    "x86": "51651"
+                    "arm64-v8a": "51670",
+                    "armeabi-v7a": "51670",
+                    "x86_64": "51670",
+                    "x86": "51670"
                 },
                 "force_bundle": true
             },
@@ -1010,18 +1163,54 @@
                 "package": "bitpit.launcher",
                 "search_term": "Niagara Launcher",
                 "stable": [
-                    "1.16.35"
+                    "1.16.36"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "1641",
-                    "armeabi-v7a": "1641",
-                    "x86_64": "1641",
-                    "x86": "1641"
+                    "arm64-v8a": "1642",
+                    "armeabi-v7a": "1642",
+                    "x86_64": "1642",
+                    "x86": "1642"
                 }
+            },
+            "nordisk-film": {
+                "package": "com.nordiskfilmplus.android",
+                "search_term": "Nordisk Film+",
+                "stable": [
+                    "1.5.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "1050401",
+                    "armeabi-v7a": "1050401",
+                    "x86_64": "1050401",
+                    "x86": "1050401"
+                },
+                "force_bundle": true
+            },
+            "nordjyske": {
+                "package": "dk.nordjyske.reader",
+                "search_term": "Nordjyske",
+                "stable": [
+                    "8.0.17"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "2012312510",
+                    "armeabi-v7a": "2012312510",
+                    "x86_64": "2012312510",
+                    "x86": "2012312510"
+                },
+                "force_bundle": true
             },
             "notepad": {
                 "package": "com.ztnstudio.notepad",
@@ -1040,6 +1229,24 @@
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "notialarm": {
+                "package": "com.soosu.notialarm",
+                "search_term": "NotiAlarm",
+                "stable": [
+                    "1.3.31"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "350103238",
+                    "armeabi-v7a": "350103238",
+                    "x86_64": "350103238",
+                    "x86": "350103238"
+                },
+                "force_bundle": true
             },
             "onecricket": {
                 "package": "one.cricket.app",
@@ -1063,17 +1270,17 @@
                 "package": "de.motain.iliga",
                 "search_term": "OneFootball",
                 "stable": [
-                    "15.148.0"
+                    "15.150.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "1045029590",
-                    "armeabi-v7a": "1045029590",
-                    "x86_64": "1045029590",
-                    "x86": "1045029590"
+                    "arm64-v8a": "1045049820",
+                    "armeabi-v7a": "1045049820",
+                    "x86_64": "1045049820",
+                    "x86": "1045049820"
                 },
                 "force_bundle": true
             },
@@ -1099,17 +1306,17 @@
                 "package": "com.Project100Pi.themusicplayer",
                 "search_term": "Pi Music Player",
                 "stable": [
-                    "3.2.1.0_release_1"
+                    "3.2.3.0_release_1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "32101",
-                    "armeabi-v7a": "32101",
-                    "x86_64": "32101",
-                    "x86": "32101"
+                    "arm64-v8a": "32301",
+                    "armeabi-v7a": "32301",
+                    "x86_64": "32301",
+                    "x86": "32301"
                 },
                 "force_bundle": true
             },
@@ -1148,6 +1355,24 @@
                     "x86": "260909124"
                 }
             },
+            "politiken": {
+                "package": "dk.pol.news",
+                "search_term": "Politiken",
+                "stable": [
+                    "4.1.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "301",
+                    "armeabi-v7a": "301",
+                    "x86_64": "301",
+                    "x86": "301"
+                },
+                "force_bundle": true
+            },
             "pro-launcher": {
                 "package": "app.prolauncher",
                 "search_term": "Pro Launcher",
@@ -1166,21 +1391,21 @@
                 },
                 "force_bundle": true
             },
-            "rarecam": {
-                "package": "com.rarecam.app",
-                "search_term": "RareCam",
+            "rhus-stiftstidende": {
+                "package": "dk.aasmain.areader",
+                "search_term": "Århus Stiftstidende",
                 "stable": [
-                    "1.0.95"
+                    "15.32"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "95",
-                    "armeabi-v7a": "95",
-                    "x86_64": "95",
-                    "x86": "95"
+                    "arm64-v8a": "2012312710",
+                    "armeabi-v7a": "2012312710",
+                    "x86_64": "2012312710",
+                    "x86": "2012312710"
                 },
                 "force_bundle": true
             },
@@ -1206,7 +1431,7 @@
                 "package": "com.shazam.android",
                 "search_term": "Shazam",
                 "stable": [
-                    "16.66.0-261029"
+                    "16.67.0-261105"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1217,10 +1442,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "1606600",
-                    "armeabi-v7a": "1606600",
-                    "x86_64": "1606600",
-                    "x86": "1606600"
+                    "arm64-v8a": "1606700",
+                    "armeabi-v7a": "1606700",
+                    "x86_64": "1606700",
+                    "x86": "1606700"
                 },
                 "force_bundle": true
             },
@@ -1228,17 +1453,17 @@
                 "package": "com.streema.simpleradio",
                 "search_term": "Simple Radio",
                 "stable": [
-                    "6.3.0"
+                    "6.3.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "899",
-                    "armeabi-v7a": "899",
-                    "x86_64": "899",
-                    "x86": "899"
+                    "arm64-v8a": "901",
+                    "armeabi-v7a": "901",
+                    "x86_64": "901",
+                    "x86": "901"
                 },
                 "force_bundle": true
             },
@@ -1264,7 +1489,7 @@
                 "package": "com.sofascore.results",
                 "search_term": "Sofascore",
                 "stable": [
-                    "26.10.26"
+                    "26.11.03"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1302,13 +1527,28 @@
                     },
                     "Slower widget refresh": {
                         "enabled": false
+                    },
+                    "AMOLED black": {
+                        "enabled": false
+                    },
+                    "Hide main tabs": {
+                        "enabled": false
+                    },
+                    "Hide match chat": {
+                        "enabled": false
+                    },
+                    "Turn off video autoplay": {
+                        "enabled": false
+                    },
+                    "Unlock developer options": {
+                        "enabled": false
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "261026004",
-                    "armeabi-v7a": "261026004",
-                    "x86_64": "261026004",
-                    "x86": "261026004"
+                    "arm64-v8a": "261103003",
+                    "armeabi-v7a": "261103003",
+                    "x86_64": "261103003",
+                    "x86": "261103003"
                 },
                 "force_bundle": true
             },
@@ -1372,36 +1612,18 @@
                 "package": "com.fenchtose.reflog",
                 "search_term": "Taskito",
                 "stable": [
-                    "1.3.3"
+                    "1.3.4"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "1331",
-                    "armeabi-v7a": "1331",
-                    "x86_64": "1331",
-                    "x86": "1331"
+                    "arm64-v8a": "1340",
+                    "armeabi-v7a": "1340",
+                    "x86_64": "1340",
+                    "x86": "1340"
                 }
-            },
-            "textra": {
-                "package": "com.textra",
-                "search_term": "Textra",
-                "stable": [
-                    "4.87"
-                ],
-                "beta": [],
-                "version_codes": {
-                    "arm64-v8a": "48761",
-                    "armeabi-v7a": "48761",
-                    "x86_64": "48761",
-                    "x86": "48761"
-                },
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "force_bundle": true
             },
             "the-guardian": {
                 "package": "com.guardian",
@@ -1425,17 +1647,17 @@
                 "package": "wsj.reader_sp",
                 "search_term": "The Wall Street Journal",
                 "stable": [
-                    "15.12.0.42675"
+                    "15.13.0.44249"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "700042675",
-                    "armeabi-v7a": "700042675",
-                    "x86_64": "700042675",
-                    "x86": "700042675"
+                    "arm64-v8a": "710044249",
+                    "armeabi-v7a": "710044249",
+                    "x86_64": "710044249",
+                    "x86": "710044249"
                 }
             },
             "timetune": {
@@ -1477,14 +1699,14 @@
                 "package": "com.truecaller",
                 "search_term": "TrueCaller",
                 "stable": [
-                    "26.43.5"
+                    "26.44.6"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "2643005",
-                    "armeabi-v7a": "2643005",
-                    "x86_64": "2643005",
-                    "x86": "2643005"
+                    "arm64-v8a": "2644006",
+                    "armeabi-v7a": "2644006",
+                    "x86_64": "2644006",
+                    "x86": "2644006"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -1542,7 +1764,52 @@
                     },
                     "Hide profile menu items": {
                         "enabled": false
+                    },
+                    "Disable Who viewed me": {
+                        "enabled": false
+                    },
+                    "Hide poor network warning": {
+                        "enabled": false
+                    },
+                    "Turn off Ad Campaign Analytics": {
+                        "enabled": false
                     }
+                },
+                "force_bundle": true
+            },
+            "tv-2-nyheder": {
+                "package": "dk.tv2.nyhedscenter",
+                "search_term": "TV 2 Nyheder",
+                "stable": [
+                    "2026.10-10188:RELEASE"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "10188",
+                    "armeabi-v7a": "10188",
+                    "x86_64": "10188",
+                    "x86": "10188"
+                },
+                "force_bundle": true
+            },
+            "tv-2-play": {
+                "package": "dk.tv2.tv2play",
+                "search_term": "TV 2 Play",
+                "stable": [
+                    "2026.10-1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "90851",
+                    "armeabi-v7a": "90851",
+                    "x86_64": "90851",
+                    "x86": "90851"
                 },
                 "force_bundle": true
             },
@@ -1567,23 +1834,6 @@
                     "x86": "315"
                 },
                 "force_bundle": true
-            },
-            "unified-remote": {
-                "package": "com.Relmtech.Remote",
-                "search_term": "Unified Remote",
-                "stable": [
-                    "3.25.1"
-                ],
-                "beta": [],
-                "version_codes": {
-                    "arm64-v8a": "325001",
-                    "armeabi-v7a": "325001",
-                    "x86_64": "325001",
-                    "x86": "325001"
-                },
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
             },
             "upnote": {
                 "package": "com.getupnote.android",
@@ -1642,17 +1892,17 @@
                 "package": "com.viaplay.android",
                 "search_term": "Viaplay",
                 "stable": [
-                    "26.42.1"
+                    "26.44.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "2642010",
-                    "armeabi-v7a": "2642010",
-                    "x86_64": "2642010",
-                    "x86": "2642010"
+                    "arm64-v8a": "2644000",
+                    "armeabi-v7a": "2644000",
+                    "x86_64": "2644000",
+                    "x86": "2644000"
                 },
                 "force_bundle": true
             },
@@ -1682,7 +1932,17 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Hide Ummah tab": {
+                        "enabled": false
+                    },
+                    "Hide activity banners": {
+                        "enabled": false
+                    },
+                    "Hide shortcut promotions": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "151",
                     "armeabi-v7a": "151",
@@ -1691,38 +1951,39 @@
                 },
                 "force_bundle": true
             },
-            "wifi-analyzer": {
-                "package": "com.farproc.wifi.analyzer",
-                "search_term": "WiFi Analyzer",
-                "stable": [
-                    "3.11.2"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "version_codes": {
-                    "arm64-v8a": "139",
-                    "armeabi-v7a": "139",
-                    "x86_64": "139",
-                    "x86": "139"
-                }
-            },
             "yahoo-sports": {
                 "package": "com.yahoo.mobile.client.android.sportacular",
                 "search_term": "Yahoo Sports",
                 "stable": [
-                    "12.27.0"
+                    "12.28.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "11168613",
-                    "armeabi-v7a": "11168613",
-                    "x86_64": "11168613",
-                    "x86": "11168613"
+                    "arm64-v8a": "11168679",
+                    "armeabi-v7a": "11168679",
+                    "x86_64": "11168679",
+                    "x86": "11168679"
+                },
+                "force_bundle": true
+            },
+            "yousee-play": {
+                "package": "yiuo.mobile.tv",
+                "search_term": "YouSee Play",
+                "stable": [
+                    "13.12.0 (build 22025)"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "130120000",
+                    "armeabi-v7a": "130120000",
+                    "x86_64": "130120000",
+                    "x86": "130120000"
                 },
                 "force_bundle": true
             }

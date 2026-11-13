@@ -66,6 +66,9 @@
                     },
                     "Change Zalo app icon": {
                         "enabled": false
+                    },
+                    "Chat reaction picker": {
+                        "enabled": false
                     }
                 }
             }

@@ -582,11 +582,33 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "samsung-editor-lite": {
+                "package": "com.samsung.app.newtrim",
+                "search_term": "Samsung Editor Lite",
+                "stable": [
+                    "4.0.85.20"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "samsung-email": {
                 "package": "com.samsung.android.email.provider",
                 "search_term": "Samsung Email",
                 "stable": [
                     "6.2.13.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-finder": {
+                "package": "com.samsung.android.app.galaxyfinder",
+                "search_term": "Samsung Finder",
+                "stable": [
+                    "10.2.13.0"
                 ],
                 "beta": [],
                 "strip": true,

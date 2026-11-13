@@ -744,7 +744,7 @@
                 "package": "com.androholic.wallpapersdepthpix",
                 "search_term": "DepthPix",
                 "stable": [
-                    "1.0.34"
+                    "1.0.35"
                 ],
                 "beta": [],
                 "strip": true,
@@ -755,10 +755,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "74",
-                    "armeabi-v7a": "74",
-                    "x86_64": "74",
-                    "x86": "74"
+                    "arm64-v8a": "77",
+                    "armeabi-v7a": "77",
+                    "x86_64": "77",
+                    "x86": "77"
                 },
                 "force_bundle": true
             },
@@ -1313,6 +1313,23 @@
                 },
                 "force_bundle": true
             },
+            "launchbox": {
+                "package": "com.unbrokensoftware.launchbox",
+                "search_term": "LaunchBox",
+                "stable": [
+                    "1.23"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "194",
+                    "armeabi-v7a": "194",
+                    "x86_64": "194",
+                    "x86": "194"
+                }
+            },
             "led-blinker": {
                 "package": "com.ledblinker",
                 "search_term": "LED Blinker",
@@ -1699,17 +1716,17 @@
                 "package": "com.myscript.nebo",
                 "search_term": "MyScript Notes",
                 "stable": [
-                    "7.4.6"
+                    "7.4.8"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "182341",
-                    "armeabi-v7a": "182341",
-                    "x86_64": "182341",
-                    "x86": "182341"
+                    "arm64-v8a": "182801",
+                    "armeabi-v7a": "182801",
+                    "x86_64": "182801",
+                    "x86": "182801"
                 },
                 "force_bundle": true
             },
@@ -1826,6 +1843,24 @@
                     "armeabi-v7a": "4197425",
                     "x86_64": "4197425",
                     "x86": "4197425"
+                },
+                "force_bundle": true
+            },
+            "ok": {
+                "package": "ru.ok.android",
+                "search_term": "OK",
+                "stable": [
+                    "26.9.24"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "26092400",
+                    "armeabi-v7a": "26092400",
+                    "x86_64": "26092400",
+                    "x86": "26092400"
                 },
                 "force_bundle": true
             },
@@ -2197,7 +2232,7 @@
                 "package": "com.cardfeed.video_public",
                 "search_term": "Public",
                 "stable": [
-                    "3.3.8"
+                    "3.4.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -2208,10 +2243,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "9070838",
-                    "armeabi-v7a": "9070838",
-                    "x86_64": "9070838",
-                    "x86": "9070838"
+                    "arm64-v8a": "9070840",
+                    "armeabi-v7a": "9070840",
+                    "x86_64": "9070840",
+                    "x86": "9070840"
                 },
                 "force_bundle": true
             },
@@ -3015,6 +3050,24 @@
                     "armeabi-v7a": "45005",
                     "x86_64": "45005",
                     "x86": "45005"
+                },
+                "force_bundle": true
+            },
+            "xianyu": {
+                "package": "com.taobao.idlefish",
+                "search_term": "Xianyu",
+                "stable": [
+                    "7.28.86.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "529",
+                    "armeabi-v7a": "529",
+                    "x86_64": "529",
+                    "x86": "529"
                 },
                 "force_bundle": true
             },
