@@ -88,7 +88,7 @@ Configure the following secrets at **Settings → Secrets and variables → Acti
 
 Edit the JSON files under `ecosystem/` (e.g., `arandomhooman.json`, `byehi98.json`) to add, remove, or modify tracked applications.
 
-**For Termux local builds:** if your ecosystem uses complex matrices (like `Piko` or `SysAdminDoc`), place split `JSON` files in `ecosystem` and register them in `repo_map.json`. The Termux script parses this map to build its interactive menu.
+**For Termux local builds:** if your ecosystem uses complex matrices (like `Piko` or `SysAdminDoc`), place split `JSON` files in `ecosystem` directory and register them in `repo_map.json`. The Termux script parses this map to build its interactive menu.
 
 ### 6. Local Build (Termux / Android)
 

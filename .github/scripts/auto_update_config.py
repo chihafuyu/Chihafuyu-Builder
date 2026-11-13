@@ -975,12 +975,12 @@ jobs:
 
 
 def _add_app_to_yaml(ecosystem_name, app_key):
-    """Insert a per-app input/env/if-block into a checkbox-style workflow."""
+    """Insert a per-app input/env/if-block into a checkbox workflow in alphabetical order."""
     yaml_path = os.path.join(
         _get_repo_root(), ".github", "workflows", f"{ecosystem_name}-patcher.yml"
     )
     if not os.path.exists(yaml_path):
-        print(f"    -> WARNING: {yaml_path} not found. If this ecosystem uses a matrix workflow, update manually.")
+        print(f"    -> WARNING: {yaml_path} not found.")
         return False
     try:
         with open(yaml_path, "r", encoding="utf-8") as file_obj:
@@ -993,8 +993,14 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         print(f"    -> {ecosystem_name} uses text input; no per-app YAML entry needed.")
         return False
 
-    existing_inputs = len(re.findall(r"^ {6}app_", content, re.MULTILINE))
-    if existing_inputs >= MAX_YAML_INPUTS:
+    input_regex = re.compile(
+        r"^( {6})app_([a-zA-Z0-9_]+):\r?\n"
+        r"(?:\1  .*\r?\n)*",
+        re.MULTILINE
+    )
+    existing_input_blocks = list(input_regex.finditer(content))
+
+    if len(existing_input_blocks) >= MAX_YAML_INPUTS:
         if _migrate_to_text_input(ecosystem_name, yaml_path):
             return True
         print(f"    -> WARNING: Failed to migrate {ecosystem_name} to text-input YAML.")
@@ -1009,13 +1015,6 @@ def _add_app_to_yaml(ecosystem_name, app_key):
 
     original_content = content
 
-    arch_pattern = re.compile(r"^ {6}architecture:\r?\n", re.MULTILINE)
-    match = arch_pattern.search(content)
-    if not match:
-        print("    -> WARNING: Failed to locate 6-space 'architecture:' input in YAML; "
-              "aborting to prevent invalid insertion.")
-        return False
-
     input_block = (
         f"      {input_name}:{newline}"
         f"        description: 'Patch {app_key}'{newline}"
@@ -1023,35 +1022,86 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         f"        type: boolean{newline}"
         f"        default: true{newline}"
     )
-    content = content[:match.start()] + input_block + content[match.start():]
 
-    env_pattern = re.compile(
-        r"(^[ \t]+prepare-apps:\r?\n(?:.*\r?\n)*?"
-        r"^[ \t]+env:\r?\n)"
-        r"((?:^[ \t]+[A-Z0-9_]+: \$\{\{ inputs\.[^}]+\}\}\r?\n)+)",
-        re.MULTILINE,
+    if existing_input_blocks:
+        inserted = False
+        for match in existing_input_blocks:
+            current_app = match.group(2)
+            if app_key.replace("-", "_").replace(".", "_") < current_app:
+                content = content[:match.start()] + input_block + content[match.start():]
+                inserted = True
+                break
+        if not inserted:
+            last_match = existing_input_blocks[-1]
+            content = content[:last_match.end()] + input_block + content[last_match.end():]
+    else:
+        arch_pattern = re.compile(r"^ {6}architecture:\r?\n", re.MULTILINE)
+        match = arch_pattern.search(content)
+        if match:
+            content = content[:match.start()] + input_block + content[match.start():]
+        else:
+            print("    -> WARNING: Failed to locate input insertion point.")
+            return False
+
+    env_regex = re.compile(
+        r"^( {6})APP_([A-Z0-9_]+): \$\{\{ inputs\.app_[a-z0-9_]+ \}\}\r?\n",
+        re.MULTILINE
     )
-    env_match = env_pattern.search(content)
-    if not env_match:
-        print("    -> WARNING: Failed to locate env block in YAML; aborting to prevent partial updates.")
-        return False
-
-    insert_pos = env_match.end(2)
+    existing_env_blocks = list(env_regex.finditer(content))
     env_line = f"      {env_var}: ${{{{ inputs.{input_name} }}}}{newline}"
-    content = content[:insert_pos] + env_line + content[insert_pos:]
 
-    list_pattern = re.compile(r'^[ \t]+LIST="\$\{LIST#,}"\r?\n', re.MULTILINE)
-    list_match = list_pattern.search(content)
-    if not list_match:
-        print("    -> WARNING: Failed to locate LIST append block in YAML; aborting to prevent partial updates.")
-        return False
+    if existing_env_blocks:
+        inserted = False
+        for match in existing_env_blocks:
+            current_app = match.group(2).lower()
+            if app_key.replace("-", "_").replace(".", "_") < current_app:
+                content = content[:match.start()] + env_line + content[match.start():]
+                inserted = True
+                break
+        if not inserted:
+            last_match = existing_env_blocks[-1]
+            content = content[:last_match.end()] + env_line + content[last_match.end():]
+    else:
+        env_header_pattern = re.compile(r"^[ \t]+env:\r?\n", re.MULTILINE)
+        match = env_header_pattern.search(content)
+        if match:
+            content = content[:match.end()] + env_line + content[match.end():]
+        else:
+            print("    -> WARNING: Failed to locate env block in YAML.")
+            return False
 
+    if_regex = re.compile(
+        r"^[ \t]+if \[\[ \"\$APP_([A-Z0-9_]+)\" == \"true\" \]\]; then\r?\n"
+        r"[ \t]+LIST=\"\$LIST,[^\"]+\"\r?\n"
+        r"[ \t]+fi\r?\n",
+        re.MULTILINE
+    )
+    existing_if_blocks = list(if_regex.finditer(content))
     if_block = (
         f'          if [[ "${env_var}" == "true" ]]; then{newline}'
         f'            LIST="$LIST,{app_key}"{newline}'
         f"          fi{newline}"
     )
-    content = content[:list_match.start()] + if_block + content[list_match.start():]
+
+    if existing_if_blocks:
+        inserted = False
+        for match in existing_if_blocks:
+            current_app = match.group(1).lower()
+            if app_key.replace("-", "_").replace(".", "_") < current_app:
+                content = content[:match.start()] + if_block + content[match.start():]
+                inserted = True
+                break
+        if not inserted:
+            last_match = existing_if_blocks[-1]
+            content = content[:last_match.end()] + if_block + content[last_match.end():]
+    else:
+        list_pattern = re.compile(r'^[ \t]+LIST="\$\{LIST#,}"\r?\n', re.MULTILINE)
+        match = list_pattern.search(content)
+        if match:
+            content = content[:match.start()] + if_block + content[match.start():]
+        else:
+            print("    -> WARNING: Failed to locate LIST append block in YAML.")
+            return False
 
     if content == original_content:
         return False
@@ -1059,7 +1109,7 @@ def _add_app_to_yaml(ecosystem_name, app_key):
     try:
         with open(yaml_path, "w", encoding="utf-8") as file_obj:
             file_obj.write(content)
-        print(f"    -> Added '{app_key}' to {ecosystem_name}-patcher.yml")
+        print(f"    -> Added '{app_key}' (alphabetical insertion)")
         return True
     except OSError as err:
         print(f"    -> Failed to write {yaml_path}: {err}")
