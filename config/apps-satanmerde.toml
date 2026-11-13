@@ -26,7 +26,7 @@
 "cryptomator-freemium" = true
 "cut-the-rope" = false
 "dan-the-man" = false
-"deepl" = true
+"deepl" = false
 "doodle-jump" = false
 "duolingo" = false
 "euria" = false
@@ -60,10 +60,10 @@
 "mega" = false
 "memrise" = false
 "microsoft-swiftkey" = false
-"moises" = true
+"moises" = false
 "money-manager" = false
 "moovit" = false
-"movix" = true
+"movix" = false
 "mx-player" = false
 "myfitnesspal" = false
 "nextcloud" = false
@@ -71,7 +71,7 @@
 "peak" = false
 "perplexity" = false
 "photomath" = false
-"picture-mushroom" = true
+"picture-mushroom" = false
 "picturethis" = false
 "pinterest" = false
 "plague-inc" = false
@@ -84,8 +84,8 @@
 "proton-pass" = false
 "proton-vpn" = false
 "quizlet" = false
-"rbtv-rblive-mobile" = true
-"rbtv-rblive-tv" = true
+"rbtv-rblive-mobile" = false
+"rbtv-rblive-tv" = false
 "reddit" = false
 "robbery-bob" = false
 "session" = false
@@ -95,7 +95,7 @@
 "shadow-fight-3" = false
 "shadow-fight-4-arena" = false
 "shazam" = false
-"shroomid" = true
+"shroomid" = false
 "signal" = false
 "silt" = false
 "simplex-chat" = false
