@@ -15,16 +15,19 @@ import requests
 # Preferred models in order of fallback. Free tier quota is tracked per
 # model, so entries from different generations each draw from their own
 # daily pool. A 404 or a long-duration 429 advances to the next entry.
+# Note: 'latest' aliases (e.g. gemini-flash-latest) are deprecated in v1
+# and should be avoided in favor of explicit versions.
 GEMINI_MODEL_CANDIDATES = (
-    "gemini-3.8-flash",          # best quality
-    "gemini-3.7-flash",          # previous generation, separate pool
-    "gemini-3.6-flash",          # separate pool
-    "gemini-3.5-flash",          # separate pool
-    "gemini-flash-lite-latest",  # rolling lite alias, larger quota
-    "gemini-3.5-flash-lite",     # explicit lite fallback
-    "gemini-flash-latest",       # rolling alias, last resort
+    "gemini-4-hydrogen",
+    "gemini-3.8-flash",
+    "gemini-3.7-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
 )
-GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
+
+# Switch to the stable v1 API endpoint to match the google-genai 3.x defaults.
+GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1/models"
 DIFF_CHAR_LIMIT = 50000
 LOG_BODY_LIMIT = 300
 MAX_RETRIES = 3
