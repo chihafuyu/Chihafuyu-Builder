@@ -24,6 +24,11 @@ name: 🐉 Toidicakhia Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_remote_desktop_manager:
+        description: 'Patch remote-desktop-manager'
+        required: true
+        type: boolean
+        default: true
       app_terabox:
         description: 'Patch terabox'
         required: true
@@ -118,6 +123,7 @@ jobs:
       APP_EZVIZ: ${{ inputs.app_ezviz }}
       APP_HTTP_SNIFFER: ${{ inputs.app_http_sniffer }}
       APP_NETMONSTER: ${{ inputs.app_netmonster }}
+      APP_REMOTE_DESKTOP_MANAGER: ${{ inputs.app_remote_desktop_manager }}
       APP_TERABOX: ${{ inputs.app_terabox }}
       APP_UNIVERSAL_COPY: ${{ inputs.app_universal_copy }}
       APP_VTVGO: ${{ inputs.app_vtvgo }}
@@ -137,6 +143,9 @@ jobs:
           fi
           if [[ "$APP_NETMONSTER" == "true" ]]; then
             LIST="$LIST,netmonster"
+          fi
+          if [[ "$APP_REMOTE_DESKTOP_MANAGER" == "true" ]]; then
+            LIST="$LIST,remote-desktop-manager"
           fi
           if [[ "$APP_TERABOX" == "true" ]]; then
             LIST="$LIST,terabox"

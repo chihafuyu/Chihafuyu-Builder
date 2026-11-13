@@ -78,6 +78,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "ccleaner": {
+                "package": "com.piriform.ccleaner",
+                "search_term": "CCleaner",
+                "stable": [
+                    "26.08.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "com-chenupt-money": {
                 "package": "com.chenupt.money",
                 "search_term": "记账助手",
@@ -127,6 +138,17 @@
                 "search_term": "DramaWave",
                 "stable": [
                     "2.0.70"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "eset-mobile-security": {
+                "package": "com.eset.ems2.gp",
+                "search_term": "ESET Mobile Security",
+                "stable": [
+                    "12.0.17.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -215,6 +237,17 @@
                         "enabled": false
                     }
                 }
+            },
+            "mt-manager": {
+                "package": "bin.mt.plus",
+                "search_term": "MT Manager",
+                "stable": [
+                    "2.26.10"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             },
             "music-pitcher-radio": {
                 "package": "com.appums.music_pitcher_radio",
@@ -455,7 +488,7 @@
                 "package": "com.whatsapp",
                 "search_term": "WhatsApp",
                 "stable": [
-                    "2.26.43.75"
+                    "2.26.43.76"
                 ],
                 "beta": [],
                 "strip": true,

@@ -81,6 +81,28 @@
                 },
                 "force_bundle": true
             },
+            "remote-desktop-manager": {
+                "package": "com.devolutions.remotedesktopmanager",
+                "search_term": "Remote Desktop Manager",
+                "stable": [
+                    "2026.3.1.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Disable SSL Pinning": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "500987",
+                    "armeabi-v7a": "500987",
+                    "x86_64": "500987",
+                    "x86": "500987"
+                },
+                "force_bundle": true
+            },
             "terabox": {
                 "package": "com.dubox.drive",
                 "search_term": "TeraBox",
