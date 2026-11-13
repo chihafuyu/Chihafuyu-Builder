@@ -51,7 +51,9 @@
 "samsung-capture" = false
 "samsung-clock" = false
 "samsung-contacts" = false
+"samsung-editor-lite" = true
 "samsung-email" = false
+"samsung-finder" = true
 "samsung-gallery" = true
 "samsung-health" = false
 "samsung-health-monitor" = false

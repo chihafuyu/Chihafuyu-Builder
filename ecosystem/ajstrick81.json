@@ -118,6 +118,9 @@
                     },
                     "Suppress Household Prompt": {
                         "enabled": false
+                    },
+                    "Remove Netflix ads (legacy engine)": {
+                        "enabled": false
                     }
                 }
             },

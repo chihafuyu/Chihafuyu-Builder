@@ -26,7 +26,7 @@
 "cryptomator-freemium" = true
 "cut-the-rope" = false
 "dan-the-man" = false
-"deepl" = false
+"deepl" = true
 "doodle-jump" = false
 "duolingo" = false
 "euria" = false
@@ -55,6 +55,7 @@
 "jetpack-joyride" = false
 "jiohotstar" = false
 "letterboxd" = false
+"macrodroid" = true
 "mathway" = false
 "mega" = false
 "memrise" = false
@@ -70,6 +71,7 @@
 "peak" = false
 "perplexity" = false
 "photomath" = false
+"picture-mushroom" = true
 "picturethis" = false
 "pinterest" = false
 "plague-inc" = false
@@ -93,6 +95,7 @@
 "shadow-fight-3" = false
 "shadow-fight-4-arena" = false
 "shazam" = false
+"shroomid" = true
 "signal" = false
 "silt" = false
 "simplex-chat" = false

@@ -97,7 +97,7 @@
                 "package": "com.ss.android.ttmd.video",
                 "search_term": "PineDrama - Short Dramas",
                 "stable": [
-                    "47.6.3"
+                    "47.7.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -135,10 +135,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "2024706030",
-                    "armeabi-v7a": "2024706030",
-                    "x86": "2024706030",
-                    "x86_64": "2024706030"
+                    "arm64-v8a": "2024707030",
+                    "armeabi-v7a": "2024707030",
+                    "x86": "2024707030",
+                    "x86_64": "2024707030"
                 },
                 "force_bundle": true
             },
@@ -222,7 +222,7 @@
                 "package": "com.instagram.barcelona",
                 "search_term": "Threads",
                 "stable": [
-                    "454.0.0.54.79"
+                    "455.0.0.55.72"
                 ],
                 "beta": [],
                 "strip": true,

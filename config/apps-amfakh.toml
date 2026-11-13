@@ -1,0 +1,19 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"bardi-smart-home" = true
+"cnn-indonesia" = true
+"coverscreen-os" = true
+"detikcom" = true
+"dodo-music" = true
+"flipside" = true
+"github" = true
+"idn" = true
+"jira" = true
+"kompas" = true
+"linkedin" = true
+"radio-indonesia" = true
+"smart-life" = true
+"tuya-smart" = true
+"windy" = true

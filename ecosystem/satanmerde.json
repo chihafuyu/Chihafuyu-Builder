@@ -192,7 +192,7 @@
                 "package": "com.anthropic.claude",
                 "search_term": "Claude",
                 "stable": [
-                    "Any"
+                    "1.261109.19"
                 ],
                 "beta": [],
                 "strip": true,
@@ -266,10 +266,10 @@
                 "options_override": {}
             },
             "deepl": {
-                "package": "com.deepl.mobile.android",
+                "package": "com.deepl.mobiletranslator",
                 "search_term": "DeepL",
                 "stable": [
-                    "Any"
+                    "26.45"
                 ],
                 "beta": [],
                 "strip": true,
@@ -596,6 +596,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "macrodroid": {
+                "package": "com.arlosoft.macrodroid",
+                "search_term": "MacroDroid",
+                "stable": [
+                    "6.1.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "mathway": {
                 "package": "com.bagatrix.mathway.android",
                 "search_term": "Mathway",
@@ -755,6 +766,17 @@
                 "search_term": "Photomath",
                 "stable": [
                     "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "picture-mushroom": {
+                "package": "com.glority.picturemushroom",
+                "search_term": "Picture Mushroom",
+                "stable": [
+                    "2.10.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1008,6 +1030,17 @@
                 "search_term": "Shazam",
                 "stable": [
                     "16.63.0-261008"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "shroomid": {
+                "package": "com.shroomid",
+                "search_term": "ShroomID",
+                "stable": [
+                    "3.52.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1370,7 +1403,7 @@
                 "package": "com.google.android.youtube",
                 "search_term": "YouTube",
                 "stable": [
-                    "Any"
+                    "21.44.539"
                 ],
                 "beta": [],
                 "strip": true,
