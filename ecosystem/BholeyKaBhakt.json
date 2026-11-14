@@ -56,6 +56,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "everycircuit": {
+                "package": "com.everycircuit.free",
+                "search_term": "EveryCircuit",
+                "stable": [
+                    "2.31"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "inshorts": {
                 "package": "com.nis.app",
                 "search_term": "Inshorts",
@@ -72,6 +83,17 @@
                 "search_term": "PROTO",
                 "stable": [
                     "1.53.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "simurelay": {
+                "package": "com.mordiastudio.simurelayfree",
+                "search_term": "Simurelay",
+                "stable": [
+                    "3.0.6"
                 ],
                 "beta": [],
                 "strip": true,
