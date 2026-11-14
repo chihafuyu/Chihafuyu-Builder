@@ -11,6 +11,7 @@
 "burrito-bison-launcha-libre" = false
 "crash-of-cars" = true
 "crossy-road" = false
+"csr-racing" = true
 "dan-the-man" = false
 "dead-target-offline-games-3d" = false
 "dead-trigger" = false
@@ -35,6 +36,7 @@
 "jetpack-joyride" = true
 "lemmings-puzzle-survival" = false
 "lumina-walls" = true
+"magic-sort" = true
 "magic-survival" = false
 "missiles" = false
 "off-the-road" = false
@@ -45,7 +47,9 @@
 "progressbar95" = false
 "rodeo-stampede-sky-zoo-safari" = false
 "shooty-skies" = false
+"smash-bandits-racing" = true
 "smash-hit" = false
+"sonic-dash-run" = true
 "swamp-attack" = true
 "swamp-attack-2" = true
 "swift-backup" = true

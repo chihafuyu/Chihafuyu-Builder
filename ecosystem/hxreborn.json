@@ -534,6 +534,24 @@
                 },
                 "force_bundle": true
             },
+            "candy-crush-saga": {
+                "package": "com.king.candycrushsaga",
+                "search_term": "Candy Crush Saga",
+                "stable": [
+                    "1.340.0.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "13400010",
+                    "armeabi-v7a": "13400010",
+                    "x86_64": "13400010",
+                    "x86": "13400010"
+                },
+                "force_bundle": true
+            },
             "cast-plug-in-for-musicolet": {
                 "package": "in.krosbits.castplugin",
                 "search_term": "Cast Plug-in for Musicolet",
@@ -2410,6 +2428,40 @@
                 },
                 "force_bundle": true
             },
+            "redreader": {
+                "package": "org.quantumbadger.redreader",
+                "search_term": "RedReader",
+                "stable": [
+                    "1.27"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "119",
+                    "armeabi-v7a": "119",
+                    "x86_64": "119",
+                    "x86": "119"
+                }
+            },
+            "redreader-alpha": {
+                "package": "org.quantumbadger.redreaderalpha",
+                "search_term": "RedReader Alpha",
+                "stable": [
+                    "Alpha 375"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "10375",
+                    "armeabi-v7a": "10375",
+                    "x86_64": "10375",
+                    "x86": "10375"
+                }
+            },
             "resprite": {
                 "package": "com.fengeon.resprite_desktop",
                 "search_term": "Resprite",
@@ -2682,7 +2734,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "1002565",
                     "armeabi-v7a": "1002565",

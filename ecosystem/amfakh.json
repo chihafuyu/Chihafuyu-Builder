@@ -44,17 +44,17 @@
                 "package": "apps.ijp.coverscreenos",
                 "search_term": "CoverScreen OS",
                 "stable": [
-                    "CSOS_9.0.1_BETA"
+                    "CSOS_9.0.2_BETA"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "244",
-                    "armeabi-v7a": "244",
-                    "x86_64": "244",
-                    "x86": "244"
+                    "arm64-v8a": "245",
+                    "armeabi-v7a": "245",
+                    "x86_64": "245",
+                    "x86": "245"
                 },
                 "force_bundle": true
             },
@@ -119,7 +119,7 @@
                 "package": "com.github.android",
                 "search_term": "GitHub",
                 "stable": [
-                    "1.283.0"
+                    "1.284.0"
                 ],
                 "beta": [],
                 "strip": true,

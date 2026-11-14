@@ -5,7 +5,7 @@
                 "package": "com.facebook.orca",
                 "search_term": "Messenger",
                 "stable": [
-                    "586.0.0.55.92"
+                    "587.0.0.54.96"
                 ],
                 "force_bundle": false,
                 "strip": true,

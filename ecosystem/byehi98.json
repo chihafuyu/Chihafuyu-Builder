@@ -108,6 +108,17 @@
                 "options_override": {},
                 "force_bundle": true
             },
+            "csr-racing": {
+                "package": "com.naturalmotion.csrracing",
+                "search_term": "CSR Racing",
+                "stable": [
+                    "5.1.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "dan-the-man": {
                 "package": "com.halfbrick.dantheman",
                 "search_term": "Dan the Man",
@@ -205,7 +216,7 @@
                 "package": "com.martinmagni.fancade",
                 "search_term": "Fancade",
                 "stable": [
-                    "1.15.24"
+                    "1.15.26"
                 ],
                 "beta": [],
                 "strip": true,
@@ -217,7 +228,7 @@
                 "package": "com.overthetopgames.fancypants",
                 "search_term": "Fancy Pants Adventures",
                 "stable": [
-                    "1.0.48"
+                    "1.0.49"
                 ],
                 "beta": [],
                 "strip": true,
@@ -316,7 +327,7 @@
                 "package": "com.fingersoft.hillclimb",
                 "search_term": "Hill Climb Racing",
                 "stable": [
-                    "1.73.2"
+                    "1.73.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -396,6 +407,18 @@
                 "options_override": {},
                 "force_bundle": true
             },
+            "magic-sort": {
+                "package": "com.grandgames.magicsort",
+                "search_term": "Magic Sort",
+                "stable": [
+                    "0.0.3480"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
             "magic-survival": {
                 "package": "com.vkslrzm.Zombie",
                 "search_term": "Magic Survival",
@@ -412,7 +435,7 @@
                 "package": "pl.macaque.Missiles",
                 "search_term": "Missiles",
                 "stable": [
-                    "1.42"
+                    "1.43"
                 ],
                 "beta": [],
                 "strip": true,
@@ -516,6 +539,17 @@
                 "options_override": {},
                 "force_bundle": true
             },
+            "smash-bandits-racing": {
+                "package": "com.hutchgames.smashbandits",
+                "search_term": "Smash Bandits Racing",
+                "stable": [
+                    "1.10.05.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "smash-hit": {
                 "package": "com.mediocre.smashhit",
                 "search_term": "Smash Hit",
@@ -526,6 +560,18 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "sonic-dash-run": {
+                "package": "com.sega.sonicdash",
+                "search_term": "Sonic Dash Run",
+                "stable": [
+                    "10.7.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
             },
             "swamp-attack": {
                 "package": "com.outfit7.movingeye.swampattack",
@@ -613,7 +659,7 @@
                 "package": "com.skgames.trafficrider",
                 "search_term": "Traffic Rider",
                 "stable": [
-                    "2.11"
+                    "2.20"
                 ],
                 "beta": [],
                 "strip": true,
@@ -648,7 +694,7 @@
                 "package": "com.vitastudio.mahjong",
                 "search_term": "Vita Mahjong",
                 "stable": [
-                    "3.46.0"
+                    "3.47.0"
                 ],
                 "beta": [],
                 "strip": true,
