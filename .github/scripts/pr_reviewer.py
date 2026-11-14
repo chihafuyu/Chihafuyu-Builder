@@ -2,6 +2,10 @@
 Gemini PR Reviewer Script.
 Fetches PR diffs and generates automated code reviews via the
 Google Generative AI REST API.
+
+GEMINI_API_KEY is optional. When it is absent (e.g. on Dependabot
+PRs, which cannot read Actions-scoped secrets), the script logs a
+notice and exits cleanly instead of failing the workflow.
 """
 
 import os
@@ -412,18 +416,32 @@ def post_comment(
 
 def main() -> None:
     """Main entrypoint for the PR reviewer."""
-    repo = os.environ.get("REPO")
-    pr_num = os.environ.get("PR_NUMBER")
-    gh_token = os.environ.get("GITHUB_TOKEN")
-    gemini_api_key = os.environ.get("GEMINI_API_KEY")
-
-    if not all([repo, pr_num, gh_token, gemini_api_key]):
+    required_env = ("REPO", "PR_NUMBER", "GITHUB_TOKEN")
+    missing = [
+        name for name in required_env
+        if not os.environ.get(name)
+    ]
+    if missing:
         print(
-            "Missing required env vars: "
-            "REPO, PR_NUMBER, GITHUB_TOKEN, GEMINI_API_KEY.",
+            "Missing required env vars: " + ", ".join(missing),
             flush=True,
         )
         sys.exit(1)
+
+    repo = os.environ["REPO"]
+    pr_num = os.environ["PR_NUMBER"]
+    gh_token = os.environ["GITHUB_TOKEN"]
+    gemini_api_key = os.environ.get("GEMINI_API_KEY", "")
+
+    if not gemini_api_key:
+        print(
+            "GEMINI_API_KEY is not set. Dependabot PRs cannot read "
+            "Actions-scoped secrets, so this is expected on those "
+            "runs; register the key under the Dependabot scope to "
+            "review them. Skipping review without failing.",
+            flush=True,
+        )
+        return
 
     safe_diff = fetch_pr_diff(repo, pr_num, gh_token)
     review = analyze_code(safe_diff, api_key=gemini_api_key)
