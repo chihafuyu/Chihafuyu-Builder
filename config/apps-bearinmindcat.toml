@@ -7,7 +7,7 @@
 "gmail" = false
 "good-lock" = false
 "google-maps" = true
-"google-photos" = true
+"google-photos" = false
 "home-up" = false
 "honor-calculator" = false
 "honor-calendar" = false
@@ -69,7 +69,7 @@
 "samsung-photo-editor" = true
 "samsung-reminder" = false
 "samsung-screen-recorder" = false
-"samsung-video-library" = true
+"samsung-video-library" = false
 "samsung-video-player" = false
 "samsung-voice-recorder" = false
 "samsung-weather" = true

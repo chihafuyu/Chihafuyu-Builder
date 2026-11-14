@@ -2,12 +2,12 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
-"atm-fee-saver" = true
+"atm-fee-saver" = false
 "automate" = true
 "autosync" = true
 "blockerx" = true
 "inshorts" = true
 "sky-tonight" = true
 "star-walk-2" = true
-"ufo-vpn" = true
-"zangi" = true
+"ufo-vpn" = false
+"zangi" = false
