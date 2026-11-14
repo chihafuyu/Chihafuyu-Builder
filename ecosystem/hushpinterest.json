@@ -5,11 +5,11 @@
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
                 "stable": [
-                    "14.43.0"
+                    "14.44.0"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "14438020"
+                    "arm64-v8a": "14448030"
                 },
                 "strip": true,
                 "force_bundle": false,
@@ -19,6 +19,9 @@
                         "enabled": true
                     },
                     "GmsCore support": {
+                        "enabled": false
+                    },
+                    "Change package name": {
                         "enabled": false
                     }
                 }

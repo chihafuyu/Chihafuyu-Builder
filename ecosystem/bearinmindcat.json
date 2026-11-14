@@ -82,6 +82,22 @@
                     }
                 }
             },
+            "google-photos": {
+                "package": "com.google.android.apps.photos",
+                "search_term": "Google Photos",
+                "stable": [
+                    "8.1.0.1016919706"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Add microG-RE support": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
             "home-up": {
                 "package": "com.samsung.android.app.homestar",
                 "search_term": "Home Up",
@@ -785,6 +801,17 @@
                 "search_term": "Samsung Screen Recorder",
                 "stable": [
                     "4.0.23"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "samsung-video-library": {
+                "package": "com.samsung.android.videolist",
+                "search_term": "Samsung Video Library",
+                "stable": [
+                    "1.4.22.81"
                 ],
                 "beta": [],
                 "strip": true,

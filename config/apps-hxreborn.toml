@@ -31,6 +31,7 @@
 "blurwall" = false
 "botim" = false
 "calcnote" = false
+"candy-crush-saga" = true
 "cast-plug-in-for-musicolet" = false
 "castle" = false
 "castle-for-tv" = false
@@ -134,6 +135,8 @@
 "rateglance" = false
 "readera" = true
 "realme-link" = false
+"redreader" = true
+"redreader-alpha" = true
 "resprite" = false
 "ridmik-keyboard" = false
 "ringtone-maker" = false
