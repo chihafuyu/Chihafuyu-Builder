@@ -5,12 +5,12 @@ name: 🌐 Dh6k Ecosystem Patcher
   workflow_dispatch:
     inputs:
       app_quetta_browser:
-        description: 'Patch quetta-browser (Play Store)'
+        description: 'Patch quetta-browser'
         required: true
         type: boolean
         default: true
       app_quetta_browser_official:
-        description: 'Patch quetta-browser-official (Direct)'
+        description: 'Patch quetta-browser-official'
         required: true
         type: boolean
         default: false

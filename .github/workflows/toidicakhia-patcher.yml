@@ -5,7 +5,7 @@ name: 🐉 Toidicakhia Ecosystem Patcher
   workflow_dispatch:
     inputs:
       app_1_1_1_1:
-        description: 'Patch 1.1.1.1'
+        description: 'Patch 1-1-1-1'
         required: true
         type: boolean
         default: true
@@ -15,7 +15,7 @@ name: 🐉 Toidicakhia Ecosystem Patcher
         type: boolean
         default: true
       app_http_sniffer:
-        description: 'Patch http-niffer'
+        description: 'Patch http-sniffer'
         required: true
         type: boolean
         default: true

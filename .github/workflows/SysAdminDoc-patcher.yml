@@ -5,52 +5,52 @@ name: 🧰 SysAdminDoc Ecosystem Patcher
   workflow_dispatch:
     inputs:
       app_facebook:
-        description: 'Patch HushFacebook'
+        description: 'Patch facebook'
         required: true
         type: boolean
         default: true
       app_instagram:
-        description: 'Patch HushGram'
+        description: 'Patch instagram'
         required: true
         type: boolean
         default: false
       app_messenger:
-        description: 'Patch HushMessenger'
+        description: 'Patch messenger'
         required: true
         type: boolean
         default: true
       app_pinedrama:
-        description: 'Patch HushPine'
+        description: 'Patch pinedrama'
         required: true
         type: boolean
         default: false
       app_pinterest:
-        description: 'Patch HushPinterest'
+        description: 'Patch pinterest'
         required: true
         type: boolean
         default: true
       app_telegram:
-        description: 'Patch HushTelegram (Mobile)'
+        description: 'Patch telegram'
         required: true
         type: boolean
         default: false
       app_telegram_web:
-        description: 'Patch HushTelegram (Web)'
+        description: 'Patch telegram-web'
         required: true
         type: boolean
         default: false
       app_threads:
-        description: 'Patch HushThreads'
+        description: 'Patch threads'
         required: true
         type: boolean
         default: true
       app_tiktok_global:
-        description: 'Patch HushFeed'
+        description: 'Patch tiktok-global'
         required: true
         type: boolean
         default: false
       app_tumblr:
-        description: 'Patch HushTumblr'
+        description: 'Patch tumblr'
         required: true
         type: boolean
         default: false

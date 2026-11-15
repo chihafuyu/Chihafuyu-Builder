@@ -5,12 +5,12 @@ name: ☁️ Fluffy Ecosystem Patcher
   workflow_dispatch:
     inputs:
       app_alarmy:
-        description: 'Patch Alarmy'
+        description: 'Patch alarmy'
         required: true
         type: boolean
         default: false
       app_blockerx:
-        description: 'Patch BlockerX'
+        description: 'Patch blockerx'
         required: true
         type: boolean
         default: false

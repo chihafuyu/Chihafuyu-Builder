@@ -5,7 +5,7 @@ name: 🧩 Riky Ecosystem Patcher
   workflow_dispatch:
     inputs:
       app_3bmeteo:
-        description: 'Patch 3Bmeteo'
+        description: 'Patch 3bmeteo'
         required: true
         type: boolean
         default: false

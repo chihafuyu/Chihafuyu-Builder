@@ -5,22 +5,22 @@ name: 🧙‍♂️ ImNoammm Ecosystem Patcher
   workflow_dispatch:
     inputs:
       app_block_blast:
-        description: 'Patch Block Blast'
+        description: 'Patch block-blast'
         required: true
         type: boolean
         default: true
       app_chess:
-        description: 'Patch Chess.com'
+        description: 'Patch chess'
         required: true
         type: boolean
         default: true
       app_gboard:
-        description: 'Patch Gboard'
+        description: 'Patch gboard'
         required: true
         type: boolean
         default: false
       app_geocaching:
-        description: 'Patch Geocaching'
+        description: 'Patch geocaching'
         required: true
         type: boolean
         default: false
