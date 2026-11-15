@@ -5,17 +5,17 @@ name: 🌌 Morphe Ecosystem Patcher
   workflow_dispatch:
     inputs:
       app_youtube:
-        description: 'Patch YouTube'
+        description: 'Patch youtube'
         required: true
         type: boolean
         default: true
       app_youtube_music:
-        description: 'Patch YouTube Music'
+        description: 'Patch youtube-music'
         required: true
         type: boolean
         default: true
       app_reddit:
-        description: 'Patch Reddit'
+        description: 'Patch reddit'
         required: true
         type: boolean
         default: true
