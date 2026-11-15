@@ -1,6 +1,22 @@
 {
     "lokesh-sparrow": {
         "apps": {
+            "doc-scanner": {
+                "package": "com.cv.docscanner",
+                "search_term": "Doc Scanner",
+                "stable": [
+                    "6.9.9"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support (Doc Scanner)": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
             "linkedin": {
                 "package": "com.linkedin.android",
                 "search_term": "LinkedIn",
@@ -27,6 +43,40 @@
                         "enabled": false
                     }
                 }
+            },
+            "splitwise": {
+                "package": "com.Splitwise.SplitwiseMobile",
+                "search_term": "Splitwise",
+                "stable": [
+                    "26.11.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support (Splitwise)": {
+                        "enabled": false
+                    },
+                    "Remove analytics and crash reporting": {
+                        "enabled": false
+                    }
+                }
+            },
+            "truecaller": {
+                "package": "com.truecaller",
+                "search_term": "Truecaller",
+                "stable": [
+                    "26.43.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support (Truecaller)": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
             }
         }
     }

@@ -45,6 +45,9 @@
                     },
                     "Skip Play Protect screen": {
                         "enabled": false
+                    },
+                    "Extra compact list": {
+                        "enabled": false
                     }
                 },
                 "force_bundle": true
@@ -700,6 +703,48 @@
                         "enabled": false
                     },
                     "Show GIFs in every region": {
+                        "enabled": false
+                    },
+                    "Bigger size range": {
+                        "enabled": false
+                    },
+                    "Build SBoard": {
+                        "enabled": false
+                    },
+                    "Faster backspace": {
+                        "enabled": false
+                    },
+                    "Faster suggestion animations": {
+                        "enabled": false
+                    },
+                    "Hide Bitmoji and mojitok": {
+                        "enabled": false
+                    },
+                    "Hide Galaxy AI": {
+                        "enabled": false
+                    },
+                    "Hide Samsung Pass": {
+                        "enabled": false
+                    },
+                    "Hide Translate": {
+                        "enabled": false
+                    },
+                    "Hide store links": {
+                        "enabled": false
+                    },
+                    "Hide tips": {
+                        "enabled": false
+                    },
+                    "Key vibration length": {
+                        "enabled": false
+                    },
+                    "More toolbar buttons": {
+                        "enabled": false
+                    },
+                    "No contacts access": {
+                        "enabled": false
+                    },
+                    "Pure black theme": {
                         "enabled": false
                     }
                 }
