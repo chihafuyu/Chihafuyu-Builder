@@ -14,6 +14,7 @@
 "anytracker" = false
 "apna-tunnel-lite" = false
 "arc-player" = false
+"arduinodroid" = true
 "athan" = true
 "atlomaps" = false
 "atvtools" = false
@@ -32,10 +33,12 @@
 "botim" = false
 "calcnote" = false
 "candy-crush-saga" = true
+"candy-crush-soda-saga" = true
 "cast-plug-in-for-musicolet" = false
 "castle" = false
 "castle-for-tv" = false
 "catzy" = false
+"classdojo" = false
 "clink" = false
 "clip-studio-paint" = false
 "clone-app" = false
@@ -64,6 +67,7 @@
 "habitify" = true
 "hindu-calendar" = false
 "hypic" = true
+"ilovepdf" = true
 "imo" = false
 "internet-speed-meter-lite" = false
 "iototoy" = false
@@ -72,7 +76,7 @@
 "jujo" = false
 "jvdroid" = false
 "keepa" = false
-"kick" = false  # Note: "Any" version, may fail if there is no custom version.
+"kick" = false
 "klassik-radio" = false
 "lagguy-wallpapers" = false
 "launchbox" = false
