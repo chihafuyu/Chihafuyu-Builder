@@ -13,6 +13,9 @@ permissions:
 jobs:
   update-configs:
     runs-on: ubuntu-latest
+    concurrency:
+      group: auto-update-configs
+      cancel-in-progress: false
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
@@ -32,13 +35,14 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GH_PAT }}
+          base: ${{ github.event.repository.default_branch }}
+          branch: auto-update/configs
           commit-message: "chore(config): auto-update ecosystem configs"
           committer: GitHub <noreply@github.com>
           author: >-
             ${{ github.actor }}
             <${{ github.actor }}@users.noreply.github.com>
           signoff: false
-          branch: auto-update/configs
           delete-branch: true
           title: '🤖 Auto-Update Ecosystem Configs'
           body: |

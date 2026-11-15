@@ -34,6 +34,61 @@ name: 🕉️ BholeyKaBhakt Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_atm_fee_saver:
+        description: 'Patch atm-fee-saver'
+        required: true
+        type: boolean
+        default: false
+      app_automate:
+        description: 'Patch automate'
+        required: true
+        type: boolean
+        default: false
+      app_autosync:
+        description: 'Patch autosync'
+        required: true
+        type: boolean
+        default: false
+      app_blockerx:
+        description: 'Patch blockerx'
+        required: true
+        type: boolean
+        default: false
+      app_everycircuit:
+        description: 'Patch everycircuit'
+        required: true
+        type: boolean
+        default: false
+      app_inshorts:
+        description: 'Patch inshorts'
+        required: true
+        type: boolean
+        default: false
+      app_simurelay:
+        description: 'Patch simurelay'
+        required: true
+        type: boolean
+        default: false
+      app_sky_tonight:
+        description: 'Patch sky-tonight'
+        required: true
+        type: boolean
+        default: false
+      app_star_walk_2:
+        description: 'Patch star-walk-2'
+        required: true
+        type: boolean
+        default: false
+      app_ufo_vpn:
+        description: 'Patch ufo-vpn'
+        required: true
+        type: boolean
+        default: false
+      app_zangi:
+        description: 'Patch zangi'
+        required: true
+        type: boolean
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -110,6 +165,17 @@ jobs:
       APP_VPNIFY: ${{ inputs.app_vpnify }}
       APP_BACKDROPS: ${{ inputs.app_backdrops }}
       APP_SOLID_EXPLORER: ${{ inputs.app_solid_explorer }}
+      APP_ATM_FEE_SAVER: ${{ inputs.app_atm_fee_saver }}
+      APP_AUTOMATE: ${{ inputs.app_automate }}
+      APP_AUTOSYNC: ${{ inputs.app_autosync }}
+      APP_BLOCKERX: ${{ inputs.app_blockerx }}
+      APP_EVERYCIRCUIT: ${{ inputs.app_everycircuit }}
+      APP_INSHORTS: ${{ inputs.app_inshorts }}
+      APP_SIMURELAY: ${{ inputs.app_simurelay }}
+      APP_SKY_TONIGHT: ${{ inputs.app_sky_tonight }}
+      APP_STAR_WALK_2: ${{ inputs.app_star_walk_2 }}
+      APP_UFO_VPN: ${{ inputs.app_ufo_vpn }}
+      APP_ZANGI: ${{ inputs.app_zangi }}
     steps:
       - id: build-list
         run: |
@@ -132,6 +198,39 @@ jobs:
           fi
           if [[ "$APP_SOLID_EXPLORER" == "true" ]]; then
             LIST="$LIST,solid-explorer"
+          fi
+          if [[ "$APP_ATM_FEE_SAVER" == "true" ]]; then
+            LIST="$LIST,atm-fee-saver"
+          fi
+          if [[ "$APP_AUTOMATE" == "true" ]]; then
+            LIST="$LIST,automate"
+          fi
+          if [[ "$APP_AUTOSYNC" == "true" ]]; then
+            LIST="$LIST,autosync"
+          fi
+          if [[ "$APP_BLOCKERX" == "true" ]]; then
+            LIST="$LIST,blockerx"
+          fi
+          if [[ "$APP_EVERYCIRCUIT" == "true" ]]; then
+            LIST="$LIST,everycircuit"
+          fi
+          if [[ "$APP_INSHORTS" == "true" ]]; then
+            LIST="$LIST,inshorts"
+          fi
+          if [[ "$APP_SIMURELAY" == "true" ]]; then
+            LIST="$LIST,simurelay"
+          fi
+          if [[ "$APP_SKY_TONIGHT" == "true" ]]; then
+            LIST="$LIST,sky-tonight"
+          fi
+          if [[ "$APP_STAR_WALK_2" == "true" ]]; then
+            LIST="$LIST,star-walk-2"
+          fi
+          if [[ "$APP_UFO_VPN" == "true" ]]; then
+            LIST="$LIST,ufo-vpn"
+          fi
+          if [[ "$APP_ZANGI" == "true" ]]; then
+            LIST="$LIST,zangi"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

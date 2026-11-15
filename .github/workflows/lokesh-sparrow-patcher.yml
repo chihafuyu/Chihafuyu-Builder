@@ -1,5 +1,5 @@
 ---
-name: 🎭 Lokesh-Sparrow Ecosystem Patcher
+name: 🔗 Lokesh-Sparrow Ecosystem Patcher
 
 "on":
   workflow_dispatch:
@@ -10,7 +10,7 @@ name: 🎭 Lokesh-Sparrow Ecosystem Patcher
         type: boolean
         default: true
       app_linkedin:
-        description: 'Patch LinkedIn'
+        description: 'Patch linkedin'
         required: true
         type: boolean
         default: true

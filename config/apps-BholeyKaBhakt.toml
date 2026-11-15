@@ -5,11 +5,17 @@
 "atm-fee-saver" = false
 "automate" = true
 "autosync" = true
+"backdrops" = true
 "blockerx" = true
 "everycircuit" = true
 "inshorts" = true
+"proto" = true
 "simurelay" = true
 "sky-tonight" = true
+"solid-explorer" = false
+"speedtest" = true
 "star-walk-2" = true
+"stellarium" = true
 "ufo-vpn" = false
+"vpnify" = false
 "zangi" = false
