@@ -1,5 +1,6 @@
 """
 Convert checkbox-based patcher workflows to text-based input.
+Also normalizes app descriptions to match their slugified input keys.
 Run manually via GitHub Actions workflow_dispatch.
 """
 
@@ -14,6 +15,30 @@ APP_INPUT_RE = re.compile(r"^ {6}app_[a-zA-Z0-9_]+:\r?\n", re.MULTILINE)
 def _get_repo_root() -> str:
     """Returns the absolute path to the repository root."""
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
+def normalize_descriptions(content: str) -> str:
+    """Normalizes app descriptions to match their slugified input keys."""
+    pattern = re.compile(
+        r"^( {6})app_([a-zA-Z0-9_]+):(\r?\n)"
+        r"([ \t]+description:\s*['\"]?Patch [^'\"\r\n]+['\"]?)(\r?\n)",
+        re.MULTILINE
+    )
+
+    def repl(match):
+        indent = match.group(1)
+        app_key = match.group(2)
+        newline = match.group(3)
+        desc_part = match.group(4)
+        desc_indent = re.match(r"^([ \t]+)", desc_part).group(1)
+        # Convert app_key (e.g., youtube_music) to slug (youtube-music)
+        slug = app_key.replace("_", "-").lower()
+        return (
+            f"{indent}app_{app_key}:{newline}"
+            f"{desc_indent}description: 'Patch {slug}'{newline}"
+        )
+
+    return pattern.sub(repl, content)
 
 
 def _build_text_yaml(ecosystem_name: str, call_patcher_block: str, workflow_name: str) -> str:
@@ -198,40 +223,46 @@ jobs:
 
 
 def convert_workflow(yaml_path: str) -> bool:
-    """Converts a single YAML file if it exceeds the input limit."""
+    """Converts a single YAML file if it exceeds the input limit and normalizes descriptions."""
     try:
         with open(yaml_path, "r", encoding="utf-8") as f:
-            content = f.read()
+            original_content = f.read()
     except OSError as err:
         print(f"Failed to read {yaml_path}: {err}")
         return False
 
-    if "apps_to_patch:" in content:
+    if "apps_to_patch:" in original_content:
         return False
 
+    # 1. Normalize descriptions
+    content = normalize_descriptions(original_content)
+
+    # 2. Check for text-based migration
     app_inputs = len(APP_INPUT_RE.findall(content))
-    if app_inputs <= MAX_YAML_INPUTS:
+    if app_inputs > MAX_YAML_INPUTS:
+        name_match = re.search(r"^name:\s*(.*)$", content, re.MULTILINE)
+        workflow_name = name_match.group(1) if name_match else "Ecosystem Patcher"
+
+        call_patcher_match = re.search(r"^  call-patcher:", content, re.MULTILINE)
+        if not call_patcher_match:
+            print(f"Skipping {yaml_path}: could not find 'call-patcher:' block.")
+            return False
+
+        call_patcher_block = content[call_patcher_match.start():]
+        ecosystem_name = os.path.basename(yaml_path).replace("-patcher.yml", "")
+
+        content = _build_text_yaml(ecosystem_name, call_patcher_block, workflow_name)
+        print(f"Migrating {yaml_path} to text-based input.")
+
+    if content == original_content:
         return False
-
-    name_match = re.search(r"^name:\s*(.*)$", content, re.MULTILINE)
-    workflow_name = name_match.group(1) if name_match else "Ecosystem Patcher"
-
-    call_patcher_match = re.search(r"^  call-patcher:", content, re.MULTILINE)
-    if not call_patcher_match:
-        print(f"Skipping {yaml_path}: could not find 'call-patcher:' block.")
-        return False
-
-    call_patcher_block = content[call_patcher_match.start():]
-    ecosystem_name = os.path.basename(yaml_path).replace("-patcher.yml", "")
-
-    new_yaml = _build_text_yaml(ecosystem_name, call_patcher_block, workflow_name)
 
     tmp_path = f"{yaml_path}.tmp"
     try:
         with open(tmp_path, "w", encoding="utf-8") as f:
-            f.write(new_yaml)
+            f.write(content)
         os.replace(tmp_path, yaml_path)
-        print(f"Successfully migrated {yaml_path} to text-based input.")
+        print(f"Successfully updated {yaml_path}.")
         return True
     except OSError as err:
         print(f"Failed to write {yaml_path}: {err}")
@@ -259,7 +290,7 @@ def main() -> None:
                 changed = True
 
     if not changed:
-        print("No workflows required migration.")
+        print("No workflows required updates.")
     else:
         print("Migration complete.")
 
