@@ -143,7 +143,7 @@
                 "package": "vn.vtv.vtvgo",
                 "search_term": "VTVGo",
                 "stable": [
-                    "12.11.05"
+                    "12.11.13"
                 ],
                 "beta": [],
                 "strip": true,
@@ -157,10 +157,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "260933",
-                    "armeabi-v7a": "260933",
-                    "x86_64": "260933",
-                    "x86": "260933"
+                    "arm64-v8a": "260935",
+                    "armeabi-v7a": "260935",
+                    "x86_64": "260935",
+                    "x86": "260935"
                 },
                 "force_bundle": true
             }

@@ -223,6 +223,24 @@
                 },
                 "force_bundle": true
             },
+            "arduinodroid": {
+                "package": "name.antonsmirnov.android.arduinodroid2",
+                "search_term": "ArduinoDroid",
+                "stable": [
+                    "9.7.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "9779",
+                    "armeabi-v7a": "9779",
+                    "x86_64": "9779",
+                    "x86": "9779"
+                },
+                "force_bundle": true
+            },
             "athan": {
                 "package": "com.athan",
                 "search_term": "Athan",
@@ -552,6 +570,24 @@
                 },
                 "force_bundle": true
             },
+            "candy-crush-soda-saga": {
+                "package": "com.king.candycrushsodasaga",
+                "search_term": "Candy Crush Soda Saga",
+                "stable": [
+                    "1.331.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "13310030",
+                    "armeabi-v7a": "13310030",
+                    "x86_64": "13310030",
+                    "x86": "13310030"
+                },
+                "force_bundle": true
+            },
             "cast-plug-in-for-musicolet": {
                 "package": "in.krosbits.castplugin",
                 "search_term": "Cast Plug-in for Musicolet",
@@ -613,6 +649,24 @@
                     "armeabi-v7a": "281",
                     "x86_64": "281",
                     "x86": "281"
+                },
+                "force_bundle": true
+            },
+            "classdojo": {
+                "package": "com.classdojo.android",
+                "search_term": "ClassDojo",
+                "stable": [
+                    "9.12.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "260091200",
+                    "armeabi-v7a": "260091200",
+                    "x86_64": "260091200",
+                    "x86": "260091200"
                 },
                 "force_bundle": true
             },
@@ -1133,6 +1187,24 @@
                     "armeabi-v7a": "99080",
                     "x86_64": "99080",
                     "x86": "99080"
+                },
+                "force_bundle": true
+            },
+            "ilovepdf": {
+                "package": "com.ilovepdf.www",
+                "search_term": "iLovePDF",
+                "stable": [
+                    "4.2.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "4002003",
+                    "armeabi-v7a": "4002003",
+                    "x86_64": "4002003",
+                    "x86": "4002003"
                 },
                 "force_bundle": true
             },
@@ -1734,17 +1806,17 @@
                 "package": "com.myscript.nebo",
                 "search_term": "MyScript Notes",
                 "stable": [
-                    "7.4.8"
+                    "7.4.9"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "182801",
-                    "armeabi-v7a": "182801",
-                    "x86_64": "182801",
-                    "x86": "182801"
+                    "arm64-v8a": "183411",
+                    "armeabi-v7a": "183411",
+                    "x86_64": "183411",
+                    "x86": "183411"
                 },
                 "force_bundle": true
             },
