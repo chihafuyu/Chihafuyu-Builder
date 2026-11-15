@@ -1,0 +1,40 @@
+---
+name: 🤖 Convert YAML to Text-Based
+
+"on":
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  convert-workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Run Conversion Script
+        run: python .github/scripts/convert_to_text.py
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GH_PAT }}
+          commit-message: "chore(workflow): convert patcher to text-based inputs"
+          branch: auto-fix/text-based-migration
+          delete-branch: true
+          title: '🤖 Auto-Convert Patcher YAML to Text-Based'
+          body: |
+            This PR automatically converts checkbox-based patcher workflows to text-based inputs because they exceeded the GitHub Actions 25-input limit.
+            
+            Please review the changes before merging.
+          labels: |
+            automated
+            config-update
