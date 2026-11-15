@@ -582,20 +582,20 @@ def _process_existing_apps(
         for pkg in ignore_packages:
             stable_pkgs.pop(pkg, None)
 
-    existing_count = sum(
-        1 for cfg in app_configs.values()
-        if isinstance(cfg, dict) and cfg.get("package")
-    )
-    if existing_count >= 5:
-        missing_count = sum(
-            1 for cfg in app_configs.values()
-            if isinstance(cfg, dict) and cfg.get("package")
-            and cfg["package"] not in stable_pkgs
-        )
-        if missing_count > existing_count // 2:
-            print(f"    -> WARNING: {missing_count}/{existing_count} apps missing from upstream "
-                  "(>50% threshold); skipping ecosystem to prevent accidental mass deletion.")
-            return False, [], {}
+    # Pylint R0912 fix: replaced comprehensions with explicit loops
+    # to prevent branch count inflation while keeping logic identical.
+    existing_count = 0
+    missing_count = 0
+    for cfg in app_configs.values():
+        if isinstance(cfg, dict) and cfg.get("package"):
+            existing_count += 1
+            if cfg["package"] not in stable_pkgs:
+                missing_count += 1
+
+    if existing_count >= 5 and missing_count > existing_count // 2:
+        print(f"    -> WARNING: {missing_count}/{existing_count} apps missing from upstream "
+              "(>50% threshold); skipping ecosystem to prevent accidental mass deletion.")
+        return False, [], {}
 
     changed = False
     removed_apps = []
@@ -695,14 +695,13 @@ def _create_full_toml(toml_path, config_path, eco_name):
     if err:
         print(f"    -> Failed to read config for TOML creation: {err}")
         return False
-    if not isinstance(apps, dict):
-        return False
-    if not apps:
+    if not isinstance(apps, dict) or not apps:
         return False
 
+    tmp_path = f"{toml_path}.tmp"
     try:
         os.makedirs(os.path.dirname(toml_path), exist_ok=True)
-        with open(toml_path, "w", encoding="utf-8") as file_obj:
+        with open(tmp_path, "w", encoding="utf-8") as file_obj:
             file_obj.write(TOML_HEADER)
             for app_key, app_cfg in sorted(apps.items()):
                 if not isinstance(app_cfg, dict):
@@ -711,13 +710,14 @@ def _create_full_toml(toml_path, config_path, eco_name):
                 first = stable[0] if isinstance(stable, list) and stable else ""
                 flag = "true" if first and first != "Any" else "false"
                 file_obj.write(f'"{app_key}" = {flag}\n')
+        os.replace(tmp_path, toml_path)
         print(f"    -> Created {os.path.basename(toml_path)} with {len(apps)} apps")
         return True
     except OSError as err:
         print(f"    -> Failed to create {toml_path}: {err}")
-        if os.path.exists(toml_path):
+        if os.path.exists(tmp_path):
             try:
-                os.remove(toml_path)
+                os.remove(tmp_path)
             except OSError:
                 pass
         return False
@@ -770,15 +770,32 @@ def _remove_app_from_yaml(ecosystem_name, app_key):
             content = input_block_re.sub("", content)
 
     if content != original_content:
-        with open(yaml_path, "w", encoding="utf-8") as file_obj:
-            file_obj.write(content)
-        print(f"    -> Removed app '{app_key}' from {ecosystem_name}-patcher.yml")
-        return True
+        # Atomic write to prevent YAML corruption if runner dies mid-write
+        tmp_path = f"{yaml_path}.tmp"
+        try:
+            with open(tmp_path, "w", encoding="utf-8") as file_obj:
+                file_obj.write(content)
+            os.replace(tmp_path, yaml_path)
+            print(f"    -> Removed app '{app_key}' from {ecosystem_name}-patcher.yml")
+            return True
+        except OSError as err:
+            print(f"    -> Failed to safely write {yaml_path}: {err}")
+            if os.path.exists(tmp_path):
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
     return False
 
 
 def _migrate_to_text_input(ecosystem_name, yaml_path):
-    """Convert a checkbox-style workflow to a text-input workflow."""
+    """Convert a checkbox-style workflow to a text-input workflow.
+
+    This is a destructive operation by design, triggered when apps exceed
+    the GitHub Actions checkbox limit (MAX_YAML_INPUTS). The previous
+    YAML content above 'call-patcher:' is completely replaced, while
+    'call-patcher:' and everything below it is preserved.
+    """
     with open(yaml_path, "r", encoding="utf-8") as file_obj:
         content = file_obj.read()
 
@@ -790,6 +807,8 @@ def _migrate_to_text_input(ecosystem_name, yaml_path):
         return False
     call_patcher_block = content[call_patcher_match.start():]
 
+    # The f-string formatting requires double braces (e.g., {{eco}}) for
+    # literal curly braces that must survive into the generated YAML.
     new_yaml = f"""---
 name: {workflow_name}
 
@@ -923,7 +942,7 @@ jobs:
           selected = []
 
           if raw_input.lower() == 'all':
-              print('[INFO] Mode: Reading from config/apps.toml', file=sys.stderr)
+              print(f'[INFO] Mode: Reading from {{toml_path}}', file=sys.stderr)
               if not os.path.exists(toml_path):
                   print(f'::error::TOML file not found: {{toml_path}}', file=sys.stderr)
                   sys.exit(1)
@@ -935,7 +954,7 @@ jobs:
               selected = [k for k, v in apps_dict.items() if v is True]
 
               if not selected:
-                  print('::error::No apps enabled in apps.toml', file=sys.stderr)
+                  print(f'::error::No apps enabled in {{toml_path}}', file=sys.stderr)
                   sys.exit(1)
 
           else:
@@ -968,10 +987,54 @@ jobs:
 
 {call_patcher_block}"""
 
-    with open(yaml_path, "w", encoding="utf-8") as file_obj:
-        file_obj.write(new_yaml)
-    print(f"    -> Migrated {ecosystem_name} to text-input YAML (exceeded 15 app checkboxes)")
-    return True
+    # Atomic write to ensure we don't leave a half-written YAML file if the runner aborts
+    tmp_path = f"{yaml_path}.tmp"
+    try:
+        with open(tmp_path, "w", encoding="utf-8") as file_obj:
+            file_obj.write(new_yaml)
+        os.replace(tmp_path, yaml_path)
+        print(f"    -> Migrated {ecosystem_name} to text-input YAML (exceeded 15 app checkboxes)")
+        return True
+    except OSError as err:
+        print(f"    -> Failed to safely migrate YAML {yaml_path}: {err}")
+        if os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+        return False
+
+
+def _insert_yaml_block(
+    content,
+    regex,
+    new_block,
+    app_key,
+    *,
+    group_idx,
+    fallback_pattern,
+    fallback_at_end=False,
+):
+    """Helper for _add_app_to_yaml to keep branch count low and code clean."""
+    existing_blocks = list(regex.finditer(content))
+    normalized_key = app_key.replace("-", "_").replace(".", "_")
+
+    if existing_blocks:
+        insert_pos = None
+        for match in existing_blocks:
+            current_app = match.group(group_idx).lower()
+            if normalized_key < current_app:
+                insert_pos = match.start()
+                break
+        if insert_pos is None:
+            insert_pos = existing_blocks[-1].end()
+        return content[:insert_pos] + new_block + content[insert_pos:]
+
+    match = fallback_pattern.search(content)
+    if match:
+        pos = match.end() if fallback_at_end else match.start()
+        return content[:pos] + new_block + content[pos:]
+    return None
 
 
 def _add_app_to_yaml(ecosystem_name, app_key):
@@ -1015,6 +1078,7 @@ def _add_app_to_yaml(ecosystem_name, app_key):
 
     original_content = content
 
+    # 1. Insert input block
     input_block = (
         f"      {input_name}:{newline}"
         f"        description: 'Patch {app_key}'{newline}"
@@ -1022,97 +1086,85 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         f"        type: boolean{newline}"
         f"        default: true{newline}"
     )
+    arch_pattern = re.compile(r"^ {6}architecture:\r?\n", re.MULTILINE)
+    new_content = _insert_yaml_block(
+        content,
+        input_regex,
+        input_block,
+        app_key,
+        group_idx=2,
+        fallback_pattern=arch_pattern,
+    )
+    if new_content is None:
+        print("    -> WARNING: Failed to locate input insertion point.")
+        return False
+    content = new_content
 
-    if existing_input_blocks:
-        inserted = False
-        for match in existing_input_blocks:
-            current_app = match.group(2)
-            if app_key.replace("-", "_").replace(".", "_") < current_app:
-                content = content[:match.start()] + input_block + content[match.start():]
-                inserted = True
-                break
-        if not inserted:
-            last_match = existing_input_blocks[-1]
-            content = content[:last_match.end()] + input_block + content[last_match.end():]
-    else:
-        arch_pattern = re.compile(r"^ {6}architecture:\r?\n", re.MULTILINE)
-        match = arch_pattern.search(content)
-        if match:
-            content = content[:match.start()] + input_block + content[match.start():]
-        else:
-            print("    -> WARNING: Failed to locate input insertion point.")
-            return False
-
+    # 2. Insert env block
     env_regex = re.compile(
         r"^( {6})APP_([A-Z0-9_]+): \$\{\{ inputs\.app_[a-z0-9_]+ \}\}\r?\n",
         re.MULTILINE
     )
-    existing_env_blocks = list(env_regex.finditer(content))
     env_line = f"      {env_var}: ${{{{ inputs.{input_name} }}}}{newline}"
+    env_header_pattern = re.compile(r"^[ \t]+env:\r?\n", re.MULTILINE)
+    new_content = _insert_yaml_block(
+        content,
+        env_regex,
+        env_line,
+        app_key,
+        group_idx=2,
+        fallback_pattern=env_header_pattern,
+        fallback_at_end=True,
+    )
+    if new_content is None:
+        print("    -> WARNING: Failed to locate env block in YAML.")
+        return False
+    content = new_content
 
-    if existing_env_blocks:
-        inserted = False
-        for match in existing_env_blocks:
-            current_app = match.group(2).lower()
-            if app_key.replace("-", "_").replace(".", "_") < current_app:
-                content = content[:match.start()] + env_line + content[match.start():]
-                inserted = True
-                break
-        if not inserted:
-            last_match = existing_env_blocks[-1]
-            content = content[:last_match.end()] + env_line + content[last_match.end():]
-    else:
-        env_header_pattern = re.compile(r"^[ \t]+env:\r?\n", re.MULTILINE)
-        match = env_header_pattern.search(content)
-        if match:
-            content = content[:match.end()] + env_line + content[match.end():]
-        else:
-            print("    -> WARNING: Failed to locate env block in YAML.")
-            return False
-
+    # 3. Insert if block
     if_regex = re.compile(
         r"^[ \t]+if \[\[ \"\$APP_([A-Z0-9_]+)\" == \"true\" \]\]; then\r?\n"
         r"[ \t]+LIST=\"\$LIST,[^\"]+\"\r?\n"
         r"[ \t]+fi\r?\n",
         re.MULTILINE
     )
-    existing_if_blocks = list(if_regex.finditer(content))
     if_block = (
         f'          if [[ "${env_var}" == "true" ]]; then{newline}'
         f'            LIST="$LIST,{app_key}"{newline}'
         f"          fi{newline}"
     )
-
-    if existing_if_blocks:
-        inserted = False
-        for match in existing_if_blocks:
-            current_app = match.group(1).lower()
-            if app_key.replace("-", "_").replace(".", "_") < current_app:
-                content = content[:match.start()] + if_block + content[match.start():]
-                inserted = True
-                break
-        if not inserted:
-            last_match = existing_if_blocks[-1]
-            content = content[:last_match.end()] + if_block + content[last_match.end():]
-    else:
-        list_pattern = re.compile(r'^[ \t]+LIST="\$\{LIST#,}"\r?\n', re.MULTILINE)
-        match = list_pattern.search(content)
-        if match:
-            content = content[:match.start()] + if_block + content[match.start():]
-        else:
-            print("    -> WARNING: Failed to locate LIST append block in YAML.")
-            return False
+    list_pattern = re.compile(r'^[ \t]+LIST="\$\{LIST#,}"\r?\n', re.MULTILINE)
+    new_content = _insert_yaml_block(
+        content,
+        if_regex,
+        if_block,
+        app_key,
+        group_idx=1,
+        fallback_pattern=list_pattern,
+    )
+    if new_content is None:
+        print("    -> WARNING: Failed to locate LIST append block in YAML.")
+        return False
+    content = new_content
 
     if content == original_content:
         return False
 
+    # Atomic write
+    tmp_path = f"{yaml_path}.tmp"
     try:
-        with open(yaml_path, "w", encoding="utf-8") as file_obj:
+        with open(tmp_path, "w", encoding="utf-8") as file_obj:
             file_obj.write(content)
+        os.replace(tmp_path, yaml_path)
         print(f"    -> Added '{app_key}' (alphabetical insertion)")
         return True
     except OSError as err:
-        print(f"    -> Failed to write {yaml_path}: {err}")
+        print(f"    -> Failed to safely write {yaml_path}: {err}")
+        if os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
         return False
 
 
@@ -1142,6 +1194,28 @@ def _rebuild_toml_index(lines):
                 key = match.group(1) or match.group(2) or match.group(3)
                 entries[key] = i
     return header_idx, entries
+
+
+def _insert_toml_entry(lines, entries, header_idx, app_key, flag):
+    """Helper for _update_apps_toml to lower branch count."""
+    new_line = f'"{app_key}" = {flag}\n'
+
+    insert_idx = None
+    for existing_key in sorted(entries.keys()):
+        if app_key < existing_key:
+            insert_idx = entries[existing_key]
+            break
+    if insert_idx is None:
+        if entries:
+            insert_idx = entries[max(entries, key=entries.get)] + 1
+        else:
+            insert_idx = header_idx + 1
+
+    if insert_idx > 0 and not lines[insert_idx - 1].endswith("\n"):
+        lines[insert_idx - 1] += "\n"
+
+    lines.insert(insert_idx, new_line)
+    return lines
 
 
 def _update_apps_toml(toml_path, added_apps, removed_apps):
@@ -1183,23 +1257,7 @@ def _update_apps_toml(toml_path, added_apps, removed_apps):
         if app_key in entries:
             continue
         flag = "true" if added_apps[app_key] else "false"
-        new_line = f'"{app_key}" = {flag}\n'
-
-        insert_idx = None
-        for existing_key in sorted(entries.keys()):
-            if app_key < existing_key:
-                insert_idx = entries[existing_key]
-                break
-        if insert_idx is None:
-            if entries:
-                insert_idx = entries[max(entries, key=entries.get)] + 1
-            else:
-                insert_idx = header_idx + 1
-
-        if insert_idx > 0 and not lines[insert_idx - 1].endswith("\n"):
-            lines[insert_idx - 1] += "\n"
-
-        lines.insert(insert_idx, new_line)
+        lines = _insert_toml_entry(lines, entries, header_idx, app_key, flag)
         print(f"    -> Added '{app_key}' to {os.path.basename(toml_path)} (enabled: {flag})")
         changed = True
         header_idx, entries = _rebuild_toml_index(lines)
@@ -1207,11 +1265,19 @@ def _update_apps_toml(toml_path, added_apps, removed_apps):
     if not changed:
         return False
 
+    # Atomic write for TOML
+    tmp_path = f"{toml_path}.tmp"
     try:
-        with open(toml_path, "w", encoding="utf-8") as file_obj:
+        with open(tmp_path, "w", encoding="utf-8") as file_obj:
             file_obj.writelines(lines)
+        os.replace(tmp_path, toml_path)
     except OSError as err:
-        print(f"    -> Failed to write {toml_path}: {err}")
+        print(f"    -> Failed to safely write {toml_path}: {err}")
+        if os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
         return False
     return True
 
@@ -1279,6 +1345,53 @@ def _process_ecosystem(config_path, ecosystem_info):
     return stable_data
 
 
+def _sync_workflow_and_toml(
+    eco_name,
+    config_path,
+    app_count,
+    *,
+    added_apps,
+    removed_apps,
+    changed,
+):
+    """Helper for main() to handle workflow and TOML synchronization."""
+    any_change = False
+    yaml_path = os.path.join(_get_repo_root(), ".github", "workflows", f"{eco_name}-patcher.yml")
+    toml_path = os.path.join(_get_repo_root(), "config", f"apps-{eco_name}.toml")
+
+    # Proactively recover broken workflows: enforce YAML migration if the limit is exceeded,
+    # even if no new apps were added in the current execution cycle.
+    if app_count > MAX_YAML_INPUTS and os.path.exists(yaml_path):
+        try:
+            with open(yaml_path, "r", encoding="utf-8") as yf:
+                yaml_content = yf.read()
+
+            if "apps_to_patch:" not in yaml_content:
+                print(f"  -> {eco_name} exceeds MAX_YAML_INPUTS. Forcing migration to text input.")
+                if _migrate_to_text_input(eco_name, yaml_path):
+                    any_change = True
+        except OSError as err:
+            print(f"  -> Failed to read {yaml_path} for migration check: {err}")
+
+    # Synchronize TOML generation state
+    if app_count > MAX_YAML_INPUTS:
+        if not os.path.exists(toml_path):
+            if _create_full_toml(toml_path, config_path, eco_name):
+                any_change = True
+        elif added_apps or removed_apps:
+            if _update_apps_toml(toml_path, added_apps, removed_apps):
+                any_change = True
+
+    if changed:
+        any_change = True
+        for app_key in removed_apps:
+            _remove_app_from_yaml(eco_name, app_key)
+        for app_key in added_apps:
+            _add_app_to_yaml(eco_name, app_key)
+
+    return any_change
+
+
 def main():
     """Run the auto-update process for all configured ecosystems."""
     ecosystems = load_ecosystems()
@@ -1298,38 +1411,16 @@ def main():
 
         eco_name = os.path.splitext(os.path.basename(config_path))[0]
         app_count = _count_apps_in_config(config_path, eco_name)
-        yaml_path = os.path.join(_get_repo_root(), ".github", "workflows", f"{eco_name}-patcher.yml")
-        toml_path = os.path.join(_get_repo_root(), "config", f"apps-{eco_name}.toml")
 
-        # Proactively recover broken workflows: enforce YAML migration if the limit is exceeded,
-        # even if no new apps were added in the current execution cycle.
-        if app_count > MAX_YAML_INPUTS and os.path.exists(yaml_path):
-            try:
-                with open(yaml_path, "r", encoding="utf-8") as yf:
-                    yaml_content = yf.read()
-
-                if "apps_to_patch:" not in yaml_content:
-                    print(f"  -> {eco_name} exceeds MAX_YAML_INPUTS. Forcing migration to text input.")
-                    if _migrate_to_text_input(eco_name, yaml_path):
-                        any_change = True
-            except OSError as err:
-                print(f"  -> Failed to read {yaml_path} for migration check: {err}")
-
-        # Synchronize TOML generation state
-        if app_count > MAX_YAML_INPUTS:
-            if not os.path.exists(toml_path):
-                if _create_full_toml(toml_path, config_path, eco_name):
-                    any_change = True
-            elif added_apps or removed_apps:
-                if _update_apps_toml(toml_path, added_apps, removed_apps):
-                    any_change = True
-
-        if changed:
+        if _sync_workflow_and_toml(
+            eco_name,
+            config_path,
+            app_count,
+            added_apps=added_apps,
+            removed_apps=removed_apps,
+            changed=changed,
+        ):
             any_change = True
-            for app_key in removed_apps:
-                _remove_app_from_yaml(eco_name, app_key)
-            for app_key in added_apps:
-                _add_app_to_yaml(eco_name, app_key)
 
     if not any_change:
         print("No updates found across all ecosystems.")
