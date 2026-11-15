@@ -38,7 +38,7 @@
 "castle" = false
 "castle-for-tv" = false
 "catzy" = false
-"classdojo" = true
+"classdojo" = false
 "clink" = false
 "clip-studio-paint" = false
 "clone-app" = false
@@ -76,7 +76,7 @@
 "jujo" = false
 "jvdroid" = false
 "keepa" = false
-"kick" = false  # Note: "Any" version, may fail if there is no custom version.
+"kick" = false
 "klassik-radio" = false
 "lagguy-wallpapers" = false
 "launchbox" = false
