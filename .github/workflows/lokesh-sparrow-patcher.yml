@@ -4,8 +4,23 @@ name: 🎭 Lokesh-Sparrow Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
+      app_doc_scanner:
+        description: 'Patch doc-scanner'
+        required: true
+        type: boolean
+        default: true
       app_linkedin:
         description: 'Patch LinkedIn'
+        required: true
+        type: boolean
+        default: true
+      app_splitwise:
+        description: 'Patch splitwise'
+        required: true
+        type: boolean
+        default: true
+      app_truecaller:
+        description: 'Patch truecaller'
         required: true
         type: boolean
         default: true
@@ -84,14 +99,26 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
+      APP_DOC_SCANNER: ${{ inputs.app_doc_scanner }}
       APP_LINKEDIN: ${{ inputs.app_linkedin }}
+      APP_SPLITWISE: ${{ inputs.app_splitwise }}
+      APP_TRUECALLER: ${{ inputs.app_truecaller }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
+          if [[ "$APP_DOC_SCANNER" == "true" ]]; then
+            LIST="$LIST,doc-scanner"
+          fi
           if [[ "$APP_LINKEDIN" == "true" ]]; then
             LIST="$LIST,linkedin"
+          fi
+          if [[ "$APP_SPLITWISE" == "true" ]]; then
+            LIST="$LIST,splitwise"
+          fi
+          if [[ "$APP_TRUECALLER" == "true" ]]; then
+            LIST="$LIST,truecaller"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then
