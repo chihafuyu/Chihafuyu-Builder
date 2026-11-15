@@ -19,6 +19,11 @@ name: 🐉 Toidicakhia Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_locket_widget:
+        description: 'Patch locket-widget'
+        required: true
+        type: boolean
+        default: true
       app_netmonster:
         description: 'Patch netmonster'
         required: true
@@ -122,6 +127,7 @@ jobs:
       APP_1_1_1_1: ${{ inputs.app_1_1_1_1 }}
       APP_EZVIZ: ${{ inputs.app_ezviz }}
       APP_HTTP_SNIFFER: ${{ inputs.app_http_sniffer }}
+      APP_LOCKET_WIDGET: ${{ inputs.app_locket_widget }}
       APP_NETMONSTER: ${{ inputs.app_netmonster }}
       APP_REMOTE_DESKTOP_MANAGER: ${{ inputs.app_remote_desktop_manager }}
       APP_TERABOX: ${{ inputs.app_terabox }}
@@ -140,6 +146,9 @@ jobs:
           fi
           if [[ "$APP_HTTP_SNIFFER" == "true" ]]; then
             LIST="$LIST,http-sniffer"
+          fi
+          if [[ "$APP_LOCKET_WIDGET" == "true" ]]; then
+            LIST="$LIST,locket-widget"
           fi
           if [[ "$APP_NETMONSTER" == "true" ]]; then
             LIST="$LIST,netmonster"
