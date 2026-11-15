@@ -33,7 +33,7 @@ jobs:
           title: '🤖 Auto-Convert Patcher YAML to Text-Based'
           body: |
             This PR automatically converts checkbox-based patcher workflows to text-based inputs because they exceeded the GitHub Actions 25-input limit.
-            
+
             Please review the changes before merging.
           labels: |
             automated
