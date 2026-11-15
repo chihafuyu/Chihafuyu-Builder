@@ -63,6 +63,24 @@
                 },
                 "force_bundle": true
             },
+            "locket-widget": {
+                "package": "com.locket.Locket",
+                "search_term": "Locket Widget",
+                "stable": [
+                    "1.247.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "632",
+                    "armeabi-v7a": "632",
+                    "x86_64": "632",
+                    "x86": "632"
+                },
+                "force_bundle": true
+            },
             "netmonster": {
                 "package": "cz.mroczis.netmonster",
                 "search_term": "NetMonster",
@@ -92,6 +110,9 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Disable SSL Pinning": {
+                        "enabled": false
+                    },
+                    "Skip Age Verification": {
                         "enabled": false
                     }
                 },

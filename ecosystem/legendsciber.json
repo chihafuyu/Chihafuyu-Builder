@@ -90,6 +90,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "lmr-copyleft-music": {
+                "package": "com.lmr.lfm",
+                "search_term": "LMR - Copyleft Music",
+                "stable": [
+                    "6.8.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "new-star-soccer": {
                 "package": "com.newstargames.newstarsoccer",
                 "search_term": "New Star Soccer",
