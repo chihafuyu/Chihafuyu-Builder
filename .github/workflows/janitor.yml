@@ -61,23 +61,21 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          echo "[INFO] Scanning for completed runs to delete..."
+          echo "[INFO] Scanning for ALL completed runs to delete..."
 
-          for wf in .github/workflows/*.yml; do
-            wf_name=$(basename "$wf")
-
-            if [[ "$wf_name" == "janitor.yml" ]]; then
-              echo "[INFO] Skipping self-deletion for: $wf_name"
-              continue
+          gh api --paginate \
+            "/repos/${{ github.repository }}/actions/runs" \
+            --jq '.workflow_runs[]
+                  | select(
+                      .path != ".github/workflows/janitor.yml"
+                      and .status == "completed"
+                    )
+                  | .id' \
+            | while read -r RUN_ID; do
+            if [[ -n "$RUN_ID" ]]; then
+              echo "[INFO] Deleting run ID: $RUN_ID"
+              gh api -X DELETE \
+                "/repos/${{ github.repository }}/actions/runs/$RUN_ID" \
+                || true
             fi
-
-            echo "[INFO] Processing workflow: $wf_name"
-
-            gh run list --workflow "$wf_name" --limit 1000 --status completed \
-              --json databaseId -q '.[].databaseId' | while read -r RUN_ID; do
-              if [[ -n "$RUN_ID" ]]; then
-                echo "[INFO] Deleting run $RUN_ID from $wf_name"
-                gh run delete "$RUN_ID" || true
-              fi
-            done
           done
