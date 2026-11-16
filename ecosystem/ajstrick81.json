@@ -274,6 +274,17 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
+            },
+            "youtube-android-tv": {
+                "package": "com.google.android.youtube.tv",
+                "search_term": "YouTube (Android TV)",
+                "stable": [
+                    "7.31.300"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
             }
         }
     }

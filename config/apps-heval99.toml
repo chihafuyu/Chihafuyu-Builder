@@ -4,12 +4,14 @@
 [apps]
 "365scores" = false
 "433" = false
+"action-launcher" = true
 "add-music" = false
 "aiscore" = false
 "alarm-clock-xtreme" = false
 "allente" = false
 "b-t" = true
 "bbc-news" = true
+"beeper" = true
 "berlingske" = false
 "besoccer" = false
 "ble-scanner" = false
@@ -23,6 +25,7 @@
 "brevent" = true
 "business-calendar-2" = false
 "castbox" = false
+"ccleaner" = true
 "crex" = false
 "digi-sport" = false
 "droidcam" = true
@@ -40,6 +43,7 @@
 "forza-football" = false
 "fotmob" = false
 "futbin" = false
+"fx-file-explorer" = true
 "fyens-stiftstidende" = false
 "gps-map-camera-editor" = true
 "hevy" = false
@@ -68,6 +72,7 @@
 "pro-launcher" = false
 "rhus-stiftstidende" = false
 "rt-news" = false
+"samsung-keyboard" = false
 "shazam" = true
 "simple-radio" = true
 "smartwod-timer" = false
@@ -88,4 +93,5 @@
 "viaplay" = false
 "wemuslim" = true
 "yahoo-sports" = false
+"youcut" = true
 "yousee-play" = false
