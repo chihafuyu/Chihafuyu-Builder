@@ -20,6 +20,10 @@ name: ⚙️ Core Patcher Engine
         required: false
         type: string
         default: ''
+      custom_version_code:
+        required: false
+        type: string
+        default: ''
       download_source:
         required: true
         type: string
@@ -46,7 +50,7 @@ name: ⚙️ Core Patcher Engine
         required: true
         type: boolean
       upload_huggingface:
-        required: false
+        required: true
         type: boolean
         default: false
       send_to_telegram:
@@ -434,6 +438,7 @@ jobs:
           INPUT_ARCH: ${{ inputs.architecture }}
           INPUT_VERSION_SELECTION: ${{ inputs.version_selection }}
           INPUT_CUSTOM_VERSION: ${{ inputs.custom_version }}
+          INPUT_CUSTOM_VERSION_CODE: ${{ inputs.custom_version_code }}
           INPUT_DOWNLOAD_SOURCE: ${{ inputs.download_source }}
           INPUT_CONTINUE_ON_ERROR: ${{ inputs.continue_on_error }}
           INPUT_CLI_TRACK: ${{ inputs.cli_track }}
@@ -457,6 +462,7 @@ jobs:
             --arch "$INPUT_ARCH" \
             --version-selection "$INPUT_VERSION_SELECTION" \
             --custom-version "$INPUT_CUSTOM_VERSION" \
+            --custom-version-code "$INPUT_CUSTOM_VERSION_CODE" \
             --download-source "$INPUT_DOWNLOAD_SOURCE" \
             --continue-on-error "$INPUT_CONTINUE_ON_ERROR" \
             --cli "morphe.jar" \

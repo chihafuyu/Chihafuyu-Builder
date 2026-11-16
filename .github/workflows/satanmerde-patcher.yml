@@ -28,6 +28,11 @@ name: 😈 SatanMerde Ecosystem Patcher
         required: false
         type: string
         default: ''
+      custom_version_code:
+        description: 'Custom Version Code (overrides JSON; leave blank for auto)'
+        required: false
+        type: string
+        default: ''
       download_source:
         description: 'Download Source'
         required: true
@@ -203,6 +208,7 @@ jobs:
       architecture: ${{ inputs.architecture }}
       version_selection: ${{ inputs.version_selection }}
       custom_version: ${{ inputs.custom_version }}
+      custom_version_code: ${{ inputs.custom_version_code }}
       download_source: ${{ inputs.download_source }}
       continue_on_error: ${{ inputs.continue_on_error }}
       cli_track: ${{ inputs.cli_track }}

@@ -186,6 +186,42 @@ def _parse_custom_versions(ver_str: str) -> dict:
     return versions
 
 
+def _apply_custom_version_code(app_data: dict, raw: str, arch: str) -> dict:
+    """Returns a shallow copy of app_data with version_codes overridden when
+    the caller supplies an explicit version code.
+
+    The override is intentionally arch-agnostic: when the user manually pins
+    a version they know the exact code for, that same code is injected under
+    every arch key (including the separator variants) so every scraper tier
+    that inspects version_codes will see a consistent value regardless of which
+    architecture was selected at workflow-dispatch time.
+
+    When *raw* is empty or non-numeric the original app_data is returned
+    unchanged so the JSON fallback continues to apply.
+    """
+    code = raw.strip() if raw else ""
+    if not code:
+        return app_data
+    if not code.isdigit():
+        print(
+            f"[WARN] custom_version_code {code!r} is not a plain integer; "
+            "ignoring and falling back to JSON version code."
+        )
+        return app_data
+
+    # Build a version_codes map that covers every arch-key variant used by
+    # _resolve_ver_code() in tier1_apkmirror.py (underscore and hyphen forms).
+    arch_variants = {arch, arch.replace("_", "-"), arch.replace("-", "_")}
+    existing = dict(app_data.get("version_codes") or {})
+    overridden = {**existing, **{k: int(code) for k in arch_variants}}
+
+    print(
+        f"[INFO] Custom version code override applied: {code} "
+        f"(arch variants: {sorted(arch_variants)})"
+    )
+    return {**app_data, "version_codes": overridden}
+
+
 def _get_apk_output_path(
     app_info: tuple[str, str, str],
     args: Any,
@@ -455,6 +491,13 @@ def process_single_app(
     else:
         arch = args.arch
 
+    # When the caller pins a specific version they can also supply the matching
+    # version code so the APKMirror scraper finds the right build variant
+    # instead of falling back to (or mismatching against) the JSON value.
+    custom_code_raw = getattr(args, "custom_version_code", "") or ""
+    if custom_ver and custom_code_raw:
+        app_data = _apply_custom_version_code(app_data, custom_code_raw, arch)
+
     print(f"\n--- {app_name} ({app_data['package']}) ---")
 
     app_info = (app_name, t_ver, arch)
@@ -653,6 +696,7 @@ def parse_arguments() -> Any:
     parser.add_argument("--arch", required=True)
     parser.add_argument("--version-selection", required=True)
     parser.add_argument("--custom-version", default="")
+    parser.add_argument("--custom-version-code", default="")
     parser.add_argument("--download-source", default="default")
     parser.add_argument(
         "--continue-on-error", choices=("true", "false"), default="false"
