@@ -124,9 +124,16 @@ jobs:
           remove_haskell: true
           remove_tool_cache: true
           remove_swap: true
-          remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* *llvm* mysql* dotnet-sdk-*"
+          remove_packages: >-
+            azure-cli google-cloud-cli microsoft-edge-stable
+            google-chrome-stable firefox postgresql* *llvm*
+            mysql* dotnet-sdk-*
           remove_packages_one_command: true
-          remove_folders: "/usr/share/az* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell /usr/local/aws-cli /usr/local/aws-sam-cli /usr/share/gradle /opt/pipx"
+          remove_folders: >-
+            /usr/share/az* /usr/local/lib/node_modules
+            /usr/local/share/chromium /usr/local/share/powershell
+            /usr/local/aws-cli /usr/local/aws-sam-cli
+            /usr/share/gradle /opt/pipx
           rm_cmd: "rmz"
           rmz_version: "3.2.0"
 
@@ -222,12 +229,16 @@ jobs:
           MD_API_KEY: ${{ secrets.MD_API_KEY }}
         run: |
           set -euo pipefail
-          if [[ -z "$VT_API_KEY" && -z "$HA_API_KEY" && -z "$MD_API_KEY" ]]; then
-            echo "::error::CRITICAL SECURITY RISK: No malware scanners configured."
-            echo "::error::At least one of VT_API_KEY, HA_API_KEY, or MD_API_KEY must be set in repository secrets."
+          if [[ -z "$VT_API_KEY" && -z "$HA_API_KEY" \
+                && -z "$MD_API_KEY" ]]; then
+            echo "::error::CRITICAL SECURITY RISK: No malware scanners" \
+              "configured."
+            echo "::error::At least one of VT_API_KEY, HA_API_KEY, or" \
+              "MD_API_KEY must be set in repository secrets."
             exit 1
           fi
-          echo "[INFO] Security scanner configuration validated. At least one scanner is active."
+          echo "[INFO] Security scanner configuration validated." \
+            "At least one scanner is active."
 
       - name: Fetch Environment Artifacts
         env:
@@ -300,7 +311,8 @@ jobs:
             CUSTOM_PATCH="Custom-Patches/$INPUT_CUSTOM_PATCH_FILENAME"
             if [[ ! -f "$CUSTOM_PATCH" ]]; then
               echo "::error::Custom patch not found: $CUSTOM_PATCH"
-              ls -la Custom-Patches/ 2>/dev/null || echo "(no Custom-Patches/ directory)"
+              ls -la Custom-Patches/ 2>/dev/null \
+                || echo "(no Custom-Patches/ directory)"
               exit 1
             fi
             if [[ ! -s "$CUSTOM_PATCH" ]]; then
@@ -312,22 +324,32 @@ jobs:
 
           elif [[ "$INPUT_PATCHES_TRACK" == "Test Artifact" ]]; then
             if [[ "$INPUT_REPO_URL" != "MorpheApp/morphe-patches" ]]; then
-              echo "::error::Test Artifact is strictly reserved for the Morphe ecosystem."
+              echo "::error::Test Artifact is strictly reserved for" \
+                "the Morphe ecosystem."
               exit 1
             fi
 
-            echo "[INFO] Fetching latest Test Artifact from Morphe dev branch..."
-            RUN_ID=$(gh api "repos/MorpheApp/morphe-patches/actions/workflows/build_pull_request.yml/runs?status=success&branch=dev&per_page=1" --jq '.workflow_runs[0].id')
+            echo "[INFO] Fetching latest Test Artifact from Morphe" \
+              "dev branch..."
+            DEV_RUN_ENDPOINT="repos/MorpheApp/morphe-patches/actions/"
+            DEV_RUN_ENDPOINT+="workflows/build_pull_request.yml/runs?"
+            DEV_RUN_ENDPOINT+="status=success&branch=dev&per_page=1"
+            RUN_ID=$(gh api "$DEV_RUN_ENDPOINT" --jq '.workflow_runs[0].id')
             if [ -z "$RUN_ID" ] || [ "$RUN_ID" == "null" ]; then
               echo "::error::No successful build found on dev branch."
               exit 1
             fi
 
             echo "[INFO] Fetching artifact ID for run ID: $RUN_ID"
-            ARTIFACT_ID=$(gh api "repos/MorpheApp/morphe-patches/actions/runs/$RUN_ID/artifacts" --jq '.artifacts[] | select(.name | endswith(".mpp")) | .id' | head -n 1)
+            ARTIFACTS_ENDPOINT="repos/MorpheApp/morphe-patches/actions/"
+            ARTIFACTS_ENDPOINT+="runs/$RUN_ID/artifacts"
+            ARTIFACT_ID=$(gh api "$ARTIFACTS_ENDPOINT" \
+              --jq '.artifacts[] | select(.name | endswith(".mpp")) | .id' \
+              | head -n 1)
 
             if [ -z "$ARTIFACT_ID" ] || [ "$ARTIFACT_ID" == "null" ]; then
-              ARTIFACT_ID=$(gh api "repos/MorpheApp/morphe-patches/actions/runs/$RUN_ID/artifacts" --jq '.artifacts[0].id')
+              ARTIFACT_ID=$(gh api "$ARTIFACTS_ENDPOINT" \
+                --jq '.artifacts[0].id')
             fi
 
             if [ -z "$ARTIFACT_ID" ] || [ "$ARTIFACT_ID" == "null" ]; then
@@ -335,12 +357,15 @@ jobs:
               exit 1
             fi
 
-            echo "[INFO] Downloading artifact $ARTIFACT_ID directly as patches.mpp via curl..."
+            echo "[INFO] Downloading artifact $ARTIFACT_ID directly" \
+              "as patches.mpp via curl..."
+            DOWNLOAD_URL="https://api.github.com/repos/MorpheApp/"
+            DOWNLOAD_URL+="morphe-patches/actions/artifacts/$ARTIFACT_ID/zip"
             curl -sL \
               -H "Authorization: Bearer $GH_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               -H "X-GitHub-Api-Version: 2026-03-10" \
-              "https://api.github.com/repos/MorpheApp/morphe-patches/actions/artifacts/$ARTIFACT_ID/zip" \
+              "$DOWNLOAD_URL" \
               -o patches.mpp
 
             if [ ! -s patches.mpp ]; then
@@ -365,7 +390,8 @@ jobs:
               PATCH_TAG="$(gh api "repos/$INPUT_REPO_URL/releases/latest" \
                 | jq -r '.tag_name // empty')"
               if [[ -z "$PATCH_TAG" ]]; then
-                echo "::error::No stable patches release found in $INPUT_REPO_URL"
+                echo "::error::No stable patches release found in" \
+                  "$INPUT_REPO_URL"
                 exit 1
               fi
             fi
@@ -393,7 +419,8 @@ jobs:
         run: |
           set -euo pipefail
           if [[ -z "$KEYSTORE_B64" ]]; then
-            echo "::warning::KEYSTORE_BASE64 is not set; patched APKs will be signed with the Morphe default keystore."
+            echo "::warning::KEYSTORE_BASE64 is not set; patched APKs will" \
+              "be signed with the Morphe default keystore."
             echo "USE_KEYSTORE=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi

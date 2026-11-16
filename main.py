@@ -476,9 +476,20 @@ def _prepare_patch_inputs(
 
 
 def process_single_app(
-    app_name: str, args: Any, app_data: dict, custom_ver: str, state: dict
+    app_name: str,
+    args: Any,
+    app_data: dict,
+    state: dict,
 ) -> None:
     """Processes a single application for downloading and patching safely."""
+    custom_ver = (
+        state["custom_vers"].get(app_name)
+        or state["custom_vers"].get("_global", "")
+    )
+    custom_code = (
+        state["custom_codes"].get(app_name)
+        or state["custom_codes"].get("_global", "")
+    )
     t_ver = _resolve_target_version(app_data, args, custom_ver)
 
     forced_arch = app_data.get("force_arch")
@@ -494,9 +505,8 @@ def process_single_app(
     # When the caller pins a specific version they can also supply the matching
     # version code so the APKMirror scraper finds the right build variant
     # instead of falling back to (or mismatching against) the JSON value.
-    custom_code_raw = getattr(args, "custom_version_code", "") or ""
-    if custom_ver and custom_code_raw:
-        app_data = _apply_custom_version_code(app_data, custom_code_raw, arch)
+    if custom_ver and custom_code:
+        app_data = _apply_custom_version_code(app_data, custom_code, arch)
 
     print(f"\n--- {app_name} ({app_data['package']}) ---")
 
@@ -618,11 +628,7 @@ def _process_app_loop(args: Any, state: dict) -> None:
             print(f"[WARN] App '{app_name}' not found in ecosystem config; skipping.")
             continue
 
-        c_ver = (
-            state["custom_vers"].get(app_name)
-            or state["custom_vers"].get("_global", "")
-        )
-        process_single_app(app_name, args, state["eco_apps"][app_name], c_ver, state)
+        process_single_app(app_name, args, state["eco_apps"][app_name], state)
 
 
 def _resolve_app_list(apps_arg: str, eco_apps: dict) -> list[str]:
@@ -677,6 +683,7 @@ def run_patcher(args: Any) -> None:
         "eco_apps": eco_apps,
         "app_list": app_list,
         "custom_vers": _parse_custom_versions(args.custom_version),
+        "custom_codes": _parse_custom_versions(getattr(args, "custom_version_code", "")),
         "start_time": time.monotonic(),
     }
 

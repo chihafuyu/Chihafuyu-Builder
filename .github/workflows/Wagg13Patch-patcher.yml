@@ -4,76 +4,13 @@ name: 🩷 Wagg13Patch Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_bisbi:
-        description: 'Patch bisbi'
+      apps_to_patch:
+        description: >-
+          Type "all" to follow config/apps-Wagg13Patch.toml,
+          or type the name of a specific app (eg: 1weather,3way)
         required: true
-        type: boolean
-        default: true
-      app_buzzcast:
-        description: 'Patch buzzcast'
-        required: true
-        type: boolean
-        default: true
-      app_image_date_fixer:
-        description: 'Patch image-date-fixer'
-        required: true
-        type: boolean
-        default: true
-      app_native_camera:
-        description: 'Patch native-camera'
-        required: true
-        type: boolean
-        default: true
-      app_picsart:
-        description: 'Patch picsart'
-        required: true
-        type: boolean
-        default: true
-      app_tinder:
-        description: 'Patch tinder'
-        required: true
-        type: boolean
-        default: true
-      app_com_pinterest:
-        description: 'Patch com-pinterest'
-        required: true
-        type: boolean
-        default: true
-      app_instagram_instants:
-        description: 'Patch instagram-instants'
-        required: true
-        type: boolean
-        default: true
-      app_com_ovz_carscanner:
-        description: 'Patch com-ovz-carscanner'
-        required: true
-        type: boolean
-        default: true
-      app_com_xinesoft_notifications:
-        description: 'Patch com-xinesoft-notifications'
-        required: true
-        type: boolean
-        default: true
-      app_instagram:
-        description: 'Patch instagram'
-        required: true
-        type: boolean
-        default: true
-      app_com_instaprime_android:
-        description: 'Patch com-instaprime-android'
-        required: true
-        type: boolean
-        default: true
-      app_telegraph_graph_messenger:
-        description: 'Patch telegraph-graph-messenger'
-        required: true
-        type: boolean
-        default: true
-      app_icsee:
-        description: 'Patch icsee'
-        required: true
-        type: boolean
-        default: true
+        type: string
+        default: 'all'
       architecture:
         description: 'Target Architecture'
         required: true
@@ -92,7 +29,7 @@ name: 🩷 Wagg13Patch Ecosystem Patcher
         type: string
         default: ''
       custom_version_code:
-        description: 'Custom Version Code (overrides JSON; leave blank for auto)'
+        description: 'Custom Version Code (blank for auto)'
         required: false
         type: string
         default: ''
@@ -137,7 +74,7 @@ name: 🩷 Wagg13Patch Ecosystem Patcher
         default: true
       upload_huggingface:
         description: 'Upload to HuggingFace Dataset'
-        required: false
+        required: true
         type: boolean
         default: false
       send_to_telegram:
@@ -153,76 +90,113 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
-    env:
-      APP_BISBI: ${{ inputs.app_bisbi }}
-      APP_BUZZCAST: ${{ inputs.app_buzzcast }}
-      APP_IMAGE_DATE_FIXER: ${{ inputs.app_image_date_fixer }}
-      APP_NATIVE_CAMERA: ${{ inputs.app_native_camera }}
-      APP_PICSART: ${{ inputs.app_picsart }}
-      APP_TINDER: ${{ inputs.app_tinder }}
-      APP_COM_PINTEREST: ${{ inputs.app_com_pinterest }}
-      APP_INSTAGRAM_INSTANTS: ${{ inputs.app_instagram_instants }}
-      APP_COM_OVZ_CARSCANNER: ${{ inputs.app_com_ovz_carscanner }}
-      APP_COM_XINESOFT_NOTIFICATIONS: ${{ inputs.app_com_xinesoft_notifications }}
-      APP_INSTAGRAM: ${{ inputs.app_instagram }}
-      APP_COM_INSTAPRIME_ANDROID: ${{ inputs.app_com_instaprime_android }}
-      APP_TELEGRAPH_GRAPH_MESSENGER: ${{ inputs.app_telegraph_graph_messenger }}
-      APP_ICSEE: ${{ inputs.app_icsee }}
     steps:
-      - id: build-list
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Validate and Normalize App List
+        id: build-list
+        env:
+          APPS_RAW: ${{ inputs.apps_to_patch }}
+          ECO_NAME: "Wagg13Patch"
         run: |
           set -euo pipefail
-          LIST=""
-          if [[ "$APP_BISBI" == "true" ]]; then
-            LIST="$LIST,bisbi"
-          fi
-          if [[ "$APP_BUZZCAST" == "true" ]]; then
-            LIST="$LIST,buzzcast"
-          fi
-          if [[ "$APP_IMAGE_DATE_FIXER" == "true" ]]; then
-            LIST="$LIST,image-date-fixer"
-          fi
-          if [[ "$APP_NATIVE_CAMERA" == "true" ]]; then
-            LIST="$LIST,native-camera"
-          fi
-          if [[ "$APP_PICSART" == "true" ]]; then
-            LIST="$LIST,picsart"
-          fi
-          if [[ "$APP_TINDER" == "true" ]]; then
-            LIST="$LIST,tinder"
-          fi
-          if [[ "$APP_COM_PINTEREST" == "true" ]]; then
-            LIST="$LIST,com-pinterest"
-          fi
-          if [[ "$APP_INSTAGRAM_INSTANTS" == "true" ]]; then
-            LIST="$LIST,instagram-instants"
-          fi
-          if [[ "$APP_COM_OVZ_CARSCANNER" == "true" ]]; then
-            LIST="$LIST,com-ovz-carscanner"
-          fi
-          if [[ "$APP_COM_XINESOFT_NOTIFICATIONS" == "true" ]]; then
-            LIST="$LIST,com-xinesoft-notifications"
-          fi
-          if [[ "$APP_INSTAGRAM" == "true" ]]; then
-            LIST="$LIST,instagram"
-          fi
-          if [[ "$APP_COM_INSTAPRIME_ANDROID" == "true" ]]; then
-            LIST="$LIST,com-instaprime-android"
-          fi
-          if [[ "$APP_TELEGRAPH_GRAPH_MESSENGER" == "true" ]]; then
-            LIST="$LIST,telegraph-graph-messenger"
-          fi
-          if [[ "$APP_ICSEE" == "true" ]]; then
-            LIST="$LIST,icsee"
-          fi
-          LIST="${LIST#,}"
-          if [[ -z "$LIST" ]]; then
-            echo "::error::No applications selected!"
+
+          ECO="$ECO_NAME"
+          CONFIG="ecosystem/${ECO}.json"
+          TOML_CONFIG="config/apps-${ECO}.toml"
+
+          if [ ! -f "$CONFIG" ]; then
+            echo "::error::Config not found: $CONFIG"
             exit 1
           fi
+
+          SELECTED=$(
+            CONFIG_PATH="$CONFIG" \
+            TOML_PATH="$TOML_CONFIG" \
+            ECO_NAME="$ECO" \
+            APPS_RAW="$APPS_RAW" \
+            python3 -c "
+          import os, json, sys
+
+          try:
+              import tomllib
+          except ImportError:
+              print(
+                  '::error::Python 3.11+ required for tomllib',
+                  file=sys.stderr
+              )
+              sys.exit(1)
+
+          eco = os.environ['ECO_NAME']
+          config_path = os.environ['CONFIG_PATH']
+          toml_path = os.environ['TOML_PATH']
+          raw_input = os.environ.get('APPS_RAW', '').strip()
+
+          with open(config_path) as f:
+              valid_apps = json.load(f)[eco]['apps']
+
+          selected = []
+
+          if raw_input.lower() == 'all':
+              print(
+                  f'[INFO] Mode: Reading from {toml_path}',
+                  file=sys.stderr
+              )
+              if not os.path.exists(toml_path):
+                  print(
+                      f'::error::TOML file not found: {toml_path}',
+                      file=sys.stderr
+                  )
+                  sys.exit(1)
+
+              with open(toml_path, 'rb') as f:
+                  toml_data = tomllib.load(f)
+
+              apps_dict = toml_data.get('apps', {})
+              selected = [k for k, v in apps_dict.items() if v is True]
+
+              if not selected:
+                  print(
+                      f'::error::No apps enabled in {toml_path}',
+                      file=sys.stderr
+                  )
+                  sys.exit(1)
+
+          else:
+              print('[INFO] Mode: Manual Input', file=sys.stderr)
+              selected = [a.strip() for a in raw_input.split(',') if a.strip()]
+
+          invalid = [app for app in selected if app not in valid_apps]
+          if invalid:
+              print(
+                  f'::error::The following apps were not found in '
+                  f'{config_path}: {invalid}',
+                  file=sys.stderr
+              )
+              print('Valid apps:', file=sys.stderr)
+              for v in sorted(valid_apps):
+                  print(f'  - {v}', file=sys.stderr)
+              sys.exit(1)
+
+          print(','.join(selected))
+          ")
+
+          if [ -z "$SELECTED" ]; then
+            echo "::error::No apps selected."
+            exit 1
+          fi
+
+          echo "Apps to patch: $SELECTED"
+
           {
             echo "apps<<EOF"
-            echo "$LIST"
+            echo "$SELECTED"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 

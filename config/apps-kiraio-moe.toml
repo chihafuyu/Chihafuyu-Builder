@@ -3,15 +3,27 @@
 
 [apps]
 "android-proxy-server" = true
+"atomic" = true
 "audiorelay" = true
+"boorusama" = true
 "camera-fv-5-lite" = true
 "chatboost" = true
 "cinema-fv-5-lite" = true
 "collage-maker-photofancie" = true
+"epic" = true
+"fakegps" = true
+"hermit" = true
+"hidden-settings" = true
+"ilovepdf" = true
+"keymate" = true
+"manga-plus" = true
 "medibang-paint" = true
+"nekopoi" = true
 "paletta" = true
 "pixel-studio" = true
+"pixellab" = true
 "sketchbook" = true
 "super-proxy" = true
+"timestamp-camera" = true
 "timestamp-camera-enterprise-free" = true
 "udisc" = true

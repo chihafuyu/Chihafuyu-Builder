@@ -40,9 +40,9 @@ TOML_HEADER = (
 )
 
 # GitHub caps workflow_dispatch at 25 inputs. Standard patcher inputs
-# consume 11 slots, so 14 checkboxes is the effective limit. Reaching
-# 15 apps triggers the checkbox-to-text migration and TOML generation.
-MAX_YAML_INPUTS = 14
+# consume 12 slots, so 13 checkboxes is the effective limit. Reaching
+# 14 apps triggers the checkbox-to-text migration and TOML generation.
+MAX_YAML_INPUTS = 13
 
 # Maps lowercased patches-list versionCodes keys to the canonical arch
 # identifiers used by the workflow inputs and scraper lookups.
@@ -723,12 +723,37 @@ def _create_full_toml(toml_path, config_path, eco_name):
         return False
 
 
+def _find_workflow_path(ecosystem_name):
+    """Finds the workflow YAML path for an ecosystem, accounting for name differences."""
+    repo_root = _get_repo_root()
+    workflows_dir = os.path.join(repo_root, ".github", "workflows")
+    direct = os.path.join(workflows_dir, f"{ecosystem_name}-patcher.yml")
+    if os.path.isfile(direct):
+        return direct
+    if not os.path.isdir(workflows_dir):
+        return None
+    for fname in os.listdir(workflows_dir):
+        if not fname.endswith("-patcher.yml"):
+            continue
+        candidate = os.path.join(workflows_dir, fname)
+        try:
+            with open(candidate, "r", encoding="utf-8") as f:
+                content = f.read()
+            if re.search(
+                rf'^\s+ecosystem:\s*["\']?{re.escape(ecosystem_name)}["\']?',
+                content,
+                re.MULTILINE
+            ):
+                return candidate
+        except OSError:
+            pass
+    return None
+
+
 def _remove_app_from_yaml(ecosystem_name, app_key):
     """Precisely remove an app's input, env, and if-block from the workflow YAML."""
-    yaml_path = os.path.join(
-        _get_repo_root(), ".github", "workflows", f"{ecosystem_name}-patcher.yml"
-    )
-    if not os.path.exists(yaml_path):
+    yaml_path = _find_workflow_path(ecosystem_name)
+    if not yaml_path or not os.path.exists(yaml_path):
         return False
     with open(yaml_path, "r", encoding="utf-8") as file_obj:
         content = file_obj.read()
@@ -807,6 +832,14 @@ def _migrate_to_text_input(ecosystem_name, yaml_path):
         return False
     call_patcher_block = content[call_patcher_match.start():]
 
+    eco_match = re.search(
+        r'^\s+ecosystem:\s*["\']([^"\'\r\n\s]+)["\']',
+        call_patcher_block,
+        re.MULTILINE
+    )
+    if eco_match and not eco_match.group(1).startswith("$"):
+        ecosystem_name = eco_match.group(1)
+
     # The f-string formatting requires double braces (e.g., {{eco}}) for
     # literal curly braces that must survive into the generated YAML.
     new_yaml = f"""---
@@ -836,6 +869,11 @@ name: {workflow_name}
         options: [Latest Recommended, Beta, Custom]
       custom_version:
         description: 'Custom App Version'
+        required: false
+        type: string
+        default: ''
+      custom_version_code:
+        description: 'Custom Version Code (blank for auto)'
         required: false
         type: string
         default: ''
@@ -880,7 +918,7 @@ name: {workflow_name}
         default: true
       upload_huggingface:
         description: 'Upload to HuggingFace Dataset'
-        required: false
+        required: true
         type: boolean
         default: false
       send_to_telegram:
@@ -922,13 +960,21 @@ jobs:
             exit 1
           fi
 
-          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          SELECTED=$(
+            CONFIG_PATH="$CONFIG" \
+            TOML_PATH="$TOML_CONFIG" \
+            ECO_NAME="$ECO" \
+            APPS_RAW="$APPS_RAW" \
+            python3 -c "
           import os, json, sys
 
           try:
               import tomllib
           except ImportError:
-              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              print(
+                  '::error::Python 3.11+ required for tomllib',
+                  file=sys.stderr
+              )
               sys.exit(1)
 
           eco = os.environ['ECO_NAME']
@@ -942,9 +988,15 @@ jobs:
           selected = []
 
           if raw_input.lower() == 'all':
-              print(f'[INFO] Mode: Reading from {{toml_path}}', file=sys.stderr)
+              print(
+                  f'[INFO] Mode: Reading from {{toml_path}}',
+                  file=sys.stderr
+              )
               if not os.path.exists(toml_path):
-                  print(f'::error::TOML file not found: {{toml_path}}', file=sys.stderr)
+                  print(
+                      f'::error::TOML file not found: {{toml_path}}',
+                      file=sys.stderr
+                  )
                   sys.exit(1)
 
               with open(toml_path, 'rb') as f:
@@ -954,7 +1006,10 @@ jobs:
               selected = [k for k, v in apps_dict.items() if v is True]
 
               if not selected:
-                  print(f'::error::No apps enabled in {{toml_path}}', file=sys.stderr)
+                  print(
+                      f'::error::No apps enabled in {{toml_path}}',
+                      file=sys.stderr
+                  )
                   sys.exit(1)
 
           else:
@@ -963,7 +1018,11 @@ jobs:
 
           invalid = [app for app in selected if app not in valid_apps]
           if invalid:
-              print(f'::error::The following apps were not found in {{config_path}}: {{invalid}}', file=sys.stderr)
+              print(
+                  f'::error::The following apps were not found in '
+                  f'{{config_path}}: {{invalid}}',
+                  file=sys.stderr
+              )
               print('Valid apps:', file=sys.stderr)
               for v in sorted(valid_apps):
                   print(f'  - {{v}}', file=sys.stderr)
@@ -1039,11 +1098,9 @@ def _insert_yaml_block(
 
 def _add_app_to_yaml(ecosystem_name, app_key):
     """Insert a per-app input/env/if-block into a checkbox workflow in alphabetical order."""
-    yaml_path = os.path.join(
-        _get_repo_root(), ".github", "workflows", f"{ecosystem_name}-patcher.yml"
-    )
-    if not os.path.exists(yaml_path):
-        print(f"    -> WARNING: {yaml_path} not found.")
+    yaml_path = _find_workflow_path(ecosystem_name)
+    if not yaml_path or not os.path.exists(yaml_path):
+        print(f"    -> WARNING: Workflow for {ecosystem_name} not found.")
         return False
     try:
         with open(yaml_path, "r", encoding="utf-8") as file_obj:
@@ -1356,20 +1413,27 @@ def _sync_workflow_and_toml(
 ):
     """Helper for main() to handle workflow and TOML synchronization."""
     any_change = False
-    yaml_path = os.path.join(_get_repo_root(), ".github", "workflows", f"{eco_name}-patcher.yml")
+    yaml_path = _find_workflow_path(eco_name)
     toml_path = os.path.join(_get_repo_root(), "config", f"apps-{eco_name}.toml")
 
     # Proactively recover broken workflows: enforce YAML migration if the limit is exceeded,
     # even if no new apps were added in the current execution cycle.
-    if app_count > MAX_YAML_INPUTS and os.path.exists(yaml_path):
+    if yaml_path and os.path.exists(yaml_path):
         try:
             with open(yaml_path, "r", encoding="utf-8") as yf:
                 yaml_content = yf.read()
 
             if "apps_to_patch:" not in yaml_content:
-                print(f"  -> {eco_name} exceeds MAX_YAML_INPUTS. Forcing migration to text input.")
-                if _migrate_to_text_input(eco_name, yaml_path):
-                    any_change = True
+                inputs_sec = yaml_content.split("permissions:")[0] if "permissions:" in yaml_content else yaml_content
+                tot_inputs = len(re.findall(r"^ {6}[a-zA-Z0-9_]+:\r?\n", inputs_sec, re.MULTILINE))
+                if app_count > MAX_YAML_INPUTS or tot_inputs > 25:
+                    print(
+                        f"  -> {eco_name} exceeds input limit "
+                        f"(apps: {app_count}, total inputs: {tot_inputs}). "
+                        f"Forcing migration to text input."
+                    )
+                    if _migrate_to_text_input(eco_name, yaml_path):
+                        any_change = True
         except OSError as err:
             print(f"  -> Failed to read {yaml_path} for migration check: {err}")
 

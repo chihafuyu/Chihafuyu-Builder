@@ -29,7 +29,7 @@ name: 🍜 Hoo-dles Ecosystem Patcher
         type: string
         default: ''
       custom_version_code:
-        description: 'Custom Version Code (overrides JSON; leave blank for auto)'
+        description: 'Custom Version Code (blank for auto)'
         required: false
         type: string
         default: ''
@@ -116,13 +116,21 @@ jobs:
             exit 1
           fi
 
-          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          SELECTED=$(
+            CONFIG_PATH="$CONFIG" \
+            TOML_PATH="$TOML_CONFIG" \
+            ECO_NAME="$ECO" \
+            APPS_RAW="$APPS_RAW" \
+            python3 -c "
           import os, json, sys
 
           try:
               import tomllib
           except ImportError:
-              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              print(
+                  '::error::Python 3.11+ required for tomllib',
+                  file=sys.stderr
+              )
               sys.exit(1)
 
           eco = os.environ['ECO_NAME']
@@ -136,9 +144,15 @@ jobs:
           selected = []
 
           if raw_input.lower() == 'all':
-              print('[INFO] Mode: Reading from config/apps.toml', file=sys.stderr)
+              print(
+                  f'[INFO] Mode: Reading from {toml_path}',
+                  file=sys.stderr
+              )
               if not os.path.exists(toml_path):
-                  print(f'::error::TOML file not found: {toml_path}', file=sys.stderr)
+                  print(
+                      f'::error::TOML file not found: {toml_path}',
+                      file=sys.stderr
+                  )
                   sys.exit(1)
 
               with open(toml_path, 'rb') as f:
@@ -148,7 +162,10 @@ jobs:
               selected = [k for k, v in apps_dict.items() if v is True]
 
               if not selected:
-                  print('::error::No apps enabled in apps.toml', file=sys.stderr)
+                  print(
+                      f'::error::No apps enabled in {toml_path}',
+                      file=sys.stderr
+                  )
                   sys.exit(1)
 
           else:
@@ -157,7 +174,11 @@ jobs:
 
           invalid = [app for app in selected if app not in valid_apps]
           if invalid:
-              print(f'::error::The following apps were not found in {config_path}: {invalid}', file=sys.stderr)
+              print(
+                  f'::error::The following apps were not found in '
+                  f'{config_path}: {invalid}',
+                  file=sys.stderr
+              )
               print('Valid apps:', file=sys.stderr)
               for v in sorted(valid_apps):
                   print(f'  - {v}', file=sys.stderr)

@@ -57,7 +57,7 @@ name: 🥷 MiguelNinja19 Ecosystem Patcher
         type: string
         default: ''
       custom_version_code:
-        description: 'Custom Version Code (overrides JSON; leave blank for auto)'
+        description: 'Custom Version Code (blank for auto)'
         required: false
         type: string
         default: ''

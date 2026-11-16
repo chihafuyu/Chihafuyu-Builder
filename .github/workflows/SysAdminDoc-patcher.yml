@@ -72,7 +72,7 @@ name: 🧰 SysAdminDoc Ecosystem Patcher
         type: string
         default: ''
       custom_version_code:
-        description: 'Custom Version Code (overrides JSON; leave blank for auto)'
+        description: 'Custom Version Code (blank for auto)'
         required: false
         type: string
         default: ''
@@ -151,7 +151,9 @@ jobs:
           set -euo pipefail
           entries=()
           add_entry() {
-            entries+=("{\"app\":\"$1\",\"repo\":\"$2\",\"prefix\":\"$3\",\"mpp\":\"$4\"}")
+            local entry="{\"app\":\"$1\",\"repo\":\"$2\","
+            entry+="\"prefix\":\"$3\",\"mpp\":\"$4\"}"
+            entries+=("$entry")
           }
           if [[ "$APP_FACEBOOK" == "true" ]]; then
             add_entry facebook HushFacebook hushfacebook hushfacebook-custom.mpp
@@ -160,19 +162,22 @@ jobs:
             add_entry instagram HushGram hushgram hushgram-custom.mpp
           fi
           if [[ "$APP_MESSENGER" == "true" ]]; then
-            add_entry messenger HushMessenger hushmessenger hushmessenger-custom.mpp
+            add_entry messenger HushMessenger hushmessenger \
+              hushmessenger-custom.mpp
           fi
           if [[ "$APP_PINEDRAMA" == "true" ]]; then
             add_entry pinedrama HushPine hushpine hushpine-custom.mpp
           fi
           if [[ "$APP_PINTEREST" == "true" ]]; then
-            add_entry pinterest HushPinterest hushpinterest hushpinterest-custom.mpp
+            add_entry pinterest HushPinterest hushpinterest \
+              hushpinterest-custom.mpp
           fi
           if [[ "$APP_TELEGRAM" == "true" ]]; then
             add_entry telegram HushTelegram hushtelegram hushtelegram-custom.mpp
           fi
           if [[ "$APP_TELEGRAM_WEB" == "true" ]]; then
-            add_entry telegram-web HushTelegram hushtelegram hushtelegram-custom.mpp
+            add_entry telegram-web HushTelegram hushtelegram \
+              hushtelegram-custom.mpp
           fi
           if [[ "$APP_THREADS" == "true" ]]; then
             add_entry threads HushThreads hushthreads hushthreads-custom.mpp

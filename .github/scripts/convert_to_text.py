@@ -4,11 +4,15 @@ Also normalizes app descriptions to match their slugified input keys.
 Run manually via GitHub Actions workflow_dispatch.
 """
 
+import json
 import os
 import re
 import sys
 
-MAX_YAML_INPUTS = 14
+# GitHub caps workflow_dispatch at 25 inputs. Standard patcher inputs
+# consume 12 slots, so 13 checkboxes is the effective limit. Reaching
+# 14 apps triggers the checkbox-to-text migration.
+MAX_YAML_INPUTS = 13
 APP_INPUT_RE = re.compile(r"^ {6}app_[a-zA-Z0-9_]+:\r?\n", re.MULTILINE)
 
 
@@ -73,6 +77,11 @@ name: {workflow_name}
         required: false
         type: string
         default: ''
+      custom_version_code:
+        description: 'Custom Version Code (blank for auto)'
+        required: false
+        type: string
+        default: ''
       download_source:
         description: 'Download Source'
         required: true
@@ -114,7 +123,7 @@ name: {workflow_name}
         default: true
       upload_huggingface:
         description: 'Upload to HuggingFace Dataset'
-        required: false
+        required: true
         type: boolean
         default: false
       send_to_telegram:
@@ -156,13 +165,21 @@ jobs:
             exit 1
           fi
 
-          SELECTED=$(CONFIG_PATH="$CONFIG" TOML_PATH="$TOML_CONFIG" ECO_NAME="$ECO" APPS_RAW="$APPS_RAW" python3 -c "
+          SELECTED=$(
+            CONFIG_PATH="$CONFIG" \
+            TOML_PATH="$TOML_CONFIG" \
+            ECO_NAME="$ECO" \
+            APPS_RAW="$APPS_RAW" \
+            python3 -c "
           import os, json, sys
 
           try:
               import tomllib
           except ImportError:
-              print('::error::Python 3.11+ required for tomllib', file=sys.stderr)
+              print(
+                  '::error::Python 3.11+ required for tomllib',
+                  file=sys.stderr
+              )
               sys.exit(1)
 
           eco = os.environ['ECO_NAME']
@@ -176,9 +193,15 @@ jobs:
           selected = []
 
           if raw_input.lower() == 'all':
-              print(f'[INFO] Mode: Reading from {{toml_path}}', file=sys.stderr)
+              print(
+                  f'[INFO] Mode: Reading from {{toml_path}}',
+                  file=sys.stderr
+              )
               if not os.path.exists(toml_path):
-                  print(f'::error::TOML file not found: {{toml_path}}', file=sys.stderr)
+                  print(
+                      f'::error::TOML file not found: {{toml_path}}',
+                      file=sys.stderr
+                  )
                   sys.exit(1)
 
               with open(toml_path, 'rb') as f:
@@ -188,7 +211,10 @@ jobs:
               selected = [k for k, v in apps_dict.items() if v is True]
 
               if not selected:
-                  print(f'::error::No apps enabled in {{toml_path}}', file=sys.stderr)
+                  print(
+                      f'::error::No apps enabled in {{toml_path}}',
+                      file=sys.stderr
+                  )
                   sys.exit(1)
 
           else:
@@ -197,7 +223,11 @@ jobs:
 
           invalid = [app for app in selected if app not in valid_apps]
           if invalid:
-              print(f'::error::The following apps were not found in {{config_path}}: {{invalid}}', file=sys.stderr)
+              print(
+                  f'::error::The following apps were not found in '
+                  f'{{config_path}}: {{invalid}}',
+                  file=sys.stderr
+              )
               print('Valid apps:', file=sys.stderr)
               for v in sorted(valid_apps):
                   print(f'  - {{v}}', file=sys.stderr)
@@ -222,6 +252,71 @@ jobs:
 {call_patcher_block}"""
 
 
+def _ensure_toml_exists(ecosystem_name: str) -> None:
+    """Ensures config/apps-{ecosystem_name}.toml exists and contains all apps from ecosystem JSON."""
+    repo_root = _get_repo_root()
+    toml_path = os.path.join(repo_root, "config", f"apps-{ecosystem_name}.toml")
+    config_path = os.path.join(repo_root, "ecosystem", f"{ecosystem_name}.json")
+    if not os.path.exists(config_path):
+        return
+
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        apps_dict = data.get(ecosystem_name, {}).get("apps", {})
+    except (OSError, json.JSONDecodeError):
+        return
+
+    if not isinstance(apps_dict, dict) or not apps_dict:
+        return
+
+    os.makedirs(os.path.dirname(toml_path), exist_ok=True)
+    existing_entries = {}
+    if os.path.exists(toml_path):
+        try:
+            with open(toml_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    match = re.match(
+                        r'^(?:"([^"]+)"|\'([^\']+)\'|([a-zA-Z0-9_-]+))\s*=\s*(true|false)',
+                        line.strip()
+                    )
+                    if match:
+                        key = match.group(1) or match.group(2) or match.group(3)
+                        existing_entries[key] = match.group(4)
+        except OSError:
+            pass
+
+    changed = False
+    for app_key, app_cfg in sorted(apps_dict.items()):
+        if app_key not in existing_entries:
+            stable = app_cfg.get("stable") or []
+            first = stable[0] if isinstance(stable, list) and stable else ""
+            flag = "true" if first and first != "Any" else "false"
+            existing_entries[app_key] = flag
+            changed = True
+
+    if changed or not os.path.exists(toml_path):
+        tmp_path = f"{toml_path}.tmp"
+        try:
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                f.write(
+                    "# Application Configuration\n"
+                    "# Change to `true` to patch, `false` to skip.\n\n"
+                    "[apps]\n"
+                )
+                for k in sorted(existing_entries.keys()):
+                    f.write(f'"{k}" = {existing_entries[k]}\n')
+            os.replace(tmp_path, toml_path)
+            print(f"    -> Synchronized {os.path.basename(toml_path)} with {len(existing_entries)} apps.")
+        except OSError as err:
+            print(f"    -> Failed to write {toml_path}: {err}")
+            if os.path.exists(tmp_path):
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
+
+
 def convert_workflow(yaml_path: str) -> bool:
     """Converts a single YAML file if it exceeds the input limit and normalizes descriptions."""
     try:
@@ -239,7 +334,10 @@ def convert_workflow(yaml_path: str) -> bool:
 
     # 2. Check for text-based migration
     app_inputs = len(APP_INPUT_RE.findall(content))
-    if app_inputs > MAX_YAML_INPUTS:
+    inputs_section = content.split("permissions:")[0] if "permissions:" in content else content
+    total_inputs = len(re.findall(r"^ {6}[a-zA-Z0-9_]+:\r?\n", inputs_section, re.MULTILINE))
+
+    if app_inputs > MAX_YAML_INPUTS or total_inputs > 25:
         name_match = re.search(r"^name:\s*(.*)$", content, re.MULTILINE)
         workflow_name = name_match.group(1) if name_match else "Ecosystem Patcher"
 
@@ -249,10 +347,15 @@ def convert_workflow(yaml_path: str) -> bool:
             return False
 
         call_patcher_block = content[call_patcher_match.start():]
-        ecosystem_name = os.path.basename(yaml_path).replace("-patcher.yml", "")
+        eco_match = re.search(r'^\s+ecosystem:\s*["\']([^"\'\r\n\s]+)["\']', call_patcher_block, re.MULTILINE)
+        if eco_match and not eco_match.group(1).startswith("$"):
+            ecosystem_name = eco_match.group(1)
+        else:
+            ecosystem_name = os.path.basename(yaml_path).replace("-patcher.yml", "")
 
         content = _build_text_yaml(ecosystem_name, call_patcher_block, workflow_name)
-        print(f"Migrating {yaml_path} to text-based input.")
+        print(f"Migrating {yaml_path} to text-based input (app inputs: {app_inputs}, total: {total_inputs}).")
+        _ensure_toml_exists(ecosystem_name)
 
     if content == original_content:
         return False
@@ -282,7 +385,7 @@ def main() -> None:
         sys.exit(1)
 
     changed = False
-    for filename in os.listdir(workflows_dir):
+    for filename in sorted(os.listdir(workflows_dir)):
         if filename.endswith("-patcher.yml"):
             yaml_path = os.path.join(workflows_dir, filename)
             print(f"Checking {filename}...")
