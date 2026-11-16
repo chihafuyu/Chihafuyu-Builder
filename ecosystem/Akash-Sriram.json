@@ -19,7 +19,7 @@
                         "enabled": false
                     },
                     "GmsCore support": {
-                        "enabled": false
+                        "enabled": true
                     }
                 }
             }
