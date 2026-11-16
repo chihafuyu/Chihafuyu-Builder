@@ -29,7 +29,7 @@
                 "package": "com.rebeltwins.aliensdrivemecrazy",
                 "search_term": "Aliens Drive Me Crazy",
                 "stable": [
-                    "3.2.10"
+                    "3.2.11"
                 ],
                 "beta": [],
                 "strip": true,
@@ -100,7 +100,7 @@
                 "package": "com.yodo1.crossyroad",
                 "search_term": "Crossy Road",
                 "stable": [
-                    "7.14.3"
+                    "7.15.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -467,6 +467,18 @@
                 "options_override": {},
                 "force_bundle": true
             },
+            "ophelia-s-paradise": {
+                "package": "com.artingames.opheliasparadise",
+                "search_term": "Ophelia's Paradise",
+                "stable": [
+                    "26.11.15"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
             "plague-inc": {
                 "package": "com.miniclip.plagueinc",
                 "search_term": "Plague Inc.",
@@ -531,7 +543,7 @@
                 "package": "com.mightygamesgroup.shootyskies",
                 "search_term": "Shooty Skies",
                 "stable": [
-                    "3.441.100104"
+                    "3.441.100105"
                 ],
                 "beta": [],
                 "strip": true,
@@ -589,7 +601,7 @@
                 "package": "com.hyperdotstudios.swampattack2",
                 "search_term": "Swamp Attack 2",
                 "stable": [
-                    "1.4.1"
+                    "1.5.0"
                 ],
                 "beta": [],
                 "strip": true,
