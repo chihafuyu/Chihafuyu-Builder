@@ -110,6 +110,11 @@ name: 🧰 SysAdminDoc Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      upload_huggingface:
+        description: 'Upload to HuggingFace Dataset'
+        required: true
+        type: boolean
+        default: false
       send_to_telegram:
         description: 'Send to Telegram'
         required: true
@@ -205,6 +210,8 @@ jobs:
       API_HASH: ${{ secrets.API_HASH }}
       SESSION_STRING: ${{ secrets.SESSION_STRING }}
       CHAT_ID: ${{ secrets.CHAT_ID }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
     with:
       ecosystem: "SysAdminDoc"
       apps: ${{ matrix.app }}
@@ -219,5 +226,6 @@ jobs:
       repo_url: SysAdminDoc/${{ matrix.repo }}
       custom_patch_filename: ${{ matrix.mpp }}
       upload_github_release: ${{ inputs.upload_github_release }}
+      upload_huggingface: ${{ inputs.upload_huggingface }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: ${{ matrix.prefix }}

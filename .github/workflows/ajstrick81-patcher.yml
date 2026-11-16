@@ -195,6 +195,8 @@ jobs:
       API_HASH: ${{ secrets.API_HASH }}
       SESSION_STRING: ${{ secrets.SESSION_STRING }}
       CHAT_ID: ${{ secrets.CHAT_ID }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
     with:
       ecosystem: "ajstrick81"
       apps: ${{ needs.prepare-apps.outputs.selected }}
@@ -209,5 +211,6 @@ jobs:
       repo_url: "ajstrick81/morphe-androidtv-patches"
       custom_patch_filename: "ajstrick81-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
+      upload_huggingface: ${{ inputs.upload_huggingface }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
       release_tag_prefix: "ajstrick81"
