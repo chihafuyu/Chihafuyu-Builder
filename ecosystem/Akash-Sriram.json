@@ -17,6 +17,9 @@
                     },
                     "Custom branding": {
                         "enabled": false
+                    },
+                    "GmsCore support": {
+                        "enabled": false
                     }
                 }
             }

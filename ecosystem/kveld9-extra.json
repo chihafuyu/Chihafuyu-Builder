@@ -5,7 +5,7 @@
                 "package": "com.lemon.lvoverseas",
                 "search_term": "CapCut",
                 "stable": [
-                    "19.9.0"
+                    "20.1.0"
                 ],
                 "beta": [],
                 "force_bundle": false,
@@ -30,7 +30,7 @@
                 "package": "com.hevy",
                 "search_term": "Hevy",
                 "stable": [
-                    "3.2.2"
+                    "3.2.5"
                 ],
                 "beta": [],
                 "strip": true,
@@ -59,7 +59,7 @@
                 "package": "com.instagram.android",
                 "search_term": "Instagram",
                 "stable": [
-                    "447.0.0.55.81"
+                    "452.1.0.53.64"
                 ],
                 "beta": [],
                 "strip": true,
@@ -78,7 +78,7 @@
                 "package": "com.tranzmate",
                 "search_term": "Moovit",
                 "stable": [
-                    "5.203.0.1812"
+                    "5.204.0.1813"
                 ],
                 "beta": [],
                 "strip": true,
@@ -90,7 +90,7 @@
                 "package": "com.nokoprint",
                 "search_term": "NokoPrint",
                 "stable": [
-                    "5.28.6"
+                    "5.28.8"
                 ],
                 "beta": [],
                 "strip": true,
@@ -143,7 +143,7 @@
                 "package": "com.twitter.android",
                 "search_term": "X",
                 "stable": [
-                    "12.37.2-prod.01"
+                    "12.41.0-prod.01"
                 ],
                 "beta": [],
                 "strip": true,

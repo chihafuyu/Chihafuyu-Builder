@@ -67,7 +67,7 @@
                 "package": "com.google.android.apps.maps",
                 "search_term": "Google Maps",
                 "stable": [
-                    "26.36.04.973607363"
+                    "26.44.06.1006895251"
                 ],
                 "beta": [],
                 "strip": true,
@@ -933,7 +933,7 @@
                 "package": "com.waze",
                 "search_term": "Waze",
                 "stable": [
-                    "5.27.0.1"
+                    "5.27.5.0"
                 ],
                 "beta": [],
                 "strip": true,

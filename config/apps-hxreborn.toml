@@ -27,6 +27,7 @@
 "bereal" = false
 "bettersleep" = true
 "biobird-flashcards" = false
+"bittorrent" = true
 "biwenger" = false
 "blockit" = false
 "blurwall" = false
@@ -149,12 +150,14 @@
 "serializd" = false
 "sheytoon" = false
 "showly" = false
+"shttps-marketless" = true
 "sqcom" = false
 "steezy" = false
 "storywise" = false
 "sygic" = true
 "symfonium" = true
 "terabox" = true
+"torrent" = true
 "tradingview" = false
 "trainline" = false
 "transparent-clock-weather" = false
