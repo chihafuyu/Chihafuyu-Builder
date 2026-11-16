@@ -56,7 +56,7 @@ jobs:
             git push origin --delete "$TAG" || true
           done
 
-      - name: Purge Workflow Runs (Except Janitor)
+      - name: Purge Workflow Runs (Except Current)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -67,8 +67,8 @@ jobs:
             "/repos/${{ github.repository }}/actions/runs" \
             --jq '.workflow_runs[]
                   | select(
-                      .path != ".github/workflows/janitor.yml"
-                      and .status == "completed"
+                      .status == "completed"
+                      and .id != ${{ github.run_id }}
                     )
                   | .id' \
             | while read -r RUN_ID; do
