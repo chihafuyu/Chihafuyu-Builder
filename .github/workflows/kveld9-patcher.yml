@@ -42,6 +42,7 @@ name: 🦁 Kveld9 Ecosystem Patcher
         type: string
         default: ''
       custom_version_code:
+        description: 'Custom Version Code (blank for auto)'
         required: false
         type: string
         default: ''
