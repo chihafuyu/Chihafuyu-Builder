@@ -302,10 +302,9 @@ def _normalize_vcodes(raw_vcodes):
             result[canonical] = str(val)
         return result
     if isinstance(raw_vcodes, list):
-        valid = [v for v in raw_vcodes if v is not None]
-        if valid:
-            highest = max(valid, key=lambda v: int(v) if str(v).isdigit() else -1)
-            return {"universal": str(highest)}
+        digits = [str(v) for v in raw_vcodes if str(v).isdecimal()]
+        if digits:
+            return {"universal": str(max(int(d) for d in digits))}
     return {}
 
 
@@ -323,12 +322,12 @@ def _parse_version_key(ver_str):
     base_nums = tuple(int(n) for n in re.findall(r"\d+", base_part))
     pre_match = PRE_STAGE_RE.search(suffix) or PRE_STAGE_RE.search(base_part.lower())
     if not pre_match and not suffix.strip("-_."):
-        return (base_nums, 2, 0, (), ver_str)
+        return (base_nums, 2, 0, (), cleaned)
 
     stage = PRE_STAGE_RANKS.get(pre_match.group(1).lower(), 5) if pre_match else 5
     is_release = 1 if stage == 5 else 0
     suffix_nums = tuple(int(n) for n in re.findall(r"\d+", suffix))
-    return (base_nums, is_release, stage, suffix_nums, ver_str)
+    return (base_nums, is_release, stage, suffix_nums, cleaned)
 
 
 def _get_target_sort_key(target):
@@ -340,7 +339,7 @@ def _get_target_sort_key(target):
         raw_values = vcodes
     else:
         raw_values = ()
-    codes = [int(v) for v in raw_values if str(v).isdigit()]
+    codes = [int(v) for v in raw_values if str(v).isdecimal()]
     highest_code = max(codes) if codes else -1
     ver_str = str(target.get("version") or "")
     return (_parse_version_key(ver_str), highest_code)
@@ -1061,7 +1060,10 @@ jobs:
         with open(tmp_path, "w", encoding="utf-8") as file_obj:
             file_obj.write(new_yaml)
         os.replace(tmp_path, yaml_path)
-        print(f"    -> Migrated {ecosystem_name} to text-input YAML (exceeded 15 app checkboxes)")
+        print(
+            f"    -> Migrated {ecosystem_name} to text-input YAML "
+            f"(exceeded {MAX_YAML_INPUTS} app checkboxes)"
+        )
         return True
     except OSError as err:
         print(f"    -> Failed to safely migrate YAML {yaml_path}: {err}")
