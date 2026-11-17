@@ -118,7 +118,6 @@ jobs:
 
           if [[ -n "$PIKO_APPS" ]]; then
             JSON_BLOCK='{"ecosystem": "piko", '
-            JSON_BLOCK+='"target_name": "Reguler", '
             JSON_BLOCK+='"repo": "crimera/piko", '
             JSON_BLOCK+='"apps": "'"$PIKO_APPS"'", '
             JSON_BLOCK+='"track": "'"$PATCHES_TRACK"'", '
@@ -184,4 +183,4 @@ jobs:
       upload_github_release: ${{ inputs.upload_github_release }}
       upload_huggingface: ${{ inputs.upload_huggingface }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "piko-${{ matrix.target_name }}"
+      release_tag_prefix: "piko"
