@@ -58,6 +58,18 @@ def _make_dummy_response(status_code: int, text: str, url: str) -> requests.Resp
     return res
 
 
+def _is_arch_token(text: str, token: str) -> bool:
+    """Matches *token* in *text* only as a standalone architecture word.
+
+    Hyphens and underscores bind tokens together, so "x86" must not match
+    "x86_64" or "x86-64" (a different architecture), while "arm64-v8a"
+    still matches its exact hyphenated form. Both the text and the token
+    are expected to be lowercase.
+    """
+    pattern = rf"(?<![a-z0-9_-]){re.escape(token)}(?![a-z0-9_-])"
+    return re.search(pattern, text) is not None
+
+
 class _FlareSolverrSession:
     """Routes HTML via FlareSolverr and binary streams via native requests."""
 
@@ -502,9 +514,9 @@ class ApkmirrorScraper(BaseScraper):
             target_arch.replace("_", "-"),
             target_arch.replace("-", "_"),
         }
-        if any(form in text for form in target_forms):
+        if any(_is_arch_token(text, form) for form in target_forms):
             return True
-        if "universal" in text or "noarch" in text:
+        if _is_arch_token(text, "universal") or _is_arch_token(text, "noarch"):
             return True
 
         arch_list = (

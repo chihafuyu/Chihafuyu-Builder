@@ -32,8 +32,8 @@ MD_INFECTED_CODES = frozenset({1, 8})
 DEFAULT_MD_INFECTED_THRESHOLD = 2
 # Env vars matching these markers are stripped before spawning untrusted subprocesses.
 SENSITIVE_ENV_MARKERS = (
-    "TOKEN", "SECRET", "PASSWORD", "API_KEY", "API_HASH", "SESSION",
-    "EMAIL", "KEYSTORE", "DEVICE_PROPERTIES",
+    "TOKEN", "SECRET", "PASSWORD", "API_KEY", "API_HASH", "API_ID",
+    "SESSION", "CHAT_ID", "EMAIL", "KEYSTORE", "DEVICE_PROPERTIES",
 )
 
 

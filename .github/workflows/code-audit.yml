@@ -36,13 +36,12 @@ jobs:
           ENABLE_LINTERS: >-
             JSON_JSONLINT,YAML_YAMLLINT,ACTION_ACTIONLINT,
             MARKDOWN_MARKDOWNLINT,YAML_V8R,PYTHON_PYLINT
-          YAML_V8R_FILE_EXTENSIONS: '[".yml", ".yaml", ".toml"]'
+          YAML_V8R_FILE_EXTENSIONS: '[".yml", ".yaml"]'
           FILTER_REGEX_EXCLUDE: '(patches-list.*\.json|list_.*\.txt)'
           PRE_COMMANDS: >-
             [{"command":
             "pip install -r
-            $GITHUB_WORKSPACE/requirements.txt
-            kurigram TgCryptoRust",
+            $GITHUB_WORKSPACE/requirements.txt",
             "venv": "pylint",
             "run_before_linters": true}]
 
@@ -73,3 +72,34 @@ jobs:
         uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{ matrix.language }}"
+
+  pytest:
+    name: 🧪 Unit Tests
+    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Initialize Python Environment
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install \
+            --disable-pip-version-check \
+            -r requirements.txt \
+            -r requirements-dev.txt
+
+      - name: Run Unit Tests
+        run: python -m pytest tests/ -q

@@ -12,6 +12,9 @@ from pyrogram.types import InputMediaDocument
 MAX_RETRIES = 5
 CHUNK_SIZE = 10
 CAPTION_LIMIT = 1024
+# Telegram FloodWait values beyond this cap indicate a serious rate limit;
+# sleeping through them would hang the CI job for hours.
+FLOOD_WAIT_CAP_SECONDS = 300
 
 
 def get_documents(ecosystem: str) -> tuple[list, str]:
@@ -98,6 +101,11 @@ async def _send_with_retry(coro_factory, label: str) -> None:
             await coro_factory()
             return
         except FloodWait as exc:
+            if exc.value > FLOOD_WAIT_CAP_SECONDS:
+                raise RuntimeError(
+                    f"{label}: Telegram requested a FloodWait of {exc.value}s, "
+                    f"exceeding the {FLOOD_WAIT_CAP_SECONDS}s retry cap."
+                ) from exc
             print(f"[{attempt + 1}] Flood wait {exc.value}s ({label}).", flush=True)
             await asyncio.sleep(exc.value + 2)
         except (OSError, TimeoutError, RPCError) as exc:

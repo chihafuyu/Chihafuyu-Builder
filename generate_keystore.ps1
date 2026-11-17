@@ -29,18 +29,34 @@ Write-Host ""
 # Verify if the Java keytool utility is available in the system environment
 if (-not (Get-Command "keytool" -ErrorAction SilentlyContinue)) {
     Write-Error "The 'keytool' command was not found. Please ensure Java (JDK) is installed and added to your system PATH."
-    exit
+    exit 1
 }
 
 $aliasName = Read-Host "1. Enter the Keystore alias (e.g., myalias) [Default: myalias]"
 if ([string]::IsNullOrWhiteSpace($aliasName)) {
     $aliasName = "myalias"
 }
+if ($aliasName -notmatch '^[A-Za-z0-9._-]+$') {
+    Write-Error "The alias can only contain letters, numbers, dots, underscores, and hyphens."
+    exit 1
+}
 
 $password = Read-Host "2. Enter the Keystore password (minimum 6 characters)"
 if ($password.Length -lt 6) {
     Write-Error "The password must be at least 6 characters long."
-    exit
+    exit 1
+}
+
+# Reject characters that break keytool's DNAME parsing (commas, quotes, etc.)
+function Assert-DnField {
+    param(
+        [Parameter(Mandatory = $true)] [string]$FieldName,
+        [Parameter(Mandatory = $true)] [string]$Value
+    )
+    if ($Value -match '[,+=\\"<>;\r\n]') {
+        Write-Error "The '$FieldName' field contains unsupported characters ( , + = \ `" < > ; )."
+        exit 1
+    }
 }
 
 Write-Host "`n3. Enter Distinguished Name (DNAME) Information:" -ForegroundColor White
@@ -63,18 +79,34 @@ if ([string]::IsNullOrWhiteSpace($s)) { $s = "Unknown" }
 $c = Read-Host "   f. Two-Letter Country Code (C) (e.g., US) [Default: US]"
 if ([string]::IsNullOrWhiteSpace($c)) { $c = "US" }
 
+if ($c -notmatch '^[A-Za-z]{2}$') {
+    Write-Error "The country code must contain exactly two letters (e.g., US, ID, UK)."
+    exit 1
+}
+
+Assert-DnField -FieldName 'CN' -Value $cn
+Assert-DnField -FieldName 'OU' -Value $ou
+Assert-DnField -FieldName 'O' -Value $o
+Assert-DnField -FieldName 'L' -Value $l
+Assert-DnField -FieldName 'S' -Value $s
+
 # Assemble the final DNAME string
 $dname = "CN=$cn, OU=$ou, O=$o, L=$l, S=$s, C=$c"
 
 $keystoreFile = "custom_keystore.keystore"
 $base64File = "custom_keystore_base64.txt"
 
-# Remove the target files if they already exist to prevent keytool prompt hangs
-if (Test-Path $keystoreFile) {
-    Remove-Item $keystoreFile -Force
-}
-if (Test-Path $base64File) {
-    Remove-Item $base64File -Force
+# Ask before destroying an existing keystore so a previously issued key is not lost
+$existingFiles = @($keystoreFile, $base64File) | Where-Object { Test-Path $_ }
+if ($existingFiles.Count -gt 0) {
+    $confirm = Read-Host "The following file(s) exist and will be deleted: $($existingFiles -join ', '). Continue? (y/N)"
+    if ($confirm -notmatch '^[Yy]([Ee][Ss])?$') {
+        Write-Warning "Aborted. No files were changed."
+        exit 1
+    }
+    foreach ($target in $existingFiles) {
+        Remove-Item $target -Force
+    }
 }
 
 Write-Host "`n[INFO] Generating the new Keystore file..." -ForegroundColor Yellow
@@ -94,10 +126,15 @@ try {
     )
 
     & keytool $keytoolArgs | Out-Null
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "keytool exited with code $LASTEXITCODE. The Keystore was not generated."
+        exit 1
+    }
 }
 catch {
     Write-Error "An error occurred while executing keytool: $_"
-    exit
+    exit 1
 }
 
 if (Test-Path $keystoreFile) {
