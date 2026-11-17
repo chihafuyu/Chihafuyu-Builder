@@ -5,7 +5,7 @@
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok",
                 "stable": [
-                    "47.7.3"
+                    "47.8.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -21,7 +21,10 @@
                         "enabled": true
                     },
                     "Custom launcher icon": {
-                        "enabled": true
+                        "enabled": true,
+                        "options": {
+                            "iconPicker": false
+                        }
                     },
                     "Feature Gate Recorder": {
                         "enabled": true
@@ -42,7 +45,14 @@
                         "enabled": true
                     },
                     "Region spoof": {
-                        "enabled": true
+                        "enabled": true,
+                        "options": {
+                            "region_spoof": false,
+                            "region_store_spoof": false,
+                            "region_request_spoof": false,
+                            "simspoof": false,
+                            "simspoof_feed_real": false
+                        }
                     },
                     "Remove LIVE extras": {
                         "enabled": true
@@ -66,20 +76,975 @@
                         "enabled": false
                     },
                     "Use system font": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "system_font": false,
+                            "system_emoji": false,
+                            "imported_font": false
+                        }
                     },
                     "Accent color": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "followWallpaper": false
+                        }
                     },
                     "Remove voice tools": {
                         "enabled": false
+                    },
+                    "Account cleanup": {
+                        "enabled": true,
+                        "options": {
+                            "tap_to_remove": false
+                        }
+                    },
+                    "Advanced downloads": {
+                        "enabled": true,
+                        "options": {
+                            "download_button": false,
+                            "hold_save_to_download": false,
+                            "download_ask_quality": false,
+                            "download_original_photos": false,
+                            "keep_photos_as_sent": false,
+                            "download_photos_as_video": false,
+                            "download_audio_track": false,
+                            "download_watermark_fallback": false,
+                            "download_cover": false,
+                            "save_cover_button": false,
+                            "download_without_sound": false,
+                            "download_progress": false,
+                            "download_unmetered_only": false,
+                            "download_details": false,
+                            "download_details_json": false,
+                            "download_tags": false,
+                            "download_burn_caption": false,
+                            "check_saved_videos": false,
+                            "mark_saved_videos": false,
+                            "ytdlnis_background": false,
+                            "save_profile_picture": false,
+                            "save_story": false,
+                            "save_story_from_share": false,
+                            "save_story_pick": false,
+                            "pick_grid_videos": false,
+                            "share_after_save": false,
+                            "video_buttons_over_rail": false
+                        }
+                    },
+                    "Allow Duet and Stitch": {
+                        "enabled": true,
+                        "options": {
+                            "allow_duet_and_stitch": false,
+                            "allow_add_to_story": false
+                        }
+                    },
+                    "Allow screenshots and Circle to Search": {
+                        "enabled": true,
+                        "options": {
+                            "allow_screen_capture": false
+                        }
+                    },
+                    "Always show publish date": {
+                        "enabled": true,
+                        "options": {
+                            "publish_date_exact_time": false,
+                            "publish_date_short_date": false,
+                            "publish_date_day_first": false,
+                            "publish_date_on_grid": false,
+                            "video_length_on_grid": false,
+                            "liked_jump_to_date": false,
+                            "grid_search": false,
+                            "grid_position_controls": false
+                        }
+                    },
+                    "Always upload in HD": {
+                        "enabled": true,
+                        "options": {
+                            "always_upload_hd": false
+                        }
+                    },
+                    "App lock": {
+                        "enabled": true,
+                        "options": {
+                            "app_lock": false
+                        }
+                    },
+                    "Automatic video advance": {
+                        "enabled": true,
+                        "options": {
+                            "auto_advance": false,
+                            "auto_advance_hide_panel_action": false,
+                            "auto_advance_search": false
+                        }
+                    },
+                    "Block author button": {
+                        "enabled": true,
+                        "options": {
+                            "no_resume_on_foreground": false,
+                            "pause_first_video": false,
+                            "keep_paused_on_return": false,
+                            "leave_on_rest_reminder": false,
+                            "session_budget_lock": false,
+                            "session_budget_wait_to_loosen": false,
+                            "session_budget_ramp": false,
+                            "session_budget_finish_video": false,
+                            "feed_lock": false,
+                            "shared_video_alone": false,
+                            "session_budget_cue": false,
+                            "block_author_button": false,
+                            "local_hide_button": false,
+                            "block_sound_button": false,
+                            "video_buttons_over_rail": false
+                        }
+                    },
+                    "Block contact list access": {
+                        "enabled": true,
+                        "options": {
+                            "block_contact_list": false
+                        }
+                    },
+                    "Block installed app scanning": {
+                        "enabled": true,
+                        "options": {
+                            "block_installed_apps": false
+                        }
+                    },
+                    "Block popups": {
+                        "enabled": true,
+                        "options": {
+                            "hide_live_bubble": false,
+                            "hide_wind_down_screens": false
+                        }
+                    },
+                    "Camera and microphone indicator": {
+                        "enabled": true,
+                        "options": {
+                            "camera_mic_indicator": false
+                        }
+                    },
+                    "Comment sort controls": {
+                        "enabled": true,
+                        "options": {
+                            "comment_sort_controls": false
+                        }
+                    },
+                    "Comment tools": {
+                        "enabled": true,
+                        "options": {
+                            "pause_on_comments": false,
+                            "comment_keyword_filter": false,
+                            "block_from_comment": false,
+                            "block_from_comment_menu": false,
+                            "country_from_comment_menu": false,
+                            "hide_comment_like_count": false,
+                            "hide_comment_dislike": false,
+                            "hide_comment_avatars": false,
+                            "comment_search": false,
+                            "comment_export": false,
+                            "comment_search_folded": false,
+                            "comment_links": false,
+                            "fold_long_comments": false,
+                            "hide_comment_media": false,
+                            "hide_voice_comments": false,
+                            "hide_spam_comments": false,
+                            "hide_comment_polls": false,
+                            "hide_comment_reply_previews": false,
+                            "hide_comment_surveys": false,
+                            "hide_comment_box_buttons": false,
+                            "show_poll_results": false,
+                            "caption_opens_comments": false,
+                            "caption_above_comments": false,
+                            "hide_comment_search_suggestions": false,
+                            "compact_comment_header": false,
+                            "hide_comment_close_button": false,
+                            "hide_comment_expand_button": false,
+                            "larger_comment_like_target": false
+                        }
+                    },
+                    "Confirm feed interactions": {
+                        "enabled": true,
+                        "options": {
+                            "confirm_follow": false,
+                            "confirm_like": false,
+                            "confirm_comment_like": false,
+                            "confirm_story_like": false,
+                            "confirm_quick_repost": false
+                        }
+                    },
+                    "Copy bio and IDs": {
+                        "enabled": true,
+                        "options": {
+                            "account_facts": false,
+                            "country_on_profiles": false
+                        }
+                    },
+                    "Custom offline videos limit": {
+                        "enabled": true,
+                        "options": {
+                            "custom_offline_videos": false,
+                            "delete_watched_offline_videos": false,
+                            "keep_offline_videos": false
+                        }
+                    },
+                    "Device privacy guard": {
+                        "enabled": true,
+                        "options": {
+                            "block_clipboard_reads": false,
+                            "hide_vpn": false,
+                            "block_advertising_id": false,
+                            "hide_root": false
+                        }
+                    },
+                    "Diagnostic tools": {
+                        "enabled": true,
+                        "options": {
+                            "morphe_debug": false,
+                            "morphe_capture_java_crashes": false,
+                            "morphe_debug_stacktrace": false
+                        }
+                    },
+                    "Disable telemetry": {
+                        "enabled": true,
+                        "options": {
+                            "disable_analytics": false
+                        }
+                    },
+                    "Disable the long press quick share": {
+                        "enabled": true,
+                        "options": {
+                            "disable_long_press_quick_share": false
+                        }
+                    },
+                    "Disable the long press repost": {
+                        "enabled": true,
+                        "options": {
+                            "disable_long_press_repost": false
+                        }
+                    },
+                    "Double-tap controls": {
+                        "enabled": true,
+                        "options": {
+                            "double_tap_split_zones": false
+                        }
+                    },
+                    "Downloads": {
+                        "enabled": true,
+                        "options": {
+                            "keep_photos_as_sent": false,
+                            "download_unmetered_only": false,
+                            "skip_post_download_share_sheet": false
+                        }
+                    },
+                    "Drop the animated image cache": {
+                        "enabled": true,
+                        "options": {
+                            "drop_animated_image_cache": false
+                        }
+                    },
+                    "Enable voice comments": {
+                        "enabled": true,
+                        "options": {
+                            "enable_voice_comments": false
+                        }
+                    },
+                    "Expand activity list": {
+                        "enabled": true,
+                        "options": {
+                            "expand_activity_list": false
+                        }
+                    },
+                    "Feed filter": {
+                        "enabled": true,
+                        "options": {
+                            "blocked_words_in_stickers": false,
+                            "hide_promotional_music": false,
+                            "hide_live_replays": false,
+                            "hide_unpersonalized_for_you": false,
+                            "friends_mutuals_only": false,
+                            "following_latest_first": false,
+                            "hide_live": false,
+                            "hide_shop": false,
+                            "hide_search_shop": false,
+                            "hide_story": false,
+                            "hide_image": false,
+                            "hide_offline_videos": false,
+                            "feed_filter_count_pill": false,
+                            "hide_bottom_search_bar": false,
+                            "local_hide_button": false,
+                            "block_sound_button": false,
+                            "hide_paid_partnership": false,
+                            "filter_location_videos": false,
+                            "hide_ai_generated": false,
+                            "hide_verified": false,
+                            "hide_series": false,
+                            "hide_mini_dramas": false,
+                            "hide_playlist_bar": false,
+                            "hide_event_badge": false,
+                            "hide_inserted_cards": false,
+                            "hide_playlist_videos": false,
+                            "hide_subscriber_only": false,
+                            "live_feed_filter": false,
+                            "live_hide_gaming": false,
+                            "live_hide_shopping": false,
+                            "live_hide_sponsored": false,
+                            "live_hide_verified": false,
+                            "hide_ai_cast": false
+                        }
+                    },
+                    "Feed tab navigation": {
+                        "enabled": true,
+                        "options": {
+                            "feed_navigation": false,
+                            "feed_navigation_block_new_tabs": false,
+                            "bottom_navigation": false,
+                            "bottom_navigation_block_new_tabs": false,
+                            "discover_bottom_tab": false,
+                            "friends_top_tab": false,
+                            "hide_tab_badges": false,
+                            "hide_bottom_tab_labels": false,
+                            "keep_for_you_on_tab_tap": false,
+                            "keep_for_you_on_pull_down": false,
+                            "profile_tab_opens_watch_history": false,
+                            "profile_tab_opens_activity_center": false,
+                            "profile_tab_switches_accounts": false,
+                            "inbox_tab_flips_read_receipts": false,
+                            "search_instead_of_home": false,
+                            "show_feed_buttons": false,
+                            "hide_tako_ai": false,
+                            "shared_video_alone": false,
+                            "hide_feed_tab_strip": false
+                        }
+                    },
+                    "Fit the video to the screen": {
+                        "enabled": true,
+                        "options": {
+                            "fit_video_to_screen": false,
+                            "fit_fills_tall_screen": false,
+                            "fill_video_to_screen": false,
+                            "stretch_video_to_screen": false,
+                            "blend_video_to_screen": false,
+                            "keep_middle_video_to_screen": false
+                        }
+                    },
+                    "Foldable split comment view": {
+                        "enabled": true,
+                        "options": {
+                            "foldable_split_view": false
+                        }
+                    },
+                    "Freeze TikTok's experiments": {
+                        "enabled": true,
+                        "options": {
+                            "freeze_remote_config": false
+                        }
+                    },
+                    "Ghost mode": {
+                        "enabled": true,
+                        "options": {
+                            "ghost_mode": false,
+                            "ghost_hide_online_status": false,
+                            "ghost_hide_live_views": false
+                        }
+                    },
+                    "Hide CAPTCHA popups": {
+                        "enabled": true,
+                        "options": {
+                            "hide_browsing_captcha_popups": false
+                        }
+                    },
+                    "Hide already seen videos": {
+                        "enabled": true,
+                        "options": {
+                            "hide_seen_videos": false,
+                            "local_watch_history": false,
+                            "for_you_hold_opens_watch_history": false,
+                            "profile_hold_opens_local_watch_history": false
+                        }
+                    },
+                    "Hide comment popup ads": {
+                        "enabled": true,
+                        "options": {
+                            "hide_comment_eggs": false
+                        }
+                    },
+                    "Hide comment typing suggestions": {
+                        "enabled": true,
+                        "options": {
+                            "hide_comment_quick_reactions": false
+                        }
+                    },
+                    "Hide feed LIVE button": {
+                        "enabled": true,
+                        "options": {
+                            "hide_live_entrance": false,
+                            "hide_feed_sidebar_button": false,
+                            "disable_feed_sidebar_swipe": false
+                        }
+                    },
+                    "Hide feed follow button": {
+                        "enabled": true,
+                        "options": {
+                            "hide_feed_follow_button": false
+                        }
+                    },
+                    "Hide feed save button": {
+                        "enabled": true,
+                        "options": {
+                            "hide_feed_save_button": false
+                        }
+                    },
+                    "Hide feed search button": {
+                        "enabled": true,
+                        "options": {
+                            "hide_feed_search_button": false
+                        }
+                    },
+                    "Hide floating promotions": {
+                        "enabled": true,
+                        "options": {
+                            "hide_homepage_coin": false,
+                            "hide_profile_rewards_shortcut": false
+                        }
+                    },
+                    "Hide inbox items": {
+                        "enabled": true,
+                        "options": {
+                            "hide_inbox_stories": false,
+                            "hide_inbox_on_this_day": false,
+                            "hide_inbox_new_followers": false,
+                            "hide_inbox_activity": false,
+                            "hide_inbox_archive": false,
+                            "hide_inbox_tako": false,
+                            "hide_inbox_shop": false,
+                            "hide_inbox_bulletin_boards": false,
+                            "hide_inbox_suggested_accounts": false,
+                            "hide_inbox_message_requests": false,
+                            "hide_inbox_conversations": false,
+                            "hide_inbox_add_people": false,
+                            "hide_inbox_search": false,
+                            "inbox_loaded_search": false,
+                            "hide_inbox_activity_status": false,
+                            "hide_inbox_group_chat_banner": false,
+                            "hide_chat_call_buttons": false,
+                            "hide_chat_sticker_banner": false,
+                            "hide_chat_ai_replies": false,
+                            "turn_off_chat_double_tap": false,
+                            "turn_off_chat_swipe_reply": false,
+                            "show_inbox_filters": false,
+                            "pin_more_chats": false,
+                            "show_message_times": false
+                        }
+                    },
+                    "Hide inbox stories": {
+                        "enabled": true,
+                        "options": {
+                            "hide_inbox_stories": false
+                        }
+                    },
+                    "Hide profile shortcuts": {
+                        "enabled": true,
+                        "options": {
+                            "hide_profile_menu_balance": false,
+                            "hide_profile_menu_minis_icons": false,
+                            "hide_profile_thoughts": false,
+                            "enable_thoughts": false
+                        }
+                    },
+                    "Hide read receipts": {
+                        "enabled": true,
+                        "options": {
+                            "hide_read_receipts": false
+                        }
+                    },
+                    "Hide search suggestions": {
+                        "enabled": true,
+                        "options": {
+                            "hide_search_rewards": false,
+                            "hide_search_suggestions": false,
+                            "discover_search_bar_only": false
+                        }
+                    },
+                    "Hide suggested accounts": {
+                        "enabled": true,
+                        "options": {
+                            "hide_inbox_suggested_accounts": false
+                        }
+                    },
+                    "Hide the launcher shortcuts": {
+                        "enabled": true,
+                        "options": {
+                            "hide_launcher_shortcuts": false
+                        }
+                    },
+                    "Hide video overlays": {
+                        "enabled": true,
+                        "options": {
+                            "swipe_levels": false,
+                            "hide_feed_caption": false,
+                            "hide_feed_music": false,
+                            "hide_feed_action_bar": false,
+                            "hide_feed_surveys": false,
+                            "hide_footnotes": false,
+                            "hide_following_live_row": false,
+                            "glass_stories_pill": false,
+                            "hide_following_all_button": false,
+                            "hide_story_create": false,
+                            "hide_repost_chip": false,
+                            "hide_detail_comment_bar": false,
+                            "hide_clear_display_controls": false,
+                            "keep_clear_display_seek_bar": false,
+                            "invisible_controls_button": false,
+                            "invisible_controls_on": false,
+                            "invisible_controls_keep_caption": false,
+                            "see_through_bottom_bar": false,
+                            "see_through_video_in_window": false,
+                            "floating_bottom_bar": false,
+                            "liquid_glass_bottom_bar": false,
+                            "glass_tab_lens": false,
+                            "glass_video_blur": false,
+                            "glass_refraction": false,
+                            "glass_tab_slide": false,
+                            "glass_liquid_hold": false,
+                            "glass_haptics": false,
+                            "see_through_status_bar": false,
+                            "status_bar_shade": false,
+                            "hide_share_guide": false,
+                            "hide_rail_follow": false,
+                            "hide_rail_like": false,
+                            "hide_rail_comments": false,
+                            "hide_rail_favourite": false,
+                            "hide_rail_music": false,
+                            "hide_rail_share": false,
+                            "hide_rail_counts": false,
+                            "stop_music_disc_spin": false,
+                            "spin_music_disc": false,
+                            "hide_status_bar": false,
+                            "hide_status_bar_in_live": false,
+                            "live_under_status_bar": false,
+                            "hide_opened_video_search": false,
+                            "hide_opened_video_back": false,
+                            "hide_profile_views_button": false,
+                            "hide_profile_add_friends": false,
+                            "hide_visual_search": false,
+                            "hide_fullscreen_button": false,
+                            "hide_feed_report_button": false,
+                            "hide_location_labels": false,
+                            "hide_creation_tags": false,
+                            "hide_live_entrance": false
+                        }
+                    },
+                    "Hold-and-slide 2x lock": {
+                        "enabled": true,
+                        "options": {
+                            "enable_long_press_speed_lock": false
+                        }
+                    },
+                    "In-app browser privacy guard": {
+                        "enabled": true,
+                        "options": {
+                            "block_webview_js_interfaces": false
+                        }
+                    },
+                    "Keep a streak going": {
+                        "enabled": true,
+                        "options": {
+                            "auto_streak": false
+                        }
+                    },
+                    "Keep playing in the background": {
+                        "enabled": true,
+                        "options": {
+                            "background_play": false,
+                            "background_play_menu": false,
+                            "background_replay": false
+                        }
+                    },
+                    "Keep pulled sounds": {
+                        "enabled": true,
+                        "options": {
+                            "keep_pulled_sounds": false
+                        }
+                    },
+                    "Keep the app language": {
+                        "enabled": true,
+                        "options": {
+                            "keep_app_language": false
+                        }
+                    },
+                    "Keep the next videos in full screen": {
+                        "enabled": true,
+                        "options": {
+                            "full_screen_next_videos": false
+                        }
+                    },
+                    "Keep the screen's brightness in the camera": {
+                        "enabled": true,
+                        "options": {
+                            "keep_camera_brightness": false
+                        }
+                    },
+                    "Keep the screen's refresh rate": {
+                        "enabled": true,
+                        "options": {
+                            "uncap_refresh_rate": false
+                        }
+                    },
+                    "Keep unsent messages": {
+                        "enabled": true,
+                        "options": {
+                            "keep_unsent_messages": false
+                        }
+                    },
+                    "LIVE controls": {
+                        "enabled": true,
+                        "options": {
+                            "stop_live_auto_enter": false,
+                            "hide_live_service_plus": false,
+                            "hide_live_ai_summary": false,
+                            "show_exact_live_viewers": false,
+                            "offer_live_quality": false,
+                            "offer_live_clear_screen": false,
+                            "keep_live_clear_screen": false,
+                            "offer_live_full_screen": false,
+                            "dark_live_panels": false,
+                            "record_live": false,
+                            "auto_record_live": false,
+                            "live_auto_tap": false,
+                            "live_audio_only": false,
+                            "live_name_alerts": false,
+                            "live_name_alerts_listen": false
+                        }
+                    },
+                    "Lift text length limits": {
+                        "enabled": true,
+                        "options": {
+                            "lift_length_limits": false
+                        }
+                    },
+                    "Limit background traffic": {
+                        "enabled": true,
+                        "options": {
+                            "skipPushSetup": false,
+                            "limit_background_traffic": false
+                        }
+                    },
+                    "Location access governor": {
+                        "enabled": true,
+                        "options": {
+                            "block_location": false
+                        }
+                    },
+                    "Long-press controls": {
+                        "enabled": true,
+                        "options": {
+                            "long_press_sides_only": false,
+                            "rail_hold_comment": false,
+                            "rail_hold_share": false,
+                            "rail_hold_favorites": false,
+                            "hold_save_to_download": false,
+                            "long_press_full_menu_on_profiles": false,
+                            "long_press_full_menu_in_search": false,
+                            "long_press_compact_menu": false,
+                            "edge_seek": false
+                        }
+                    },
+                    "Mute feed videos": {
+                        "enabled": true,
+                        "options": {
+                            "feed_muted": false,
+                            "feed_mute_button": false,
+                            "focus_waits_for_video": false,
+                            "video_buttons_over_rail": false
+                        }
+                    },
+                    "Network proxy": {
+                        "enabled": true,
+                        "options": {
+                            "network_proxy": false
+                        }
+                    },
+                    "Not interested button": {
+                        "enabled": true,
+                        "options": {
+                            "not_interested_button": false,
+                            "not_interested_also_filter": false,
+                            "video_buttons_over_rail": false
+                        }
+                    },
+                    "Notification controls": {
+                        "enabled": true,
+                        "options": {
+                            "hide_follower_notifications": false,
+                            "turn_off_push_notifications": false,
+                            "hide_message_streaks": false,
+                            "hide_streak_popups": false
+                        }
+                    },
+                    "Open the comments at full height": {
+                        "enabled": true,
+                        "options": {
+                            "comments_full_height": false
+                        }
+                    },
+                    "Picture-in-picture": {
+                        "enabled": true,
+                        "options": {
+                            "picture_in_picture": false
+                        }
+                    },
+                    "Play SDR instead of HDR": {
+                        "enabled": true,
+                        "options": {
+                            "play_sdr": false
+                        }
+                    },
+                    "Playback speed": {
+                        "enabled": true,
+                        "options": {
+                            "default_speed_enabled": false,
+                            "hold_speed_slide": false,
+                            "hide_speed_toasts": false
+                        }
+                    },
+                    "Prefer H.264 playback": {
+                        "enabled": true,
+                        "options": {
+                            "prefer_h264": false
+                        }
+                    },
+                    "Profile background": {
+                        "enabled": true,
+                        "options": {
+                            "profile_background": false
+                        }
+                    },
+                    "Remember clear display": {
+                        "enabled": true,
+                        "options": {
+                            "automatic_clear_display": false,
+                            "clear_display": false
+                        }
+                    },
+                    "Remove avatar rings": {
+                        "enabled": true,
+                        "options": {
+                            "hide_story_rings": false,
+                            "hide_live_ring": false,
+                            "open_story_over_live": false
+                        }
+                    },
+                    "Report a newer phone to effects": {
+                        "enabled": true,
+                        "options": {
+                            "report_newer_phone_to_effects": false
+                        }
+                    },
+                    "Resource and battery governor": {
+                        "enabled": true,
+                        "options": {
+                            "block_motion_sensors": false,
+                            "stop_benchmark_runs": false
+                        }
+                    },
+                    "SIM spoof": {
+                        "enabled": true,
+                        "options": {
+                            "simspoof": false,
+                            "simspoof_feed_real": false
+                        }
+                    },
+                    "Sanitize sharing links": {
+                        "enabled": true,
+                        "options": {
+                            "expand_short_share_links": false
+                        }
+                    },
+                    "Settings": {
+                        "enabled": true,
+                        "options": {
+                            "hide_settings_row": false,
+                            "settings_as_list": false,
+                            "startup_message": false,
+                            "check_for_updates": false
+                        }
+                    },
+                    "Share sheet tools": {
+                        "enabled": true,
+                        "options": {
+                            "hide_share_channels": false,
+                            "hide_share_actions": false,
+                            "share_block_author": false,
+                            "hide_share_contacts": false,
+                            "share_tap_copies_link": false,
+                            "hide_share_new_group": false
+                        }
+                    },
+                    "Show LIVE search": {
+                        "enabled": true,
+                        "options": {
+                            "enable_live_search": false
+                        }
+                    },
+                    "Show author region": {
+                        "enabled": true,
+                        "options": {
+                            "show_author_region": false,
+                            "region_as_flag": false,
+                            "country_date_under_caption": false,
+                            "show_author_handle": false
+                        }
+                    },
+                    "Show commenter handle and region": {
+                        "enabled": true,
+                        "options": {
+                            "region_as_flag": false,
+                            "show_commenter_handle": false,
+                            "show_commenter_region": false,
+                            "color_commenter_names": false
+                        }
+                    },
+                    "Show engagement rate": {
+                        "enabled": true,
+                        "options": {
+                            "show_engagement_rate": false
+                        }
+                    },
+                    "Show exact counts": {
+                        "enabled": true,
+                        "options": {
+                            "show_exact_counts": false
+                        }
+                    },
+                    "Show follow status": {
+                        "enabled": true,
+                        "options": {
+                            "show_join_date": false,
+                            "local_profile_counts": false,
+                            "local_profile_verified_badge": false,
+                            "hide_own_profile_restriction_notice": false
+                        }
+                    },
+                    "Show the progress bar": {
+                        "enabled": true,
+                        "options": {
+                            "seekbar_time": false,
+                            "seekbar_full_width": false,
+                            "seekbar_big_handle": false,
+                            "story_seekbar": false,
+                            "sound_seekbar": false
+                        }
+                    },
+                    "Skip content warnings": {
+                        "enabled": true,
+                        "options": {
+                            "hide_sensitive_warnings": false,
+                            "hide_unverified_notices": false,
+                            "hide_check_your_sources": false
+                        }
+                    },
+                    "Skip passkey sign-in": {
+                        "enabled": true,
+                        "options": {
+                            "skip_passkey_sign_in": false
+                        }
+                    },
+                    "Skip the splash ad": {
+                        "enabled": true,
+                        "options": {
+                            "skip_splash_ad": false
+                        }
+                    },
+                    "Skip update checks": {
+                        "enabled": true,
+                        "options": {
+                            "skip_update_checks": false
+                        }
+                    },
+                    "Stay on the video in full screen": {
+                        "enabled": true,
+                        "options": {
+                            "full_screen_hold": false
+                        }
+                    },
+                    "Stop on-device AI profiling": {
+                        "enabled": true,
+                        "options": {
+                            "stop_ai_profiling": false
+                        }
+                    },
+                    "Stop recording watch history": {
+                        "enabled": true,
+                        "options": {
+                            "stop_watch_history": false
+                        }
+                    },
+                    "Stop saving search history": {
+                        "enabled": true,
+                        "options": {
+                            "stop_search_history": false
+                        }
+                    },
+                    "Stop search autoplay": {
+                        "enabled": true,
+                        "options": {
+                            "stop_search_autoplay": false
+                        }
+                    },
+                    "Stop video looping": {
+                        "enabled": true,
+                        "options": {
+                            "stop_video_looping": false
+                        }
+                    },
+                    "Story controls": {
+                        "enabled": true,
+                        "options": {
+                            "story_loop": false,
+                            "story_photo_hold": false
+                        }
+                    },
+                    "Subtitle tools": {
+                        "enabled": true,
+                        "options": {
+                            "download_subtitles": false,
+                            "keep_captions_clear_display": false,
+                            "keep_captions_available": false
+                        }
+                    },
+                    "Translate comments": {
+                        "enabled": true,
+                        "options": {
+                            "comment_batch_translation": false,
+                            "dm_translation_preview": false,
+                            "received_dm_translation_preview": false,
+                            "no_video_auto_translate": false,
+                            "comment_translate_button": false,
+                            "show_translation_settings": false
+                        }
+                    },
+                    "Turn off haptics": {
+                        "enabled": true,
+                        "options": {
+                            "turn_off_haptics": false
+                        }
+                    },
+                    "Turn off screen transitions": {
+                        "enabled": true,
+                        "options": {
+                            "turn_off_screen_transitions": false
+                        }
+                    },
+                    "Use non-personalized search": {
+                        "enabled": true,
+                        "options": {
+                            "enable_non_personalized_search": false
+                        }
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "2024707030",
-                    "armeabi-v7a": "2024707030",
-                    "x86": "2024707030",
-                    "x86_64": "2024707030"
+                    "arm64-v8a": "2024708030",
+                    "armeabi-v7a": "2024708030",
+                    "x86": "2024708030",
+                    "x86_64": "2024708030"
                 }
             }
         }

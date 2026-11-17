@@ -18,7 +18,10 @@
                         "enabled": false
                     },
                     "Accent color": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "followWallpaper": false
+                        }
                     },
                     "Block P2P video relay": {
                         "enabled": false
@@ -67,6 +70,12 @@
                     },
                     "Trust user certificates": {
                         "enabled": false
+                    },
+                    "Limit background traffic": {
+                        "enabled": true,
+                        "options": {
+                            "skipPushSetup": false
+                        }
                     }
                 },
                 "version_codes": {

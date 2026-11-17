@@ -35,7 +35,10 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Add microG-RE support": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "keepIconAndName": false
+                        }
                     },
                     "Black theme": {
                         "enabled": false
@@ -47,7 +50,10 @@
                         "enabled": false
                     },
                     "Extra compact list": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "squareAvatars": false
+                        }
                     }
                 },
                 "force_bundle": true
@@ -82,6 +88,12 @@
                     },
                     "Follow playing media": {
                         "enabled": false
+                    },
+                    "Location provider toggle": {
+                        "enabled": true,
+                        "options": {
+                            "useFusedProvider": false
+                        }
                     }
                 }
             },
@@ -96,7 +108,10 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Add microG-RE support": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "keepIconAndName": false
+                        }
                     }
                 },
                 "force_bundle": true
@@ -527,7 +542,10 @@
                         "enabled": false
                     },
                     "Custom icon": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "fill": false
+                        }
                     }
                 }
             },

@@ -7,7 +7,9 @@
                 "stable": [
                     "26.16.0+rc2-2026.09.08"
                 ],
-                "beta": [],
+                "beta": [
+                    "26.20.0+rc3-2026.11.02"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
@@ -77,7 +79,9 @@
                 "stable": [
                     "7.9.0.61"
                 ],
-                "beta": [],
+                "beta": [
+                    "7.14.0.69"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
@@ -109,7 +113,9 @@
                 "stable": [
                     "13.0.1 build 25028"
                 ],
-                "beta": [],
+                "beta": [
+                    "13.2.2 build 27250"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
@@ -130,7 +136,9 @@
                 "stable": [
                     "16.19.0"
                 ],
-                "beta": [],
+                "beta": [
+                    "17.3.0"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -174,7 +182,9 @@
                 "stable": [
                     "6.23.23+v15.5.0.70-armv7a"
                 ],
-                "beta": [],
+                "beta": [
+                    "6.24.13+v16.0.1.93-allAbis"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {

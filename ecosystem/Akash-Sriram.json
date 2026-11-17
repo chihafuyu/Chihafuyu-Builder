@@ -7,7 +7,9 @@
                 "stable": [
                     "7.99.0.1007655401"
                 ],
-                "beta": [],
+                "beta": [
+                    "8.0.0.1011730683"
+                ],
                 "strip": true,
                 "force_bundle": false,
                 "archive_id": "ZeNiX",

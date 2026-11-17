@@ -41,7 +41,9 @@
                 "stable": [
                     "2.3.608"
                 ],
-                "beta": [],
+                "beta": [
+                    "2.3.608"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
@@ -406,7 +408,9 @@
                 "stable": [
                     "1.99.57"
                 ],
-                "beta": [],
+                "beta": [
+                    "1.99.57"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
@@ -2016,7 +2020,9 @@
                 "stable": [
                     "26.45.0"
                 ],
-                "beta": [],
+                "beta": [
+                    "26.45.0"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},

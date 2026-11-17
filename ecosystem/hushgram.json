@@ -5,14 +5,13 @@
                 "package": "com.instagram.android",
                 "search_term": "Instagram",
                 "stable": [
-                    "455.0.0.51.72"
+                    "456.0.0.53.78"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "386113969",
-                    "armeabi-v7a": "386113968",
-                    "x86": "386113970",
-                    "x86_64": "386113971"
+                    "arm64-v8a": "386214574",
+                    "armeabi-v7a": "386214562",
+                    "x86": "386214575"
                 },
                 "force_bundle": true,
                 "strip": true,
@@ -22,7 +21,10 @@
                         "enabled": true
                     },
                     "Install next to Instagram": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "markIcon": false
+                        }
                     },
                     "Pure black dark mode": {
                         "enabled": true

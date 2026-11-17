@@ -29,7 +29,7 @@
                     "21.30.216"
                 ],
                 "beta": [
-                    "21.46.520"
+                    "21.45.82"
                 ],
                 "strip": true,
                 "force_bundle": false,
@@ -37,6 +37,20 @@
                 "options_override": {
                     "Network proxy": {
                         "enabled": false
+                    },
+                    "Hide Shorts components": {
+                        "enabled": true,
+                        "options": {
+                            "hideShortsAppShortcut": false,
+                            "hideShortsWidget": false
+                        }
+                    },
+                    "Navigation bar": {
+                        "enabled": true,
+                        "options": {
+                            "hideSearchAppShortcut": false,
+                            "hideSubscriptionsAppShortcut": false
+                        }
                     }
                 }
             },
