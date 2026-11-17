@@ -63,11 +63,11 @@ def _is_arch_token(text: str, token: str) -> bool:
 
     Hyphens and underscores bind tokens together, so "x86" must not match
     "x86_64" or "x86-64" (a different architecture), while "arm64-v8a"
-    still matches its exact hyphenated form. Both the text and the token
-    are expected to be lowercase.
+    still matches its exact hyphenated form. Matching is case-insensitive
+    so mixed-case callers cannot produce false negatives.
     """
     pattern = rf"(?<![a-z0-9_-]){re.escape(token)}(?![a-z0-9_-])"
-    return re.search(pattern, text) is not None
+    return re.search(pattern, text, re.IGNORECASE) is not None
 
 
 class _FlareSolverrSession:

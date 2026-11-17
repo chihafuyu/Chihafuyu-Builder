@@ -287,7 +287,7 @@ def _is_acceptable_response(resp: Any, check_dmca: bool) -> bool:
         print("[ERROR] DMCA Trap detected (Store APK).")
         return False
     size = resp.headers.get("Content-Length")
-    if size and size.isdigit() and int(size) > MAX_DOWNLOAD_BYTES:
+    if size and size.isdecimal() and int(size) > MAX_DOWNLOAD_BYTES:
         print("[ERROR] File exceeds size limit.")
         return False
     return True

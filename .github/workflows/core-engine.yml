@@ -176,10 +176,14 @@ jobs:
           )"
           echo "Resolved ${IMAGE} -> ${DIGEST}"
 
-          retry docker run -d --name=flaresolverr \
-            -p 127.0.0.1:8191:8191 \
-            -e LOG_LEVEL=info \
-            "$DIGEST"
+          start_flaresolverr() {
+            docker rm -f flaresolverr >/dev/null 2>&1 || true
+            docker run -d --name=flaresolverr \
+              -p 127.0.0.1:8191:8191 \
+              -e LOG_LEVEL=info \
+              "$DIGEST"
+          }
+          retry start_flaresolverr
 
           echo "Waiting for FlareSolverr to initialize..."
           timeout 60 bash -c '
@@ -419,8 +423,8 @@ jobs:
             ARTIFACT_ZIP="$ARTIFACT_DIR/artifact.zip"
             if unzip -l "$ARTIFACT_ZIP" 2>/dev/null \
               | grep -Eq '\.mpp[[:space:]]*$'; then
-              unzip -q "$ARTIFACT_ZIP" -d "$ARTIFACT_DIR"
-              mapfile -t MPPS < <(find "$ARTIFACT_DIR" -maxdepth 1 -type f \
+              unzip -q -o "$ARTIFACT_ZIP" -d "$ARTIFACT_DIR"
+              mapfile -t MPPS < <(find "$ARTIFACT_DIR" -type f \
                 -name '*.mpp' -print | sort -V)
               if (( ${#MPPS[@]} == 0 )); then
                 echo "::error::No .mpp file found inside artifact" \
@@ -442,6 +446,7 @@ jobs:
               echo "::error::Downloaded patches.mpp is empty or failed."
               exit 1
             fi
+            rm -rf "$ARTIFACT_DIR"
 
             echo "PATCHES_VERSION=test-$RUN_ID" >> "$GITHUB_ENV"
             echo "[INFO] Successfully fetched patches.mpp from test artifact"

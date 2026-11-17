@@ -302,7 +302,7 @@ def _normalize_vcodes(raw_vcodes):
             result[canonical] = str(val)
         return result
     if isinstance(raw_vcodes, list):
-        digits = [str(v) for v in raw_vcodes if str(v).isdigit()]
+        digits = [str(v) for v in raw_vcodes if str(v).isdecimal()]
         if digits:
             return {"universal": str(max(int(d) for d in digits))}
     return {}
@@ -339,7 +339,7 @@ def _get_target_sort_key(target):
         raw_values = vcodes
     else:
         raw_values = ()
-    codes = [int(v) for v in raw_values if str(v).isdigit()]
+    codes = [int(v) for v in raw_values if str(v).isdecimal()]
     highest_code = max(codes) if codes else -1
     ver_str = str(target.get("version") or "")
     return (_parse_version_key(ver_str), highest_code)

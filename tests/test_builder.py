@@ -63,6 +63,12 @@ def test_get_target_sort_key_prefers_higher_version():
     assert key_fn(new) > key_fn(old)
 
 
+def test_get_target_sort_key_tolerates_non_decimal_codes():
+    """Non-decimal version codes are ignored during sort-key building."""
+    target = {"version": "1.0", "versionCodes": {"arm64-v8a": "²"}}
+    assert AUTO_CONFIG._get_target_sort_key(target)[1] == -1
+
+
 def test_normalize_vcodes_list_uses_highest_digit():
     """A list of version codes collapses to its highest numeric value."""
     assert AUTO_CONFIG._normalize_vcodes(["312401001", 31100, None]) == {
@@ -80,6 +86,13 @@ def test_normalize_vcodes_dict_normalizes_keys():
     assert AUTO_CONFIG._normalize_vcodes(
         {"ARM64_V8A": "1", "X86-64": "2"}
     ) == {"arm64-v8a": "1", "x86_64": "2"}
+
+
+def test_normalize_vcodes_ignores_non_decimal_digits():
+    """Unicode digit lookalikes are skipped instead of crashing int()."""
+    assert AUTO_CONFIG._normalize_vcodes(["312401001", "²"]) == {
+        "universal": "312401001"
+    }
 
 
 @pytest.mark.parametrize(
@@ -108,6 +121,12 @@ def test_is_arch_match_multi_arm_bundle():
     assert TIER1.ApkmirrorScraper._is_arch_match(text, "armeabi-v7a", 3) is True
     assert TIER1.ApkmirrorScraper._is_arch_match(text, "universal", 3) is True
     assert TIER1.ApkmirrorScraper._is_arch_match(text, "x86", 3) is False
+
+
+def test_is_arch_token_case_insensitive():
+    """Arch token matching tolerates mixed-case text and tokens."""
+    assert TIER1._is_arch_token("X86 NODPI APK", "x86") is True
+    assert TIER1._is_arch_token("X86_64 NODPI APK", "x86") is False
 
 
 @pytest.mark.parametrize(
@@ -157,6 +176,12 @@ def test_apply_custom_version_code_rejects_non_numeric():
     """Non-numeric codes fall back to the JSON value untouched."""
     app = {"package": "p"}
     assert MAIN._apply_custom_version_code(app, "abc", "arm64-v8a") is app
+
+
+def test_apply_custom_version_code_rejects_non_decimal_digits():
+    """Superscript digit lookalikes are rejected like non-numeric codes."""
+    app = {"package": "p"}
+    assert MAIN._apply_custom_version_code(app, "²", "arm64-v8a") is app
 
 
 def test_apply_custom_version_code_empty_passthrough():

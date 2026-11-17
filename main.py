@@ -202,7 +202,7 @@ def _apply_custom_version_code(app_data: dict, raw: str, arch: str) -> dict:
     code = raw.strip() if raw else ""
     if not code:
         return app_data
-    if not code.isdigit():
+    if not code.isdecimal():
         print(
             f"[WARN] custom_version_code {code!r} is not a plain integer; "
             "ignoring and falling back to JSON version code."

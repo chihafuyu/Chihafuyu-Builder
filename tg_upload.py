@@ -76,7 +76,7 @@ async def _resolve_target_chat(app: Client) -> int | str:
     if not chat_env:
         raise ValueError("CHAT_ID environment variable is required.")
     target_chat: int | str = (
-        int(chat_env) if chat_env.lstrip("-").isdigit() else chat_env
+        int(chat_env) if chat_env.lstrip("-").isdecimal() else chat_env
     )
 
     if isinstance(target_chat, str) and target_chat.startswith("http"):
