@@ -11,7 +11,7 @@ Select **Custom** in the `App Version Selection` dropdown, then use a `name=vers
 **Example:**
 
 ```text
-x-twitter=12.15.1-release.0, instagram=439.0.0.37.89
+twitter-newx=12.41.0-prod.01, instagram=452.1.0.53.64
 ```
 
 Each app is matched by its key in the ecosystem JSON. Apps not listed fall back to their configured `stable` version.

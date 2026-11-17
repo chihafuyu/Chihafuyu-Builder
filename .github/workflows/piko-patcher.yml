@@ -4,13 +4,8 @@ name: 🦊 Piko Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
-      app_x_twitter:
-        description: 'Patch x-twitter'
-        required: true
-        type: boolean
-        default: false
-      app_newx_twitter:
-        description: 'Patch newx-twitter'
+      app_twitter_newx:
+        description: 'Patch twitter-newx'
         required: true
         type: boolean
         default: true
@@ -18,7 +13,7 @@ name: 🦊 Piko Ecosystem Patcher
         description: 'Patch instagram'
         required: true
         type: boolean
-        default: false
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -69,14 +64,8 @@ name: 🦊 Piko Ecosystem Patcher
         required: false
         type: string
         default: ''
-      reguler_patches_track:
-        description: 'Reguler Patches Track (Twitter/IG)'
-        required: true
-        type: choice
-        default: 'Stable'
-        options: [Stable, Pre-release, Custom Local]
-      newx_patches_track:
-        description: 'NewX Patches Track'
+      patches_track:
+        description: 'Patches Track'
         required: true
         type: choice
         default: 'Stable'
@@ -105,11 +94,9 @@ jobs:
     outputs:
       build_matrix: ${{ steps.set-matrix.outputs.matrix }}
     env:
-      APP_X_TWITTER: ${{ inputs.app_x_twitter }}
-      APP_NEWX_TWITTER: ${{ inputs.app_newx_twitter }}
+      APP_TWITTER_NEWX: ${{ inputs.app_twitter_newx }}
       APP_INSTAGRAM: ${{ inputs.app_instagram }}
-      REGULER_TRACK: ${{ inputs.reguler_patches_track }}
-      NEWX_TRACK: ${{ inputs.newx_patches_track }}
+      PATCHES_TRACK: ${{ inputs.patches_track }}
     steps:
       - name: Generate Dynamic Matrix
         id: set-matrix
@@ -118,8 +105,8 @@ jobs:
           MATRIX_JSON="["
           PIKO_APPS=""
 
-          if [[ "$APP_X_TWITTER" == "true" ]]; then
-            PIKO_APPS="x-twitter"
+          if [[ "$APP_TWITTER_NEWX" == "true" ]]; then
+            PIKO_APPS="twitter-newx"
           fi
           if [[ "$APP_INSTAGRAM" == "true" ]]; then
             if [[ -n "$PIKO_APPS" ]]; then
@@ -131,20 +118,10 @@ jobs:
 
           if [[ -n "$PIKO_APPS" ]]; then
             JSON_BLOCK='{"ecosystem": "piko", '
-            JSON_BLOCK+='"target_name": "Reguler", '
             JSON_BLOCK+='"repo": "crimera/piko", '
             JSON_BLOCK+='"apps": "'"$PIKO_APPS"'", '
-            JSON_BLOCK+='"track": "'"$REGULER_TRACK"'", '
+            JSON_BLOCK+='"track": "'"$PATCHES_TRACK"'", '
             JSON_BLOCK+='"mpp_name": "piko-custom.mpp"},'
-            MATRIX_JSON="${MATRIX_JSON}${JSON_BLOCK}"
-          fi
-
-          if [[ "$APP_NEWX_TWITTER" == "true" ]]; then
-            JSON_BLOCK='{"ecosystem": "piko-newx", "target_name": "NewX", '
-            JSON_BLOCK+='"repo": "crimera/piko-newx", '
-            JSON_BLOCK+='"apps": "newx-twitter", '
-            JSON_BLOCK+='"track": "'"$NEWX_TRACK"'", '
-            JSON_BLOCK+='"mpp_name": "piko-newx.mpp"},'
             MATRIX_JSON="${MATRIX_JSON}${JSON_BLOCK}"
           fi
 
@@ -185,6 +162,7 @@ jobs:
       API_ID: ${{ secrets.API_ID }}
       API_HASH: ${{ secrets.API_HASH }}
       SESSION_STRING: ${{ secrets.SESSION_STRING }}
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       CHAT_ID: ${{ secrets.CHAT_ID }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
@@ -205,4 +183,4 @@ jobs:
       upload_github_release: ${{ inputs.upload_github_release }}
       upload_huggingface: ${{ inputs.upload_huggingface }}
       send_to_telegram: ${{ inputs.send_to_telegram }}
-      release_tag_prefix: "piko-${{ matrix.target_name }}"
+      release_tag_prefix: "piko"

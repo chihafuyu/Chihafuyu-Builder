@@ -13,17 +13,17 @@ name: 🦁 Kveld9 Ecosystem Patcher
         description: 'Patch tiktok-global'
         required: true
         type: boolean
-        default: false
+        default: true
       app_gboard_lite:
         description: 'Patch gboard-lite'
         required: true
         type: boolean
-        default: true
+        default: false
       app_tiktok_lite:
         description: 'Patch tiktok-lite'
         required: true
         type: boolean
-        default: true
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true
@@ -156,6 +156,7 @@ jobs:
       API_ID: ${{ secrets.API_ID }}
       API_HASH: ${{ secrets.API_HASH }}
       SESSION_STRING: ${{ secrets.SESSION_STRING }}
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       CHAT_ID: ${{ secrets.CHAT_ID }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}

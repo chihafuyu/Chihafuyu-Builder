@@ -85,6 +85,8 @@ name: ⚙️ Core Patcher Engine
         required: false
       API_HASH:
         required: false
+      BOT_TOKEN:
+        required: false
       SESSION_STRING:
         required: false
       CHAT_ID:
@@ -100,7 +102,7 @@ permissions:
 jobs:
   execute:
     runs-on: ubuntu-latest
-    timeout-minutes: 350
+    timeout-minutes: 360
     concurrency:
       group: >-
         ${{ (inputs.send_to_telegram || inputs.upload_huggingface) == true
@@ -174,13 +176,17 @@ jobs:
           )"
           echo "Resolved ${IMAGE} -> ${DIGEST}"
 
-          docker run -d --name=flaresolverr \
-            -p 127.0.0.1:8191:8191 \
-            -e LOG_LEVEL=info \
-            "$IMAGE"
+          start_flaresolverr() {
+            docker rm -f flaresolverr >/dev/null 2>&1 || true
+            docker run -d --name=flaresolverr \
+              -p 127.0.0.1:8191:8191 \
+              -e LOG_LEVEL=info \
+              "$DIGEST"
+          }
+          retry start_flaresolverr
 
           echo "Waiting for FlareSolverr to initialize..."
-          timeout 30 bash -c '
+          timeout 60 bash -c '
             while ! curl -sf http://localhost:8191/ > /dev/null; do
               sleep 2
             done
@@ -195,8 +201,7 @@ jobs:
 
           python -m pip install \
             --disable-pip-version-check \
-            -r requirements.txt \
-            huggingface_hub
+            -r requirements.txt
 
           APKEEP_VERSION='1.1.0'
           APKEEP_ASSET='apkeep-x86_64-unknown-linux-gnu'
@@ -259,7 +264,33 @@ jobs:
             done
           }
 
-          if [[ "$INPUT_REPO_URL" == *://* ]]; then
+          verify_digest() {
+            if [ -z "$ARTIFACT_DIGEST" ]; then
+              echo "::warning::Artifact $ARTIFACT_ID exposes no digest;" \
+                "skipping integrity verification."
+              return 0
+            fi
+            local actual
+            actual="$(sha256sum "$1" | cut -d' ' -f1)"
+            if [ "$actual" == "$ARTIFACT_DIGEST" ]; then
+              echo "[INFO] SHA-256 verified: $1 matches artifact digest."
+              return 0
+            fi
+            if [ -f "$ARTIFACT_ZIP" ]; then
+              local wrapper
+              wrapper="$(sha256sum "$ARTIFACT_ZIP" | cut -d' ' -f1)"
+              if [ "$wrapper" == "$ARTIFACT_DIGEST" ]; then
+                echo "[INFO] Legacy artifact: digest matches the" \
+                  "stored ZIP wrapper."
+                return 0
+              fi
+            fi
+            echo "::error::SHA-256 mismatch for $1:" \
+              "expected $ARTIFACT_DIGEST, got $actual"
+            exit 1
+          }
+
+          if [[ ! "$INPUT_REPO_URL" =~ ^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9._-]+$ ]]; then
             echo "::error::repo_url must be 'owner/repo', got: $INPUT_REPO_URL"
             exit 1
           fi
@@ -357,24 +388,72 @@ jobs:
               exit 1
             fi
 
-            echo "[INFO] Downloading artifact $ARTIFACT_ID directly" \
-              "as patches.mpp via curl..."
+            # The artifact API exposes the SHA-256 digest of the uploaded
+            # stream: the raw patch bundle for single-file artifacts, or the
+            # stored ZIP wrapper for legacy artifacts. It is verified below
+            # before anything downstream consumes the file.
+            ARTIFACT_META="repos/MorpheApp/morphe-patches/actions/"
+            ARTIFACT_META+="artifacts/$ARTIFACT_ID"
+            ARTIFACT_DIGEST="$(gh api "$ARTIFACT_META" \
+              --jq '.digest // ""' | sed 's/^sha256://')"
+
+            # The artifact endpoint serves either a transport ZIP wrapping
+            # the uploaded files or the raw uploaded stream itself (a
+            # Morphe bundle is zip-format yet never nests an .mpp member).
+            # Only a payload holding an .mpp member is unwrapped here; the
+            # patches.mpp file is moved out byte-for-byte and must never be
+            # extracted itself. Either outcome is digest-verified.
+            echo "[INFO] Downloading artifact $ARTIFACT_ID..."
+            ARTIFACT_DIR=".artifact_download"
+            rm -rf "$ARTIFACT_DIR"
+            mkdir -p "$ARTIFACT_DIR"
             DOWNLOAD_URL="https://api.github.com/repos/MorpheApp/"
             DOWNLOAD_URL+="morphe-patches/actions/artifacts/$ARTIFACT_ID/zip"
-            curl -sL \
+            curl -sSLf \
               -H "Authorization: Bearer $GH_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               -H "X-GitHub-Api-Version: 2026-03-10" \
               "$DOWNLOAD_URL" \
-              -o patches.mpp
+              -o "$ARTIFACT_DIR/artifact.zip"
+
+            if [ ! -s "$ARTIFACT_DIR/artifact.zip" ]; then
+              echo "::error::Artifact download failed."
+              exit 1
+            fi
+
+            ARTIFACT_ZIP="$ARTIFACT_DIR/artifact.zip"
+            if unzip -l "$ARTIFACT_ZIP" 2>/dev/null \
+              | grep -Eq '\.mpp[[:space:]]*$'; then
+              unzip -q -o "$ARTIFACT_ZIP" -d "$ARTIFACT_DIR"
+              mapfile -t MPPS < <(find "$ARTIFACT_DIR" -type f \
+                -name '*.mpp' -print | sort -V)
+              if (( ${#MPPS[@]} == 0 )); then
+                echo "::error::No .mpp file found inside artifact" \
+                  "$ARTIFACT_ID"
+                exit 1
+              fi
+              mv -- "${MPPS[${#MPPS[@]}-1]}" patches.mpp
+              verify_digest patches.mpp
+            else
+              # Fallback: the endpoint served the raw artifact stream. A
+              # Morphe bundle is zip-format with no .mpp member inside,
+              # so the payload is used directly as patches.mpp.
+              # verify_digest rejects anything but the exact uploaded
+              # bundle, so a wrong payload still fails the run.
+              echo "[INFO] No .mpp member inside the payload; using it" \
+                "as the raw patch bundle."
+              mv -- "$ARTIFACT_ZIP" patches.mpp
+              verify_digest patches.mpp
+            fi
 
             if [ ! -s patches.mpp ]; then
               echo "::error::Downloaded patches.mpp is empty or failed."
               exit 1
             fi
+            rm -rf "$ARTIFACT_DIR"
 
             echo "PATCHES_VERSION=test-$RUN_ID" >> "$GITHUB_ENV"
-            echo "[INFO] Successfully fetched patches.mpp without extraction"
+            echo "[INFO] Successfully fetched patches.mpp from test artifact"
 
           else
             if [[ "$INPUT_PATCHES_TRACK" == "Pre-release" ]]; then
@@ -499,6 +578,8 @@ jobs:
             --is-prerelease "$IS_PRERELEASE" \
             "${KEYSTORE_OPTS[@]}"
 
+          rm -rf "./$INPUT_ECOSYSTEM/Input" "./$INPUT_ECOSYSTEM/Staging"
+
       - name: Validate Release Outputs
         env:
           INPUT_ECOSYSTEM: ${{ inputs.ecosystem }}
@@ -559,12 +640,10 @@ jobs:
         env:
           API_ID: ${{ secrets.API_ID }}
           API_HASH: ${{ secrets.API_HASH }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           SESSION_STRING: ${{ secrets.SESSION_STRING }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
           ECOSYSTEM: ${{ inputs.ecosystem }}
         run: |
           set -euo pipefail
-          python -m pip install \
-            --disable-pip-version-check \
-            "kurigram" "TgCryptoRust"
           python tg_upload.py

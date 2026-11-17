@@ -202,7 +202,7 @@ def _apply_custom_version_code(app_data: dict, raw: str, arch: str) -> dict:
     code = raw.strip() if raw else ""
     if not code:
         return app_data
-    if not code.isdigit():
+    if not code.isdecimal():
         print(
             f"[WARN] custom_version_code {code!r} is not a plain integer; "
             "ignoring and falling back to JSON version code."
@@ -452,15 +452,20 @@ def _prepare_patch_inputs(
     """Downloads APK, generates options, and returns a bundle of paths."""
     app_name, t_ver, arch = app_info
 
-    ctx = Context(
-        get_scraper(),
-        app_data,
-        t_ver,
-        arch,
-        state["in_dir"],
-        RateLimiter(delay=3.0),
-    )
-    apk_path = download_apk(ctx, args)
+    session = get_scraper()
+    try:
+        ctx = Context(
+            session,
+            app_data,
+            t_ver,
+            arch,
+            state["in_dir"],
+            RateLimiter(delay=3.0),
+        )
+        apk_path = download_apk(ctx, args)
+    finally:
+        session.close()
+
     if not apk_path:
         return None
 
@@ -507,6 +512,11 @@ def process_single_app(
     # instead of falling back to (or mismatching against) the JSON value.
     if custom_ver and custom_code:
         app_data = _apply_custom_version_code(app_data, custom_code, arch)
+    elif custom_code:
+        print(
+            f"[WARN] {app_name}: custom_version_code {custom_code!r} ignored "
+            "because no custom_version was provided for this app."
+        )
 
     print(f"\n--- {app_name} ({app_data['package']}) ---")
 
@@ -558,7 +568,6 @@ def process_single_app(
         "arch": arch,
         "status": status,
     })
-    time.sleep(5)
 
 
 def _build_log_block(entry: dict, state: dict) -> str:
@@ -618,7 +627,8 @@ def _aggregate_exports(args: Any, state: dict) -> None:
 
 def _process_app_loop(args: Any, state: dict) -> None:
     """Iterates over the app list, dispatching each to process_single_app."""
-    for app_name in state["app_list"]:
+    total = len(state["app_list"])
+    for idx, app_name in enumerate(state["app_list"]):
         if time.monotonic() - state["start_time"] > MAX_RUNTIME_SECONDS:
             print("\n[WARN] ⏱️ Maximum runtime limit (5.5 hours) reached!")
             print("[WARN] Stopping gracefully to preserve generated artifacts...")
@@ -628,7 +638,21 @@ def _process_app_loop(args: Any, state: dict) -> None:
             print(f"[WARN] App '{app_name}' not found in ecosystem config; skipping.")
             continue
 
-        process_single_app(app_name, args, state["eco_apps"][app_name], state)
+        app_data = state["eco_apps"][app_name]
+        try:
+            process_single_app(app_name, args, app_data, state)
+        except Exception as err:
+            print(f"\n[ERROR] UNEXPECTED: {app_name}. Reason: {err}")
+            state["attempted"].append({
+                "name": app_name,
+                "package": app_data.get("package", app_name),
+                "version": "",
+                "arch": args.arch,
+                "status": f"Unexpected failure: {err}",
+            })
+
+        if idx < total - 1:
+            time.sleep(5)
 
 
 def _resolve_app_list(apps_arg: str, eco_apps: dict) -> list[str]:
@@ -693,6 +717,15 @@ def run_patcher(args: Any) -> None:
 
     if state["success"]:
         write_changelog(args, state["success"], workspace, clean_ver)
+    else:
+        failed = ", ".join(
+            f"{entry['name']} ({entry['status']})"
+            for entry in state["attempted"]
+        ) or "no apps were processed"
+        sys.exit(
+            f"[FATAL] No apps were patched successfully. "
+            f"Attempted: {failed}"
+        )
 
 
 def parse_arguments() -> Any:
@@ -708,7 +741,6 @@ def parse_arguments() -> Any:
     parser.add_argument(
         "--continue-on-error", choices=("true", "false"), default="false"
     )
-    parser.add_argument("--hf-user", default="chihafuyu")
     parser.add_argument(
         "--microg-url",
         default="https://github.com/MorpheApp/MicroG-RE/releases/latest",

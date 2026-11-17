@@ -18,7 +18,7 @@ name: 🏪 Mlkem Ecosystem Patcher
         description: 'Patch walmart-canada'
         required: true
         type: boolean
-        default: true
+        default: false
       app_wongnai:
         description: 'Patch wongnai'
         required: true
@@ -165,6 +165,7 @@ jobs:
       API_ID: ${{ secrets.API_ID }}
       API_HASH: ${{ secrets.API_HASH }}
       SESSION_STRING: ${{ secrets.SESSION_STRING }}
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       CHAT_ID: ${{ secrets.CHAT_ID }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
