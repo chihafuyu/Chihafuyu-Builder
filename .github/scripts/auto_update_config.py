@@ -372,7 +372,24 @@ def _parse_patch_packages(patch):
     return []
 
 
-def _process_package(pkg_data, pkg, patch_name, default_enabled):
+def _collect_patch_options(patch):
+    """Collect boolean option defaults whose upstream value is false.
+
+    Option entries share the {key, default} shape across ecosystems;
+    non-boolean options (paths, enums) and true defaults are left out
+    because the CLI already applies them verbatim from options-create.
+    """
+    result = {}
+    for opt in patch.get("options") or []:
+        if not isinstance(opt, dict):
+            continue
+        key = opt.get("key")
+        if isinstance(key, str) and key and opt.get("default") is False:
+            result[key] = False
+    return result
+
+
+def _process_package(pkg_data, pkg, patch_name, default_enabled, patch_options):
     """Process a single compatible package entry."""
     pkg_name = pkg.get("packageName")
     if not pkg_name:
@@ -381,18 +398,23 @@ def _process_package(pkg_data, pkg, patch_name, default_enabled):
         "package": pkg_name,
         "name": pkg.get("name") or pkg_name,
         "all_targets": [],
+        "all_targets_experimental": [],
         "patches": {},
+        "patch_options": {},
         "apk_file_type": pkg.get("apkFileType"),
     })
     if patch_name:
         entry["patches"][patch_name] = default_enabled
+        if patch_options:
+            entry["patch_options"].setdefault(patch_name, {}).update(patch_options)
 
     for target in pkg.get("targets") or []:
         if not isinstance(target, dict):
             continue
         is_exp = target.get("isExperimental", target.get("experimental", False))
-        if not is_exp and target not in entry["all_targets"]:
-            entry["all_targets"].append(target)
+        bucket = "all_targets_experimental" if is_exp else "all_targets"
+        if target not in entry[bucket]:
+            entry[bucket].append(target)
 
 
 def _extract_pkg_data(patches_data, ignore_patches=None):
@@ -413,17 +435,20 @@ def _extract_pkg_data(patches_data, ignore_patches=None):
             continue
 
         default_enabled = patch.get("default", patch.get("use", False))
+        bool_options = _collect_patch_options(patch)
         packages = _parse_patch_packages(patch)
         for pkg in packages:
             if isinstance(pkg, dict):
-                _process_package(pkg_data, pkg, patch_name, default_enabled)
+                _process_package(
+                    pkg_data, pkg, patch_name, default_enabled, bool_options
+                )
     for data in pkg_data.values():
         targets = data.pop("all_targets", [])
-        if not targets:
-            data["latest_target"] = None
-            continue
+        experimental = data.pop("all_targets_experimental", [])
         targets.sort(key=_get_target_sort_key, reverse=True)
-        data["latest_target"] = targets[0]
+        data["latest_target"] = targets[0] if targets else None
+        experimental.sort(key=_get_target_sort_key, reverse=True)
+        data["latest_experimental"] = experimental[0] if experimental else None
     for pkg_name, data in pkg_data.items():
         latest = data.get("latest_target")
         ver = latest.get("version") if latest else "None"
@@ -431,8 +456,37 @@ def _extract_pkg_data(patches_data, ignore_patches=None):
     return pkg_data
 
 
-def _sync_app_patches(app_cfg, compatible_patches, app_key):
-    """Sync patches in options_override to match upstream 1:1."""
+def _prune_local_options(entry, upstream_opts, patch_name, app_key):
+    """Drops option keys the upstream patch no longer declares.
+
+    Returns True when the entry changed; an options map left empty is
+    removed so redundant default-true entries can be cleaned up after.
+    """
+    local_opts = entry.get("options")
+    if not isinstance(local_opts, dict):
+        return False
+    stale = [key for key in local_opts if key not in upstream_opts]
+    for key in stale:
+        del local_opts[key]
+    if not local_opts:
+        entry.pop("options", None)
+    if not stale:
+        return False
+    print(
+        f"    -> Removing obsolete option(s) {', '.join(sorted(stale))}"
+        f" from '{patch_name}' in '{app_key}'."
+    )
+    return True
+
+
+def _sync_app_patches(app_cfg, compatible_patches, patch_options, app_key):
+    """Sync options_override entries to match the upstream patches list.
+
+    Entries carry the upstream enabled state plus every option whose
+    default is false. Locally customized values are preserved and only
+    missing keys are filled in from upstream; stale keys and patches the
+    upstream no longer declares are pruned.
+    """
     changed = False
     options = app_cfg.get("options_override")
     if not isinstance(options, dict):
@@ -444,24 +498,67 @@ def _sync_app_patches(app_cfg, compatible_patches, app_key):
             print(f"    -> Removing obsolete patch '{patch_name}' from '{app_key}'.")
             del options[patch_name]
             changed = True
-        elif compatible_patches[patch_name] is True:
-            local_opt = options[patch_name]
-            if isinstance(local_opt, dict) and local_opt.get("enabled") is False:
-                continue
+            continue
+        entry = options[patch_name]
+        if not isinstance(entry, dict):
+            if compatible_patches[patch_name] is True:
+                print(f"    -> Removing malformed patch entry '{patch_name}' from '{app_key}'.")
+                del options[patch_name]
+                changed = True
+            continue
+        upstream_opts = patch_options.get(patch_name) or {}
+        if _prune_local_options(entry, upstream_opts, patch_name, app_key):
+            changed = True
+        if (
+            compatible_patches[patch_name] is True
+            and entry.get("enabled") is not False
+            and not entry.get("options")
+        ):
             print(f"    -> Removing redundant patch '{patch_name}' (now default: true upstream) from '{app_key}'.")
             del options[patch_name]
             changed = True
 
     for patch_name, default_val in sorted(compatible_patches.items()):
-        if patch_name not in options and default_val is False:
-            print(f"    -> Adding new patch '{patch_name}' to '{app_key}' (enabled: false).")
-            options[patch_name] = {"enabled": False}
+        upstream_opts = patch_options.get(patch_name) or {}
+        if patch_name not in options:
+            if default_val is False or upstream_opts:
+                entry = {"enabled": bool(default_val)}
+                if upstream_opts:
+                    entry["options"] = dict(upstream_opts)
+                state = "true" if entry["enabled"] else "false"
+                print(
+                    f"    -> Adding new patch '{patch_name}' to '{app_key}'"
+                    f" (enabled: {state})."
+                )
+                options[patch_name] = entry
+                changed = True
+            continue
+        local_opts = options[patch_name].get("options")
+        if not isinstance(local_opts, dict):
+            local_opts = {}
+        missing = {key: val for key, val in upstream_opts.items() if key not in local_opts}
+        if missing:
+            local_opts.update(missing)
+            options[patch_name]["options"] = local_opts
+            names = ", ".join(sorted(missing))
+            print(
+                f"    -> Recording option default(s) for '{patch_name}'"
+                f" in '{app_key}': {names}."
+            )
             changed = True
     return changed
 
 
 def _update_app_version(app_key, app_cfg, pkg_info):
-    """Update version data for an existing app config."""
+    """Update version data for an existing app config.
+
+    Stable mirrors the highest non-experimental upstream target and beta
+    mirrors the highest experimental one. A stale local stable skips the
+    whole update, beta included, so degraded upstream lists cannot
+    regress the config. Version codes mirror the upstream target 1:1:
+    architectures the upstream no longer publishes are dropped instead
+    of lingering with stale codes merged in from older releases.
+    """
     changed = False
     latest = pkg_info.get("latest_target")
     if not latest:
@@ -486,6 +583,16 @@ def _update_app_version(app_key, app_cfg, pkg_info):
         app_cfg["stable"] = target_list
         changed = True
 
+    latest_experimental = pkg_info.get("latest_experimental") or {}
+    experimental_version = str(latest_experimental.get("version") or "").strip()
+    if experimental_version and app_cfg.get("beta") != [experimental_version]:
+        print(
+            f"    -> Updating beta version of '{app_key}' to"
+            f" {experimental_version} (highest upstream experimental)."
+        )
+        app_cfg["beta"] = [experimental_version]
+        changed = True
+
     if app_cfg.get("preserve_version_codes"):
         print(f"    -> Preserving local version_codes for '{app_key}' (flag is active).")
     else:
@@ -497,11 +604,15 @@ def _update_app_version(app_key, app_cfg, pkg_info):
             changed = True
 
         elif new_vcodes:
-            existing = app_cfg.get("version_codes") or {}
-            merged = {**existing, **new_vcodes}
-            if merged != existing:
-                print(f"    -> Updating/Merging version codes for '{app_key}'.")
-                app_cfg["version_codes"] = merged
+            # Mirror the upstream code set 1:1 so architectures the
+            # upstream dropped (e.g. a removed x86_64) do not linger
+            # with stale codes from older releases.
+            if app_cfg.get("version_codes") != new_vcodes:
+                print(
+                    f"    -> Syncing version codes of '{app_key}'"
+                    " 1:1 with upstream."
+                )
+                app_cfg["version_codes"] = dict(new_vcodes)
                 changed = True
 
     apk_type = (pkg_info.get("apk_file_type") or "").upper()
@@ -543,15 +654,23 @@ def _build_new_app_config(pkg_info):
     latest = pkg_info.get("latest_target") or {}
     version = str(latest.get("version") or "").strip()
     vcodes = _normalize_vcodes(latest.get("versionCodes"))
-    options = {
-        name: {"enabled": False}
-        for name, val in sorted(pkg_info["patches"].items()) if val is False
-    }
+    experimental = pkg_info.get("latest_experimental") or {}
+    experimental_version = str(experimental.get("version") or "").strip()
+    patch_options = pkg_info.get("patch_options") or {}
+    options = {}
+    for name, val in sorted(pkg_info["patches"].items()):
+        upstream_opts = patch_options.get(name) or {}
+        if val is not False and not upstream_opts:
+            continue
+        entry = {"enabled": bool(val)}
+        if upstream_opts:
+            entry["options"] = dict(upstream_opts)
+        options[name] = entry
     config = {
         "package": pkg_info["package"],
         "search_term": pkg_info.get("name") or pkg_info["package"],
         "stable": [version] if version else ["Any"],
-        "beta": [],
+        "beta": [experimental_version] if experimental_version else [],
         "strip": True,
         "archive_id": "ZeNiX",
         "options_override": options,
@@ -617,7 +736,12 @@ def _process_existing_apps(
         pkg_info = stable_pkgs[pkg_name]
         if _update_app_version(app_key, app_cfg, pkg_info):
             changed = True
-        if not skip_patches and _sync_app_patches(app_cfg, pkg_info["patches"], app_key):
+        if not skip_patches and _sync_app_patches(
+            app_cfg,
+            pkg_info["patches"],
+            pkg_info.get("patch_options") or {},
+            app_key,
+        ):
             changed = True
 
     added_apps = {}
