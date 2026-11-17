@@ -23,7 +23,16 @@
                         "enabled": false
                     },
                     "Remove Unused AI & VPN": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "removeVpnLibrary": false
+                        }
+                    },
+                    "Clean New Tab": {
+                        "enabled": true,
+                        "options": {
+                            "hideTopSites": false
+                        }
                     }
                 }
             },
@@ -44,7 +53,14 @@
                         "enabled": false
                     },
                     "Remove Permissions": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "stripContacts": false,
+                            "stripAudio": false,
+                            "stripMedia": false,
+                            "stripUserDictionary": false,
+                            "stripCrossProfile": false
+                        }
                     },
                     "Stop Background Sync": {
                         "enabled": false
@@ -87,7 +103,12 @@
                         "enabled": false
                     },
                     "Declutter Video Interface": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "hideSaveButton": false,
+                            "hideMusicCover": false,
+                            "hideFullscreenButton": false
+                        }
                     },
                     "Disable History Recording": {
                         "enabled": false
@@ -120,7 +141,19 @@
                         "enabled": false
                     },
                     "Strip Sensitive Permissions": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "stripNotifications": false,
+                            "stripCamera": false,
+                            "stripMicrophone": false,
+                            "stripStorageMedia": false,
+                            "stripForegroundServices": false,
+                            "stripSystemAlertWindow": false,
+                            "stripWakeLock": false,
+                            "stripMiscHardware": false,
+                            "stripPushDelivery": false,
+                            "stripBilling": false
+                        }
                     },
                     "Use System Font": {
                         "enabled": false
@@ -136,6 +169,68 @@
                     },
                     "Hide AI-Generated Content": {
                         "enabled": false
+                    },
+                    "Block Popups & Prompts": {
+                        "enabled": true,
+                        "options": {
+                            "suppressPostDownloadDialog": false,
+                            "skipContentWarnings": false
+                        }
+                    },
+                    "Comment Customizer": {
+                        "enabled": true,
+                        "options": {
+                            "showPollResults": false,
+                            "autoTranslate": false
+                        }
+                    },
+                    "Custom Share Sheet": {
+                        "enabled": true,
+                        "options": {
+                            "hideRepost": false,
+                            "hideQrCode": false,
+                            "hideCopyLink": false,
+                            "hideSystemShare": false,
+                            "hideFriendsRow": false,
+                            "hideCreateGroup": false,
+                            "hideAddToStory": false,
+                            "hideCreateSticker": false,
+                            "hideDuet": false,
+                            "hideStitch": false,
+                            "hideUseThisEffect": false,
+                            "hidePip": false,
+                            "hideClearDisplay": false,
+                            "hideListenAudio": false,
+                            "hideWallpaperAndGif": false,
+                            "hideNotInterested": false,
+                            "hideReport": false
+                        }
+                    },
+                    "Customize Search": {
+                        "enabled": true,
+                        "options": {
+                            "enableLiveSearch": false
+                        }
+                    },
+                    "Declutter Navigation Bar": {
+                        "enabled": true,
+                        "options": {
+                            "hideTopLiveEntrance": false,
+                            "hidePublishTab": false
+                        }
+                    },
+                    "Download Without Watermark": {
+                        "enabled": true,
+                        "options": {
+                            "suppressPostDownloadDialog": false
+                        }
+                    },
+                    "Feed Content & Bloat Filter": {
+                        "enabled": true,
+                        "options": {
+                            "blockLiveStreams": false,
+                            "hidePhotoPosts": false
+                        }
                     }
                 }
             },
@@ -174,10 +269,36 @@
                         "enabled": false
                     },
                     "Strip Sensitive Permissions": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "stripNotifications": false,
+                            "stripCamera": false,
+                            "stripMicrophone": false,
+                            "stripStorageMedia": false,
+                            "stripForegroundServices": false,
+                            "stripSystemAlertWindow": false,
+                            "stripWakeLock": false,
+                            "stripMiscHardware": false,
+                            "stripPushDelivery": false,
+                            "stripBilling": false
+                        }
                     },
                     "Hide AI-Generated Content": {
                         "enabled": false
+                    },
+                    "Block Popups & Prompts": {
+                        "enabled": true,
+                        "options": {
+                            "suppressPostDownloadDialog": false,
+                            "skipContentWarnings": false
+                        }
+                    },
+                    "Feed Content & Bloat Filter": {
+                        "enabled": true,
+                        "options": {
+                            "blockLiveStreams": false,
+                            "hidePhotoPosts": false
+                        }
                     }
                 },
                 "force_bundle": true

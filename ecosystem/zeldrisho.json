@@ -37,10 +37,7 @@
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "261002903",
-                    "armeabi-v7a": "261002903",
-                    "x86_64": "261002903",
-                    "x86": "261002903"
+                    "arm64-v8a": "261002903"
                 },
                 "strip": true,
                 "force_bundle": true,

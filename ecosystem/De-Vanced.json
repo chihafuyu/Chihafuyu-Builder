@@ -271,7 +271,16 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Hide distractions": {
+                        "enabled": true,
+                        "options": {
+                            "joinChallenge": false,
+                            "joinClub": false,
+                            "activityLookback": false
+                        }
+                    }
+                }
             },
             "viber": {
                 "package": "com.viber.voip",

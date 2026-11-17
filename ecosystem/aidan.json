@@ -12,7 +12,11 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Unlock Developer Tools": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "startWithDebugMessages": false,
+                            "startInDemoMode": false
+                        }
                     }
                 },
                 "force_bundle": true
@@ -28,10 +32,19 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Remove Useless/Promotional Items": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "removeOpenInAcrobat": false
+                        }
                     },
                     "Use System Font": {
                         "enabled": false
+                    },
+                    "Unlock Premium": {
+                        "enabled": true,
+                        "options": {
+                            "unlockCloudTools": false
+                        }
                     }
                 },
                 "force_bundle": true
@@ -51,6 +64,12 @@
                     },
                     "Hide Broken Tracking Map": {
                         "enabled": false
+                    },
+                    "OpenStreetMap Drop-in Replacement": {
+                        "enabled": true,
+                        "options": {
+                            "addZoomButtons": false
+                        }
                     }
                 }
             },
@@ -105,7 +124,23 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Enable Developer Tools and Feature Flags": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "enableAchievementDebugTap": false,
+                            "enableShareablesInApp": false,
+                            "enableCollaborativeLists": false,
+                            "enableLodestones": false,
+                            "enableEditLogDate": false,
+                            "enableBetterEventsFilter": false,
+                            "enableSelectCacheTypes": false,
+                            "enableDiagnosticFlags": false,
+                            "forceMapTrayEnabled": false,
+                            "forceHideLastLogCount": false,
+                            "forceShowDowntimeBanner": false,
+                            "forceDisableMapAutoUpdate": false,
+                            "forceSendDiagnosticLogs": false,
+                            "forceLinearCalloutsEnabled": false
+                        }
                     },
                     "Unlock Experimental Features": {
                         "enabled": false
@@ -136,7 +171,10 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Unlock Hidden Features": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "enableDeveloperSettings": false
+                        }
                     }
                 },
                 "force_bundle": true
@@ -165,6 +203,19 @@
                     },
                     "Unlock Receipt Scanner": {
                         "enabled": false
+                    },
+                    "Remove Promos & Giveaways": {
+                        "enabled": true,
+                        "options": {
+                            "blockTrivia": false,
+                            "blockNotificationPrompts": false
+                        }
+                    },
+                    "Replace AI Discover with Products": {
+                        "enabled": true,
+                        "options": {
+                            "removeProductsTab": false
+                        }
                     }
                 },
                 "force_bundle": true

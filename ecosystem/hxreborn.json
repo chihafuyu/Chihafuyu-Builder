@@ -543,7 +543,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Hide Home tab": {
+                        "enabled": false
+                    },
+                    "Remove Home sections": {
+                        "enabled": false
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "7171",
                     "armeabi-v7a": "7171",
@@ -874,17 +881,17 @@
                 "package": "flar2.devcheck",
                 "search_term": "DevCheck",
                 "stable": [
-                    "6.62"
+                    "6.63"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "662",
-                    "armeabi-v7a": "662",
-                    "x86_64": "662",
-                    "x86": "662"
+                    "arm64-v8a": "663",
+                    "armeabi-v7a": "663",
+                    "x86_64": "663",
+                    "x86": "663"
                 },
                 "force_bundle": true
             },
@@ -2018,7 +2025,14 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Hide navigation buttons": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "hideFeed": false,
+                            "hideLibrary": false,
+                            "hideQuip": false,
+                            "hideCommunity": false,
+                            "hideNotifications": false
+                        }
                     }
                 },
                 "version_codes": {
@@ -2822,6 +2836,15 @@
                 "options_override": {
                     "Clone app": {
                         "enabled": false
+                    },
+                    "Hide home shortcuts": {
+                        "enabled": true,
+                        "options": {
+                            "hideCreativeGeneration": false,
+                            "hideSignature": false,
+                            "hidePdfEncryption": false,
+                            "hideAddWatermark": false
+                        }
                     }
                 },
                 "version_codes": {
@@ -3028,6 +3051,12 @@
                     },
                     "Remove locked Plus items": {
                         "enabled": false
+                    },
+                    "Hide navigation buttons": {
+                        "enabled": true,
+                        "options": {
+                            "hideCalls": false
+                        }
                     }
                 },
                 "version_codes": {

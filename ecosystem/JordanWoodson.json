@@ -53,16 +53,29 @@
                         "enabled": false
                     },
                     "Default video quality": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "live": false
+                        }
                     },
                     "Disable autoplay": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "nextVideo": false,
+                            "feedPreviews": false
+                        }
                     },
                     "Hide Shorts": {
                         "enabled": false
                     },
                     "Hide tipping and Rants": {
                         "enabled": false
+                    },
+                    "Disable analytics": {
+                        "enabled": true,
+                        "options": {
+                            "keepWatchProgress": false
+                        }
                     }
                 }
             },

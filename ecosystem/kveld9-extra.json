@@ -16,7 +16,10 @@
                         "enabled": false
                     },
                     "Native Bloat Slimmer": {
-                        "enabled": false
+                        "enabled": false,
+                        "options": {
+                            "trimSpeechEngines": false
+                        }
                     },
                     "Redirect API to v2 Boot": {
                         "enabled": false
@@ -83,7 +86,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Fix Google Maps": {
+                        "enabled": true,
+                        "options": {
+                            "forceGoogleMaps": false
+                        }
+                    }
+                },
                 "force_bundle": true
             },
             "nokoprint": {
@@ -151,6 +161,12 @@
                 "options_override": {
                     "Background Slimmer": {
                         "enabled": false
+                    },
+                    "Block Telemetry & Trackers": {
+                        "enabled": true,
+                        "options": {
+                            "blockPaymentsTelemetry": false
+                        }
                     }
                 },
                 "force_bundle": true

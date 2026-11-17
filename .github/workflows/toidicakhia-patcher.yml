@@ -29,16 +29,6 @@ name: 🐉 Toidicakhia Ecosystem Patcher
         required: true
         type: boolean
         default: true
-      app_remote_desktop_manager:
-        description: 'Patch remote-desktop-manager'
-        required: true
-        type: boolean
-        default: true
-      app_terabox:
-        description: 'Patch terabox'
-        required: true
-        type: boolean
-        default: false
       app_universal_copy:
         description: 'Patch universal-copy'
         required: true
@@ -49,6 +39,11 @@ name: 🐉 Toidicakhia Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_wedj:
+        description: 'Patch wedj'
+        required: true
+        type: boolean
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
@@ -134,10 +129,9 @@ jobs:
       APP_HTTP_SNIFFER: ${{ inputs.app_http_sniffer }}
       APP_LOCKET_WIDGET: ${{ inputs.app_locket_widget }}
       APP_NETMONSTER: ${{ inputs.app_netmonster }}
-      APP_REMOTE_DESKTOP_MANAGER: ${{ inputs.app_remote_desktop_manager }}
-      APP_TERABOX: ${{ inputs.app_terabox }}
       APP_UNIVERSAL_COPY: ${{ inputs.app_universal_copy }}
       APP_VTVGO: ${{ inputs.app_vtvgo }}
+      APP_WEDJ: ${{ inputs.app_wedj }}
     steps:
       - id: build-list
         run: |
@@ -158,17 +152,14 @@ jobs:
           if [[ "$APP_NETMONSTER" == "true" ]]; then
             LIST="$LIST,netmonster"
           fi
-          if [[ "$APP_REMOTE_DESKTOP_MANAGER" == "true" ]]; then
-            LIST="$LIST,remote-desktop-manager"
-          fi
-          if [[ "$APP_TERABOX" == "true" ]]; then
-            LIST="$LIST,terabox"
-          fi
           if [[ "$APP_UNIVERSAL_COPY" == "true" ]]; then
             LIST="$LIST,universal-copy"
           fi
           if [[ "$APP_VTVGO" == "true" ]]; then
             LIST="$LIST,vtvgo"
+          fi
+          if [[ "$APP_WEDJ" == "true" ]]; then
+            LIST="$LIST,wedj"
           fi
           LIST="${LIST#,}"
           if [[ -z "$LIST" ]]; then

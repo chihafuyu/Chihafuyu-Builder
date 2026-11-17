@@ -32,6 +32,12 @@
                     },
                     "View stories anonymously": {
                         "enabled": false
+                    },
+                    "Theme": {
+                        "enabled": true,
+                        "options": {
+                            "amoled": false
+                        }
                     }
                 },
                 "force_bundle": true
@@ -55,6 +61,12 @@
                     },
                     "Export all activities": {
                         "enabled": false
+                    },
+                    "Handle custom twitter links": {
+                        "enabled": true,
+                        "options": {
+                            "unofficialInstanceLinks": false
+                        }
                     }
                 },
                 "force_bundle": true

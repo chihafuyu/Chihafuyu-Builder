@@ -18,7 +18,9 @@
                 "stable": [
                     "1.7.0.2322"
                 ],
-                "beta": [],
+                "beta": [
+                    "1.7.0"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -29,7 +31,9 @@
                 "stable": [
                     "26.5.0"
                 ],
-                "beta": [],
+                "beta": [
+                    "26.4.1"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -73,7 +77,9 @@
                 "stable": [
                     "1.50.2"
                 ],
-                "beta": [],
+                "beta": [
+                    "1.50.1"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -128,7 +134,9 @@
                 "stable": [
                     "7.0.0"
                 ],
-                "beta": [],
+                "beta": [
+                    "6.9.3"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -139,7 +147,9 @@
                 "stable": [
                     "2.0.70"
                 ],
-                "beta": [],
+                "beta": [
+                    "2.0.61"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -161,7 +171,9 @@
                 "stable": [
                     "3.73.235"
                 ],
-                "beta": [],
+                "beta": [
+                    "3.73.0"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
@@ -187,7 +199,9 @@
                 "stable": [
                     "1.36.5"
                 ],
-                "beta": [],
+                "beta": [
+                    "1.36.4"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -244,10 +258,19 @@
                 "stable": [
                     "2.26.10"
                 ],
-                "beta": [],
+                "beta": [
+                    "2.26.9"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Unlock Premium (Experimental)": {
+                        "enabled": true,
+                        "options": {
+                            "aggressive": false
+                        }
+                    }
+                }
             },
             "music-pitcher-radio": {
                 "package": "com.appums.music_pitcher_radio",
@@ -288,7 +311,9 @@
                 "stable": [
                     "1.81.0"
                 ],
-                "beta": [],
+                "beta": [
+                    "1.87.0"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -347,7 +372,9 @@
                 "stable": [
                     "4.2.60"
                 ],
-                "beta": [],
+                "beta": [
+                    "4.2.00"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -367,7 +394,7 @@
                 "package": "com.spaceship.screen.textcopy",
                 "search_term": "Screen Translate",
                 "stable": [
-                    "v7.5.00112"
+                    "7.5.00112"
                 ],
                 "beta": [],
                 "strip": true,
@@ -490,7 +517,9 @@
                 "stable": [
                     "2.26.43.76"
                 ],
-                "beta": [],
+                "beta": [
+                    "2.26.43.74"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
@@ -499,6 +528,12 @@
                     },
                     "Typing indicator": {
                         "enabled": false
+                    },
+                    "Remove Meta AI": {
+                        "enabled": true,
+                        "options": {
+                            "aggressive": false
+                        }
                     }
                 }
             }

@@ -235,7 +235,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Price history charts": {
+                        "enabled": true,
+                        "options": {
+                            "amazonCccHideZero": false
+                        }
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "1243250306",
                     "armeabi-v7a": "1243250306",
@@ -253,7 +260,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Price history charts": {
+                        "enabled": true,
+                        "options": {
+                            "amazonCccHideZero": false
+                        }
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "1243250306",
                     "armeabi-v7a": "1243250306",
