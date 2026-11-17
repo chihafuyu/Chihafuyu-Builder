@@ -14,6 +14,11 @@ name: 🔗 Lokesh-Sparrow Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_mx_player_pro:
+        description: 'Patch mx-player-pro'
+        required: true
+        type: boolean
+        default: true
       app_splitwise:
         description: 'Patch splitwise'
         required: true
@@ -106,6 +111,7 @@ jobs:
     env:
       APP_DOC_SCANNER: ${{ inputs.app_doc_scanner }}
       APP_LINKEDIN: ${{ inputs.app_linkedin }}
+      APP_MX_PLAYER_PRO: ${{ inputs.app_mx_player_pro }}
       APP_SPLITWISE: ${{ inputs.app_splitwise }}
       APP_TRUECALLER: ${{ inputs.app_truecaller }}
     steps:
@@ -118,6 +124,9 @@ jobs:
           fi
           if [[ "$APP_LINKEDIN" == "true" ]]; then
             LIST="$LIST,linkedin"
+          fi
+          if [[ "$APP_MX_PLAYER_PRO" == "true" ]]; then
+            LIST="$LIST,mx-player-pro"
           fi
           if [[ "$APP_SPLITWISE" == "true" ]]; then
             LIST="$LIST,splitwise"
