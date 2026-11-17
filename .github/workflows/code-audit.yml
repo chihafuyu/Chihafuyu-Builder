@@ -41,7 +41,8 @@ jobs:
           PRE_COMMANDS: >-
             [{"command":
             "pip install -r
-            $GITHUB_WORKSPACE/requirements.txt",
+            $GITHUB_WORKSPACE/requirements.txt
+            -r $GITHUB_WORKSPACE/requirements-dev.txt",
             "venv": "pylint",
             "run_before_linters": true}]
 
