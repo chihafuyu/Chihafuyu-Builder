@@ -165,6 +165,162 @@ def test_update_app_version_syncs_universal_from_list():
     assert app["version_codes"] == {"universal": "300"}
 
 
+def test_collect_patch_options_picks_boolean_false_defaults():
+    """Only options whose default is literally false are recorded."""
+    patch = {
+        "options": [
+            {"key": "hideShortsWidget", "default": False},
+            {"key": "enabledOpt", "default": True},
+            {"key": "strOpt", "default": "in-app"},
+            {"key": "nullOpt", "default": None},
+            {"key": "", "default": False},
+            {"default": False},
+            "junk",
+        ]
+    }
+    assert AUTO_CONFIG._collect_patch_options(patch) == {"hideShortsWidget": False}
+
+
+def test_extract_pkg_data_flags_experimental_and_options():
+    """Experimental targets and false option defaults surface per package."""
+    data = {"patches": [{
+        "name": "Hide Shorts components",
+        "default": True,
+        "compatiblePackages": [{
+            "packageName": "com.google.android.youtube",
+            "targets": [
+                {"version": "21.45.82", "isExperimental": True},
+                {"version": "21.30.216", "isExperimental": False},
+            ],
+        }],
+        "options": [
+            {"key": "hideShortsWidget", "default": False},
+            {"key": "other", "default": True},
+        ],
+    }]}
+    pkg_data = AUTO_CONFIG._extract_pkg_data(data)
+    pkg = pkg_data["com.google.android.youtube"]
+    assert pkg["latest_target"]["version"] == "21.30.216"
+    assert pkg["latest_experimental"]["version"] == "21.45.82"
+    assert pkg["patch_options"] == {
+        "Hide Shorts components": {"hideShortsWidget": False}
+    }
+    assert pkg["patches"] == {"Hide Shorts components": True}
+
+
+def test_update_app_version_mirrors_highest_experimental_beta():
+    """Beta mirrors the highest upstream experimental version."""
+    app = {"stable": ["21.30.216"], "beta": ["21.46.520"]}
+    pkg = {
+        "latest_target": {"version": "21.30.216"},
+        "latest_experimental": {"version": "21.45.82"},
+    }
+    assert AUTO_CONFIG._update_app_version("youtube", app, pkg) is True
+    assert app["beta"] == ["21.45.82"]
+
+
+def test_update_app_version_leaves_beta_without_experimental():
+    """Ecosystems without experimental targets keep their beta list intact."""
+    app = {"stable": ["1.0.0"], "beta": []}
+    pkg = {"latest_target": {"version": "1.1.0"}}
+    assert AUTO_CONFIG._update_app_version("app", app, pkg) is True
+    assert not app["beta"]
+
+
+def test_sync_app_patches_records_false_option_defaults():
+    """Default-true patches with false options gain recorded entries."""
+    app = {"options_override": {}}
+    patches = {"Hide Shorts components": True, "Network proxy": False}
+    patch_options = {"Hide Shorts components": {"hideShortsWidget": False}}
+    changed = AUTO_CONFIG._sync_app_patches(app, patches, patch_options, "youtube")
+    assert changed is True
+    assert app["options_override"]["Hide Shorts components"] == {
+        "enabled": True,
+        "options": {"hideShortsWidget": False},
+    }
+    assert app["options_override"]["Network proxy"] == {"enabled": False}
+
+
+def test_sync_app_patches_preserves_local_option_values():
+    """Existing option values are kept; only missing keys are filled."""
+    app = {"options_override": {
+        "Hide Shorts components": {
+            "enabled": True,
+            "options": {"hideShortsWidget": True},
+        },
+    }}
+    patches = {"Hide Shorts components": True}
+    patch_options = {
+        "Hide Shorts components": {
+            "hideShortsWidget": False,
+            "hideShortsAppShortcut": False,
+        },
+    }
+    changed = AUTO_CONFIG._sync_app_patches(app, patches, patch_options, "youtube")
+    assert changed is True
+    assert app["options_override"]["Hide Shorts components"]["options"] == {
+        "hideShortsWidget": True,
+        "hideShortsAppShortcut": False,
+    }
+
+
+def test_sync_app_patches_prunes_stale_option_keys():
+    """Option keys dropped upstream are removed; empty entries follow."""
+    app = {"options_override": {
+        "Widget patch": {"enabled": True, "options": {"gone": False}},
+    }}
+    patches = {"Widget patch": True}
+    changed = AUTO_CONFIG._sync_app_patches(app, patches, {}, "app")
+    assert changed is True
+    assert "Widget patch" not in app["options_override"]
+
+
+def test_sync_app_patches_keeps_explicit_disable():
+    """A locally disabled default-true patch is never pruned as redundant."""
+    app = {"options_override": {"Widget patch": {"enabled": False}}}
+    patches = {"Widget patch": True}
+    changed = AUTO_CONFIG._sync_app_patches(app, patches, {}, "app")
+    assert changed is False
+    assert app["options_override"]["Widget patch"] == {"enabled": False}
+
+
+def test_sync_app_patches_removes_obsolete_and_merges_options():
+    """Obsolete patches vanish; default-false patches gain upstream options."""
+    app = {"options_override": {
+        "Old patch": {"enabled": False},
+        "Install next to Instagram": {"enabled": False},
+    }}
+    patches = {"Install next to Instagram": False}
+    patch_options = {"Install next to Instagram": {"markIcon": False}}
+    changed = AUTO_CONFIG._sync_app_patches(app, patches, patch_options, "instagram")
+    assert changed is True
+    assert "Old patch" not in app["options_override"]
+    assert app["options_override"]["Install next to Instagram"] == {
+        "enabled": False,
+        "options": {"markIcon": False},
+    }
+
+
+def test_build_new_app_config_prefills_beta_and_options():
+    """New app configs prefill beta and record false option defaults."""
+    pkg = {
+        "package": "com.example.app",
+        "name": "Example",
+        "latest_target": {"version": "1.0.0"},
+        "latest_experimental": {"version": "2.0.0-beta.1"},
+        "patches": {"Premium unlock": False, "Widget toggle": True},
+        "patch_options": {"Widget toggle": {"hideWidget": False}},
+        "apk_file_type": "APK",
+    }
+    config = AUTO_CONFIG._build_new_app_config(pkg)
+    assert config["stable"] == ["1.0.0"]
+    assert config["beta"] == ["2.0.0-beta.1"]
+    assert config["options_override"] == {
+        "Premium unlock": {"enabled": False},
+        "Widget toggle": {"enabled": True, "options": {"hideWidget": False}},
+    }
+
+
 @pytest.mark.parametrize(
     "text,target,expected",
     [
