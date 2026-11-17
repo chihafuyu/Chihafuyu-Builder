@@ -397,12 +397,13 @@ jobs:
             ARTIFACT_DIGEST="$(gh api "$ARTIFACT_META" \
               --jq '.digest // ""' | sed 's/^sha256://')"
 
-            # GitHub's artifact endpoint always returns a transport ZIP that
-            # wraps the uploaded files. Only that wrapper is unwrapped here;
-            # the patches.mpp member is moved out byte-for-byte and must
-            # never be extracted itself. If the payload is not a ZIP at all,
-            # it is treated as the raw bundle and still digest-checked.
-            echo "[INFO] Downloading artifact $ARTIFACT_ID as a ZIP archive..."
+            # The artifact endpoint serves either a transport ZIP wrapping
+            # the uploaded files or the raw uploaded stream itself (a
+            # Morphe bundle is zip-format yet never nests an .mpp member).
+            # Only a payload holding an .mpp member is unwrapped here; the
+            # patches.mpp file is moved out byte-for-byte and must never be
+            # extracted itself. Either outcome is digest-verified.
+            echo "[INFO] Downloading artifact $ARTIFACT_ID..."
             ARTIFACT_DIR=".artifact_download"
             rm -rf "$ARTIFACT_DIR"
             mkdir -p "$ARTIFACT_DIR"
@@ -433,11 +434,14 @@ jobs:
               fi
               mv -- "${MPPS[${#MPPS[@]}-1]}" patches.mpp
               verify_digest patches.mpp
-            elif unzip -l "$ARTIFACT_ZIP" >/dev/null 2>&1; then
-              echo "::error::Artifact $ARTIFACT_ID has no .mpp member"
-              exit 1
             else
-              echo "[INFO] Payload is not a ZIP wrapper; using it directly."
+              # Fallback: the endpoint served the raw artifact stream. A
+              # Morphe bundle is zip-format with no .mpp member inside,
+              # so the payload is used directly as patches.mpp.
+              # verify_digest rejects anything but the exact uploaded
+              # bundle, so a wrong payload still fails the run.
+              echo "[INFO] No .mpp member inside the payload; using it" \
+                "as the raw patch bundle."
               mv -- "$ARTIFACT_ZIP" patches.mpp
               verify_digest patches.mpp
             fi
