@@ -3163,24 +3163,6 @@
                 },
                 "force_bundle": true
             },
-            "social-gamebox": {
-                "package": "com.app.social_gamebox",
-                "search_term": "Social Gamebox",
-                "stable": [
-                    "1.4.3"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "version_codes": {
-                    "arm64-v8a": "1027",
-                    "armeabi-v7a": "1027",
-                    "x86_64": "1027",
-                    "x86": "1027"
-                },
-                "force_bundle": true
-            },
             "sociallite": {
                 "package": "com.sociallite.android",
                 "search_term": "SocialLite",

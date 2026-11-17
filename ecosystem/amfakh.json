@@ -255,7 +255,7 @@
                 "package": "com.tuya.smart",
                 "search_term": "Tuya Smart",
                 "stable": [
-                    "7.12.6"
+                    "7.13.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -266,10 +266,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "872",
-                    "armeabi-v7a": "872",
-                    "x86_64": "872",
-                    "x86": "872"
+                    "arm64-v8a": "876",
+                    "armeabi-v7a": "876",
+                    "x86_64": "876",
+                    "x86": "876"
                 },
                 "force_bundle": true
             },
