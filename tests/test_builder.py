@@ -95,6 +95,76 @@ def test_normalize_vcodes_ignores_non_decimal_digits():
     }
 
 
+def test_update_app_version_syncs_codes_one_to_one():
+    """Upstream code sets replace local ones, dropping removed arches."""
+    app = {
+        "stable": ["454.0.0.54.77"],
+        "version_codes": {
+            "arm64-v8a": "386014758",
+            "armeabi-v7a": "386014757",
+            "x86": "386014759",
+            "x86_64": "386014760",
+        },
+    }
+    pkg = {"latest_target": {
+        "version": "456.0.0.53.78",
+        "versionCodes": {
+            "ARM64_V8A": 386214574,
+            "ARMEABI_V7A": 386214562,
+            "X86": 386214575,
+        },
+    }}
+    assert AUTO_CONFIG._update_app_version("instagram", app, pkg) is True
+    assert app["stable"] == ["456.0.0.53.78"]
+    assert app["version_codes"] == {
+        "arm64-v8a": "386214574",
+        "armeabi-v7a": "386214562",
+        "x86": "386214575",
+    }
+
+
+def test_update_app_version_keeps_codes_when_upstream_silent():
+    """Upstream without a versionCodes field leaves local codes untouched."""
+    app = {"stable": ["1.0.0"], "version_codes": {"arm64-v8a": "100"}}
+    pkg = {"latest_target": {"version": "1.1.0"}}
+    assert AUTO_CONFIG._update_app_version("app", app, pkg) is True
+    assert app["version_codes"] == {"arm64-v8a": "100"}
+
+
+def test_update_app_version_clears_codes_on_explicit_null():
+    """An upstream null versionCodes clears stale local codes."""
+    app = {"stable": ["1.0.0"], "version_codes": {"arm64-v8a": "100"}}
+    pkg = {"latest_target": {"version": "1.1.0", "versionCodes": None}}
+    assert AUTO_CONFIG._update_app_version("app", app, pkg) is True
+    assert "version_codes" not in app
+
+
+def test_update_app_version_preserves_flagged_codes():
+    """preserve_version_codes keeps local codes regardless of upstream."""
+    app = {
+        "stable": ["1.0.0"],
+        "preserve_version_codes": True,
+        "version_codes": {"arm64-v8a": "100"},
+    }
+    pkg = {"latest_target": {
+        "version": "1.1.0",
+        "versionCodes": {"ARM64_V8A": "200"},
+    }}
+    assert AUTO_CONFIG._update_app_version("app", app, pkg) is True
+    assert app["version_codes"] == {"arm64-v8a": "100"}
+
+
+def test_update_app_version_syncs_universal_from_list():
+    """List-style upstream codes collapse to the universal key 1:1."""
+    app = {"stable": ["1.0.0"], "version_codes": {"arm64-v8a": "100"}}
+    pkg = {"latest_target": {
+        "version": "1.1.0",
+        "versionCodes": ["300", "200"],
+    }}
+    assert AUTO_CONFIG._update_app_version("app", app, pkg) is True
+    assert app["version_codes"] == {"universal": "300"}
+
+
 @pytest.mark.parametrize(
     "text,target,expected",
     [
