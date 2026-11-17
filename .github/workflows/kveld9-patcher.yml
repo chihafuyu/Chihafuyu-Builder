@@ -13,17 +13,17 @@ name: 🦁 Kveld9 Ecosystem Patcher
         description: 'Patch tiktok-global'
         required: true
         type: boolean
-        default: false
+        default: true
       app_gboard_lite:
         description: 'Patch gboard-lite'
         required: true
         type: boolean
-        default: true
+        default: false
       app_tiktok_lite:
         description: 'Patch tiktok-lite'
         required: true
         type: boolean
-        default: true
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true

@@ -18,7 +18,7 @@ name: 🏪 Mlkem Ecosystem Patcher
         description: 'Patch walmart-canada'
         required: true
         type: boolean
-        default: true
+        default: false
       app_wongnai:
         description: 'Patch wongnai'
         required: true

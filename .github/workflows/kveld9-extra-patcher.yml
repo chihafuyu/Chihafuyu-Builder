@@ -18,42 +18,42 @@ name: 🛠️ Kveld9-Extra Ecosystem Patcher
         description: 'Patch nokoprint'
         required: true
         type: boolean
-        default: false
+        default: true
       app_sd_maid_se:
         description: 'Patch sd-maid-se'
         required: true
         type: boolean
-        default: false
+        default: true
       app_instagram:
         description: 'Patch instagram'
         required: true
         type: boolean
-        default: true
+        default: false
       app_x:
         description: 'Patch x'
         required: true
         type: boolean
-        default: true
+        default: false
       app_moovit:
         description: 'Patch moovit'
         required: true
         type: boolean
-        default: true
+        default: false
       app_sube:
         description: 'Patch sube'
         required: true
         type: boolean
-        default: true
+        default: false
       app_xiaomi_earbuds:
         description: 'Patch xiaomi-earbuds'
         required: true
         type: boolean
-        default: true
+        default: false
       app_ibispaint_x:
         description: 'Patch ibispaint-x'
         required: true
         type: boolean
-        default: true
+        default: false
       architecture:
         description: 'Target Architecture'
         required: true

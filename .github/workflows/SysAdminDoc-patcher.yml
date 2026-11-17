@@ -53,7 +53,7 @@ name: 🧰 SysAdminDoc Ecosystem Patcher
         description: 'Patch tumblr'
         required: true
         type: boolean
-        default: false
+        default: true
       architecture:
         description: 'Target Architecture'
         required: true
