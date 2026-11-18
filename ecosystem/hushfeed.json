@@ -127,7 +127,8 @@
                             "save_story_pick": false,
                             "pick_grid_videos": false,
                             "share_after_save": false,
-                            "video_buttons_over_rail": false
+                            "video_buttons_over_rail": false,
+                            "save_episodes_button": false
                         }
                     },
                     "Allow Duet and Stitch": {
@@ -1037,6 +1038,24 @@
                         "enabled": true,
                         "options": {
                             "enable_non_personalized_search": false
+                        }
+                    },
+                    "Group likes per comment": {
+                        "enabled": true,
+                        "options": {
+                            "bundle_activity_likes": false
+                        }
+                    },
+                    "Play original audio": {
+                        "enabled": true,
+                        "options": {
+                            "original_audio": false
+                        }
+                    },
+                    "Split activity list": {
+                        "enabled": true,
+                        "options": {
+                            "split_activity_list": false
                         }
                     }
                 },

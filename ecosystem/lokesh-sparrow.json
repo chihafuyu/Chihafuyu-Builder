@@ -44,6 +44,17 @@
                     }
                 }
             },
+            "mx-player-pro": {
+                "package": "com.mxtech.videoplayer.pro",
+                "search_term": "MX Player Pro",
+                "stable": [
+                    "1.93.4"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "splitwise": {
                 "package": "com.Splitwise.SplitwiseMobile",
                 "search_term": "Splitwise",

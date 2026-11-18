@@ -728,7 +728,7 @@
                 "package": "org.telegram.messenger",
                 "search_term": "Telegram",
                 "stable": [
-                    "13.2.1"
+                    "13.2.2"
                 ],
                 "beta": [],
                 "strip": true,
@@ -748,18 +748,18 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "72911"
+                    "arm64-v8a": "73031"
                 }
             },
             "telegram-web": {
                 "package": "org.telegram.messenger.web",
                 "search_term": "Telegram Web",
                 "stable": [
-                    "13.2.1"
+                    "13.2.2"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "72919"
+                    "arm64-v8a": "73039"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -932,7 +932,8 @@
                             "save_story_pick": false,
                             "pick_grid_videos": false,
                             "share_after_save": false,
-                            "video_buttons_over_rail": false
+                            "video_buttons_over_rail": false,
+                            "save_episodes_button": false
                         }
                     },
                     "Allow Duet and Stitch": {
@@ -1842,6 +1843,24 @@
                         "enabled": true,
                         "options": {
                             "enable_non_personalized_search": false
+                        }
+                    },
+                    "Group likes per comment": {
+                        "enabled": true,
+                        "options": {
+                            "bundle_activity_likes": false
+                        }
+                    },
+                    "Play original audio": {
+                        "enabled": true,
+                        "options": {
+                            "original_audio": false
+                        }
+                    },
+                    "Split activity list": {
+                        "enabled": true,
+                        "options": {
+                            "split_activity_list": false
                         }
                     }
                 },
