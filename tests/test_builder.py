@@ -7,7 +7,9 @@
 import importlib.util
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
+from bs4 import BeautifulSoup
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -353,6 +355,115 @@ def test_is_arch_token_case_insensitive():
     """Arch token matching tolerates mixed-case text and tokens."""
     assert TIER1._is_arch_token("X86 NODPI APK", "x86") is True
     assert TIER1._is_arch_token("X86_64 NODPI APK", "x86") is False
+
+
+def _release_link(title, href):
+    """Builds a minimal APKMirror search-result anchor."""
+    return BeautifulSoup(
+        f'<a class="fontBlack" href="{href}">{title}</a>', "html.parser"
+    ).a
+
+
+@pytest.mark.parametrize(
+    "title,href,expected",
+    [
+        (
+            "YouTube 21.45.82",
+            "/apk/google-inc/youtube/youtube-21-45-82-release/",
+            True,
+        ),
+        (
+            "YouTube 21.45.82-BETA",
+            "/apk/google-inc/youtube/youtube-21-45-82-beta-release/",
+            True,
+        ),
+        (
+            "YouTube 21.45.82-EXTENDED",
+            "/apk/google-inc/youtube/youtube-21-45-82-extended-release/",
+            False,
+        ),
+        (
+            "YouTube 21.45.82-SECONDARY",
+            "/apk/google-inc/youtube/youtube-21-45-82-secondary-release/",
+            False,
+        ),
+    ],
+)
+def test_is_valid_release_link_filters_upload_tags(title, href, expected):
+    """Extended and secondary uploads are skipped; beta uploads stay eligible."""
+    exc_kws, inc_kws = TIER1.ApkmirrorScraper._get_filter_kws(
+        SimpleNamespace(app_data={})
+    )
+    result = TIER1.ApkmirrorScraper._is_valid_release_link(
+        _release_link(title, href), "21.45.82", exc_kws, inc_kws
+    )
+    assert (result is not None) is expected
+
+
+def test_get_filter_kws_merges_default_and_custom_exclusions():
+    """Per-app exclusions are appended to the default release tags."""
+    exc_kws, _ = TIER1.ApkmirrorScraper._get_filter_kws(
+        SimpleNamespace(app_data={
+            "apkm_exclude": ["Fire TV", "tablet"],
+        })
+    )
+    assert exc_kws == ["extended", "secondary", "fire tv", "tablet"]
+
+
+def test_find_release_skips_newer_extended_upload(monkeypatch):
+    """A newer extended upload must not shadow the exact version release."""
+    html = (
+        '<a class="fontBlack" href="/apk/google-inc/youtube/'
+        'youtube-21-45-82-extended-release/">YouTube 21.45.82-EXTENDED</a>'
+        '<a class="fontBlack" href="/apk/google-inc/youtube/'
+        'youtube-21-45-82-release/">YouTube 21.45.82</a>'
+        '<a class="fontBlack" href="/apk/google-inc/youtube/'
+        'youtube-21-45-82-secondary-release/">YouTube 21.45.82-SECONDARY</a>'
+        '<a class="fontBlack" href="/apk/google-inc/youtube/'
+        'youtube-21-45-82-beta-release/">YouTube 21.45.82-BETA</a>'
+    )
+    scraper = object.__new__(TIER1.ApkmirrorScraper)
+    ctx = SimpleNamespace(
+        pkg="com.google.android.youtube",
+        app_data={"search_term": "YouTube"},
+        target_ver="21.45.82",
+    )
+
+    def fake_get(_ctx, url):
+        return SimpleNamespace(url=url, text=html)
+
+    monkeypatch.setattr(scraper, "_safe_get", fake_get)
+    url = scraper._find_release(ctx)
+    assert url == (
+        "https://www.apkmirror.com/apk/google-inc/youtube/"
+        "youtube-21-45-82-release/"
+    )
+
+
+def test_find_release_falls_back_to_beta_upload(monkeypatch):
+    """Beta uploads remain valid when no plain release exists."""
+    html = (
+        '<a class="fontBlack" href="/apk/google-inc/youtube/'
+        'youtube-21-45-82-extended-release/">YouTube 21.45.82-EXTENDED</a>'
+        '<a class="fontBlack" href="/apk/google-inc/youtube/'
+        'youtube-21-45-82-beta-release/">YouTube 21.45.82-BETA</a>'
+    )
+    scraper = object.__new__(TIER1.ApkmirrorScraper)
+    ctx = SimpleNamespace(
+        pkg="com.google.android.youtube",
+        app_data={"search_term": "YouTube"},
+        target_ver="21.45.82",
+    )
+
+    def fake_get(_ctx, url):
+        return SimpleNamespace(url=url, text=html)
+
+    monkeypatch.setattr(scraper, "_safe_get", fake_get)
+    url = scraper._find_release(ctx)
+    assert url == (
+        "https://www.apkmirror.com/apk/google-inc/youtube/"
+        "youtube-21-45-82-beta-release/"
+    )
 
 
 @pytest.mark.parametrize(

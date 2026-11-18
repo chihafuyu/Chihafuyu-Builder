@@ -20,6 +20,8 @@ EDITION_SLUG_REGEX = re.compile(
     re.IGNORECASE,
 )
 
+EXCLUDED_RELEASE_TAGS = ("extended", "secondary")
+
 FETCH_ATTEMPTS = 3
 FETCH_TIMEOUT_SECONDS = 45
 URL_LOG_WIDTH = 90
@@ -275,7 +277,7 @@ class ApkmirrorScraper(BaseScraper):
 
     @staticmethod
     def _get_filter_kws(ctx: Context) -> tuple[list[str], list[str]]:
-        exc_kws = ["secondary"] + [
+        exc_kws = list(EXCLUDED_RELEASE_TAGS) + [
             k.lower()
             for k in ctx.app_data.get("apkm_exclude", [])
             if k.strip()
