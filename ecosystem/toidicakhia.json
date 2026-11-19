@@ -72,7 +72,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Spoofer server": {
+                        "enabled": false,
+                        "options": {
+                            "routeRevenueCat": false
+                        }
+                    }
+                },
                 "version_codes": {
                     "arm64-v8a": "632",
                     "armeabi-v7a": "632",
@@ -96,6 +103,34 @@
                     "armeabi-v7a": "277",
                     "x86_64": "277",
                     "x86": "277"
+                },
+                "force_bundle": true
+            },
+            "terabox": {
+                "package": "com.dubox.drive",
+                "search_term": "TeraBox",
+                "stable": [
+                    "4.27.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Auto claim Benefits tasks": {
+                        "enabled": false
+                    },
+                    "Bypass SSL pinning": {
+                        "enabled": false
+                    },
+                    "Spoof signature": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "702",
+                    "armeabi-v7a": "702",
+                    "x86_64": "702",
+                    "x86": "702"
                 },
                 "force_bundle": true
             },

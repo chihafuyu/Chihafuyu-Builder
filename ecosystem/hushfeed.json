@@ -5,7 +5,7 @@
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok",
                 "stable": [
-                    "47.8.3"
+                    "47.9.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -80,7 +80,8 @@
                         "options": {
                             "system_font": false,
                             "system_emoji": false,
-                            "imported_font": false
+                            "imported_font": false,
+                            "imported_emoji_font": false
                         }
                     },
                     "Accent color": {
@@ -154,7 +155,10 @@
                             "video_length_on_grid": false,
                             "liked_jump_to_date": false,
                             "grid_search": false,
-                            "grid_position_controls": false
+                            "grid_position_controls": false,
+                            "publish_date_month_name": false,
+                            "hide_grid_view_count": false,
+                            "sort_pinned_with_rest": false
                         }
                     },
                     "Always upload in HD": {
@@ -532,7 +536,10 @@
                             "turn_off_chat_swipe_reply": false,
                             "show_inbox_filters": false,
                             "pin_more_chats": false,
-                            "show_message_times": false
+                            "show_message_times": false,
+                            "hide_inbox_suggested_lives": false,
+                            "hide_inbox_suggested_stories": false,
+                            "hide_inbox_widget_guide": false
                         }
                     },
                     "Hide inbox stories": {
@@ -547,7 +554,8 @@
                             "hide_profile_menu_balance": false,
                             "hide_profile_menu_minis_icons": false,
                             "hide_profile_thoughts": false,
-                            "enable_thoughts": false
+                            "enable_thoughts": false,
+                            "hide_add_bio": false
                         }
                     },
                     "Hide read receipts": {
@@ -567,7 +575,8 @@
                     "Hide suggested accounts": {
                         "enabled": true,
                         "options": {
-                            "hide_inbox_suggested_accounts": false
+                            "hide_inbox_suggested_accounts": false,
+                            "keep_profile_suggested_accounts": false
                         }
                     },
                     "Hide the launcher shortcuts": {
@@ -630,7 +639,8 @@
                             "hide_feed_report_button": false,
                             "hide_location_labels": false,
                             "hide_creation_tags": false,
-                            "hide_live_entrance": false
+                            "hide_live_entrance": false,
+                            "hide_may_know_tag": false
                         }
                     },
                     "Hold-and-slide 2x lock": {
@@ -712,7 +722,8 @@
                             "live_auto_tap": false,
                             "live_audio_only": false,
                             "live_name_alerts": false,
-                            "live_name_alerts_listen": false
+                            "live_name_alerts_listen": false,
+                            "live_buttons_in_menu": false
                         }
                     },
                     "Lift text length limits": {
@@ -1057,13 +1068,19 @@
                         "options": {
                             "split_activity_list": false
                         }
+                    },
+                    "Report a newer phone to game LIVE": {
+                        "enabled": true,
+                        "options": {
+                            "report_newer_phone_to_game_live": false
+                        }
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "2024708030",
-                    "armeabi-v7a": "2024708030",
-                    "x86": "2024708030",
-                    "x86_64": "2024708030"
+                    "arm64-v8a": "2024709010",
+                    "armeabi-v7a": "2024709010",
+                    "x86": "2024709010",
+                    "x86_64": "2024709010"
                 }
             }
         }

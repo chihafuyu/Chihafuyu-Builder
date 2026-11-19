@@ -7,14 +7,35 @@
                 "stable": [
                     "1.4.9"
                 ],
-                "beta": [],
+                "beta": [
+                    "1.4.11"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Hermes hide ad promo surfaces": {
+                    "Disable Expo updates and backup restore": {
+                        "enabled": false
+                    },
+                    "Disable ad SDK manifest components": {
+                        "enabled": false
+                    },
+                    "Disable ad and promo remote config": {
+                        "enabled": false
+                    },
+                    "Neutralize bundled ad unit IDs and premium banners": {
+                        "enabled": false
+                    },
+                    "Neutralize premium and reward-ad prompts": {
+                        "enabled": false
+                    },
+                    "Pin local Expo config": {
+                        "enabled": false
+                    },
+                    "Remove Music League ad card container": {
                         "enabled": false
                     }
-                }
+                },
+                "force_bundle": true
             },
             "pushpress-members": {
                 "package": "com.pushpress.memberportal",
@@ -53,7 +74,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Disable Wongnai Google ads": {
+                        "enabled": false
+                    }
+                },
                 "force_bundle": true
             },
             "zoom-earth": {
@@ -65,7 +90,29 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "100 Zoom Earth favourites": {
+                        "enabled": false
+                    },
+                    "Allow Zoom Earth patched installation": {
+                        "enabled": false
+                    },
+                    "Enable Zoom Earth Pro features": {
+                        "enabled": false
+                    },
+                    "Quiet Zoom Earth prompts": {
+                        "enabled": false
+                    },
+                    "Remove LiteAPKS nag": {
+                        "enabled": false
+                    },
+                    "Remove Zoom Earth LiteAPKs promotions": {
+                        "enabled": false
+                    },
+                    "Remove Zoom Earth ads": {
+                        "enabled": false
+                    }
+                }
             }
         }
     }

@@ -5,7 +5,7 @@
                 "package": "com.kick.mobile",
                 "search_term": "Kick",
                 "stable": [
-                    "40.34.0"
+                    "40.35.4"
                 ],
                 "beta": [],
                 "force_bundle": true,
@@ -83,7 +83,7 @@
                 "package": "tv.twitch.android.app",
                 "search_term": "Twitch",
                 "stable": [
-                    "31.9.0"
+                    "32.1.0"
                 ],
                 "beta": [],
                 "force_bundle": true,

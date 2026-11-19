@@ -28,6 +28,15 @@
                 "options_override": {
                     "GmsCore support for Pinterest": {
                         "enabled": false
+                    },
+                    "Quick save to profile": {
+                        "enabled": false
+                    },
+                    "Show Create in the bottom bar": {
+                        "enabled": false
+                    },
+                    "Show Messages in the bottom bar": {
+                        "enabled": false
                     }
                 }
             }

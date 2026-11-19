@@ -5,11 +5,11 @@
                 "package": "com.pinterest",
                 "search_term": "Pinterest",
                 "stable": [
-                    "14.44.0"
+                    "14.45.0"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "14448030"
+                    "arm64-v8a": "14458020"
                 },
                 "strip": true,
                 "force_bundle": false,
