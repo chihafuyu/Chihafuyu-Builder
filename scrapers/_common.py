@@ -31,6 +31,6 @@ def probe_and_download(
             return None
 
     print(f"[INFO] Downloading from {source_name}...")
-    if download_file_stream(ctx.scraper, url, out_path, referer=referer):
+    if download_file_stream(ctx.scraper, url, out_path, referer=referer, ctx=ctx):
         return out_path
     return None

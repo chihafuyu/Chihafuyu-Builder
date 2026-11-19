@@ -37,6 +37,12 @@ class Context:
     arch: str
     out_dir: str
     limiter: RateLimiter
+    # Provenance of the downloaded artifact. Scrapers (or the downloader)
+    # fill these in so per-app logs can report the original filename and
+    # the source it came from.
+    original_name: str = ""
+    source_name: str = ""
+    source_url: str = ""
 
     @property
     def pkg(self) -> str:

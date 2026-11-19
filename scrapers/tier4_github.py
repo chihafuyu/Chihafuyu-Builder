@@ -55,7 +55,7 @@ class GithubScraper(BaseScraper):
                 continue
 
             print("[INFO] Downloading from GitHub...")
-            if download_file_stream(ctx.scraper, dl_link, out_path):
+            if download_file_stream(ctx.scraper, dl_link, out_path, ctx=ctx):
                 return out_path
 
         return None

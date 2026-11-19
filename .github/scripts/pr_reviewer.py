@@ -28,6 +28,9 @@ GEMINI_MODEL_CANDIDATES = (
     "gemini-3.6-flash",
     "gemini-3.5-flash",
     "gemini-3.5-flash-lite",
+    # Paid-only model: Gemini 4 Neon is not offered on the free tier, so
+    # keep it last to avoid wasting free-key attempts before free models.
+    "gemini-4-neon",
 )
 
 # Switch to the stable v1 API endpoint to match the google-genai 3.x defaults.

@@ -147,6 +147,9 @@ class GooglePlayScraper(BaseScraper):
     def scrape(self, ctx: Context) -> str | None:
         """Executes the scraping process via Google Play and Apkeep."""
         print(f"[TIER 9] Secure Google Play: v{ctx.target_ver}")
+        ctx.source_url = (
+            f"https://play.google.com/store/apps/details?id={ctx.pkg}"
+        )
 
         email = os.getenv("PLAY_EMAIL")
         token = os.getenv("PLAY_AAS_TOKEN")

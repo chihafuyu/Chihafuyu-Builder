@@ -7,12 +7,13 @@ import glob
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
 import zipfile
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 import requests
 
@@ -22,6 +23,8 @@ CHUNK_SIZE = 1024 * 1024
 SUBPROCESS_TIMEOUT_SECONDS = 900
 # APKs are executable code: only accept transports that guarantee integrity in transit.
 ALLOWED_DOWNLOAD_SCHEMES = frozenset({"https"})
+# Container extensions that identify a real artifact filename in a URL.
+DOWNLOAD_NAME_EXTENSIONS = (".apk", ".apkm", ".apks", ".xapk", ".zip")
 # VirusTotal engines that must agree before rejecting an APK.
 DEFAULT_VT_MALICIOUS_THRESHOLD = 3
 HA_THREAT_THRESHOLD = 50
@@ -303,10 +306,54 @@ def _stream_to_file(resp: Any, file_obj: Any) -> None:
         file_obj.write(chunk)
 
 
+def _url_basename(url: str) -> str:
+    """Returns the decoded basename of a URL path, or an empty string."""
+    return _safe_filename(
+        unquote(os.path.basename(urlparse(url).path)), fallback=""
+    )
+
+
+def _extract_download_name(resp: Any, url: str) -> str:
+    """Returns the original filename advertised by a download response.
+
+    Prefers Content-Disposition, then the final URL path, then the original
+    request URL. APKMirror, for instance, redirects to a storage URL whose
+    basename is the real artifact name (e.g. ``..._apkmirror.com.apk``),
+    while GitHub redirects to opaque CDN keys that keep the filename only
+    in the original request URL.
+    """
+    disposition = resp.headers.get("Content-Disposition", "")
+    for pattern in (
+        r"filename\*\s*=\s*(?:UTF-8'')?([^;]+)",
+        r'filename\s*=\s*"?([^";]+)"?',
+    ):
+        match = re.search(pattern, disposition, re.IGNORECASE)
+        if match:
+            name = unquote(match.group(1).strip().strip('"'))
+            return _safe_filename(name, fallback="")
+
+    final_name = _url_basename(getattr(resp, "url", "") or url)
+    original_name = _url_basename(url)
+    for candidate in (final_name, original_name):
+        if os.path.splitext(candidate)[1].lower() in DOWNLOAD_NAME_EXTENSIONS:
+            return candidate
+    return final_name or original_name
+
+
 def download_file_stream(
-    scraper: Any, url: str, out_path: str, referer: str = "", check_dmca: bool = False
+    scraper: Any,
+    url: str,
+    out_path: str,
+    referer: str = "",
+    check_dmca: bool = False,
+    *,
+    ctx: Any = None,
 ) -> bool:
-    """Downloads a file safely with streaming, size limits, and atomic replacement."""
+    """Downloads a file safely with streaming, size limits, and atomic replacement.
+
+    When *ctx* is provided it records the original download filename and the
+    pre-redirect source URL for provenance logging.
+    """
     out_dir = os.path.dirname(os.path.abspath(out_path))
     try:
         _validate_download_url(url)
@@ -332,6 +379,11 @@ def download_file_stream(
             finally:
                 if os.path.exists(t_path):
                     os.remove(t_path)
+            if ctx is not None:
+                if not ctx.original_name:
+                    ctx.original_name = _extract_download_name(resp, url)
+                if not ctx.source_url:
+                    ctx.source_url = url
             return True
     except (requests.exceptions.RequestException, OSError, ValueError) as err:
         print(f"[ERROR] Request failed: {err}")

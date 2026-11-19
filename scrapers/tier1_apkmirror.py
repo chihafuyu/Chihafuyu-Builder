@@ -456,6 +456,7 @@ class ApkmirrorScraper(BaseScraper):
         print(f"[INFO] Preparing to extract: {p_type}", flush=True)
 
         dl_page = urljoin("https://www.apkmirror.com", btn["href"])
+        ctx.source_url = dl_page
         print(
             f"[INFO] Resolving download page: {_short_url(dl_page)}",
             flush=True,
@@ -485,6 +486,7 @@ class ApkmirrorScraper(BaseScraper):
                 urljoin("https://www.apkmirror.com", dl_btn["href"]),
                 out_path,
                 dl_page,
+                ctx=ctx,
             ):
                 print(
                     f"[WARN] APKMirror download failed after "
