@@ -644,6 +644,52 @@ def test_extract_download_name_falls_back_to_original_url():
     )
 
 
+def test_extract_download_name_decodes_rfc5987_language_tag():
+    """Charset and language prefixes decode into a plain filename."""
+    resp = SimpleNamespace(
+        headers={
+            "Content-Disposition": (
+                "attachment; filename*=iso-8859-1'it'caf%E9.apk"
+            )
+        },
+        url="https://example.com/download",
+    )
+    assert (
+        CORE_UTILS._extract_download_name(resp, resp.url)
+        == "caf\u00e9.apk"
+    )
+
+
+def test_extract_download_name_skips_empty_candidates():
+    """Unusable header filenames fall through to the URL basename."""
+    resp = SimpleNamespace(
+        headers={
+            "Content-Disposition": (
+                "attachment; filename*=UTF-8''; filename=\"..\""
+            )
+        },
+        url="https://example.com/files/app-1.2.3.apk",
+    )
+    assert (
+        CORE_UTILS._extract_download_name(resp, resp.url)
+        == "app-1.2.3.apk"
+    )
+
+
+def test_finalize_download_clears_provenance_on_failure(monkeypatch):
+    """A failed post-processing step cannot leave stale source metadata."""
+    ctx = SimpleNamespace(
+        original_name="artifact.apk",
+        source_name="APKMirror",
+        source_url="https://www.apkmirror.com/apk/x/y/download/",
+    )
+    monkeypatch.setattr(MAIN, "process_downloaded_file", lambda _: None)
+    assert MAIN._finalize_download(ctx, "artifact.apk") is None
+    assert ctx.original_name == ""
+    assert ctx.source_name == ""
+    assert ctx.source_url == ""
+
+
 def test_build_log_block_reports_provenance(tmp_path):
     """Per-app headers expose the original filename and sanitized source."""
     entry = {
@@ -667,6 +713,35 @@ def test_build_log_block_reports_provenance(tmp_path):
         "(https://www.apkmirror.com/apk/google-inc/youtube/)"
     ) in block
     assert "key=secret" not in block
+
+
+def test_format_download_source_preserves_play_store_id():
+    """Google Play links keep their package id while tokens are dropped."""
+    entry = {
+        "source_name": "Google Play",
+        "source_url": (
+            "https://play.google.com/store/apps/details"
+            "?id=com.google.android.youtube&hl=en&token=secret"
+        ),
+    }
+    assert MAIN._format_download_source(entry) == (
+        "Google Play (https://play.google.com/store/apps/details"
+        "?id=com.google.android.youtube&hl=en)"
+    )
+
+
+def test_format_download_source_drops_one_time_apkmirror_key():
+    """APKMirror one-time keys and routing params never reach the log."""
+    entry = {
+        "source_name": "APKMirror",
+        "source_url": (
+            "https://www.apkmirror.com/apk/x/y/download/"
+            "?key=secret&forcebaseapk=true"
+        ),
+    }
+    assert MAIN._format_download_source(entry) == (
+        "APKMirror (https://www.apkmirror.com/apk/x/y/download/)"
+    )
 
 
 def test_pr_reviewer_keeps_paid_neon_as_last_resort():

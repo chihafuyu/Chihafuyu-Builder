@@ -313,6 +313,51 @@ def _url_basename(url: str) -> str:
     )
 
 
+def _decode_rfc5987_filename(raw: str) -> str:
+    """Decodes an RFC 5987 ``filename*`` value into a plain filename.
+
+    The value uses the ``charset'language'percent-encoded`` form. Unknown
+    charsets fall back to UTF-8 instead of raising.
+    """
+    value = raw.strip().strip('"')
+    charset = "utf-8"
+    parts = value.split("'", 2)
+    if len(parts) == 3:
+        charset = parts[0] or charset
+        value = parts[2]
+    try:
+        return unquote(value, encoding=charset, errors="replace")
+    except LookupError:
+        return unquote(value)
+
+
+def _filename_from_disposition(disposition: str) -> str:
+    """Extracts the first usable filename from a Content-Disposition header.
+
+    ``filename*`` is preferred over plain ``filename``. Empty or unsafe
+    candidates are skipped so the caller can fall back to the URL basename.
+    """
+    candidates: list[str] = []
+    extended = re.search(
+        r"filename\s*\*\s*=\s*([^;]+)", disposition, re.IGNORECASE
+    )
+    if extended:
+        candidates.append(_decode_rfc5987_filename(extended.group(1)))
+    for pattern in (
+        r'filename\s*=\s*"([^"]*)"',
+        r"filename\s*=\s*([^;]+)",
+    ):
+        match = re.search(pattern, disposition, re.IGNORECASE)
+        if match:
+            candidates.append(unquote(match.group(1).strip().strip('"')))
+
+    for candidate in candidates:
+        safe_name = _safe_filename(candidate, fallback="")
+        if safe_name:
+            return safe_name
+    return ""
+
+
 def _extract_download_name(resp: Any, url: str) -> str:
     """Returns the original filename advertised by a download response.
 
@@ -322,15 +367,11 @@ def _extract_download_name(resp: Any, url: str) -> str:
     while GitHub redirects to opaque CDN keys that keep the filename only
     in the original request URL.
     """
-    disposition = resp.headers.get("Content-Disposition", "")
-    for pattern in (
-        r"filename\*\s*=\s*(?:UTF-8'')?([^;]+)",
-        r'filename\s*=\s*"?([^";]+)"?',
-    ):
-        match = re.search(pattern, disposition, re.IGNORECASE)
-        if match:
-            name = unquote(match.group(1).strip().strip('"'))
-            return _safe_filename(name, fallback="")
+    name = _filename_from_disposition(
+        resp.headers.get("Content-Disposition", "")
+    )
+    if name:
+        return name
 
     final_name = _url_basename(getattr(resp, "url", "") or url)
     original_name = _url_basename(url)
