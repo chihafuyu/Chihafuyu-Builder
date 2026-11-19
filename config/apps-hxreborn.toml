@@ -72,7 +72,7 @@
 "imo" = false
 "internet-speed-meter-lite" = false
 "iototoy" = false
-"ivoox" = true
+"ivoox" = false
 "joyn" = false
 "joyn-austria" = false
 "jujo" = false
@@ -108,7 +108,7 @@
 "neetprep" = false
 "neetprep-essential" = false
 "network-analyzer" = false
-"nextdoor" = true
+"nextdoor" = false
 "notein" = false
 "notesnook" = true
 "ok" = false
