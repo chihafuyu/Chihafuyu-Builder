@@ -44,9 +44,8 @@ DOWNLOAD_SOURCE_LABELS = {
     "google_play": "Google Play",
     "huggingface": "HuggingFace",
 }
-# Query parameters that identify the artifact/source and are safe to keep
-# in user-facing logs. Every other parameter is dropped so signed tokens,
-# expiry stamps, and tracking IDs never leak into build logs.
+# Allowlist of query parameters safe to log; signed tokens and tracking
+# parameters are dropped before the URL reaches the build log.
 SOURCE_URL_SAFE_QUERY_KEYS = frozenset({
     "id", "package", "app", "hl", "gl", "file", "filename",
 })

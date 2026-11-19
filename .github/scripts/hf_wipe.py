@@ -24,7 +24,6 @@ def main() -> None:
             print(f"[WARN] Dataset {hf_dataset} is already empty. Nothing to wipe.")
             return
 
-        # Keep repository metadata files
         excluded_files = {"README.md", ".gitattributes"}
         files_to_delete = [f for f in files if f not in excluded_files]
 
@@ -34,7 +33,6 @@ def main() -> None:
 
         print(f"[INFO] Found {len(files_to_delete)} files to delete. Proceeding...")
 
-        # Delete specific files
         api.delete_files(
             repo_id=hf_dataset,
             delete_patterns=files_to_delete,

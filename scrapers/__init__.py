@@ -27,5 +27,4 @@ def load_all_scrapers() -> dict[str, type[BaseScraper]]:
     return registry
 
 
-# Instantiated registry ready to be imported by the main script.
 AVAILABLE_SCRAPERS = load_all_scrapers()

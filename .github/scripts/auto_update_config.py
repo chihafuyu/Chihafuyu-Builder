@@ -26,7 +26,6 @@ FORCE_BUNDLE_APK_TYPES = frozenset({
     "APKM", "APKS", "XAPK", "APKS_REQUIRED", "XAPK_REQUIRED",
 })
 
-# Matches TOML entries with double quotes, single quotes, or no quotes
 APPS_TOML_ENTRY_RE = re.compile(
     r'^(?:"([^"]+)"|\'([^\']+)\'|([a-zA-Z0-9_-]+))\s*=\s*(true|false)'
 )
@@ -700,8 +699,6 @@ def _process_existing_apps(
         for pkg in ignore_packages:
             stable_pkgs.pop(pkg, None)
 
-    # Pylint R0912 fix: replaced comprehensions with explicit loops
-    # to prevent branch count inflation while keeping logic identical.
     existing_count = 0
     missing_count = 0
     for cfg in app_configs.values():
@@ -1261,7 +1258,6 @@ def _add_app_to_yaml(ecosystem_name, app_key):
 
     original_content = content
 
-    # 1. Insert input block
     input_block = (
         f"      {input_name}:{newline}"
         f"        description: 'Patch {app_key}'{newline}"
@@ -1283,7 +1279,6 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         return False
     content = new_content
 
-    # 2. Insert env block
     env_regex = re.compile(
         r"^( {6})APP_([A-Z0-9_]+): \$\{\{ inputs\.app_[a-z0-9_]+ \}\}\r?\n",
         re.MULTILINE
@@ -1304,7 +1299,6 @@ def _add_app_to_yaml(ecosystem_name, app_key):
         return False
     content = new_content
 
-    # 3. Insert if block
     if_regex = re.compile(
         r"^[ \t]+if \[\[ \"\$APP_([A-Z0-9_]+)\" == \"true\" \]\]; then\r?\n"
         r"[ \t]+LIST=\"\$LIST,[^\"]+\"\r?\n"
@@ -1333,7 +1327,6 @@ def _add_app_to_yaml(ecosystem_name, app_key):
     if content == original_content:
         return False
 
-    # Atomic write
     tmp_path = f"{yaml_path}.tmp"
     try:
         with open(tmp_path, "w", encoding="utf-8") as file_obj:
@@ -1448,7 +1441,6 @@ def _update_apps_toml(toml_path, added_apps, removed_apps):
     if not changed:
         return False
 
-    # Atomic write for TOML
     tmp_path = f"{toml_path}.tmp"
     try:
         with open(tmp_path, "w", encoding="utf-8") as file_obj:
@@ -1563,7 +1555,6 @@ def _sync_workflow_and_toml(
         except OSError as err:
             print(f"  -> Failed to read {yaml_path} for migration check: {err}")
 
-    # Synchronize TOML generation state
     if app_count > MAX_YAML_INPUTS:
         if not os.path.exists(toml_path):
             if _create_full_toml(toml_path, config_path, eco_name):

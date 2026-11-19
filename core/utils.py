@@ -23,7 +23,6 @@ CHUNK_SIZE = 1024 * 1024
 SUBPROCESS_TIMEOUT_SECONDS = 900
 # APKs are executable code: only accept transports that guarantee integrity in transit.
 ALLOWED_DOWNLOAD_SCHEMES = frozenset({"https"})
-# Container extensions that identify a real artifact filename in a URL.
 DOWNLOAD_NAME_EXTENSIONS = (".apk", ".apkm", ".apks", ".xapk", ".zip")
 # VirusTotal engines that must agree before rejecting an APK.
 DEFAULT_VT_MALICIOUS_THRESHOLD = 3
