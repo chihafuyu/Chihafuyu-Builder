@@ -37,6 +37,10 @@ class Context:
     arch: str
     out_dir: str
     limiter: RateLimiter
+    # Download provenance used by per-app build logs.
+    original_name: str = ""
+    source_name: str = ""
+    source_url: str = ""
 
     @property
     def pkg(self) -> str:

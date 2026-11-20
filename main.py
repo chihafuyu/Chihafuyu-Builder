@@ -14,7 +14,7 @@ import threading
 import time
 from contextlib import ExitStack
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from core.context import Context, RateLimiter
 from core.utils import (
@@ -35,6 +35,20 @@ ZERO_PATCH_RE = re.compile(
     re.IGNORECASE,
 )
 GOOGLE_PACKAGE_PREFIX = "com.google."
+DOWNLOAD_SOURCE_LABELS = {
+    "apkmirror": "APKMirror",
+    "apkpure": "APKPure",
+    "archive": "Archive.org",
+    "direct": "Direct URL",
+    "github": "GitHub Releases",
+    "google_play": "Google Play",
+    "huggingface": "HuggingFace",
+}
+# Allowlist of query parameters safe to log; signed tokens and tracking
+# parameters are dropped before the URL reaches the build log.
+SOURCE_URL_SAFE_QUERY_KEYS = frozenset({
+    "id", "package", "app", "hl", "gl", "file", "filename",
+})
 
 
 def load_config(ecosystem_name: str) -> dict[str, Any]:
@@ -60,6 +74,31 @@ def load_config(ecosystem_name: str) -> dict[str, Any]:
     return data[ecosystem_name]
 
 
+def _clear_download_source(ctx: Context) -> None:
+    """Clears provenance so failed downloads cannot leak stale metadata."""
+    ctx.original_name = ""
+    ctx.source_name = ""
+    ctx.source_url = ""
+
+
+def _finalize_download(ctx: Context, raw_path: str) -> str | None:
+    """Processes a scraper result while preserving its provenance metadata."""
+    fallback_name = os.path.basename(raw_path)
+    path = process_downloaded_file(raw_path)
+    if not path:
+        _clear_download_source(ctx)
+        return None
+    if not ctx.original_name:
+        ctx.original_name = fallback_name
+    return path
+
+
+def _reset_download_source(ctx: Context, source_name: str) -> None:
+    """Switches provenance to a new source, clearing stale fallback metadata."""
+    _clear_download_source(ctx)
+    ctx.source_name = DOWNLOAD_SOURCE_LABELS.get(source_name, source_name)
+
+
 def download_apk(ctx: Context, args: Any) -> str | None:
     """Downloads target APK via fallback sources or primary scraper."""
     if not ctx.target_ver or ctx.target_ver.lower() == "any":
@@ -73,10 +112,11 @@ def download_apk(ctx: Context, args: Any) -> str | None:
 
     req_source = args.download_source.lower()
     if req_source in AVAILABLE_SCRAPERS:
+        _reset_download_source(ctx, req_source)
         with AVAILABLE_SCRAPERS[req_source]() as scraper_instance:
             path = scraper_instance.scrape(ctx)
             if path:
-                return process_downloaded_file(path)
+                return _finalize_download(ctx, path)
         print(f"[INFO] Primary source '{req_source}' returned nothing; falling back.")
 
     fallback_order = [
@@ -86,12 +126,14 @@ def download_apk(ctx: Context, args: Any) -> str | None:
 
     for src_name in fallback_order:
         if src_name in AVAILABLE_SCRAPERS and src_name != req_source:
+            _reset_download_source(ctx, src_name)
             with AVAILABLE_SCRAPERS[src_name]() as scraper_instance:
                 path = scraper_instance.scrape(ctx)
                 if path:
-                    return process_downloaded_file(path)
+                    return _finalize_download(ctx, path)
 
     print(f"[FATAL] Exhausted sources or specific source failed for {ctx.pkg}.")
+    _clear_download_source(ctx)
     return None
 
 
@@ -477,6 +519,9 @@ def _prepare_patch_inputs(
         "apk": apk_path,
         "options": json_file,
         "out_apk": _get_apk_output_path(app_info, args, state),
+        "original_name": ctx.original_name,
+        "source_name": ctx.source_name,
+        "source_url": ctx.source_url,
     }
 
 
@@ -525,6 +570,12 @@ def process_single_app(
     if bundle is None:
         return
 
+    provenance = {
+        "original_name": bundle.get("original_name", ""),
+        "source_name": bundle.get("source_name", ""),
+        "source_url": bundle.get("source_url", ""),
+    }
+
     _export_options_snapshot(
         bundle["options"], _get_staging_path(app_name, state, "options")
     )
@@ -555,6 +606,7 @@ def process_single_app(
             "version": t_ver,
             "build": app_data.get("version_codes", {}).get(arch),
             "arch": arch,
+            **provenance,
         })
     else:
         print(f"\n[ERROR] FAILED: {app_name}. Reason: {status}")
@@ -567,16 +619,58 @@ def process_single_app(
         "version": t_ver,
         "arch": arch,
         "status": status,
+        **provenance,
     })
+
+
+def _sanitize_source_url(url: str) -> str:
+    """Keeps identifier parameters while dropping credentials from a URL.
+
+    Google Play needs its ``?id=<package>`` parameter to produce a working
+    link, while APKMirror download pages carry a one-time ``key`` token.
+    A small allowlist preserves the former without ever logging the latter.
+    """
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return url.split("?", 1)[0].split("#", 1)[0]
+
+    if not parsed.query:
+        return parsed._replace(fragment="").geturl()
+
+    kept = [
+        (key, value)
+        for key, value in parse_qsl(parsed.query, keep_blank_values=True)
+        if key.lower() in SOURCE_URL_SAFE_QUERY_KEYS
+    ]
+    return urlunparse(parsed._replace(query=urlencode(kept), fragment=""))
+
+
+def _format_download_source(entry: dict) -> str:
+    """Returns a human-readable 'Downloaded from' value for an app entry."""
+    source = entry.get("source_name") or ""
+    url = entry.get("source_url") or ""
+    if not url:
+        return source
+    clean_url = _sanitize_source_url(url)
+    return f"{source} ({clean_url})" if source else clean_url
 
 
 def _build_log_block(entry: dict, state: dict) -> str:
     """Builds a single delimited log block for one app."""
     tmp_log = _get_staging_path(entry["name"], state, "log")
+    original_name = entry.get("original_name") or ""
+    source = _format_download_source(entry)
+    provenance = ""
+    if original_name:
+        provenance += f"Original app name: {original_name}\n"
+    if source:
+        provenance += f"Downloaded from: {source}\n"
     header = (
         "=" * 60 + "\n"
         f"App: {entry['name']} ({entry['package']})\n"
-        f"Version: {entry['version']} | Arch: {entry['arch']}\n"
+        + provenance
+        + f"Version: {entry['version']} | Arch: {entry['arch']}\n"
         f"Status: {entry['status']}\n"
         + "=" * 60 + "\n\n"
     )

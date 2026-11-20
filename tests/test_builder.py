@@ -597,3 +597,157 @@ def test_sandboxed_env_strips_credentials(monkeypatch):
         assert secret not in env
     assert env["PYTHONHASHSEED"] == "0"
     assert env["PATH"]
+
+
+def test_extract_download_name_unquotes_redirect_basename():
+    """APKMirror redirect basenames decode into the original artifact name."""
+    resp = SimpleNamespace(
+        headers={},
+        url=(
+            "https://r2.example.com/downloadprod/com.zhiliaoapp.musically_47.7.3-"
+            "2024707030_minAPI23%28arm64-v8a%2Carmeabi-v7a%29%28nodpi%29_"
+            "apkmirror.com.apk?X-Amz-Signature=secret"
+        ),
+    )
+    name = CORE_UTILS._extract_download_name(
+        resp, "https://www.apkmirror.com/download.php?id=1"
+    )
+    assert name == (
+        "com.zhiliaoapp.musically_47.7.3-2024707030_"
+        "minAPI23(arm64-v8a,armeabi-v7a)(nodpi)_apkmirror.com.apk"
+    )
+
+
+def test_extract_download_name_prefers_content_disposition():
+    """A server-provided filename wins over the URL basename."""
+    resp = SimpleNamespace(
+        headers={"Content-Disposition": 'attachment; filename="app-1.2.3.apk"'},
+        url="https://example.com/download?id=1",
+    )
+    assert (
+        CORE_UTILS._extract_download_name(resp, "https://example.com/download")
+        == "app-1.2.3.apk"
+    )
+
+
+def test_extract_download_name_falls_back_to_original_url():
+    """Opaque CDN keys still resolve to the original request's filename."""
+    resp = SimpleNamespace(
+        headers={},
+        url="https://cdn.example.com/opaque/abc123?X-Amz-Signature=secret",
+    )
+    assert (
+        CORE_UTILS._extract_download_name(
+            resp, "https://github.com/o/r/releases/download/v1/app.apk"
+        )
+        == "app.apk"
+    )
+
+
+def test_extract_download_name_decodes_rfc5987_language_tag():
+    """Charset and language prefixes decode into a plain filename."""
+    resp = SimpleNamespace(
+        headers={
+            "Content-Disposition": (
+                "attachment; filename*=iso-8859-1'it'caf%E9.apk"
+            )
+        },
+        url="https://example.com/download",
+    )
+    assert (
+        CORE_UTILS._extract_download_name(resp, resp.url)
+        == "caf\u00e9.apk"
+    )
+
+
+def test_extract_download_name_skips_empty_candidates():
+    """Unusable header filenames fall through to the URL basename."""
+    resp = SimpleNamespace(
+        headers={
+            "Content-Disposition": (
+                "attachment; filename*=UTF-8''; filename=\"..\""
+            )
+        },
+        url="https://example.com/files/app-1.2.3.apk",
+    )
+    assert (
+        CORE_UTILS._extract_download_name(resp, resp.url)
+        == "app-1.2.3.apk"
+    )
+
+
+def test_finalize_download_clears_provenance_on_failure(monkeypatch):
+    """A failed post-processing step cannot leave stale source metadata."""
+    ctx = SimpleNamespace(
+        original_name="artifact.apk",
+        source_name="APKMirror",
+        source_url="https://www.apkmirror.com/apk/x/y/download/",
+    )
+    monkeypatch.setattr(MAIN, "process_downloaded_file", lambda _: None)
+    assert MAIN._finalize_download(ctx, "artifact.apk") is None
+    assert ctx.original_name == ""
+    assert ctx.source_name == ""
+    assert ctx.source_url == ""
+
+
+def test_build_log_block_reports_provenance(tmp_path):
+    """Per-app headers expose the original filename and sanitized source."""
+    entry = {
+        "name": "youtube",
+        "package": "com.google.android.youtube",
+        "version": "21.45.82",
+        "arch": "arm64-v8a",
+        "status": "success",
+        "original_name": "com.google.android.youtube_21.45.82-1_apkmirror.com.apk",
+        "source_name": "APKMirror",
+        "source_url": "https://www.apkmirror.com/apk/google-inc/youtube/?key=secret#frag",
+    }
+    block = MAIN._build_log_block(entry, {"staging_dir": str(tmp_path)})
+    assert "App: youtube (com.google.android.youtube)" in block
+    assert (
+        "Original app name: "
+        "com.google.android.youtube_21.45.82-1_apkmirror.com.apk"
+    ) in block
+    assert (
+        "Downloaded from: APKMirror "
+        "(https://www.apkmirror.com/apk/google-inc/youtube/)"
+    ) in block
+    assert "key=secret" not in block
+
+
+def test_format_download_source_preserves_play_store_id():
+    """Google Play links keep their package id while tokens are dropped."""
+    entry = {
+        "source_name": "Google Play",
+        "source_url": (
+            "https://play.google.com/store/apps/details"
+            "?id=com.google.android.youtube&hl=en&token=secret"
+        ),
+    }
+    assert MAIN._format_download_source(entry) == (
+        "Google Play (https://play.google.com/store/apps/details"
+        "?id=com.google.android.youtube&hl=en)"
+    )
+
+
+def test_format_download_source_drops_one_time_apkmirror_key():
+    """APKMirror one-time keys and routing params never reach the log."""
+    entry = {
+        "source_name": "APKMirror",
+        "source_url": (
+            "https://www.apkmirror.com/apk/x/y/download/"
+            "?key=secret&forcebaseapk=true"
+        ),
+    }
+    assert MAIN._format_download_source(entry) == (
+        "APKMirror (https://www.apkmirror.com/apk/x/y/download/)"
+    )
+
+
+def test_pr_reviewer_keeps_paid_neon_as_last_resort():
+    """The paid-only Neon model is tried only after free-tier candidates."""
+    reviewer = _load_module(
+        "builder_pr_reviewer", ".github/scripts/pr_reviewer.py"
+    )
+    assert reviewer.GEMINI_MODEL_CANDIDATES[-1] == "gemini-4-neon"
+    assert "gemini-4-hydrogen" in reviewer.GEMINI_MODEL_CANDIDATES

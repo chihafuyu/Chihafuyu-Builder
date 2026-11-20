@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ─── Constants ───────────────────────────────────────────────────
 CYAN='\033[0;36m'; YELLOW='\033[1;33m'; WHITE='\033[1;37m'
 GREEN='\033[0;32m'; RED='\033[0;31m'; NC='\033[0m'
 
@@ -13,21 +12,18 @@ BASE_DIR="$TERMUX_HOME/storage/downloads/Chihafuyu"
 MORPHE_JAR="$BASE_DIR/morphe.jar"
 REPO_URL="https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main"
 
-# ─── Runtime state ───────────────────────────────────────────────
 TEMP_PATCH="" ECO_CHOICE="" TARGET_REPO="" TARGET_JSON_PATH=""
 ECO_DIR="" TRACK_CHOICE="" APK_CHOICE="" TEMP_LOG_FILE=""
 WAKELOCK_HELD=0
 KEYSTORE_PATH="" KEYSTORE_ALIAS="Morphe"
 KEYSTORE_STORE_PASS="" KEYSTORE_ENTRY_PASS="Morphe" KEYSTORE_SIGNER="Morphe"
 
-# ─── Cleanup ─────────────────────────────────────────────────────
 cleanup() {
     local code=$?
     trap - EXIT INT TERM
     if [[ $WAKELOCK_HELD -eq 1 ]]; then
         termux-wake-unlock >/dev/null 2>&1 || true
     fi
-    # Clean up temporary log
     if [[ -n "$TEMP_LOG_FILE" && -f "$TEMP_LOG_FILE" ]]; then
         rm -f "$TEMP_LOG_FILE"
     fi
@@ -41,7 +37,6 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-# ─── Menu helper ─────────────────────────────────────────────────
 _select_menu() {
     local prompt="$1"
     shift 1
@@ -59,7 +54,6 @@ _select_menu() {
     return 1
 }
 
-# ─── Pre-flight ──────────────────────────────────────────────────
 check_dependencies() {
     local missing=()
     command -v curl >/dev/null 2>&1 || missing+=("curl")
@@ -99,7 +93,6 @@ ensure_storage_access() {
     done
 }
 
-# ─── Selectors ───────────────────────────────────────────────────
 select_ecosystem() {
     echo -e "${YELLOW}[INFO] Fetching ecosystem map...${NC}"
     local map_url="${REPO_URL}/repo_map.json"
@@ -127,7 +120,6 @@ select_ecosystem() {
     # Catch Ctrl+D (EOF) to avoid continuing with an empty variable
     ECO_CHOICE=$(_select_menu "Enter your choice: " "${eco_list[@]}") || return 1
     
-    # Early return if user selects Exit
     if [[ "$ECO_CHOICE" == "Exit" ]]; then
         return 0
     fi
@@ -178,7 +170,6 @@ select_track() {
     TRACK_CHOICE=$(_select_menu "Enter track number: " \
         "Stable" "Pre-release" "Back" "Exit") || return 1
         
-    # Early return if user selects Back or Exit
     if [[ "$TRACK_CHOICE" == "Back" || "$TRACK_CHOICE" == "Exit" ]]; then
         return 0
     fi
@@ -192,7 +183,6 @@ select_track() {
     fi
 }
 
-# ─── Downloads ───────────────────────────────────────────────────
 _download_with_cache() {
     local url="$1" dest="$2" timeout="$3"
     local tmp="${dest}.tmp"
@@ -277,7 +267,6 @@ fetch_components() {
     fi
 }
 
-# ─── Keystore ────────────────────────────────────────────────────
 _read_cfg() {
     local file="$1" key="$2"
     if [[ ! -f "$file" ]]; then
@@ -366,7 +355,6 @@ load_keystore_config() {
     echo -e "${CYAN}[INFO] Alias: $KEYSTORE_ALIAS | Signer: $KEYSTORE_SIGNER${NC}"
 }
 
-# ─── APK selection & patching ────────────────────────────────────
 wait_for_apk() {
     echo -e "\n${WHITE}⚠️ ACTION REQUIRED ⚠️${NC}"
     echo -e "Download the APK or bundle (.apk / .apkm / .xapk) of the app to patch."
@@ -399,7 +387,6 @@ select_apk() {
     # Catch Ctrl+D (EOF)
     APK_CHOICE=$(_select_menu "Select APK number: " "${apk_files[@]}") || return 1
     
-    # Early return if user selects Back or Exit
     if [[ "$APK_CHOICE" == "Back" || "$APK_CHOICE" == "Exit" ]]; then
         return 0
     fi
@@ -462,7 +449,6 @@ execute_patch() {
     fi
 }
 
-# ─── Entrypoint ──────────────────────────────────────────────────
 main() {
     echo -e "${CYAN}=========================================${NC}"
     echo -e "${YELLOW}       CHIHAFUYU LOCAL BUILDER           ${NC}"

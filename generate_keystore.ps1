@@ -18,7 +18,6 @@
 [CmdletBinding()]
 param()
 
-# Clear the console for better readability
 Clear-Host
 
 Write-Host "=========================================" -ForegroundColor Cyan
@@ -26,7 +25,6 @@ Write-Host "       CUSTOM KEYSTORE GENERATOR         " -ForegroundColor Yellow
 Write-Host "=========================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Verify if the Java keytool utility is available in the system environment
 if (-not (Get-Command "keytool" -ErrorAction SilentlyContinue)) {
     Write-Error "The 'keytool' command was not found. Please ensure Java (JDK) is installed and added to your system PATH."
     exit 1
@@ -90,7 +88,6 @@ Assert-DnField -FieldName 'O' -Value $o
 Assert-DnField -FieldName 'L' -Value $l
 Assert-DnField -FieldName 'S' -Value $s
 
-# Assemble the final DNAME string
 $dname = "CN=$cn, OU=$ou, O=$o, L=$l, S=$s, C=$c"
 
 $keystoreFile = "custom_keystore.keystore"
@@ -144,7 +141,6 @@ if (Test-Path $keystoreFile) {
         $fileBytes = [System.IO.File]::ReadAllBytes((Resolve-Path $keystoreFile).Path)
         $base64String = [System.Convert]::ToBase64String($fileBytes)
 
-        # Save the Base64 string to a text file securely
         $base64FilePath = Join-Path (Get-Location) $base64File
         [System.IO.File]::WriteAllText($base64FilePath, $base64String)
 

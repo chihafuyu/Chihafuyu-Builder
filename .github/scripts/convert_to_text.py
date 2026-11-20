@@ -35,7 +35,6 @@ def normalize_descriptions(content: str) -> str:
         newline = match.group(3)
         desc_part = match.group(4)
         desc_indent = re.match(r"^([ \t]+)", desc_part).group(1)
-        # Convert app_key (e.g., youtube_music) to slug (youtube-music)
         slug = app_key.replace("_", "-").lower()
         return (
             f"{indent}app_{app_key}:{newline}"
@@ -329,10 +328,8 @@ def convert_workflow(yaml_path: str) -> bool:
     if "apps_to_patch:" in original_content:
         return False
 
-    # 1. Normalize descriptions
     content = normalize_descriptions(original_content)
 
-    # 2. Check for text-based migration
     app_inputs = len(APP_INPUT_RE.findall(content))
     inputs_section = content.split("permissions:")[0] if "permissions:" in content else content
     total_inputs = len(re.findall(r"^ {6}[a-zA-Z0-9_]+:\r?\n", inputs_section, re.MULTILINE))
