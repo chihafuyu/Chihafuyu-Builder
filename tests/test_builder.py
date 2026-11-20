@@ -5,6 +5,7 @@
 # pylint: disable=protected-access
 
 import importlib.util
+import json
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -31,6 +32,9 @@ TIER1 = _load_module("scrapers.tier1_apkmirror", "scrapers/tier1_apkmirror.py")
 TIER3 = _load_module("scrapers.tier3_archive", "scrapers/tier3_archive.py")
 AUTO_CONFIG = _load_module(
     "builder_auto_update_config", ".github/scripts/auto_update_config.py"
+)
+CONVERT_TO_TEXT = _load_module(
+    "builder_convert_to_text", ".github/scripts/convert_to_text.py"
 )
 
 
@@ -321,6 +325,145 @@ def test_build_new_app_config_prefills_beta_and_options():
         "Premium unlock": {"enabled": False},
         "Widget toggle": {"enabled": True, "options": {"hideWidget": False}},
     }
+
+
+def test_sync_workflow_and_toml_repairs_missing_apps(tmp_path, monkeypatch):
+    """Existing TOMLs must gain config apps that predate their creation."""
+    eco_name = "aidan"
+    config_path = tmp_path / f"{eco_name}.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                eco_name: {
+                    "apps": {
+                        "365-pay": {"stable": ["10.2605.0"]},
+                        "adobe-scan": {"stable": ["26.09.25"]},
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    toml_path = tmp_path / "config" / f"apps-{eco_name}.toml"
+    toml_path.parent.mkdir()
+    toml_path.write_text(
+        AUTO_CONFIG.TOML_HEADER
+        + '"365-pay" = false\n'
+        + '"removed-app" = true\n',
+        encoding="utf-8",
+    )
+    yaml_path = tmp_path / f"{eco_name}-patcher.yml"
+    yaml_path.write_text("apps_to_patch:\n", encoding="utf-8")
+
+    monkeypatch.setattr(AUTO_CONFIG, "_get_repo_root", lambda: str(tmp_path))
+    monkeypatch.setattr(
+        AUTO_CONFIG, "_find_workflow_path", lambda _name: str(yaml_path)
+    )
+
+    changed = AUTO_CONFIG._sync_workflow_and_toml(
+        eco_name,
+        str(config_path),
+        14,
+        added_apps={},
+        removed_apps=[],
+        changed=False,
+    )
+
+    assert changed is True
+    content = toml_path.read_text(encoding="utf-8")
+    assert '"365-pay" = false' in content
+    assert '"adobe-scan" = true' in content
+    assert '"removed-app"' not in content
+
+
+def test_sync_workflow_and_toml_creates_toml_for_text_input(
+    tmp_path, monkeypatch
+):
+    """Text-input workflows need a TOML even when the app count is low."""
+    eco_name = "small"
+    config_path = tmp_path / f"{eco_name}.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                eco_name: {
+                    "apps": {
+                        "alpha": {"stable": ["1.0.0"]},
+                        "beta": {"stable": ["Any"]},
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    toml_path = tmp_path / "config" / f"apps-{eco_name}.toml"
+    yaml_path = tmp_path / f"{eco_name}-patcher.yml"
+    yaml_path.write_text("apps_to_patch:\n", encoding="utf-8")
+
+    monkeypatch.setattr(AUTO_CONFIG, "_get_repo_root", lambda: str(tmp_path))
+    monkeypatch.setattr(
+        AUTO_CONFIG, "_find_workflow_path", lambda _name: str(yaml_path)
+    )
+
+    changed = AUTO_CONFIG._sync_workflow_and_toml(
+        eco_name,
+        str(config_path),
+        2,
+        added_apps={},
+        removed_apps=[],
+        changed=False,
+    )
+
+    assert changed is True
+    content = toml_path.read_text(encoding="utf-8")
+    assert '"alpha" = true' in content
+    assert '"beta" = false' in content
+
+
+def test_convert_workflow_repairs_toml_for_text_input(tmp_path, monkeypatch):
+    """Already-migrated workflows still reconcile apps missing from TOML."""
+    eco_name = "aidan"
+    config_dir = tmp_path / "ecosystem"
+    config_dir.mkdir()
+    (config_dir / f"{eco_name}.json").write_text(
+        json.dumps(
+            {
+                eco_name: {
+                    "apps": {
+                        "365-pay": {"stable": ["10.2605.0"]},
+                        "adobe-scan": {"stable": ["26.09.25"]},
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    toml_path = tmp_path / "config" / f"apps-{eco_name}.toml"
+    toml_path.parent.mkdir()
+    toml_path.write_text(
+        AUTO_CONFIG.TOML_HEADER + '"365-pay" = false\n',
+        encoding="utf-8",
+    )
+    yaml_path = tmp_path / f"{eco_name}-patcher.yml"
+    yaml_path.write_text(
+        '"on":\n'
+        "  workflow_dispatch:\n"
+        "    inputs:\n"
+        "      apps_to_patch:\n"
+        "        type: string\n"
+        "\n"
+        "jobs:\n"
+        "  call-patcher:\n"
+        "    with:\n"
+        f'      ecosystem: "{eco_name}"\n',
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(CONVERT_TO_TEXT, "_get_repo_root", lambda: str(tmp_path))
+
+    assert CONVERT_TO_TEXT.convert_workflow(str(yaml_path)) is True
+    content = toml_path.read_text(encoding="utf-8")
+    assert '"365-pay" = false' in content
+    assert '"adobe-scan" = true' in content
 
 
 @pytest.mark.parametrize(

@@ -807,6 +807,13 @@ def _count_apps_in_config(config_path, eco_name):
     return len(apps) if apps else 0
 
 
+def _app_enabled_by_default(app_cfg):
+    """Return whether a config entry has a concrete stable version to patch."""
+    stable = app_cfg.get("stable") or []
+    first = stable[0] if isinstance(stable, list) and stable else ""
+    return bool(first and first != "Any")
+
+
 def _create_full_toml(toml_path, config_path, eco_name):
     """Create a new apps.toml populated from the current config apps."""
     if os.path.exists(toml_path):
@@ -826,9 +833,7 @@ def _create_full_toml(toml_path, config_path, eco_name):
             for app_key, app_cfg in sorted(apps.items()):
                 if not isinstance(app_cfg, dict):
                     continue
-                stable = app_cfg.get("stable") or []
-                first = stable[0] if isinstance(stable, list) and stable else ""
-                flag = "true" if first and first != "Any" else "false"
+                flag = "true" if _app_enabled_by_default(app_cfg) else "false"
                 file_obj.write(f'"{app_key}" = {flag}\n')
         os.replace(tmp_path, toml_path)
         print(f"    -> Created {os.path.basename(toml_path)} with {len(apps)} apps")
@@ -1394,16 +1399,43 @@ def _insert_toml_entry(lines, entries, header_idx, app_key, flag):
     return lines
 
 
+def _collect_toml_delta(toml_path, config_path, eco_name):
+    """Return (missing_apps, stale_apps) between config and an existing TOML.
+
+    Existing TOML files can predate later config growth; incremental
+    added/removed tracking alone cannot repair those gaps.
+    """
+    apps, err = _extract_apps_or_none(config_path, eco_name)
+    if err:
+        print(f"    -> Failed to read config for TOML sync: {err}")
+        return {}, []
+    if not isinstance(apps, dict) or not apps:
+        return {}, []
+
+    try:
+        with open(toml_path, "r", encoding="utf-8") as file_obj:
+            lines = file_obj.readlines()
+    except OSError as err:
+        print(f"    -> Failed to read {toml_path} for TOML sync: {err}")
+        return {}, []
+
+    header_idx, entries = _rebuild_toml_index(lines)
+    if header_idx is None:
+        return {}, []
+
+    missing_apps = {}
+    for app_key, app_cfg in apps.items():
+        if app_key in entries or not isinstance(app_cfg, dict):
+            continue
+        missing_apps[app_key] = _app_enabled_by_default(app_cfg)
+    stale_apps = sorted(set(entries) - set(apps))
+    return missing_apps, stale_apps
+
+
 def _update_apps_toml(toml_path, added_apps, removed_apps):
-    """Add or remove apps in config/apps-[eco].toml while preserving structure."""
+    """Add or remove apps in an existing config/apps-[eco].toml."""
     if not os.path.exists(toml_path):
-        try:
-            os.makedirs(os.path.dirname(toml_path), exist_ok=True)
-            with open(toml_path, "w", encoding="utf-8") as file_obj:
-                file_obj.write(TOML_HEADER)
-        except OSError as err:
-            print(f"    -> Failed to create {toml_path}: {err}")
-            return False
+        return False
 
     if not added_apps and not removed_apps:
         return False
@@ -1533,6 +1565,7 @@ def _sync_workflow_and_toml(
     any_change = False
     yaml_path = _find_workflow_path(eco_name)
     toml_path = os.path.join(_get_repo_root(), "config", f"apps-{eco_name}.toml")
+    text_input = False
 
     # Proactively recover broken workflows: enforce YAML migration if the limit is exceeded,
     # even if no new apps were added in the current execution cycle.
@@ -1541,7 +1574,9 @@ def _sync_workflow_and_toml(
             with open(yaml_path, "r", encoding="utf-8") as yf:
                 yaml_content = yf.read()
 
-            if "apps_to_patch:" not in yaml_content:
+            if "apps_to_patch:" in yaml_content:
+                text_input = True
+            else:
                 inputs_sec = yaml_content.split("permissions:")[0] if "permissions:" in yaml_content else yaml_content
                 tot_inputs = len(re.findall(r"^ {6}[a-zA-Z0-9_]+:\r?\n", inputs_sec, re.MULTILINE))
                 if app_count > MAX_YAML_INPUTS or tot_inputs > 25:
@@ -1551,17 +1586,28 @@ def _sync_workflow_and_toml(
                         f"Forcing migration to text input."
                     )
                     if _migrate_to_text_input(eco_name, yaml_path):
+                        text_input = True
                         any_change = True
         except OSError as err:
             print(f"  -> Failed to read {yaml_path} for migration check: {err}")
 
-    if app_count > MAX_YAML_INPUTS:
+    # Text-input workflows need a TOML even below the checkbox limit. Existing
+    # TOMLs are reconciled even without incremental changes so entries missed
+    # when the file was first created are repaired.
+    if app_count > MAX_YAML_INPUTS or text_input or os.path.exists(toml_path):
         if not os.path.exists(toml_path):
             if _create_full_toml(toml_path, config_path, eco_name):
                 any_change = True
-        elif added_apps or removed_apps:
-            if _update_apps_toml(toml_path, added_apps, removed_apps):
-                any_change = True
+        else:
+            missing_apps, stale_apps = _collect_toml_delta(
+                toml_path, config_path, eco_name
+            )
+            sync_added = dict(missing_apps)
+            sync_added.update(added_apps)
+            sync_removed = sorted(set(removed_apps) | set(stale_apps))
+            if sync_added or sync_removed:
+                if _update_apps_toml(toml_path, sync_added, sync_removed):
+                    any_change = True
 
     if changed:
         any_change = True

@@ -251,23 +251,38 @@ jobs:
 {call_patcher_block}"""
 
 
-def _ensure_toml_exists(ecosystem_name: str) -> None:
-    """Ensures config/apps-{ecosystem_name}.toml exists and contains all apps from ecosystem JSON."""
+def _resolve_ecosystem_name(content: str, yaml_path: str) -> str:
+    """Resolve the ecosystem from the workflow, falling back to its filename."""
+    call_patcher_match = re.search(r"^  call-patcher:", content, re.MULTILINE)
+    if call_patcher_match:
+        call_patcher_block = content[call_patcher_match.start():]
+        eco_match = re.search(
+            r'^\s+ecosystem:\s*["\']([^"\'\r\n\s]+)["\']',
+            call_patcher_block,
+            re.MULTILINE,
+        )
+        if eco_match and not eco_match.group(1).startswith("$"):
+            return eco_match.group(1)
+    return os.path.basename(yaml_path).replace("-patcher.yml", "")
+
+
+def _ensure_toml_exists(ecosystem_name: str) -> bool:
+    """Ensure the TOML exists and covers every app in the ecosystem JSON."""
     repo_root = _get_repo_root()
     toml_path = os.path.join(repo_root, "config", f"apps-{ecosystem_name}.toml")
     config_path = os.path.join(repo_root, "ecosystem", f"{ecosystem_name}.json")
     if not os.path.exists(config_path):
-        return
+        return False
 
     try:
         with open(config_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         apps_dict = data.get(ecosystem_name, {}).get("apps", {})
     except (OSError, json.JSONDecodeError):
-        return
+        return False
 
     if not isinstance(apps_dict, dict) or not apps_dict:
-        return
+        return False
 
     os.makedirs(os.path.dirname(toml_path), exist_ok=True)
     existing_entries = {}
@@ -307,6 +322,7 @@ def _ensure_toml_exists(ecosystem_name: str) -> None:
                     f.write(f'"{k}" = {existing_entries[k]}\n')
             os.replace(tmp_path, toml_path)
             print(f"    -> Synchronized {os.path.basename(toml_path)} with {len(existing_entries)} apps.")
+            return True
         except OSError as err:
             print(f"    -> Failed to write {toml_path}: {err}")
             if os.path.exists(tmp_path):
@@ -314,6 +330,8 @@ def _ensure_toml_exists(ecosystem_name: str) -> None:
                     os.remove(tmp_path)
                 except OSError:
                     pass
+            return False
+    return False
 
 
 def convert_workflow(yaml_path: str) -> bool:
@@ -325,8 +343,9 @@ def convert_workflow(yaml_path: str) -> bool:
         print(f"Failed to read {yaml_path}: {err}")
         return False
 
+    ecosystem_name = _resolve_ecosystem_name(original_content, yaml_path)
     if "apps_to_patch:" in original_content:
-        return False
+        return _ensure_toml_exists(ecosystem_name)
 
     content = normalize_descriptions(original_content)
 
@@ -344,12 +363,7 @@ def convert_workflow(yaml_path: str) -> bool:
             return False
 
         call_patcher_block = content[call_patcher_match.start():]
-        eco_match = re.search(r'^\s+ecosystem:\s*["\']([^"\'\r\n\s]+)["\']', call_patcher_block, re.MULTILINE)
-        if eco_match and not eco_match.group(1).startswith("$"):
-            ecosystem_name = eco_match.group(1)
-        else:
-            ecosystem_name = os.path.basename(yaml_path).replace("-patcher.yml", "")
-
+        ecosystem_name = _resolve_ecosystem_name(content, yaml_path)
         content = _build_text_yaml(ecosystem_name, call_patcher_block, workflow_name)
         print(f"Migrating {yaml_path} to text-based input (app inputs: {app_inputs}, total: {total_inputs}).")
         _ensure_toml_exists(ecosystem_name)
