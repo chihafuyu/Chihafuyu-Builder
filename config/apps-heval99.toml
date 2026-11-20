@@ -9,6 +9,7 @@
 "aiscore" = false
 "alarm-clock-xtreme" = false
 "allente" = false
+"aqua-mail" = true
 "b-t" = true
 "bbc-news" = true
 "beeper" = true
@@ -21,6 +22,7 @@
 "bluetooth-scanner" = false
 "bold" = false
 "bookly" = false
+"box-box" = true
 "brave-browser" = false
 "brevent" = true
 "business-calendar-2" = false
@@ -35,6 +37,7 @@
 "ekstra-bladet" = false
 "eurosport" = false
 "ex-file-manager" = true
+"fairemail" = true
 "firefox" = true
 "firefox-focus" = false
 "fishbuddy" = false
@@ -50,22 +53,27 @@
 "hyperion-launcher" = false
 "interval-timer" = false
 "ircode-finder" = false
+"jetaudio" = true
 "jydskevestkysten" = false
 "jyllands-posten" = false
+"librera" = true
 "livescore" = false
 "mail-com" = false
 "mango-launcher" = false
 "minimalist-launcher" = false
 "monefy" = false
+"moon-reader" = true
 "myfitnesspal" = false
 "native-camera" = true
 "niagara-launcher" = false
 "nordisk-film" = false
 "nordjyske" = false
+"notepad" = true
 "notialarm" = true
 "onecricket" = false
 "onefootball" = false
 "osmand" = false
+"pi-music-player" = true
 "pocket-color-wheel" = false
 "podcast-republic" = false
 "politiken" = false
@@ -84,6 +92,7 @@
 "the-wall-street-journal" = true
 "timetune" = false
 "transfermarkt" = false
+"truecaller" = true
 "tv-2-nyheder" = false
 "tv-2-play" = false
 "tv-smarters-player-expert" = false
@@ -91,6 +100,7 @@
 "vesselfinder" = false
 "via" = false
 "viaplay" = false
+"weather-underground" = true
 "wemuslim" = true
 "yahoo-sports" = false
 "youcut" = true

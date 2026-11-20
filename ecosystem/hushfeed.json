@@ -5,7 +5,7 @@
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok",
                 "stable": [
-                    "47.9.1"
+                    "47.9.2"
                 ],
                 "beta": [],
                 "strip": true,
@@ -129,7 +129,8 @@
                             "pick_grid_videos": false,
                             "share_after_save": false,
                             "video_buttons_over_rail": false,
-                            "save_episodes_button": false
+                            "save_episodes_button": false,
+                            "profile_picture_viewer": false
                         }
                     },
                     "Allow Duet and Stitch": {
@@ -1077,10 +1078,116 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "2024709010",
-                    "armeabi-v7a": "2024709010",
-                    "x86": "2024709010",
-                    "x86_64": "2024709010"
+                    "arm64-v8a": "2024709020",
+                    "armeabi-v7a": "2024709020",
+                    "x86": "2024709020",
+                    "x86_64": "2024709020"
+                }
+            },
+            "tiktok-lite": {
+                "package": "com.zhiliaoapp.musically.go",
+                "search_term": "TikTok Lite",
+                "stable": [
+                    "47.8.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Block contact list access": {
+                        "enabled": true,
+                        "options": {
+                            "block_contact_list": false
+                        }
+                    },
+                    "Block installed app scanning": {
+                        "enabled": true,
+                        "options": {
+                            "block_installed_apps": false
+                        }
+                    },
+                    "Camera and microphone indicator": {
+                        "enabled": true,
+                        "options": {
+                            "camera_mic_indicator": false
+                        }
+                    },
+                    "Change app name": {
+                        "enabled": false
+                    },
+                    "Diagnostic tools": {
+                        "enabled": true,
+                        "options": {
+                            "morphe_debug": false,
+                            "morphe_capture_java_crashes": false,
+                            "morphe_debug_stacktrace": false
+                        }
+                    },
+                    "Feed filter": {
+                        "enabled": true,
+                        "options": {
+                            "blocked_words_in_stickers": false,
+                            "hide_promotional_music": false,
+                            "hide_live_replays": false,
+                            "hide_unpersonalized_for_you": false,
+                            "friends_mutuals_only": false,
+                            "following_latest_first": false,
+                            "hide_live": false,
+                            "hide_shop": false,
+                            "hide_search_shop": false,
+                            "hide_story": false,
+                            "hide_image": false,
+                            "hide_offline_videos": false,
+                            "feed_filter_count_pill": false,
+                            "hide_bottom_search_bar": false,
+                            "local_hide_button": false,
+                            "block_sound_button": false,
+                            "hide_paid_partnership": false,
+                            "filter_location_videos": false,
+                            "hide_ai_generated": false,
+                            "hide_verified": false,
+                            "hide_series": false,
+                            "hide_mini_dramas": false,
+                            "hide_playlist_bar": false,
+                            "hide_event_badge": false,
+                            "hide_inserted_cards": false,
+                            "hide_playlist_videos": false,
+                            "hide_subscriber_only": false,
+                            "live_feed_filter": false,
+                            "live_hide_gaming": false,
+                            "live_hide_shopping": false,
+                            "live_hide_sponsored": false,
+                            "live_hide_verified": false,
+                            "hide_ai_cast": false
+                        }
+                    },
+                    "In-app browser privacy guard": {
+                        "enabled": true,
+                        "options": {
+                            "block_webview_js_interfaces": false
+                        }
+                    },
+                    "Network request report": {
+                        "enabled": false
+                    },
+                    "Settings": {
+                        "enabled": true,
+                        "options": {
+                            "hide_settings_row": false,
+                            "settings_as_list": false,
+                            "startup_message": false,
+                            "check_for_updates": false
+                        }
+                    },
+                    "Trust user certificates": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "470802",
+                    "armeabi-v7a": "470802",
+                    "x86": "470802",
+                    "x86_64": "470802"
                 }
             }
         }

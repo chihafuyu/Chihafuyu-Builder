@@ -84,17 +84,6 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
-            "ccleaner": {
-                "package": "com.piriform.ccleaner",
-                "search_term": "CCleaner",
-                "stable": [
-                    "26.08.0"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {}
-            },
             "com-chenupt-money": {
                 "package": "com.chenupt.money",
                 "search_term": "记账助手",
@@ -212,7 +201,9 @@
                 "stable": [
                     "2.243.1555"
                 ],
-                "beta": [],
+                "beta": [
+                    "2.240.1552"
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}
@@ -515,10 +506,10 @@
                 "package": "com.whatsapp",
                 "search_term": "WhatsApp",
                 "stable": [
-                    "2.26.43.76"
+                    "2.26.45.93"
                 ],
                 "beta": [
-                    "2.26.43.74"
+                    "2.26.44.70"
                 ],
                 "strip": true,
                 "archive_id": "ZeNiX",

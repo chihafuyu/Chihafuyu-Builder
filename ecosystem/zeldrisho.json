@@ -33,13 +33,13 @@
                 "package": "com.zing.zalo",
                 "search_term": "Zalo",
                 "stable": [
-                    "26.10.02"
+                    "26.11.01"
                 ],
                 "beta": [
                     "26.11.01"
                 ],
                 "version_codes": {
-                    "arm64-v8a": "261002903"
+                    "arm64-v8a": "261101901"
                 },
                 "strip": true,
                 "force_bundle": true,
@@ -82,6 +82,9 @@
                         "enabled": false
                     },
                     "Save Zalo stories": {
+                        "enabled": false
+                    },
+                    "Enable bubble chat": {
                         "enabled": false
                     }
                 }

@@ -3,3 +3,5 @@
 
 [apps]
 "brave-browser" = false
+"quetta-browser" = true
+"quetta-browser-official" = true
