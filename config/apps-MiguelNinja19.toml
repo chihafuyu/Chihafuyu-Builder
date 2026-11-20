@@ -2,7 +2,10 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
+"anger-of-stick-5" = true
 "climb" = true
 "cubex-solver" = true
+"hunter-assassin" = true
 "oddmar" = true
 "plants-vs-zombies-free" = true
+"the-battle-of-polytopia" = true

@@ -3,12 +3,16 @@
 
 [apps]
 "365-pay" = true
+"adobe-reader" = true
+"adobe-scan" = true
 "aftership" = true
 "blackjack" = true
 "canvas-student" = true
+"credit-karma" = true
 "fizz" = true
 "geocaching" = true
 "navigate360-student" = true
 "nhl" = true
+"pro-metronome" = true
 "sezzle" = true
 "sidelineswap" = true

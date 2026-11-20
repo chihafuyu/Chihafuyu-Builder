@@ -2,4 +2,14 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
+"facebook" = true
+"instagram" = true
+"messenger" = true
+"pinedrama" = true
+"pinterest" = true
 "telegram" = true
+"telegram-web" = true
+"threads" = true
+"tiktok-global" = true
+"tiktok-lite" = true
+"tumblr" = true

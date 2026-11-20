@@ -2,9 +2,13 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
+"capcut" = true
+"hevy" = true
 "ibispaint-x" = true
 "instagram" = true
 "moovit" = true
+"nokoprint" = true
+"sd-maid-se" = true
 "sube" = true
 "x" = true
 "xiaomi-earbuds" = true

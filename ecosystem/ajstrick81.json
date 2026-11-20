@@ -96,6 +96,17 @@
                     }
                 }
             },
+            "mediaset-infinity-android-tv": {
+                "package": "it.mediaset.infinitytv",
+                "search_term": "Mediaset Infinity Android TV",
+                "stable": [
+                    "8.1.20"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "mlb-tv-android-tv": {
                 "package": "com.bamnetworks.mobile.android.gameday.atbat",
                 "search_term": "MLB.tv Android TV",

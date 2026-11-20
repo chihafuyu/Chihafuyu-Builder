@@ -2,12 +2,23 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
+"disneyplus" = true
 "espn-android-tv" = true
 "f1-tv-android-tv" = true
 "fawesome-movies-tv-android-tv" = true
 "fox-one-android-tv" = true
+"hbo-max" = true
+"mediaset-infinity-android-tv" = true
 "mlb-tv-android-tv" = true
+"netflix" = true
+"paramount-plus" = true
+"peacock" = true
+"pluto-tv" = true
+"prime-video" = true
 "raiplay-android-tv" = true
 "rt-player-android-tv" = true
+"tubi" = true
+"twitch" = true
+"vix" = true
 "xumo-play-android-tv" = true
 "youtube-android-tv" = true

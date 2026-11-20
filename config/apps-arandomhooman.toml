@@ -2,26 +2,39 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
+"adm" = true
 "adobe-acrobat" = true
 "agama-car-launcher" = true
+"alpha-progression" = true
 "at4k-launcher" = true
 "autozen" = true
+"bandlab" = true
+"battery-guru" = true
 "blockerhero" = true
 "cashew" = true
 "chatboost" = true
 "collectr" = true
+"cronometer" = true
+"directchat" = true
 "essence" = true
+"finch" = true
+"flightradar24" = true
+"foldersync" = true
 "google-phone" = true
 "hevy" = true
 "i-am-sober" = true
+"inshot" = true
+"liquid-gallery" = true
 "microsoft-swiftkey" = true
 "mixel" = true
 "moneta" = true
 "money-manager" = true
 "moovit" = true
+"poweramp" = true
 "quizlet" = true
 "replaio" = true
 "rumble" = true
+"smart-audiobook" = true
 "sofascore" = true
 "stash" = true
 "symfonium" = true
@@ -30,4 +43,6 @@
 "tracked" = true
 "tumblr" = true
 "twitch" = true
+"video-converter" = true
 "wanderlog" = true
+"webtoon" = true

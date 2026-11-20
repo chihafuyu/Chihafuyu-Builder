@@ -3,3 +3,4 @@
 
 [apps]
 "telegram" = true
+"telegram-web" = true

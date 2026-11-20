@@ -21,6 +21,18 @@
                 },
                 "force_bundle": true
             },
+            "adobe-reader": {
+                "package": "com.adobe.reader",
+                "search_term": "Adobe Reader",
+                "stable": [
+                    "26.9.2.50367"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
             "adobe-scan": {
                 "package": "com.adobe.scan.android",
                 "search_term": "Adobe Scan",
@@ -39,12 +51,6 @@
                     },
                     "Use System Font": {
                         "enabled": false
-                    },
-                    "Unlock Premium": {
-                        "enabled": true,
-                        "options": {
-                            "unlockCloudTools": false
-                        }
                     }
                 },
                 "force_bundle": true
@@ -89,7 +95,38 @@
                 "package": "com.instructure.candroid",
                 "search_term": "Canvas Student",
                 "stable": [
-                    "8.10.0"
+                    "8.12.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Change App Icon": {
+                        "enabled": false
+                    },
+                    "Change App Name": {
+                        "enabled": false
+                    },
+                    "Clone App": {
+                        "enabled": false
+                    },
+                    "Disable AI Study Tools": {
+                        "enabled": false
+                    },
+                    "Show Remote Config Editor": {
+                        "enabled": false
+                    },
+                    "Unlock Notebook and Offline Content": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
+            "credit-karma": {
+                "package": "com.creditkarma.mobile",
+                "search_term": "Credit Karma",
+                "stable": [
+                    "26.40"
                 ],
                 "beta": [],
                 "strip": true,
@@ -177,6 +214,18 @@
                         }
                     }
                 },
+                "force_bundle": true
+            },
+            "pro-metronome": {
+                "package": "com.eumlab.android.prometronome",
+                "search_term": "Pro Metronome",
+                "stable": [
+                    "1.0.12"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
                 "force_bundle": true
             },
             "sezzle": {
