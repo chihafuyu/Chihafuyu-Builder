@@ -1,4 +1,4 @@
-beautifulsoup4>=4.13,<5
+beautifulsoup4>=4.15.0,<5
 huggingface_hub>=2.4.0,<3
 kurigram>=2.2.27,<3
 requests>=2.32,<3
