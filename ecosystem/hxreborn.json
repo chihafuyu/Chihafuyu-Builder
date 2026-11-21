@@ -58,7 +58,7 @@
                 "package": "com.thesortdapp.sortd",
                 "search_term": "Albo",
                 "stable": [
-                    "1.25.6"
+                    "1.28.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -69,10 +69,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "1037",
-                    "armeabi-v7a": "1037",
-                    "x86_64": "1037",
-                    "x86": "1037"
+                    "arm64-v8a": "1135",
+                    "armeabi-v7a": "1135",
+                    "x86_64": "1135",
+                    "x86": "1135"
                 },
                 "force_bundle": true
             },
@@ -320,17 +320,17 @@
                 "package": "com.oneletters.audiobooksai",
                 "search_term": "Audiobook Unlimited for Kindle",
                 "stable": [
-                    "1.7.24"
+                    "1.7.30"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "199",
-                    "armeabi-v7a": "199",
-                    "x86_64": "199",
-                    "x86": "199"
+                    "arm64-v8a": "205",
+                    "armeabi-v7a": "205",
+                    "x86_64": "205",
+                    "x86": "205"
                 },
                 "force_bundle": true
             },
@@ -431,17 +431,17 @@
                 "package": "ipnossoft.rma.free",
                 "search_term": "BetterSleep",
                 "stable": [
-                    "26.19"
+                    "26.20"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "27176",
-                    "armeabi-v7a": "27176",
-                    "x86_64": "27176",
-                    "x86": "27176"
+                    "arm64-v8a": "27237",
+                    "armeabi-v7a": "27237",
+                    "x86_64": "27237",
+                    "x86": "27237"
                 },
                 "force_bundle": true
             },
@@ -449,17 +449,17 @@
                 "package": "com.biobird.exvee",
                 "search_term": "Biobird Flashcards",
                 "stable": [
-                    "3.0.0"
+                    "4.0.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "41",
-                    "armeabi-v7a": "41",
-                    "x86_64": "41",
-                    "x86": "41"
+                    "arm64-v8a": "46",
+                    "armeabi-v7a": "46",
+                    "x86_64": "46",
+                    "x86": "46"
                 },
                 "force_bundle": true
             },
@@ -1566,7 +1566,7 @@
                 "package": "com.lingodeer",
                 "search_term": "LingoDeer",
                 "stable": [
-                    "2.99.419"
+                    "2.99.423"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1577,10 +1577,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "683",
-                    "armeabi-v7a": "683",
-                    "x86_64": "683",
-                    "x86": "683"
+                    "arm64-v8a": "687",
+                    "armeabi-v7a": "687",
+                    "x86_64": "687",
+                    "x86": "687"
                 },
                 "force_bundle": true
             },
@@ -2617,17 +2617,17 @@
                 "package": "org.readera",
                 "search_term": "ReadEra",
                 "stable": [
-                    "26.10.28+2340"
+                    "26.11.06+2360"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "2340",
-                    "armeabi-v7a": "2340",
-                    "x86_64": "2340",
-                    "x86": "2340"
+                    "arm64-v8a": "2360",
+                    "armeabi-v7a": "2360",
+                    "x86_64": "2360",
+                    "x86": "2360"
                 },
                 "force_bundle": true
             },
@@ -2687,17 +2687,17 @@
                 "package": "com.fengeon.resprite_desktop",
                 "search_term": "Resprite",
                 "stable": [
-                    "1.32.6"
+                    "1.33.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "302",
-                    "armeabi-v7a": "302",
-                    "x86_64": "302",
-                    "x86": "302"
+                    "arm64-v8a": "313",
+                    "armeabi-v7a": "313",
+                    "x86_64": "313",
+                    "x86": "313"
                 },
                 "force_bundle": true
             },
@@ -2945,7 +2945,7 @@
                 "package": "com.dubox.drive",
                 "search_term": "TeraBox",
                 "stable": [
-                    "4.28.5"
+                    "4.29.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -2965,10 +2965,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "709",
-                    "armeabi-v7a": "709",
-                    "x86_64": "709",
-                    "x86": "709"
+                    "arm64-v8a": "710",
+                    "armeabi-v7a": "710",
+                    "x86_64": "710",
+                    "x86": "710"
                 },
                 "force_bundle": true
             },
@@ -3455,7 +3455,7 @@
                 "package": "io.yuka.android",
                 "search_term": "Yuka",
                 "stable": [
-                    "5.7"
+                    "5.9.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -3466,10 +3466,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "875",
-                    "armeabi-v7a": "875",
-                    "x86_64": "875",
-                    "x86": "875"
+                    "arm64-v8a": "882",
+                    "armeabi-v7a": "882",
+                    "x86_64": "882",
+                    "x86": "882"
                 },
                 "force_bundle": true
             }

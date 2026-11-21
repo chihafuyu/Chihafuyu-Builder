@@ -16,7 +16,7 @@
                 "package": "com.llamalab.automate",
                 "search_term": "Automate",
                 "stable": [
-                    "1.51.1"
+                    "1.54.0-play"
                 ],
                 "beta": [],
                 "strip": true,
@@ -56,6 +56,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "cosmic-watch": {
+                "package": "com.cosmic_watch.cosmicwatch",
+                "search_term": "Cosmic Watch",
+                "stable": [
+                    "3.0.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "everycircuit": {
                 "package": "com.everycircuit.free",
                 "search_term": "EveryCircuit",
@@ -72,6 +83,17 @@
                 "search_term": "Inshorts",
                 "stable": [
                     "6.13.04"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "mt-manager": {
+                "package": "bin.mt.plus",
+                "search_term": "MT Manager",
+                "stable": [
+                    "2.26.11"
                 ],
                 "beta": [],
                 "strip": true,
@@ -104,7 +126,18 @@
                 "package": "com.vitotechnology.sky.tonight.map.star.walk",
                 "search_term": "Sky Tonight",
                 "stable": [
-                    "2.5.3"
+                    "2.6.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
+            "solar-walk-2": {
+                "package": "com.vitotechnology.SolarWalk2Free",
+                "search_term": "Solar Walk 2",
+                "stable": [
+                    "1.6.9"
                 ],
                 "beta": [],
                 "strip": true,
@@ -115,7 +148,7 @@
                 "package": "pl.solidexplorer2",
                 "search_term": "Solid Explorer",
                 "stable": [
-                    "3.6.4"
+                    "3.6.5"
                 ],
                 "beta": [],
                 "strip": true,

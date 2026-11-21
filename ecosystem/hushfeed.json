@@ -5,7 +5,7 @@
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok",
                 "stable": [
-                    "47.9.2"
+                    "47.9.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -1078,10 +1078,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "2024709020",
-                    "armeabi-v7a": "2024709020",
-                    "x86": "2024709020",
-                    "x86_64": "2024709020"
+                    "arm64-v8a": "2024709030",
+                    "armeabi-v7a": "2024709030",
+                    "x86": "2024709030",
+                    "x86_64": "2024709030"
                 }
             },
             "tiktok-lite": {
