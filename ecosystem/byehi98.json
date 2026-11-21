@@ -61,6 +61,18 @@
                 "options_override": {},
                 "force_bundle": true
             },
+            "app-usage": {
+                "package": "com.a0soft.gphone.uninstaller",
+                "search_term": "App Usage",
+                "stable": [
+                    "6.19"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
             "big-hunter": {
                 "package": "com.kakarod.bighunter",
                 "search_term": "Big Hunter",
@@ -96,6 +108,22 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "crazygames": {
+                "package": "com.crazygames.crazygamesapp",
+                "search_term": "CrazyGames",
+                "stable": [
+                    "1.7.13"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Google login via MicroG-RE": {
+                        "enabled": false
+                    }
+                },
+                "force_bundle": true
+            },
             "crossy-road": {
                 "package": "com.yodo1.crossyroad",
                 "search_term": "Crossy Road",
@@ -123,7 +151,7 @@
                 "package": "com.halfbrick.dantheman",
                 "search_term": "Dan the Man",
                 "stable": [
-                    "1.14.11"
+                    "1.14.12"
                 ],
                 "beta": [],
                 "strip": true,
@@ -159,7 +187,7 @@
                 "package": "com.cv.docscanner",
                 "search_term": "Document Scanner",
                 "stable": [
-                    "6.9.9"
+                    "6.9.14"
                 ],
                 "beta": [],
                 "strip": true,
@@ -228,7 +256,7 @@
                 "package": "com.overthetopgames.fancypants",
                 "search_term": "Fancy Pants Adventures",
                 "stable": [
-                    "1.0.49"
+                    "1.0.50"
                 ],
                 "beta": [],
                 "strip": true,
@@ -264,15 +292,15 @@
                 "package": "com.halfbrick.fruitninjafree",
                 "search_term": "Fruit Ninja (Free)",
                 "stable": [
-                    "3.97.9"
+                    "3.98.4"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "88485200",
-                    "armeabi-v7a": "88485200"
+                    "arm64-v8a": "90061600",
+                    "armeabi-v7a": "90061600"
                 },
                 "force_bundle": true
             },
@@ -327,7 +355,7 @@
                 "package": "com.fingersoft.hillclimb",
                 "search_term": "Hill Climb Racing",
                 "stable": [
-                    "1.73.3"
+                    "1.74.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -411,7 +439,7 @@
                 "package": "com.grandgames.magicsort",
                 "search_term": "Magic Sort",
                 "stable": [
-                    "0.0.3480"
+                    "0.0.3497"
                 ],
                 "beta": [],
                 "strip": true,
@@ -495,7 +523,7 @@
                 "package": "com.ea.game.pvzfree_row",
                 "search_term": "Plants vs. Zombies FREE",
                 "stable": [
-                    "3.18.0"
+                    "3.19.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -601,7 +629,7 @@
                 "package": "com.hyperdotstudios.swampattack2",
                 "search_term": "Swamp Attack 2",
                 "stable": [
-                    "1.5.0"
+                    "1.5.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -671,7 +699,7 @@
                 "package": "com.skgames.trafficrider",
                 "search_term": "Traffic Rider",
                 "stable": [
-                    "2.20"
+                    "2.21"
                 ],
                 "beta": [],
                 "strip": true,
@@ -706,7 +734,7 @@
                 "package": "com.vitastudio.mahjong",
                 "search_term": "Vita Mahjong",
                 "stable": [
-                    "3.47.0"
+                    "3.48.0"
                 ],
                 "beta": [],
                 "strip": true,

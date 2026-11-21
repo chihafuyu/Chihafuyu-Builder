@@ -40,6 +40,24 @@
                     "x86": "224"
                 }
             },
+            "confluence": {
+                "package": "com.atlassian.android.confluence.core",
+                "search_term": "Confluence",
+                "stable": [
+                    "5.26.1.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "5260101",
+                    "armeabi-v7a": "5260101",
+                    "x86_64": "5260101",
+                    "x86": "5260101"
+                },
+                "force_bundle": true
+            },
             "coverscreen-os": {
                 "package": "apps.ijp.coverscreenos",
                 "search_term": "CoverScreen OS",
@@ -193,7 +211,7 @@
                 "package": "com.linkedin.android",
                 "search_term": "LinkedIn",
                 "stable": [
-                    "4.1.1275"
+                    "4.1.1276"
                 ],
                 "beta": [],
                 "strip": true,

@@ -516,6 +516,24 @@
                 },
                 "force_bundle": true
             },
+            "blossom-blast-saga": {
+                "package": "com.king.blossomblast",
+                "search_term": "Blossom Blast Saga",
+                "stable": [
+                    "100.234.0.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "625",
+                    "armeabi-v7a": "625",
+                    "x86_64": "625",
+                    "x86": "625"
+                },
+                "force_bundle": true
+            },
             "blurwall": {
                 "package": "apps.automan.blurwallpaper",
                 "search_term": "BlurWall",
@@ -1053,6 +1071,42 @@
                     "armeabi-v7a": "82",
                     "x86_64": "82",
                     "x86": "82"
+                },
+                "force_bundle": true
+            },
+            "flipaclip": {
+                "package": "com.vblast.flipaclip",
+                "search_term": "FlipaClip",
+                "stable": [
+                    "5.0.3"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "962",
+                    "armeabi-v7a": "962",
+                    "x86_64": "962",
+                    "x86": "962"
+                },
+                "force_bundle": true
+            },
+            "flipboard": {
+                "package": "flipboard.app",
+                "search_term": "Flipboard",
+                "stable": [
+                    "4.3.68"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "5526",
+                    "armeabi-v7a": "5526",
+                    "x86_64": "5526",
+                    "x86": "5526"
                 },
                 "force_bundle": true
             },
@@ -1949,6 +2003,24 @@
                     "armeabi-v7a": "19502",
                     "x86_64": "19502",
                     "x86": "19502"
+                },
+                "force_bundle": true
+            },
+            "networkflow": {
+                "package": "com.evozi.network",
+                "search_term": "NetworkFlow",
+                "stable": [
+                    "3.1.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "118",
+                    "armeabi-v7a": "118",
+                    "x86_64": "118",
+                    "x86": "118"
                 },
                 "force_bundle": true
             },

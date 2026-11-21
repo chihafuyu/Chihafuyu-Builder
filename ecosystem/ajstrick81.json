@@ -96,6 +96,17 @@
                     }
                 }
             },
+            "joyn-android-tv": {
+                "package": "de.prosiebensat1digital.seventv",
+                "search_term": "Joyn Android TV",
+                "stable": [
+                    "6.5.2-ATV-605282491"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "mediaset-infinity-android-tv": {
                 "package": "it.mediaset.infinitytv",
                 "search_term": "Mediaset Infinity Android TV",
