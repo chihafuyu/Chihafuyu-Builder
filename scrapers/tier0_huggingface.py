@@ -2,7 +2,7 @@
 
 from urllib.parse import quote
 
-from core.context import Context
+from core.context import Context, vault_filename
 from .base import BaseScraper
 from ._common import probe_and_download
 
@@ -49,7 +49,7 @@ class HuggingfaceScraper(BaseScraper):
         print(f"[TIER 0] HuggingFace: v{ctx.target_ver}")
 
         for ext in HF_EXTENSIONS:
-            filename = f"{ctx.pkg}_{ctx.target_ver}{ext}"
+            filename = vault_filename(ctx.pkg, ctx.target_ver, ext)
             dl_link = self._build_url(hf_repo, filename)
             out_path = ctx.get_out_path(ext)
 
