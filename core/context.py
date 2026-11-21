@@ -4,11 +4,18 @@ Provides shared execution state for all scraper tiers.
 """
 
 import os
+import re
 import time
 from dataclasses import dataclass
 from typing import Any
 
 from core.utils import _safe_filename
+
+
+# Characters that are invalid in Windows filenames and awkward in URLs.
+# Tier 0 and the vault sync uploader share this sanitizer so a cached file is
+# always found under the exact name that was uploaded.
+VAULT_UNSAFE_CHARS = re.compile(r'[<>:"|?*\x00-\x1f]')
 
 
 class RateLimiter:
@@ -25,6 +32,21 @@ class RateLimiter:
         if elapsed < self.delay:
             time.sleep(self.delay - elapsed)
         self.last_req = time.monotonic()
+
+
+def vault_name_part(value: str) -> str:
+    """Sanitizes one component of a HuggingFace vault filename."""
+    safe = VAULT_UNSAFE_CHARS.sub("_", _safe_filename(value)).strip()
+    return safe or "artifact"
+
+
+def vault_filename(package: str, version: str, ext: str) -> str:
+    """Builds the canonical vault filename shared by Tier 0 and the sync job.
+
+    The package/version pair is sanitized exactly once so the uploader and
+    the runtime lookup can never disagree about the cached path.
+    """
+    return f"{vault_name_part(package)}_{vault_name_part(version)}{ext}"
 
 
 @dataclass

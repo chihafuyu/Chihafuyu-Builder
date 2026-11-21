@@ -1,0 +1,302 @@
+---
+name: Fetch Googlag Apps (Source Vault)
+
+# Manual-only by design. Run this after ecosystem configs change to archive
+# the original APKs that Tier 0 can serve later. It never patches or signs
+# artifacts and never deletes anything from the destination dataset.
+"on":
+  workflow_dispatch:
+    inputs:
+      ecosystems:
+        description: 'Ecosystems to scan (comma-separated, or "all")'
+        required: true
+        type: string
+        default: 'all'
+      apps:
+        description: 'App keys to fetch (comma-separated, or "all")'
+        required: true
+        type: string
+        default: 'all'
+      version_selection:
+        description: 'Target version channel'
+        required: true
+        type: choice
+        options:
+          - stable
+          - beta
+        default: stable
+      architecture:
+        description: 'Architecture for APKMirror raw APK variants'
+        required: true
+        type: choice
+        options:
+          - arm64-v8a
+          - armeabi-v7a
+          - x86
+          - x86_64
+          - universal
+        default: arm64-v8a
+      download_source:
+        description: 'Download strategy (auto = Play, then APKMirror)'
+        required: true
+        type: choice
+        options:
+          - auto
+          - google_play
+          - apkmirror
+        default: auto
+      limit:
+        description: 'Maximum unique artifacts to attempt (0 = no limit)'
+        required: true
+        type: string
+        default: '0'
+      custom_version:
+        description: 'Optional app=version pins (comma-separated)'
+        required: false
+        type: string
+        default: ''
+      hf_dataset:
+        description: 'Override vault dataset (owner/name); blank = per-app archive_id'
+        required: false
+        type: string
+        default: ''
+      dry_run:
+        description: 'Only print the plan; no downloads or uploads'
+        required: true
+        type: boolean
+        default: false
+      force:
+        description: 'Re-download even when the vault already has the artifact'
+        required: true
+        type: boolean
+        default: false
+      no_upload:
+        description: 'Download and verify locally without uploading'
+        required: true
+        type: boolean
+        default: false
+      keep_files:
+        description: 'Keep downloaded artifacts after a successful upload'
+        required: true
+        type: boolean
+        default: false
+      strict:
+        description: 'Fail the job when any app cannot be vaulted'
+        required: true
+        type: boolean
+        default: false
+      max_runtime_minutes:
+        description: 'Stop gracefully after this many minutes'
+        required: true
+        type: string
+        default: '330'
+
+concurrency:
+  group: googlag-vault-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Disk Space Report (Before)
+        run: df -h
+
+      - name: Initialize Python Environment
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+          cache-dependency-path: requirements.txt
+
+      - name: Start FlareSolverr Microservice
+        if: ${{ !inputs.dry_run && inputs.download_source != 'google_play' }}
+        run: |
+          set -euo pipefail
+
+          retry() {
+            local n=3
+            until "$@"; do
+              ((n--)) || return 1
+              sleep 5
+            done
+          }
+
+          IMAGE="ghcr.io/flaresolverr/flaresolverr:latest"
+          retry docker pull "$IMAGE"
+
+          DIGEST="$(
+            docker inspect \
+              --format='{{index .RepoDigests 0}}' "$IMAGE"
+          )"
+          echo "Resolved ${IMAGE} -> ${DIGEST}"
+
+          start_flaresolverr() {
+            docker rm -f flaresolverr >/dev/null 2>&1 || true
+            docker run -d --name=flaresolverr \
+              -p 127.0.0.1:8191:8191 \
+              -e LOG_LEVEL=info \
+              "$DIGEST"
+          }
+          retry start_flaresolverr
+
+          echo "Waiting for FlareSolverr to initialize..."
+          timeout 60 bash -c '
+            while ! curl -sf http://localhost:8191/ > /dev/null; do
+              sleep 2
+            done
+          '
+          echo "FlareSolverr proxy is online!"
+
+      - name: Install Dependencies & apkeep
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_DOWNLOAD_SOURCE: ${{ inputs.download_source }}
+        run: |
+          set -euo pipefail
+
+          python -m pip install \
+            --disable-pip-version-check \
+            -r requirements.txt
+
+          if [[ "$INPUT_DOWNLOAD_SOURCE" == "apkmirror" ]]; then
+            echo "[INFO] apkeep not required for an APKMirror-only run."
+            exit 0
+          fi
+
+          APKEEP_VERSION='1.1.0'
+          APKEEP_ASSET='apkeep-x86_64-unknown-linux-gnu'
+          DL_BASE="https://github.com/EFForg/apkeep/releases/download"
+          APKEEP_URL="${DL_BASE}/${APKEEP_VERSION}/${APKEEP_ASSET}"
+
+          wget -q --show-progress --https-only "$APKEEP_URL" -O apkeep
+
+          JQ_Q=".assets[] | select(.name == \"$APKEEP_ASSET\") | .digest"
+          EXPECTED_SHA256="$(
+            gh api "repos/EFForg/apkeep/releases/tags/$APKEEP_VERSION" \
+              --jq "$JQ_Q" | sed 's/^sha256://'
+          )"
+
+          if [ -z "$EXPECTED_SHA256" ] || ! printf '%s  %s\n' \
+            "$EXPECTED_SHA256" apkeep | sha256sum --check --status; then
+            echo "::error::apkeep SHA-256 verification failed"
+            rm -f apkeep
+            exit 1
+          fi
+
+          chmod 0755 apkeep
+          sudo install -m 0755 apkeep /usr/local/bin/apkeep
+          rm -f apkeep
+
+      - name: Verify Security Scanner Configuration
+        if: ${{ !inputs.dry_run }}
+        env:
+          VT_API_KEY: ${{ secrets.VT_API_KEY }}
+          HA_API_KEY: ${{ secrets.HA_API_KEY }}
+          MD_API_KEY: ${{ secrets.MD_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$VT_API_KEY" && -z "$HA_API_KEY" \
+                && -z "$MD_API_KEY" ]]; then
+            echo "::error::No malware scanners are configured."
+            echo "::error::Set at least one of VT_API_KEY, HA_API_KEY, or" \
+              "MD_API_KEY before filling the source vault."
+            exit 1
+          fi
+          echo "[INFO] Security scanner configuration validated."
+
+      - name: Verify Vault Credentials
+        if: ${{ !inputs.dry_run && !inputs.no_upload }}
+        env:
+          HF_TOKEN: ${{ secrets.HF_SOURCE_TOKEN || secrets.HF_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$HF_TOKEN" ]]; then
+            echo "::error::HF_SOURCE_TOKEN or HF_TOKEN is required for upload."
+            echo "::error::Use no_upload=true for a local verification run."
+            exit 1
+          fi
+
+      - name: Fetch Original Artifacts
+        env:
+          HF_TOKEN: ${{ secrets.HF_SOURCE_TOKEN || secrets.HF_TOKEN }}
+          HF_SOURCE_DATASET_ID: ${{ secrets.HF_SOURCE_DATASET_ID }}
+          PLAY_EMAIL: ${{ secrets.PLAY_EMAIL }}
+          PLAY_AAS_TOKEN: ${{ secrets.PLAY_AAS_TOKEN }}
+          DEVICE_PROPERTIES_B64: ${{ secrets.DEVICE_PROPERTIES_B64 }}
+          VT_API_KEY: ${{ secrets.VT_API_KEY }}
+          HA_API_KEY: ${{ secrets.HA_API_KEY }}
+          MD_API_KEY: ${{ secrets.MD_API_KEY }}
+          INPUT_ECOSYSTEMS: ${{ inputs.ecosystems }}
+          INPUT_APPS: ${{ inputs.apps }}
+          INPUT_VERSION_SELECTION: ${{ inputs.version_selection }}
+          INPUT_ARCHITECTURE: ${{ inputs.architecture }}
+          INPUT_DOWNLOAD_SOURCE: ${{ inputs.download_source }}
+          INPUT_LIMIT: ${{ inputs.limit }}
+          INPUT_CUSTOM_VERSION: ${{ inputs.custom_version }}
+          INPUT_HF_DATASET: ${{ inputs.hf_dataset }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+          INPUT_FORCE: ${{ inputs.force }}
+          INPUT_NO_UPLOAD: ${{ inputs.no_upload }}
+          INPUT_KEEP_FILES: ${{ inputs.keep_files }}
+          INPUT_STRICT: ${{ inputs.strict }}
+          INPUT_MAX_RUNTIME_MINUTES: ${{ inputs.max_runtime_minutes }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! "$INPUT_LIMIT" =~ ^[0-9]+$ ]]; then
+            echo "::error::limit must be a non-negative integer"
+            exit 1
+          fi
+          if [[ ! "$INPUT_MAX_RUNTIME_MINUTES" =~ ^[1-9][0-9]*$ ]]; then
+            echo "::error::max_runtime_minutes must be a positive integer"
+            exit 1
+          fi
+
+          ARGS=(
+            --ecosystems "$INPUT_ECOSYSTEMS"
+            --apps "$INPUT_APPS"
+            --version-selection "$INPUT_VERSION_SELECTION"
+            --arch "$INPUT_ARCHITECTURE"
+            --download-source "$INPUT_DOWNLOAD_SOURCE"
+            --limit "$INPUT_LIMIT"
+            --custom-version "$INPUT_CUSTOM_VERSION"
+            --hf-dataset "$INPUT_HF_DATASET"
+            --max-runtime-seconds "$((INPUT_MAX_RUNTIME_MINUTES * 60))"
+            --output-dir "vault-downloads"
+          )
+
+          if [[ "$INPUT_DRY_RUN" == "true" ]]; then
+            ARGS+=(--dry-run)
+          fi
+          if [[ "$INPUT_FORCE" == "true" ]]; then
+            ARGS+=(--force)
+          fi
+          if [[ "$INPUT_NO_UPLOAD" == "true" ]]; then
+            ARGS+=(--no-upload)
+          fi
+          if [[ "$INPUT_KEEP_FILES" == "true" ]]; then
+            ARGS+=(--keep-files)
+          fi
+          if [[ "$INPUT_STRICT" == "true" ]]; then
+            ARGS+=(--strict)
+          fi
+
+          python -u vault_sync.py "${ARGS[@]}"
+
+      - name: Upload Vault Sync Summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vault-sync-summary
+          path: vault-downloads/vault-sync-summary.json
+          if-no-files-found: warn
+          retention-days: 14
