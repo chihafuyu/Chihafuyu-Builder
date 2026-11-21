@@ -308,16 +308,30 @@ A real run also needs at least one scanner key (`VT_API_KEY`, `HA_API_KEY`, or `
 
 ## 14. Does the source vault workflow delete or overwrite files?
 
-No remote files are deleted by this workflow. Its behavior is intentionally non-destructive:
+It never deletes unrelated files. By default it **does** remove older versions of the same package after a replacement upload succeeds, because the workflow is designed to keep one current artifact per app.
 
-- Existing filenames are skipped unless `force=true`.
-- Uploads are committed in batches, with a per-file fallback if a batch fails.
-- A failed upload leaves the verified staged file in place for inspection.
-- With `no_upload=true`, verified files are removed after the run unless `keep_files=true`.
-- `vault_manifest.json` merges new entries into existing metadata; it is not replaced with an empty manifest.
-- If the existing remote manifest cannot be read safely, it is left untouched rather than overwritten.
+Pruning behavior:
 
-The only local cleanup is removal of verified artifacts after a successful upload (or after `no_upload` when `keep_files` is disabled). Files that fail verification are removed before they can be uploaded.
+- The new artifact is uploaded first. Older files are deleted only after that upload is confirmed.
+- Only files recorded in `vault_manifest.json` with the same `package` in the same dataset are candidates. Filename prefixes are not trusted, so `com.foo` cannot delete `com.foo_bar`.
+- Versions targeted by the same run are protected, so selecting two known versions does not make them delete each other.
+- Files without manifest metadata are left alone.
+- A failed upload, a failed delete, or an unreadable remote manifest never removes the old working artifact. The manifest is merged, not replaced with an empty one.
+- `prune_old_versions=false` disables remote deletion entirely.
+
+Local files are also cleaned up: verified artifacts are removed after a successful upload unless `keep_files=true`. With `no_upload=true`, verified files are removed unless `keep_files=true`; files that fail verification are removed before they can be uploaded.
+
+Pruning happens when a replacement is uploaded. If the target filename is already present, the run reports `already_present` and leaves the vault unchanged; use `force=true` to re-upload and prune, or wait until the target version changes.
+
+---
+
+## 15. Can I keep multiple versions of the same app in the vault?
+
+Yes. Set `prune_old_versions=false` in the workflow, or omit `--prune-old-versions` when running the CLI. The workflow default is `true`.
+
+The version selected by the run is treated as current. If you pin an older version with `custom_version` while a newer file exists in the vault, enabling pruning will delete the newer file as superseded. Disable pruning whenever an ecosystem intentionally pins older versions, or run the vault per ecosystem with a separate dataset.
+
+See [README §6](README.md#6-fill-the-source-vault-optional) for the full input reference.
 
 ---
 

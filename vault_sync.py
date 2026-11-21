@@ -6,9 +6,10 @@ This is a manual, ecosystem-driven sync job. It reads only apps enabled in
 verifies the embedded versionName, and uploads it under the exact filename that
 Tier 0 expects.
 
-Nothing here patches, signs, renames a mismatched download, or deletes remote
-files. The vault is a separate dataset from the patched-output uploads in
-``hf_upload.py``.
+Nothing here patches, signs, or renames a mismatched download. Remote
+deletion is limited to superseded versions of the same package, and only after
+a replacement upload succeeds. The vault is a separate dataset from the
+patched-output uploads in ``hf_upload.py``.
 """
 
 import argparse
@@ -38,12 +39,14 @@ from core.utils import _safe_filename, get_scraper, verify_file_hash
 try:
     from huggingface_hub import (
         CommitOperationAdd as _CommitOperationAdd,
+        CommitOperationDelete as _CommitOperationDelete,
         HfApi as _HfApi,
         hf_hub_download as _hf_hub_download,
     )
     HF_AVAILABLE = True
 except ImportError:  # pragma: no cover - local download-only installs
     _CommitOperationAdd = None
+    _CommitOperationDelete = None
     _HfApi = None
     _hf_hub_download = None
     HF_AVAILABLE = False
@@ -870,19 +873,31 @@ def _sha256(path: str) -> str:
 
 
 class VaultPublisher:
-    """Batched, non-destructive HuggingFace dataset publisher."""
+    """Batched HuggingFace dataset publisher with optional version pruning."""
 
-    def __init__(self, token: str, enabled: bool, keep_files: bool, out_dir: Path):
+    def __init__(
+        self,
+        token: str,
+        enabled: bool,
+        keep_files: bool,
+        out_dir: Path,
+        *,
+        prune_old_versions: bool = False,
+        protected_filenames: set[str] | None = None,
+    ):
         self.token = token
         self.enabled = enabled and bool(token)
         self.keep_files = keep_files
         self.out_dir = out_dir
+        self.prune_old_versions = prune_old_versions
+        self._protected = set(protected_filenames or ())
         self._api: Any = None
         self._inventory: dict[str, set[str]] = {}
         self._manifests: dict[str, dict[str, Any]] = {}
         self._manifest_loaded: dict[str, bool] = {}
         self._dirty_repos: set[str] = set()
         self._prepared: set[str] = set()
+        self._pruned: dict[str, dict[str, set[str]]] = {}
 
     @property
     def active(self) -> bool:
@@ -974,10 +989,106 @@ class VaultPublisher:
                 return candidate
         return None
 
+    def _superseded_versions(
+        self,
+        repo: str,
+        record: PendingUpload,
+        batch_filenames: set[str] | None = None,
+    ) -> set[str]:
+        """Finds older manifest-tracked artifacts for the same package."""
+        if not self.prune_old_versions:
+            return set()
+        if not self._manifest_loaded.get(repo, False):
+            # Without a readable manifest there is no safe way to prove which
+            # filenames belong to this package. Leave the remote untouched.
+            return set()
+
+        protected = self._protected | set(batch_filenames or ())
+        package = str(record.metadata.get("package") or "").strip()
+        if not package:
+            return set()
+
+        artifacts = self._manifests.get(repo, {}).get("artifacts", {})
+        if not isinstance(artifacts, dict):
+            return set()
+
+        files = self._inventory.get(repo, set())
+        package_key = package.casefold()
+        superseded: set[str] = set()
+        for filename, metadata in artifacts.items():
+            if filename == record.filename or filename in protected:
+                continue
+            if filename not in files:
+                continue
+            if os.path.splitext(filename)[1].lower() not in ARTIFACT_EXTENSIONS:
+                continue
+            if not isinstance(metadata, dict):
+                continue
+            if str(metadata.get("package") or "").strip().casefold() != package_key:
+                continue
+            superseded.add(filename)
+        return superseded
+
+    def _delete_remote(self, repo: str, filenames: list[str]) -> set[str]:
+        """Deletes superseded files, falling back to one commit per file."""
+        if not filenames:
+            return set()
+
+        api = self._get_api()
+        if _CommitOperationDelete is not None:
+            try:
+                api.create_commit(
+                    repo_id=repo,
+                    operations=[
+                        _CommitOperationDelete(path_in_repo=filename)
+                        for filename in filenames
+                    ],
+                    commit_message=(
+                        f"chore(vault): remove {len(filenames)} superseded "
+                        "artifact(s)"
+                    ),
+                    repo_type="dataset",
+                )
+                return set(filenames)
+            except Exception as err:
+                print(
+                    f"[WARN] {repo}: batch delete failed ({err}); "
+                    "retrying each file individually."
+                )
+
+        deleted: set[str] = set()
+        for filename in filenames:
+            try:
+                api.delete_file(
+                    path_in_repo=filename,
+                    repo_id=repo,
+                    repo_type="dataset",
+                    commit_message=f"chore(vault): remove {filename}",
+                )
+                deleted.add(filename)
+            except Exception as err:
+                print(
+                    f"[ERROR] {repo}: failed to remove {filename}: {err}"
+                )
+        return deleted
+
+    def pruned_versions(self, repo: str, filename: str) -> set[str]:
+        """Returns the old filenames removed after one upload succeeded."""
+        return set(self._pruned.get(repo, {}).get(filename, set()))
+
+    @property
+    def pruned_count(self) -> int:
+        """Total number of superseded files removed in this run."""
+        return sum(
+            len(filenames)
+            for per_file in self._pruned.values()
+            for filenames in per_file.values()
+        )
+
     def publish(
         self, repo: str, records: list[PendingUpload]
     ) -> set[str]:
-        """Uploads a batch, falling back to per-file commits on batch failure."""
+        """Uploads a batch, then optionally prunes older package versions."""
         if not self.active or not records:
             return set()
 
@@ -1024,7 +1135,8 @@ class VaultPublisher:
                     )
 
         if uploaded:
-            self._inventory.setdefault(repo, set()).update(uploaded)
+            inventory = self._inventory.setdefault(repo, set())
+            inventory.update(uploaded)
             manifest = self._manifests.setdefault(
                 repo, {"schema": 1, "repo": repo, "artifacts": {}}
             )
@@ -1033,6 +1145,41 @@ class VaultPublisher:
                 if record.filename in uploaded:
                     artifacts[record.filename] = record.metadata
             self._dirty_repos.add(repo)
+
+            if self.prune_old_versions:
+                batch_filenames = set(uploaded)
+                for record in sorted(records, key=lambda item: item.filename):
+                    if record.filename not in uploaded:
+                        continue
+                    superseded = self._superseded_versions(
+                        repo, record, batch_filenames
+                    )
+                    if not superseded:
+                        continue
+                    try:
+                        removed = self._delete_remote(
+                            repo, sorted(superseded)
+                        )
+                    except Exception as err:
+                        print(
+                            f"[WARN] {repo}: could not prune older "
+                            f"versions of {record.filename}: {err}"
+                        )
+                        continue
+                    for filename in removed:
+                        inventory.discard(filename)
+                        artifacts.pop(filename, None)
+                    if removed:
+                        self._pruned.setdefault(repo, {})[
+                            record.filename
+                        ] = removed
+                        package = record.metadata.get(
+                            "package", record.filename
+                        )
+                        print(
+                            f"[INFO] {repo}: removed {len(removed)} older "
+                            f"version(s) of {package}"
+                        )
         return uploaded
 
     def flush_manifests(self) -> None:
@@ -1239,6 +1386,7 @@ def _print_summary(summary: dict[str, Any]) -> None:
         f"uploaded={counts.get('uploaded', 0)} "
         f"already_present={counts.get('already_present', 0)} "
         f"downloaded={counts.get('downloaded', 0)} "
+        f"pruned={counts.get('pruned', 0)} "
         f"failed={counts.get('failed', 0)} "
         f"skipped={counts.get('skipped', 0)}"
     )
@@ -1366,6 +1514,7 @@ def run(args: argparse.Namespace) -> int:
             "version_selection": args.version_selection,
             "download_source": args.download_source,
             "limit": args.limit,
+            "prune_old_versions": bool(args.prune_old_versions),
         },
         "results": list(plan_errors),
         "counts": {},
@@ -1406,11 +1555,18 @@ def run(args: argparse.Namespace) -> int:
     except ConfigError as err:
         return _config_failure(out_dir, str(err), plan_errors)
 
+    planned_filenames = {
+        f"{plan.filename_stem}{extension}"
+        for plan in plans
+        for extension in ARTIFACT_EXTENSIONS
+    }
     publisher = VaultPublisher(
         token=token,
         enabled=upload_enabled,
         keep_files=args.keep_files,
         out_dir=out_dir,
+        prune_old_versions=args.prune_old_versions,
+        protected_filenames=planned_filenames,
     )
 
     if publisher.active:
@@ -1460,6 +1616,11 @@ def run(args: argparse.Namespace) -> int:
         for record in records:
             if record.filename in uploaded:
                 results[record.result_index]["status"] = "uploaded"
+                removed = publisher.pruned_versions(repo, record.filename)
+                if removed:
+                    results[record.result_index][
+                        "removed_old_versions"
+                    ] = sorted(removed)
                 if not publisher.keep_files:
                     _remove_quietly(record.path)
             else:
@@ -1521,6 +1682,7 @@ def run(args: argparse.Namespace) -> int:
         "uploaded": counts.get("uploaded", 0),
         "already_present": counts.get("already_present", 0),
         "downloaded": counts.get("downloaded", 0),
+        "pruned": publisher.pruned_count,
         "failed": counts.get("failed", 0),
         "skipped": counts.get("skipped", 0),
     }
@@ -1579,6 +1741,14 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--hf-dataset", default="")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--force", action="store_true")
+    parser.add_argument(
+        "--prune-old-versions",
+        action="store_true",
+        help=(
+            "After a successful upload, delete older vault files for the "
+            "same package using vault_manifest.json metadata"
+        ),
+    )
     parser.add_argument("--no-upload", action="store_true")
     parser.add_argument("--keep-files", action="store_true")
     parser.add_argument("--strict", action="store_true")

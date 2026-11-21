@@ -17,7 +17,7 @@
 - 📥 **Multi-Tier Smart Downloader** — Aggressive fallback chain across Direct URLs, GitHub Releases, HuggingFace, APKMirror, Archive.org, APKPure, and Google Play Store. Backed by a local **FlareSolverr Docker microservice** to seamlessly bypass Cloudflare WAF and Turnstile inside GitHub Actions.
 - 🛡️ **Security Hardened** — Enforces strict HTTPS validation, fails fast if no malware scanners are configured, and runs third-party tools in a credential-free sandbox.
 - 📦 **Split/Bundle Support** — Pulls XAPK/APKM bundles when patches require them (e.g., Google apps), with dynamic segment matching for exact version accuracy.
-- 🗄️ **Source Vault Sync** — Optional manual workflow that archives original APK/APKS/XAPK/APKM files to a separate HuggingFace dataset using the exact Tier 0 filenames, so older or pinned versions remain available when upstream sources move on.
+- 🗄️ **Source Vault Sync** — Optional manual workflow that archives original APK/APKS/XAPK/APKM files to a separate HuggingFace dataset using the exact Tier 0 filenames, then prunes superseded versions after a successful replacement upload.
 - ⚙️ **Dynamic Options Injection** — Generates and modifies `options.json` on the fly to apply custom patch preferences and locale stripping.
 - 📁 **Local Patch Support** — Use custom patch bundles directly from your repository.
 - 🚀 **Seamless Distribution** — Signs finished APKs and uploads them to GitHub Releases and private Telegram channels via session strings.
@@ -97,7 +97,7 @@ Edit the JSON files under `ecosystem/` (e.g., `arandomhooman.json`, `byehi98.jso
 
 ### 6. Fill the Source Vault (Optional)
 
-Tier 0 can serve cached **original** artifacts from HuggingFace. The **Fetch Googlag Apps (Source Vault)** workflow fills that cache manually. It never patches, signs, or generates `options.json`, and it writes to a dataset separate from `HF_DATASET_ID` (the patched-output dataset).
+Tier 0 can serve cached **original** artifacts from HuggingFace. The **Fetch Googlag Apps (Source Vault)** workflow fills that cache manually. It never patches, signs, or generates `options.json`, and it writes to a dataset separate from `HF_DATASET_ID` (the patched-output dataset). By default it keeps one version per package and removes the superseded file only after the replacement upload succeeds.
 
 #### How apps are selected
 
@@ -129,6 +129,7 @@ Useful inputs:
 | `hf_dataset` | Optional single dataset override. Blank uses each app's `{hf_user}/{archive_id}` repo. |
 | `dry_run` | Prints the plan only; no downloads, uploads, scanners, or credentials needed. |
 | `force` | Re-downloads even when the same filename already exists in the vault. |
+| `prune_old_versions` | Enabled by default. After a new artifact uploads successfully, removes older artifacts of the same package in the same dataset. Disable it to keep multiple versions. |
 | `no_upload` | Downloads and verifies locally without uploading. |
 | `keep_files` | Keeps staged files after upload, or after `no_upload`. |
 | `strict` | Fails a real run when any selected app cannot be vaulted. |
@@ -139,8 +140,13 @@ Useful inputs:
 - **Original containers are preserved.** Files stay APK, XAPK, APKM, or APKS; they are not unwrapped, patched, signed, or relabeled.
 - **Tier 0 naming is exact.** Files use `vault_filename()` (`package_version.ext`), so the patcher can find them later.
 - **Existing files are skipped.** Without `force`, the workflow checks the vault inventory before applying `limit`, which lets repeated bounded runs keep advancing.
-- **Nothing is deleted remotely.** Uploads are batched; a failed upload leaves the staged file in place. `vault_manifest.json` is merged with existing metadata rather than replaced.
+- **Pruning is post-upload and metadata-driven.** Uploads are batched; a failed upload leaves both the staged file and every old remote version untouched. Only after a replacement upload succeeds are other files whose `vault_manifest.json` entry has the same `package` removed. Filename prefixes are never trusted for ownership, so `com.foo` cannot accidentally delete `com.foo_bar`. Files without manifest metadata, versions targeted by the same run, and unrelated packages are left alone.
+- **A failed or unreadable manifest disables pruning.** The workflow will not guess which files belong to an app, and it merges new entries instead of replacing the existing manifest.
 - **No guessing.** An enabled app with `"stable": ["any"]` or no concrete version is reported as failed. Add a pin through `custom_version` or set a concrete version in the ecosystem JSON.
+
+> **Pruning warning:** the version selected by the run is treated as current. If you pin an older version with `custom_version` while a newer file is already in the vault, the newer file is considered superseded. Set `prune_old_versions=false` when you intentionally keep multiple versions of the same package.
+>
+> Pruning only runs after a replacement upload. If the target file is already present, the workflow reports `already_present` and leaves old files in place; use `force=true` to re-upload the current target and prune, or wait for the next version.
 
 A real run needs `HF_SOURCE_TOKEN` (or `HF_TOKEN`) and at least one malware scanner (`VT_API_KEY`, `HA_API_KEY`, or `MD_API_KEY`). Play credentials are needed for Google Play downloads; without them, `auto` uses APKMirror only and `google_play` alone fails. The workflow starts FlareSolverr automatically for APKMirror. Full results are saved as the `vault-sync-summary` artifact.
 
@@ -159,7 +165,7 @@ You can also run the same logic locally:
 
 ```bash
 python vault_sync.py --ecosystems hxreborn --apps all --dry-run
-python vault_sync.py --ecosystems hxreborn --apps all --limit 10
+python vault_sync.py --ecosystems hxreborn --apps all --limit 10 --prune-old-versions
 ```
 
 ### 7. Local Build (Termux / Android)

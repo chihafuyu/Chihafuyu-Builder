@@ -438,18 +438,31 @@ class _FakeCommitOperation:
     def __init__(self, path_in_repo, path_or_fileobj):
         self.path_in_repo = path_in_repo
         self.path_or_fileobj = path_or_fileobj
+        self.is_delete = False
+
+
+class _FakeCommitOperationDelete:
+    """Minimal stand-in for huggingface_hub.CommitOperationDelete."""
+
+    def __init__(self, path_in_repo):
+        self.path_in_repo = path_in_repo
+        self.is_delete = True
 
 
 class _FakeApi:
     """Records HuggingFace calls without touching the network."""
 
-    def __init__(self, exists=True, files=(), fail_commit=False):
+    def __init__(
+        self, exists=True, files=(), fail_commit=False, fail_uploads=False
+    ):
         self.exists = exists
         self.files = set(files)
         self.fail_commit = fail_commit
+        self.fail_uploads = fail_uploads
         self.created = []
         self.commits = []
         self.uploads = []
+        self.deleted = []
 
     def repo_exists(self, repo_id, repo_type=None):  # pylint: disable=unused-argument
         """Reports whether the fake repository exists."""
@@ -472,7 +485,12 @@ class _FakeApi:
             raise RuntimeError("simulated batch failure")
         names = [operation.path_in_repo for operation in operations]
         self.commits.append(names)
-        self.files.update(names)
+        for operation in operations:
+            if getattr(operation, "is_delete", False):
+                self.files.discard(operation.path_in_repo)
+                self.deleted.append(operation.path_in_repo)
+            else:
+                self.files.add(operation.path_in_repo)
 
     def upload_file(
         self,
@@ -483,17 +501,40 @@ class _FakeApi:
         commit_message="",
     ):  # pylint: disable=unused-argument,too-many-arguments
         """Applies a fake single-file upload."""
+        if self.fail_uploads:
+            raise RuntimeError("simulated upload failure")
         self.uploads.append(path_in_repo)
         self.files.add(path_in_repo)
 
+    def delete_file(
+        self,
+        path_in_repo,
+        repo_id,
+        repo_type=None,
+        commit_message="",
+    ):  # pylint: disable=unused-argument,too-many-arguments
+        """Applies a fake single-file delete."""
+        self.deleted.append(path_in_repo)
+        self.files.discard(path_in_repo)
 
-def _fake_publisher(monkeypatch, api, tmp_path):
+
+def _fake_publisher(
+    monkeypatch, api, tmp_path, prune=False, protected=None
+):
     """Builds a VaultPublisher backed by a fake API."""
     monkeypatch.setattr(VAULT, "HF_AVAILABLE", True)
     monkeypatch.setattr(VAULT, "_HfApi", lambda token: api)
     monkeypatch.setattr(VAULT, "_CommitOperationAdd", _FakeCommitOperation)
+    monkeypatch.setattr(
+        VAULT, "_CommitOperationDelete", _FakeCommitOperationDelete
+    )
     return VAULT.VaultPublisher(
-        token="test-token", enabled=True, keep_files=True, out_dir=tmp_path
+        token="test-token",
+        enabled=True,
+        keep_files=True,
+        out_dir=tmp_path,
+        prune_old_versions=prune,
+        protected_filenames=protected,
     )
 
 
@@ -593,3 +634,243 @@ def test_publisher_does_not_overwrite_unreadable_manifest(tmp_path, monkeypatch)
     assert "vault_manifest.json" in api.files
     assert not api.uploads
     assert not (tmp_path / "manifests" / "owner__vault.json").exists()
+
+
+def _manifest_api(tmp_path, monkeypatch, artifacts):
+    """Creates a fake API backed by a readable remote manifest."""
+    manifest_path = tmp_path / "remote-manifest.json"
+    manifest_path.write_text(
+        json.dumps({
+            "schema": 1,
+            "repo": "owner/vault",
+            "artifacts": artifacts,
+        }),
+        encoding="utf-8",
+    )
+    api = _FakeApi(
+        exists=True, files=set(artifacts) | {"vault_manifest.json"}
+    )
+    monkeypatch.setattr(
+        VAULT, "_hf_hub_download", lambda **kwargs: str(manifest_path)
+    )
+    return api
+
+
+def test_publisher_prunes_older_versions_after_upload(tmp_path, monkeypatch):
+    """Only the newly uploaded version of a package remains in the vault."""
+    api = _manifest_api(
+        tmp_path,
+        monkeypatch,
+        {
+            "com.example.app_1.0.0.apk": {
+                "package": "com.example.app",
+                "version": "1.0.0",
+            },
+            "com.other.app_1.0.0.apk": {
+                "package": "com.other.app",
+                "version": "1.0.0",
+            },
+        },
+    )
+    publisher = _fake_publisher(monkeypatch, api, tmp_path, prune=True)
+
+    assert publisher.prepare("owner/vault")
+    record = _record(
+        tmp_path,
+        "com.example.app_2.0.0.apk",
+        metadata={"package": "com.example.app", "version": "2.0.0"},
+    )
+    assert publisher.publish("owner/vault", [record]) == {record.filename}
+    assert publisher.pruned_versions(
+        "owner/vault", record.filename
+    ) == {"com.example.app_1.0.0.apk"}
+    assert publisher.pruned_count == 1
+
+    assert "com.example.app_1.0.0.apk" not in api.files
+    assert "com.other.app_1.0.0.apk" in api.files
+
+    publisher.flush_manifests()
+    manifest = json.loads(
+        (tmp_path / "manifests" / "owner__vault.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert set(manifest["artifacts"]) == {
+        "com.example.app_2.0.0.apk",
+        "com.other.app_1.0.0.apk",
+    }
+
+
+def test_publisher_keeps_old_versions_when_pruning_is_off(
+    tmp_path, monkeypatch
+):
+    """Opting out leaves existing package versions untouched."""
+    api = _manifest_api(
+        tmp_path,
+        monkeypatch,
+        {
+            "com.example.app_1.0.0.apk": {
+                "package": "com.example.app",
+                "version": "1.0.0",
+            },
+        },
+    )
+    publisher = _fake_publisher(monkeypatch, api, tmp_path)
+
+    assert publisher.prepare("owner/vault")
+    record = _record(
+        tmp_path,
+        "com.example.app_2.0.0.apk",
+        metadata={"package": "com.example.app", "version": "2.0.0"},
+    )
+    publisher.publish("owner/vault", [record])
+
+    assert "com.example.app_1.0.0.apk" in api.files
+    assert not api.deleted
+
+
+def test_publisher_does_not_prune_untracked_files(tmp_path, monkeypatch):
+    """Unmanifested files are left alone because ownership is unproven."""
+    api = _manifest_api(tmp_path, monkeypatch, {})
+    api.files.add("com.example.app_0.9.0.apk")
+    publisher = _fake_publisher(monkeypatch, api, tmp_path, prune=True)
+
+    assert publisher.prepare("owner/vault")
+    record = _record(
+        tmp_path,
+        "com.example.app_2.0.0.apk",
+        metadata={"package": "com.example.app", "version": "2.0.0"},
+    )
+    publisher.publish("owner/vault", [record])
+
+    assert "com.example.app_0.9.0.apk" in api.files
+    assert not api.deleted
+
+
+def test_publisher_does_not_prune_other_packages_with_similar_names(
+    tmp_path, monkeypatch
+):
+    """Package metadata wins over filename prefixes such as com.foo_."""
+    api = _manifest_api(
+        tmp_path,
+        monkeypatch,
+        {
+            "com.foo_bar_1.0.0.apk": {
+                "package": "com.foo_bar",
+                "version": "1.0.0",
+            },
+        },
+    )
+    publisher = _fake_publisher(monkeypatch, api, tmp_path, prune=True)
+
+    assert publisher.prepare("owner/vault")
+    record = _record(
+        tmp_path,
+        "com.foo_2.0.0.apk",
+        metadata={"package": "com.foo", "version": "2.0.0"},
+    )
+    publisher.publish("owner/vault", [record])
+
+    assert "com.foo_bar_1.0.0.apk" in api.files
+    assert not api.deleted
+
+
+def test_publisher_does_not_prune_when_upload_fails(tmp_path, monkeypatch):
+    """A failed upload must never remove the previously working artifact."""
+    api = _manifest_api(
+        tmp_path,
+        monkeypatch,
+        {
+            "com.example.app_1.0.0.apk": {
+                "package": "com.example.app",
+                "version": "1.0.0",
+            },
+        },
+    )
+    api.fail_commit = True
+    api.fail_uploads = True
+    publisher = _fake_publisher(monkeypatch, api, tmp_path, prune=True)
+
+    assert publisher.prepare("owner/vault")
+    record = _record(
+        tmp_path,
+        "com.example.app_2.0.0.apk",
+        metadata={"package": "com.example.app", "version": "2.0.0"},
+    )
+    assert not publisher.publish("owner/vault", [record])
+
+    assert "com.example.app_1.0.0.apk" in api.files
+    assert not api.deleted
+    assert not publisher.pruned_count
+
+
+def test_publisher_can_protect_other_selected_versions(tmp_path, monkeypatch):
+    """Versions targeted by the same run are never treated as stale."""
+    api = _manifest_api(
+        tmp_path,
+        monkeypatch,
+        {
+            "com.example.app_1.0.0.apk": {
+                "package": "com.example.app",
+                "version": "1.0.0",
+            },
+        },
+    )
+    publisher = _fake_publisher(
+        monkeypatch,
+        api,
+        tmp_path,
+        prune=True,
+        protected={"com.example.app_1.0.0.apk"},
+    )
+
+    assert publisher.prepare("owner/vault")
+    record = _record(
+        tmp_path,
+        "com.example.app_2.0.0.apk",
+        metadata={"package": "com.example.app", "version": "2.0.0"},
+    )
+    publisher.publish("owner/vault", [record])
+
+    assert "com.example.app_1.0.0.apk" in api.files
+    assert not api.deleted
+
+
+def test_publisher_protects_versions_uploaded_in_same_batch(
+    tmp_path, monkeypatch
+):
+    """Two versions uploaded together must not delete each other."""
+    api = _manifest_api(
+        tmp_path,
+        monkeypatch,
+        {
+            "com.example.app_1.0.0.apk": {
+                "package": "com.example.app",
+                "version": "1.0.0",
+            },
+        },
+    )
+    publisher = _fake_publisher(monkeypatch, api, tmp_path, prune=True)
+
+    assert publisher.prepare("owner/vault")
+    second = _record(
+        tmp_path,
+        "com.example.app_2.0.0.apk",
+        metadata={"package": "com.example.app", "version": "2.0.0"},
+    )
+    third = _record(
+        tmp_path,
+        "com.example.app_3.0.0.apk",
+        metadata={"package": "com.example.app", "version": "3.0.0"},
+    )
+    publisher.publish("owner/vault", [second, third])
+
+    assert "com.example.app_1.0.0.apk" not in api.files
+    assert {"com.example.app_2.0.0.apk", "com.example.app_3.0.0.apk"} <= api.files
+    assert api.deleted == ["com.example.app_1.0.0.apk"]
+
+
+def test_parse_arguments_prune_old_versions_defaults_to_off():
+    """Local CLI runs only prune when explicitly requested."""
+    assert not VAULT.parse_arguments([]).prune_old_versions
+    assert VAULT.parse_arguments(["--prune-old-versions"]).prune_old_versions

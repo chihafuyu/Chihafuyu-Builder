@@ -3,7 +3,8 @@ name: 📂 Fetch Googlag Apps (Source Vault)
 
 # Manual-only by design. Run this after ecosystem configs change to archive
 # the original APKs that Tier 0 can serve later. It never patches or signs
-# artifacts and never deletes anything from the destination dataset.
+# artifacts. Old versions of the same package can be pruned only after the
+# replacement upload succeeds; unrelated files are never touched.
 "on":
   workflow_dispatch:
     inputs:
@@ -70,6 +71,11 @@ name: 📂 Fetch Googlag Apps (Source Vault)
         required: true
         type: boolean
         default: false
+      prune_old_versions:
+        description: 'Delete older versions of the same package after a successful upload'
+        required: true
+        type: boolean
+        default: true
       no_upload:
         description: 'Download and verify locally without uploading'
         required: true
@@ -245,6 +251,7 @@ jobs:
           INPUT_HF_DATASET: ${{ inputs.hf_dataset }}
           INPUT_DRY_RUN: ${{ inputs.dry_run }}
           INPUT_FORCE: ${{ inputs.force }}
+          INPUT_PRUNE_OLD_VERSIONS: ${{ inputs.prune_old_versions }}
           INPUT_NO_UPLOAD: ${{ inputs.no_upload }}
           INPUT_KEEP_FILES: ${{ inputs.keep_files }}
           INPUT_STRICT: ${{ inputs.strict }}
@@ -282,6 +289,9 @@ jobs:
           fi
           if [[ "$INPUT_FORCE" == "true" ]]; then
             ARGS+=(--force)
+          fi
+          if [[ "$INPUT_PRUNE_OLD_VERSIONS" == "true" ]]; then
+            ARGS+=(--prune-old-versions)
           fi
           if [[ "$INPUT_NO_UPLOAD" == "true" ]]; then
             ARGS+=(--no-upload)
