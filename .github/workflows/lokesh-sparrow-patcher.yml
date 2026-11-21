@@ -13,7 +13,7 @@ name: 🔗 Lokesh-Sparrow Ecosystem Patcher
         description: 'Patch google-photos'
         required: true
         type: boolean
-        default: true
+        default: false
       app_linkedin:
         description: 'Patch linkedin'
         required: true
