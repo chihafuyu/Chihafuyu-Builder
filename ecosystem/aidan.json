@@ -220,7 +220,7 @@
                 "package": "com.eumlab.android.prometronome",
                 "search_term": "Pro Metronome",
                 "stable": [
-                    "1.0.12"
+                    "1.14"
                 ],
                 "beta": [],
                 "strip": true,

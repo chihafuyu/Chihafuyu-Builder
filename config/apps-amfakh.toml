@@ -4,6 +4,7 @@
 [apps]
 "bardi-smart-home" = true
 "cnn-indonesia" = true
+"confluence" = true
 "coverscreen-os" = true
 "detikcom" = true
 "dodo-music" = true

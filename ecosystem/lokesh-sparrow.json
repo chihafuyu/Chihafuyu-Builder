@@ -17,6 +17,18 @@
                 },
                 "force_bundle": true
             },
+            "google-photos": {
+                "package": "com.google.android.apps.photos",
+                "search_term": "Google Photos",
+                "stable": [
+                    "8.1.0.1023737660"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "force_bundle": true
+            },
             "linkedin": {
                 "package": "com.linkedin.android",
                 "search_term": "LinkedIn",
