@@ -1,5 +1,5 @@
 ---
-name: Fetch Googlag Apps (Source Vault)
+name: 📂 Fetch Googlag Apps (Source Vault)
 
 # Manual-only by design. Run this after ecosystem configs change to archive
 # the original APKs that Tier 0 can serve later. It never patches or signs
