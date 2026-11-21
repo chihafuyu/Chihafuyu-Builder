@@ -33,7 +33,7 @@
                 "package": "jp.naver.line.android",
                 "search_term": "LINE",
                 "stable": [
-                    "26.16.0"
+                    "26.18.2"
                 ],
                 "beta": [],
                 "strip": true,
@@ -46,7 +46,13 @@
                         "enabled": false
                     }
                 },
-                "force_bundle": true
+                "force_bundle": true,
+                "version_codes": {
+                    "arm64-v8a": "261820153",
+                    "armeabi-v7a": "261820153",
+                    "x86_64": "261820153",
+                    "x86": "261820153"
+                }
             }
         }
     }

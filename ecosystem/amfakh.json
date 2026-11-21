@@ -235,6 +235,28 @@
                 },
                 "force_bundle": true
             },
+            "muslim-pro": {
+                "package": "com.bitsmedia.android.muslimpro",
+                "search_term": "Muslim Pro",
+                "stable": [
+                    "17.11"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "1711000201",
+                    "armeabi-v7a": "1711000201",
+                    "x86_64": "1711000201",
+                    "x86": "1711000201"
+                },
+                "force_bundle": true
+            },
             "radio-indonesia": {
                 "package": "com.appmind.radios.id",
                 "search_term": "Radio Indonesia",
