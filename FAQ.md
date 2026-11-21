@@ -107,6 +107,8 @@ The 7-tier smart downloader will attempt to fetch the APK from any of these sour
 
 Once added, the app appears in the interactive menu and can be dispatched through GitHub Actions.
 
+To archive the original artifact for the Tier 0 fallback, also set the app to `true` in `config/apps-<ecosystem>.toml` and run the [source vault workflow](README.md#6-fill-the-source-vault-optional).
+
 ---
 
 ## 5. The workflow failed with `[ERROR] FAILED: DMCA Trap`. What does this mean?
@@ -153,6 +155,8 @@ Because these ecosystems track dozens of apps, the dispatch form uses a **text i
 ```text
 finch, poweramp, webtoon
 ```
+
+> In the source-vault workflow, a blank **App keys** field is equivalent to `all`. See [Q10](#10-do-i-have-to-list-every-app-in-app-keys-for-the-source-vault).
 
 ### `arandomhooman` apps
 
@@ -210,6 +214,110 @@ finch, poweramp, webtoon
 - `wallverse`
 - `windscribe-vpn`
 - `wolfram-alpha`
+
+---
+
+## 9. What is the "Fetch Googlag Apps (Source Vault)" workflow?
+
+It is a **manual-only** workflow that archives original app artifacts into a HuggingFace dataset used as the Tier 0 fallback source. It does **not** patch, sign, generate `options.json`, or publish patched output.
+
+Run it after changing ecosystem configs when you want the vault to contain the new or updated originals. It is intentionally separate from the ecosystem patcher workflows, and it writes to a different dataset from `HF_DATASET_ID`. See [README §6](README.md#6-fill-the-source-vault-optional) for the full input reference.
+
+---
+
+## 10. Do I have to list every app in "App keys" for the source vault?
+
+No. Leave **App keys** blank, or enter `all`, to follow the selected ecosystem's TOML:
+
+- `true` → download the app
+- `false` → ignore the app
+
+The ecosystem JSON still supplies the `package`, `stable`/`beta` version, `archive_id`, and scraper hints. For example, `hxreborn` currently has 188 TOML entries and 45 `true` entries, so a dry run plans 45 artifacts.
+
+To narrow the TOML selection for one run, enter specific keys:
+
+```text
+1weather,acalendar
+```
+
+or ecosystem-qualified keys:
+
+```text
+hxreborn/1weather,hxreborn/acalendar
+```
+
+The app filter can narrow the selection, but it cannot enable an app that is `false` in the TOML. Set it to `true` first, then run the workflow.
+
+---
+
+## 11. Why did an app fail with "no concrete target version" or a version mismatch?
+
+These failures are deliberate safeguards for Tier 0 naming:
+
+- **`no concrete target version`** — the JSON has `"stable": ["any"]`, an empty version, or no version for the selected channel. There is no safe filename to create.
+- **`Play version mismatch`** — Google Play served a different version than the target. The artifact is discarded instead of being renamed to the target version. In `auto` mode, the workflow then tries APKMirror for the pinned version.
+- **APKMirror mismatch or missing version** — the fallback could not supply the exact target, so the app is skipped.
+
+To fix it, set a concrete version in the ecosystem JSON or use the `custom_version` input:
+
+```text
+some-app=1.2.3
+```
+
+Using the correct target version matters because Tier 0 finds cached files by their exact `package_version.ext` name.
+
+---
+
+## 12. How do I fill a large vault without hitting the GitHub Actions time limit?
+
+Use the `limit` input. It is applied **after** already-present vault files are skipped, so repeated bounded runs keep advancing through the remaining apps instead of reprocessing the same first entries.
+
+Example sequence:
+
+1. Run with `limit=25` and `dry_run=true` to confirm the plan.
+2. Run with `limit=25` and `dry_run=false`.
+3. Repeat the real run; files already in the vault are reported as `already_present`.
+4. Increase `limit` when you have enough runtime headroom.
+
+`max_runtime_minutes` lets the job stop gracefully and marks the remaining plans as `skipped`. Use `force=true` only when you intentionally want to replace an existing filename.
+
+The full `all` set is large (hundreds of artifacts), so bounded runs are the recommended way to seed it.
+
+---
+
+## 13. Which HuggingFace secrets and dataset does the source vault use?
+
+| Setting | Purpose |
+| :--- | :--- |
+| `HF_SOURCE_TOKEN` | Preferred token for source-vault uploads. |
+| `HF_TOKEN` | Fallback token when `HF_SOURCE_TOKEN` is not set. |
+| `HF_SOURCE_DATASET_ID` | Optional single dataset override in `owner/name` form. |
+| `HF_DATASET_ID` | **Patched-output** dataset; do not use it for the source vault. |
+
+When no override is provided, each app uses:
+
+```text
+{hf_user or chihafuyu}/{archive_id}
+```
+
+With the current ecosystem configs that resolves to `chihafuyu/ZeNiX`. If the dataset does not exist, the workflow creates it as a public dataset. The uploader writes a SHA-256 `vault_manifest.json` alongside the artifacts.
+
+A real run also needs at least one scanner key (`VT_API_KEY`, `HA_API_KEY`, or `MD_API_KEY`). Play credentials are needed for Google Play downloads; without them, `auto` uses APKMirror only and `google_play` alone fails. Dry runs need none of these.
+
+---
+
+## 14. Does the source vault workflow delete or overwrite files?
+
+No remote files are deleted by this workflow. Its behavior is intentionally non-destructive:
+
+- Existing filenames are skipped unless `force=true`.
+- Uploads are committed in batches, with a per-file fallback if a batch fails.
+- A failed upload leaves the verified staged file in place for inspection.
+- With `no_upload=true`, verified files are removed after the run unless `keep_files=true`.
+- `vault_manifest.json` merges new entries into existing metadata; it is not replaced with an empty manifest.
+- If the existing remote manifest cannot be read safely, it is left untouched rather than overwritten.
+
+The only local cleanup is removal of verified artifacts after a successful upload (or after `no_upload` when `keep_files` is disabled). Files that fail verification are removed before they can be uploaded.
 
 ---
 

@@ -460,6 +460,11 @@ def _build_plans(  # pylint: disable=too-many-positional-arguments
             errors.append({"ecosystem": ecosystem, "reason": str(err)})
             continue
 
+        print(
+            f"[INFO] {ecosystem}: {len(enabled)} enabled app(s) in "
+            f"config/apps-{ecosystem}.toml"
+        )
+
         for app_key in enabled:
             if not _matches_requested_app(ecosystem, app_key, requested_apps):
                 continue
@@ -1543,8 +1548,19 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
             "source vault without patching or relabeling."
         )
     )
-    parser.add_argument("--ecosystems", default="all")
-    parser.add_argument("--apps", default="all")
+    parser.add_argument(
+        "--ecosystems",
+        default="all",
+        help="Comma-separated ecosystem names, or all",
+    )
+    parser.add_argument(
+        "--apps",
+        default="all",
+        help=(
+            "Comma-separated app keys or ecosystem/app keys; all or blank "
+            "uses every true app in the selected TOML files"
+        ),
+    )
     parser.add_argument(
         "--version-selection", choices=("stable", "beta"), default="stable"
     )

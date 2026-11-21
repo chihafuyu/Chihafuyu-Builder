@@ -287,6 +287,38 @@ def test_build_plans_dedupes_shared_package_and_prefers_bundle(tmp_path):
     assert plans[0].app_data["force_bundle"] is True
 
 
+def test_run_blank_apps_follows_enabled_toml(tmp_path):
+    """An empty workflow app filter means every true TOML entry, nothing else."""
+    _write_ecosystem(
+        tmp_path,
+        "eco",
+        {"enabled": True, "disabled": False},
+        {
+            "enabled": _app("com.example.enabled", ["1.0.0"]),
+            "disabled": _app("com.example.disabled", ["2.0.0"]),
+        },
+    )
+    out_dir = tmp_path / "out"
+    args = VAULT.parse_arguments([
+        "--ecosystems",
+        "eco",
+        "--apps",
+        "",
+        "--dry-run",
+        "--repo-root",
+        str(tmp_path),
+        "--output-dir",
+        str(out_dir),
+    ])
+
+    assert VAULT.run(args) == 0
+    summary = json.loads(
+        (out_dir / "vault-sync-summary.json").read_text(encoding="utf-8")
+    )
+    assert summary["requested"]["apps"] == ["all"]
+    assert [result["app"] for result in summary["results"]] == ["enabled"]
+
+
 def test_build_plans_app_filters_and_repo_override(tmp_path):
     """App filters can be plain keys or ecosystem-qualified names."""
     _write_ecosystem(

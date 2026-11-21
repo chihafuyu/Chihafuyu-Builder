@@ -17,6 +17,7 @@
 - 📥 **Multi-Tier Smart Downloader** — Aggressive fallback chain across Direct URLs, GitHub Releases, HuggingFace, APKMirror, Archive.org, APKPure, and Google Play Store. Backed by a local **FlareSolverr Docker microservice** to seamlessly bypass Cloudflare WAF and Turnstile inside GitHub Actions.
 - 🛡️ **Security Hardened** — Enforces strict HTTPS validation, fails fast if no malware scanners are configured, and runs third-party tools in a credential-free sandbox.
 - 📦 **Split/Bundle Support** — Pulls XAPK/APKM bundles when patches require them (e.g., Google apps), with dynamic segment matching for exact version accuracy.
+- 🗄️ **Source Vault Sync** — Optional manual workflow that archives original APK/APKS/XAPK/APKM files to a separate HuggingFace dataset using the exact Tier 0 filenames, so older or pinned versions remain available when upstream sources move on.
 - ⚙️ **Dynamic Options Injection** — Generates and modifies `options.json` on the fly to apply custom patch preferences and locale stripping.
 - 📁 **Local Patch Support** — Use custom patch bundles directly from your repository.
 - 🚀 **Seamless Distribution** — Signs finished APKs and uploads them to GitHub Releases and private Telegram channels via session strings.
@@ -77,6 +78,10 @@ Configure the following secrets at **Settings → Secrets and variables → Acti
 | `VT_API_KEY` | VirusTotal API key for scan verification |
 | `HA_API_KEY` | HybridAnalysis API key |
 | `MD_API_KEY` | MetaDefender API key |
+| `HF_DATASET_ID` | HuggingFace dataset that receives **patched** APKs |
+| `HF_TOKEN` | HuggingFace token for patched-output uploads; also the fallback token for the source vault |
+| `HF_SOURCE_TOKEN` | Optional dedicated HuggingFace token for the source vault (falls back to `HF_TOKEN`) |
+| `HF_SOURCE_DATASET_ID` | Optional source-vault dataset override; when blank, each app uses `{hf_user}/{archive_id}` |
 | `API_ID` | Telegram API ID from my.telegram.org |
 | `API_HASH` | Telegram API hash from my.telegram.org |
 | `SESSION_STRING` | Pyrogram session string from Step 3 |
@@ -90,7 +95,74 @@ Edit the JSON files under `ecosystem/` (e.g., `arandomhooman.json`, `byehi98.jso
 
 **For Termux local builds:** if your ecosystem uses complex matrices (like `Piko` or `SysAdminDoc`), place split `JSON` files in `ecosystem` directory and register them in `repo_map.json`. The Termux script parses this map to build its interactive menu.
 
-### 6. Local Build (Termux / Android)
+### 6. Fill the Source Vault (Optional)
+
+Tier 0 can serve cached **original** artifacts from HuggingFace. The **Fetch Googlag Apps (Source Vault)** workflow fills that cache manually. It never patches, signs, or generates `options.json`, and it writes to a dataset separate from `HF_DATASET_ID` (the patched-output dataset).
+
+#### How apps are selected
+
+Each ecosystem uses two files:
+
+| File | Role |
+| :--- | :--- |
+| `config/apps-<ecosystem>.toml` | Download switch. Only apps marked `true` are processed; `false` is ignored. |
+| `ecosystem/<ecosystem>.json` | Package name, `stable`/`beta` version, `archive_id`, and scraper hints. |
+
+Leave **App keys** blank (or use `all`) to follow the TOML. For example, `hxreborn` currently has 188 TOML entries, 45 of them `true`; a dry run therefore plans 45 artifacts. To narrow the TOML selection for one run, use a comma-separated list such as `1weather,acalendar` or `hxreborn/1weather`.
+
+#### Run the workflow
+
+1. Open **Actions → 📂 Fetch Googlag Apps (Source Vault) → Run workflow**.
+2. Set **Ecosystems** to one ecosystem (for example `hxreborn`) or `all`.
+3. Leave **App keys** blank to use every `true` app in the selected TOML, or enter an explicit override.
+4. Run once with **Dry run** enabled to review the plan and counts.
+5. Run again with **Dry run** disabled to download, verify, and upload.
+
+Useful inputs:
+
+| Input | Behavior |
+| :--- | :--- |
+| `version_selection` | `stable` or `beta`; an explicit `custom_version` pin wins. |
+| `download_source` | `auto` tries Google Play first, then APKMirror. |
+| `limit` | Maximum unique artifacts to attempt after already-present files are skipped; `0` means no limit. |
+| `custom_version` | Optional `app=version` pins, for example `1weather=13.1.0`. A single value without `=` applies globally. |
+| `hf_dataset` | Optional single dataset override. Blank uses each app's `{hf_user}/{archive_id}` repo. |
+| `dry_run` | Prints the plan only; no downloads, uploads, scanners, or credentials needed. |
+| `force` | Re-downloads even when the same filename already exists in the vault. |
+| `no_upload` | Downloads and verifies locally without uploading. |
+| `keep_files` | Keeps staged files after upload, or after `no_upload`. |
+| `strict` | Fails a real run when any selected app cannot be vaulted. |
+
+#### Safety guarantees
+
+- **Play is primary; APKMirror is fallback.** Google Play cannot request an older version, so the downloaded artifact's embedded `versionName` is verified. If it does not match the target, the artifact is discarded and APKMirror is tried for the pinned version in `auto` mode. A mismatched file is never renamed to the target version.
+- **Original containers are preserved.** Files stay APK, XAPK, APKM, or APKS; they are not unwrapped, patched, signed, or relabeled.
+- **Tier 0 naming is exact.** Files use `vault_filename()` (`package_version.ext`), so the patcher can find them later.
+- **Existing files are skipped.** Without `force`, the workflow checks the vault inventory before applying `limit`, which lets repeated bounded runs keep advancing.
+- **Nothing is deleted remotely.** Uploads are batched; a failed upload leaves the staged file in place. `vault_manifest.json` is merged with existing metadata rather than replaced.
+- **No guessing.** An enabled app with `"stable": ["any"]` or no concrete version is reported as failed. Add a pin through `custom_version` or set a concrete version in the ecosystem JSON.
+
+A real run needs `HF_SOURCE_TOKEN` (or `HF_TOKEN`) and at least one malware scanner (`VT_API_KEY`, `HA_API_KEY`, or `MD_API_KEY`). Play credentials are needed for Google Play downloads; without them, `auto` uses APKMirror only and `google_play` alone fails. The workflow starts FlareSolverr automatically for APKMirror. Full results are saved as the `vault-sync-summary` artifact.
+
+#### Source vault vs. patched output
+
+| | Source vault | Patched output |
+| :--- | :--- | :--- |
+| Workflow | Fetch Googlag Apps (Source Vault) | Ecosystem patcher workflows |
+| Contents | Original APK/APKS/XAPK/APKM | Patched, signed APKs |
+| Dataset | `HF_SOURCE_DATASET_ID`, or per-app `{hf_user}/{archive_id}` | `HF_DATASET_ID` |
+| Naming | Tier 0 `package_version.ext` | Patcher output names |
+
+Keep the two datasets separate. Pointing `hf_dataset` or `HF_SOURCE_DATASET_ID` at `HF_DATASET_ID` would mix original and patched files in one repository.
+
+You can also run the same logic locally:
+
+```bash
+python vault_sync.py --ecosystems hxreborn --apps all --dry-run
+python vault_sync.py --ecosystems hxreborn --apps all --limit 10
+```
+
+### 7. Local Build (Termux / Android)
 
 Patch directly on an Android device without depending on GitHub Actions limits. The Termux builder supports dynamic matrix routing, anti-cache corruption, and API rate-limit bypass.
 

@@ -8,15 +8,15 @@ name: 📂 Fetch Googlag Apps (Source Vault)
   workflow_dispatch:
     inputs:
       ecosystems:
-        description: 'Ecosystems to scan (comma-separated, or "all")'
+        description: 'Ecosystems to scan (e.g. hxreborn, comma-separated, or "all")'
         required: true
         type: string
         default: 'all'
       apps:
-        description: 'App keys to fetch (comma-separated, or "all")'
-        required: true
+        description: 'Optional app-key override; blank = every true app in config/apps-<ecosystem>.toml'
+        required: false
         type: string
-        default: 'all'
+        default: ''
       version_selection:
         description: 'Target version channel'
         required: true
@@ -261,9 +261,12 @@ jobs:
             exit 1
           fi
 
+          # Blank app filter means "follow the selected ecosystem TOML".
+          APPS_INPUT="${INPUT_APPS:-all}"
+
           ARGS=(
             --ecosystems "$INPUT_ECOSYSTEMS"
-            --apps "$INPUT_APPS"
+            --apps "$APPS_INPUT"
             --version-selection "$INPUT_VERSION_SELECTION"
             --arch "$INPUT_ARCHITECTURE"
             --download-source "$INPUT_DOWNLOAD_SOURCE"
