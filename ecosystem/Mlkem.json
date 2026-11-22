@@ -61,6 +61,9 @@
                 "options_override": {
                     "Remove Shop — Canada": {
                         "enabled": false
+                    },
+                    "Aeroplan shopping for Walmart Canada": {
+                        "enabled": false
                     }
                 },
                 "force_bundle": true
