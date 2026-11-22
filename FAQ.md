@@ -143,12 +143,14 @@ some-app=1.2.3
 
 ---
 
-## 8. What apps are supported in large ecosystems like `arandomhooman` and `rushiranpise`?
+## 8. How do I select apps in large ecosystems like `arandomhooman` and `rushiranpise`?
 
 Because these ecosystems track dozens of apps, the dispatch form uses a **text input** instead of individual checkboxes (to stay under GitHub Actions input limits).
 
-- Typing `all` in the **Apps to patch** field will read the `config/apps-{ecosystem}.toml` file and process every app marked as `true`.
-- To process specific apps without changing the TOML, paste a comma-separated list of specific app keys.
+The authoritative app list is `config/apps-{ecosystem}.toml`; this FAQ does not duplicate it.
+
+- Typing `all` in the **Apps to patch** field reads that TOML and processes every app marked `true`.
+- To process specific apps without changing the TOML, paste a comma-separated list of keys from that file.
 
 **Example:**
 
@@ -157,63 +159,6 @@ finch, poweramp, webtoon
 ```
 
 > In the source-vault workflow, a blank **App keys** field is equivalent to `all`. See [Q10](#10-do-i-have-to-list-every-app-in-app-keys-for-the-source-vault).
-
-### `arandomhooman` apps
-
-- `adm`
-- `alpha-progression`
-- `bandlab`
-- `battery-guru`
-- `cronometer`
-- `directchat`
-- `finch`
-- `flightradar24`
-- `foldersync`
-- `inshot`
-- `liquid-gallery`
-- `poweramp`
-- `smart-audiobook`
-- `video-converter`
-- `webtoon`
-
-### `rushiranpise` apps
-
-- `1-1-1-1`
-- `accubattery`
-- `accuweather`
-- `aida64`
-- `amoledpix`
-- `ampere`
-- `anime-depth`
-- `apkmirror-installer`
-- `calm`
-- `canva`
-- `colornote`
-- `cpu-z`
-- `drama-box` *(downloads via Uptodown)*
-- `electron`
-- `hola-vpn`
-- `http-sniffer`
-- `inure`
-- `kahoot`
-- `kinemaster`
-- `lark-player`
-- `life360`
-- `ml-manager`
-- `mobioffice`
-- `netguard`
-- `network-guru`
-- `ninja-vpn`
-- `proton-vpn`
-- `proxyman`
-- `psiphon-pro`
-- `rar`
-- `stargazing-hub`
-- `stickerly`
-- `turboscan`
-- `wallverse`
-- `windscribe-vpn`
-- `wolfram-alpha`
 
 ---
 
@@ -332,6 +277,25 @@ Yes. Set `prune_old_versions=false` in the workflow, or omit `--prune-old-versio
 The version selected by the run is treated as current. If you pin an older version with `custom_version` while a newer file exists in the vault, enabling pruning will delete the newer file as superseded. Disable pruning whenever an ecosystem intentionally pins older versions, or run the vault per ecosystem with a separate dataset.
 
 See [README §6](README.md#6-fill-the-source-vault-optional) for the full input reference.
+
+---
+
+## 16. Can the builder use upstream CI test builds (Morphe/Piko)?
+
+Yes. Select `patches_track: Test Artifact`. It reads the newest successful `build_pull_request.yml` run on `dev` from the ecosystem's `repo_url`, then downloads its artifact:
+
+- Piko uploads a ZIP named `patches-bundle`; the workflow extracts the `.mpp` member.
+- Morphe uploads an `.mpp`-named artifact.
+- If the newest runs have no unexpired artifact, the workflow checks older successful runs.
+- The payload is checked against GitHub's artifact SHA-256 digest before patching.
+
+GitHub requires authentication for artifact downloads, and the built-in `GITHUB_TOKEN` only has access to this repository. Add `PATCH_SOURCE_TOKEN` as a repository secret: a fine-grained PAT with **Actions: Read** access to the upstream public repository. Without it, the track fails with a clear message.
+
+If you do not want a PAT, use `Pre-release`. Piko publishes `v*-dev.*` prereleases with `.mpp` assets, but those can lag behind the newest CI build.
+
+> A test build may require newer app versions than the pins in `ecosystem/piko.json`. If patching fails with an unsupported-version error, update the ecosystem version or use `Pre-release`/`Stable`.
+
+See [README §8](README.md#8-use-upstream-test-builds-optional) for setup details.
 
 ---
 

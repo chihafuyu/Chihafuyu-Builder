@@ -152,6 +152,7 @@ jobs:
       CHAT_ID: ${{ secrets.CHAT_ID }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       HF_DATASET_ID: ${{ secrets.HF_DATASET_ID }}
+      PATCH_SOURCE_TOKEN: ${{ secrets.PATCH_SOURCE_TOKEN }}
     with:
       ecosystem: "morphe"
       apps: ${{ needs.prepare-apps.outputs.selected }}

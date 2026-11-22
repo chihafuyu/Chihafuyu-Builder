@@ -20,6 +20,7 @@
 - 🗄️ **Source Vault Sync** — Optional manual workflow that archives original APK/APKS/XAPK/APKM files to a separate HuggingFace dataset using the exact Tier 0 filenames, then prunes superseded versions after a successful replacement upload.
 - ⚙️ **Dynamic Options Injection** — Generates and modifies `options.json` on the fly to apply custom patch preferences and locale stripping.
 - 📁 **Local Patch Support** — Use custom patch bundles directly from your repository.
+- 🧪 **Upstream Test Builds** — Fetch the newest Morphe or Piko CI `.mpp` artifact directly from GitHub Actions, with SHA-256 verification.
 - 🚀 **Seamless Distribution** — Signs finished APKs and uploads them to GitHub Releases and private Telegram channels via session strings.
 
 ## 🚀 How to Use This Template
@@ -82,6 +83,7 @@ Configure the following secrets at **Settings → Secrets and variables → Acti
 | `HF_TOKEN` | HuggingFace token for patched-output uploads; also the fallback token for the source vault |
 | `HF_SOURCE_TOKEN` | Optional dedicated HuggingFace token for the source vault (falls back to `HF_TOKEN`) |
 | `HF_SOURCE_DATASET_ID` | Optional source-vault dataset override; when blank, each app uses `{hf_user}/{archive_id}` |
+| `PATCH_SOURCE_TOKEN` | Fine-grained PAT with **Actions: Read** on the upstream patch repository; required for the `Test Artifact` patches track |
 | `API_ID` | Telegram API ID from my.telegram.org |
 | `API_HASH` | Telegram API hash from my.telegram.org |
 | `SESSION_STRING` | Pyrogram session string from Step 3 |
@@ -199,6 +201,24 @@ Anonymous GitHub API requests are capped at 60 per hour. A classic personal acce
 ```bash
 echo 'export GITHUB_TOKEN="your_ghp_token_here"' >> ~/.bashrc && source ~/.bashrc
 ```
+
+### 8. Use Upstream Test Builds (Optional)
+
+Some patch repositories publish CI-only `.mpp` bundles as GitHub Actions artifacts instead of releases. The `patches_track` input accepts `Test Artifact` for those:
+
+- It reads the newest successful `build_pull_request.yml` run on the `dev` branch of the ecosystem's `repo_url`.
+- Only runs whose head repository is `repo_url` itself are eligible, so fork pull-request artifacts are ignored.
+- If the newest runs have no unexpired artifact, it checks older successful runs.
+- It accepts a ZIP artifact containing an `.mpp` member (Piko's `patches-bundle`) or a raw `.mpp` artifact (Morphe).
+- The artifact is checked against GitHub's SHA-256 digest before use.
+
+Piko exposes this as **Patches Track → Test Artifact**.
+
+GitHub does not allow the built-in `GITHUB_TOKEN` to read another repository's artifacts. Add a `PATCH_SOURCE_TOKEN` repository secret: a fine-grained PAT with **Actions: Read** access to the upstream public repository. Without it, `Test Artifact` stops with a clear error.
+
+If you do not want to manage a PAT, use `Pre-release`. Piko publishes `v*-dev.*` prereleases with `.mpp` assets, but released builds can lag behind the newest CI build.
+
+> Test builds can target newer app versions than the pins in `ecosystem/piko.json`. If patching fails with an unsupported-version error, update the ecosystem version or switch to `Pre-release`/`Stable`.
 
 ## 🙏 Credits & Acknowledgments
 

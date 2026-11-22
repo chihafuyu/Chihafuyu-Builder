@@ -40,6 +40,14 @@ name: ⚙️ Core Patcher Engine
       patches_track:
         required: true
         type: string
+      test_artifact_workflow:
+        required: false
+        type: string
+        default: 'build_pull_request.yml'
+      test_artifact_branch:
+        required: false
+        type: string
+        default: 'dev'
       repo_url:
         required: true
         type: string
@@ -94,6 +102,8 @@ name: ⚙️ Core Patcher Engine
       HF_TOKEN:
         required: false
       HF_DATASET_ID:
+        required: false
+      PATCH_SOURCE_TOKEN:
         required: false
 
 permissions:
@@ -248,11 +258,14 @@ jobs:
       - name: Fetch Environment Artifacts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PATCH_SOURCE_TOKEN: ${{ secrets.PATCH_SOURCE_TOKEN }}
           INPUT_CLI_TRACK: ${{ inputs.cli_track }}
           INPUT_CUSTOM_CLI_VERSION: ${{ inputs.custom_cli_version }}
           INPUT_PATCHES_TRACK: ${{ inputs.patches_track }}
           INPUT_REPO_URL: ${{ inputs.repo_url }}
           INPUT_CUSTOM_PATCH_FILENAME: ${{ inputs.custom_patch_filename }}
+          INPUT_TEST_ARTIFACT_WORKFLOW: ${{ inputs.test_artifact_workflow }}
+          INPUT_TEST_ARTIFACT_BRANCH: ${{ inputs.test_artifact_branch }}
         run: |
           set -euo pipefail
 
@@ -354,70 +367,144 @@ jobs:
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
 
           elif [[ "$INPUT_PATCHES_TRACK" == "Test Artifact" ]]; then
-            if [[ "$INPUT_REPO_URL" != "MorpheApp/morphe-patches" ]]; then
-              echo "::error::Test Artifact is strictly reserved for" \
-                "the Morphe ecosystem."
+            if [[ -z "${PATCH_SOURCE_TOKEN:-}" ]]; then
+              echo "::error::Test Artifact needs the PATCH_SOURCE_TOKEN" \
+                "secret to read GitHub Actions artifacts."
+              echo "::error::Create a fine-grained PAT with 'Actions: Read'" \
+                "for $INPUT_REPO_URL and add it as a repository secret."
               exit 1
             fi
 
-            echo "[INFO] Fetching latest Test Artifact from Morphe" \
-              "dev branch..."
-            DEV_RUN_ENDPOINT="repos/MorpheApp/morphe-patches/actions/"
-            DEV_RUN_ENDPOINT+="workflows/build_pull_request.yml/runs?"
-            DEV_RUN_ENDPOINT+="status=success&branch=dev&per_page=1"
-            RUN_ID=$(gh api "$DEV_RUN_ENDPOINT" --jq '.workflow_runs[0].id')
-            if [ -z "$RUN_ID" ] || [ "$RUN_ID" == "null" ]; then
-              echo "::error::No successful build found on dev branch."
+            TEST_WORKFLOW="${INPUT_TEST_ARTIFACT_WORKFLOW:-build_pull_request.yml}"
+            TEST_BRANCH="${INPUT_TEST_ARTIFACT_BRANCH:-dev}"
+            if [[ ! "$TEST_WORKFLOW" =~ ^[A-Za-z0-9._-]+\.ya?ml$ ]]; then
+              echo "::error::test_artifact_workflow must be a workflow" \
+                "file name, got: $TEST_WORKFLOW"
+              exit 1
+            fi
+            if [[ ! "$TEST_BRANCH" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+              echo "::error::test_artifact_branch contains unsupported" \
+                "characters: $TEST_BRANCH"
               exit 1
             fi
 
-            echo "[INFO] Fetching artifact ID for run ID: $RUN_ID"
-            ARTIFACTS_ENDPOINT="repos/MorpheApp/morphe-patches/actions/"
-            ARTIFACTS_ENDPOINT+="runs/$RUN_ID/artifacts"
-            ARTIFACT_ID=$(gh api "$ARTIFACTS_ENDPOINT" \
-              --jq '.artifacts[] | select(.name | endswith(".mpp")) | .id' \
-              | head -n 1)
+            AUTH_TOKEN="$PATCH_SOURCE_TOKEN"
+            API_ACCEPT="Accept: application/vnd.github+json"
+            API_VERSION="X-GitHub-Api-Version: 2026-03-10"
 
-            if [ -z "$ARTIFACT_ID" ] || [ "$ARTIFACT_ID" == "null" ]; then
-              ARTIFACT_ID=$(gh api "$ARTIFACTS_ENDPOINT" \
-                --jq '.artifacts[0].id')
-            fi
+            api_get() {
+              curl -sSLf \
+                -H "Authorization: Bearer $AUTH_TOKEN" \
+                -H "$API_ACCEPT" \
+                -H "$API_VERSION" \
+                "$1"
+            }
 
-            if [ -z "$ARTIFACT_ID" ] || [ "$ARTIFACT_ID" == "null" ]; then
-              echo "::error::Failed to locate artifact for run ID $RUN_ID"
+            echo "[INFO] Fetching latest Test Artifact from" \
+              "$INPUT_REPO_URL ($TEST_BRANCH)..."
+            ENCODED_BRANCH="$(jq -rn \
+              --arg value "$TEST_BRANCH" '$value | @uri')"
+            RUNS_URL="https://api.github.com/repos/$INPUT_REPO_URL/actions/"
+            RUNS_URL+="workflows/$TEST_WORKFLOW/runs?"
+            RUNS_URL+="status=success&branch=$ENCODED_BRANCH&per_page=20"
+
+            if ! RUNS_JSON="$(api_get "$RUNS_URL")"; then
+              echo "::error::Could not list workflow runs from" \
+                "$INPUT_REPO_URL."
+              echo "::error::Verify that PATCH_SOURCE_TOKEN can read" \
+                "Actions for that repository."
               exit 1
             fi
 
-            # The artifact API exposes the SHA-256 digest of the uploaded
-            # stream: the raw patch bundle for single-file artifacts, or the
-            # stored ZIP wrapper for legacy artifacts. It is verified below
-            # before anything downstream consumes the file.
-            ARTIFACT_META="repos/MorpheApp/morphe-patches/actions/"
-            ARTIFACT_META+="artifacts/$ARTIFACT_ID"
-            ARTIFACT_DIGEST="$(gh api "$ARTIFACT_META" \
-              --jq '.digest // ""' | sed 's/^sha256://')"
+            # Only trust runs built by the upstream repository itself. A
+            # fork pull request can reuse the same branch name, but its
+            # artifact must never be applied with this repository's secrets.
+            REPO_KEY="$(printf '%s' "$INPUT_REPO_URL" \
+              | tr '[:upper:]' '[:lower:]')"
+            mapfile -t RUN_IDS < <(jq -r --arg repo "$REPO_KEY" '
+              .workflow_runs[]
+              | select((.head_repository.full_name // "")
+                       | ascii_downcase == $repo)
+              | .id
+            ' <<<"$RUNS_JSON")
+            if (( ${#RUN_IDS[@]} == 0 )); then
+              echo "::error::No successful $TEST_WORKFLOW run from" \
+                "$INPUT_REPO_URL itself found on branch $TEST_BRANCH."
+              exit 1
+            fi
 
-            # The artifact endpoint serves either a transport ZIP wrapping
-            # the uploaded files or the raw uploaded stream itself (a
-            # Morphe bundle is zip-format yet never nests an .mpp member).
-            # Only a payload holding an .mpp member is unwrapped here; the
-            # patches.mpp file is moved out byte-for-byte and must never be
-            # extracted itself. Either outcome is digest-verified.
+            RUN_ID=""
+            ARTIFACT_ID=""
+            ARTIFACT_NAME=""
+            ARTIFACT_DIGEST=""
+            for CANDIDATE_RUN in "${RUN_IDS[@]}"; do
+              ARTIFACTS_URL="https://api.github.com/repos/"
+              ARTIFACTS_URL+="$INPUT_REPO_URL/actions/runs/"
+              ARTIFACTS_URL+="$CANDIDATE_RUN/artifacts?per_page=100"
+              if ! ARTIFACTS_JSON="$(api_get "$ARTIFACTS_URL")"; then
+                echo "[WARN] Could not list artifacts for run" \
+                  "$CANDIDATE_RUN; trying an older run."
+                continue
+              fi
+
+              # Prefer a bundle named *.mpp (Morphe) or one whose name
+              # mentions patches (Piko's patches-bundle). Fall back to the
+              # first unexpired artifact.
+              SELECTED="$(jq -c '
+                ([.artifacts[]
+                  | select(.expired == false)
+                  | select((.name | endswith(".mpp"))
+                           or (.name | test("patch"; "i")))] | first)
+                // ([.artifacts[] | select(.expired == false)] | first)
+                // empty
+              ' <<<"$ARTIFACTS_JSON")"
+              if [[ -z "$SELECTED" || "$SELECTED" == "null" ]]; then
+                echo "[WARN] Run $CANDIDATE_RUN has no unexpired" \
+                  "artifact; trying an older run."
+                continue
+              fi
+
+              RUN_ID="$CANDIDATE_RUN"
+              ARTIFACT_ID="$(jq -r '.id' <<<"$SELECTED")"
+              ARTIFACT_NAME="$(jq -r '.name // ""' <<<"$SELECTED")"
+              ARTIFACT_DIGEST="$(jq -r '.digest // ""' <<<"$SELECTED" \
+                | sed 's/^sha256://')"
+              break
+            done
+
+            if [[ -z "$ARTIFACT_ID" ]]; then
+              echo "::error::No unexpired artifact found in the latest" \
+                "successful runs of $INPUT_REPO_URL."
+              exit 1
+            fi
+
+            echo "[INFO] Using run $RUN_ID, artifact $ARTIFACT_ID" \
+              "($ARTIFACT_NAME)."
+
+            # The artifact API exposes the SHA-256 digest of the stored ZIP
+            # wrapper. verify_digest checks either the extracted bundle or
+            # the wrapper, so a tampered or wrong payload still fails.
             echo "[INFO] Downloading artifact $ARTIFACT_ID..."
             ARTIFACT_DIR=".artifact_download"
             rm -rf "$ARTIFACT_DIR"
             mkdir -p "$ARTIFACT_DIR"
-            DOWNLOAD_URL="https://api.github.com/repos/MorpheApp/"
-            DOWNLOAD_URL+="morphe-patches/actions/artifacts/$ARTIFACT_ID/zip"
-            curl -sSLf \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              -H "X-GitHub-Api-Version: 2026-03-10" \
+            DOWNLOAD_URL="https://api.github.com/repos/$INPUT_REPO_URL/"
+            DOWNLOAD_URL+="actions/artifacts/$ARTIFACT_ID/zip"
+
+            if ! curl -sSLf \
+              -H "Authorization: Bearer $AUTH_TOKEN" \
+              -H "$API_ACCEPT" \
+              -H "$API_VERSION" \
               "$DOWNLOAD_URL" \
-              -o "$ARTIFACT_DIR/artifact.zip"
+              -o "$ARTIFACT_DIR/artifact.zip"; then
+              echo "::error::Artifact download failed for run $RUN_ID."
+              echo "::error::The artifact may have expired or the token" \
+                "may lack Actions: Read."
+              exit 1
+            fi
 
             if [ ! -s "$ARTIFACT_DIR/artifact.zip" ]; then
-              echo "::error::Artifact download failed."
+              echo "::error::Artifact download produced an empty file."
               exit 1
             fi
 
@@ -436,10 +523,9 @@ jobs:
               verify_digest patches.mpp
             else
               # Fallback: the endpoint served the raw artifact stream. A
-              # Morphe bundle is zip-format with no .mpp member inside,
-              # so the payload is used directly as patches.mpp.
-              # verify_digest rejects anything but the exact uploaded
-              # bundle, so a wrong payload still fails the run.
+              # patch bundle is zip-format with no .mpp member inside, so
+              # the payload is used directly as patches.mpp. verify_digest
+              # rejects anything but the exact uploaded bundle.
               echo "[INFO] No .mpp member inside the payload; using it" \
                 "as the raw patch bundle."
               mv -- "$ARTIFACT_ZIP" patches.mpp
