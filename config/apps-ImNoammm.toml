@@ -1,0 +1,8 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"block-blast" = true
+"chess" = true
+"gboard" = true
+"geocaching" = true

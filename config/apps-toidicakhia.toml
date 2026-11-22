@@ -1,0 +1,13 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"1-1-1-1" = true
+"ezviz" = true
+"http-sniffer" = true
+"locket-widget" = true
+"netmonster" = true
+"terabox" = true
+"universal-copy" = true
+"vtvgo" = true
+"wedj" = true

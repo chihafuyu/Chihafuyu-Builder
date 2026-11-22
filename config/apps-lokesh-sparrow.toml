@@ -1,0 +1,10 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"doc-scanner" = true
+"google-photos" = true
+"linkedin" = true
+"mx-player-pro" = true
+"splitwise" = true
+"truecaller" = true

@@ -1,0 +1,7 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"kick" = true
+"rumble" = true
+"twitch" = true

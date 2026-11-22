@@ -1,0 +1,9 @@
+# Application Configuration
+# Change to `true` to patch, `false` to skip.
+
+[apps]
+"music-league" = true
+"pushpress-members" = true
+"walmart-canada" = true
+"wongnai" = true
+"zoom-earth" = true
