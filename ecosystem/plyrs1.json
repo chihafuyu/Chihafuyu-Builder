@@ -27,6 +27,17 @@
                 "archive_id": "ZeNiX",
                 "options_override": {}
             },
+            "nusuk": {
+                "package": "com.moh.nusukapp",
+                "search_term": "Nusuk",
+                "stable": [
+                    "17.6.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "pertaminiku": {
                 "package": "com.pertaminiku",
                 "search_term": "Pertaminiku",
