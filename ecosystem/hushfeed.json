@@ -159,7 +159,8 @@
                             "grid_position_controls": false,
                             "publish_date_month_name": false,
                             "hide_grid_view_count": false,
-                            "sort_pinned_with_rest": false
+                            "sort_pinned_with_rest": false,
+                            "rounded_grid_corners": false
                         }
                     },
                     "Always upload in HD": {
@@ -263,7 +264,10 @@
                             "compact_comment_header": false,
                             "hide_comment_close_button": false,
                             "hide_comment_expand_button": false,
-                            "larger_comment_like_target": false
+                            "larger_comment_like_target": false,
+                            "show_comment_expand_button": false,
+                            "keep_video_size_under_comments": false,
+                            "share_any_comment": false
                         }
                     },
                     "Confirm feed interactions": {
@@ -393,7 +397,8 @@
                             "live_hide_shopping": false,
                             "live_hide_sponsored": false,
                             "live_hide_verified": false,
-                            "hide_ai_cast": false
+                            "hide_ai_cast": false,
+                            "hide_playable_games": false
                         }
                     },
                     "Feed tab navigation": {
@@ -417,7 +422,8 @@
                             "show_feed_buttons": false,
                             "hide_tako_ai": false,
                             "shared_video_alone": false,
-                            "hide_feed_tab_strip": false
+                            "hide_feed_tab_strip": false,
+                            "exit_with_one_back": false
                         }
                     },
                     "Fit the video to the screen": {
@@ -448,7 +454,8 @@
                         "options": {
                             "ghost_mode": false,
                             "ghost_hide_online_status": false,
-                            "ghost_hide_live_views": false
+                            "ghost_hide_live_views": false,
+                            "ghost_local_likes": false
                         }
                     },
                     "Hide CAPTCHA popups": {
@@ -641,7 +648,8 @@
                             "hide_location_labels": false,
                             "hide_creation_tags": false,
                             "hide_live_entrance": false,
-                            "hide_may_know_tag": false
+                            "hide_may_know_tag": false,
+                            "hide_pause_icon": false
                         }
                     },
                     "Hold-and-slide 2x lock": {
@@ -724,7 +732,18 @@
                             "live_audio_only": false,
                             "live_name_alerts": false,
                             "live_name_alerts_listen": false,
-                            "live_buttons_in_menu": false
+                            "live_buttons_in_menu": false,
+                            "show_exact_battle_scores": false,
+                            "live_room_info": false,
+                            "live_running_time": false,
+                            "hide_live_card_events": false,
+                            "hide_live_card_products": false,
+                            "hide_live_card_shop": false,
+                            "hide_live_card_shop_rating": false,
+                            "hide_live_card_group_chat": false,
+                            "hide_live_card_bulletin_board": false,
+                            "hide_live_card_gift_gallery": false,
+                            "hide_live_card_fest_honors": false
                         }
                     },
                     "Lift text length limits": {
@@ -933,7 +952,8 @@
                             "show_join_date": false,
                             "local_profile_counts": false,
                             "local_profile_verified_badge": false,
-                            "hide_own_profile_restriction_notice": false
+                            "hide_own_profile_restriction_notice": false,
+                            "show_profile_changes": false
                         }
                     },
                     "Show the progress bar": {
@@ -1020,7 +1040,8 @@
                         "options": {
                             "download_subtitles": false,
                             "keep_captions_clear_display": false,
-                            "keep_captions_available": false
+                            "keep_captions_available": false,
+                            "skip_promo_lines": false
                         }
                     },
                     "Translate comments": {
@@ -1074,6 +1095,12 @@
                         "enabled": true,
                         "options": {
                             "report_newer_phone_to_game_live": false
+                        }
+                    },
+                    "Smaller text sizes": {
+                        "enabled": true,
+                        "options": {
+                            "smaller_text_sizes": false
                         }
                     }
                 },
@@ -1158,7 +1185,8 @@
                             "live_hide_shopping": false,
                             "live_hide_sponsored": false,
                             "live_hide_verified": false,
-                            "hide_ai_cast": false
+                            "hide_ai_cast": false,
+                            "hide_playable_games": false
                         }
                     },
                     "In-app browser privacy guard": {

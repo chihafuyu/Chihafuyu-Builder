@@ -14,6 +14,11 @@ name: 🗒️ Plyrs1 Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_nusuk:
+        description: 'Patch nusuk'
+        required: true
+        type: boolean
+        default: true
       app_pertaminiku:
         description: 'Patch pertaminiku'
         required: true
@@ -111,6 +116,7 @@ jobs:
     env:
       APP_E_UJIAN_BROWSER: ${{ inputs.app_e_ujian_browser }}
       APP_HABITICA: ${{ inputs.app_habitica }}
+      APP_NUSUK: ${{ inputs.app_nusuk }}
       APP_PERTAMINIKU: ${{ inputs.app_pertaminiku }}
       APP_STRUK_POM: ${{ inputs.app_struk_pom }}
       APP_STRUK_POM_SPBU: ${{ inputs.app_struk_pom_spbu }}
@@ -124,6 +130,9 @@ jobs:
           fi
           if [[ "$APP_HABITICA" == "true" ]]; then
             LIST="$LIST,habitica"
+          fi
+          if [[ "$APP_NUSUK" == "true" ]]; then
+            LIST="$LIST,nusuk"
           fi
           if [[ "$APP_PERTAMINIKU" == "true" ]]; then
             LIST="$LIST,pertaminiku"

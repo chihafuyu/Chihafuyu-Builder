@@ -202,7 +202,7 @@
                 "package": "com.amazon.amazonvideo.livingroom",
                 "search_term": "Prime Video",
                 "stable": [
-                    "6.23.23+v15.5.0.70-armv7a"
+                    "6.24.7+v16.0.0.332-allAbis"
                 ],
                 "beta": [
                     "6.24.13+v16.0.1.93-allAbis"

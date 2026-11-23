@@ -137,7 +137,7 @@
                 "package": "com.github.android",
                 "search_term": "GitHub",
                 "stable": [
-                    "1.284.0"
+                    "1.285.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -147,7 +147,13 @@
                         "enabled": false
                     }
                 },
-                "force_bundle": true
+                "force_bundle": true,
+                "version_codes": {
+                    "arm64-v8a": "956",
+                    "armeabi-v7a": "956",
+                    "x86_64": "956",
+                    "x86": "956"
+                }
             },
             "idn": {
                 "package": "com.idntimes.idntimes",
@@ -211,7 +217,7 @@
                 "package": "com.linkedin.android",
                 "search_term": "LinkedIn",
                 "stable": [
-                    "4.1.1276"
+                    "4.1.1278"
                 ],
                 "beta": [],
                 "strip": true,
@@ -233,7 +239,13 @@
                         "enabled": false
                     }
                 },
-                "force_bundle": true
+                "force_bundle": true,
+                "version_codes": {
+                    "arm64-v8a": "218600",
+                    "armeabi-v7a": "218600",
+                    "x86_64": "218600",
+                    "x86": "218600"
+                }
             },
             "muslim-pro": {
                 "package": "com.bitsmedia.android.muslimpro",
