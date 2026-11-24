@@ -72,6 +72,21 @@ def _find_repo_map(script_dir, repo_root):
     return next((p for p in candidates if os.path.exists(p)), None)
 
 
+def _parse_fallback_urls(info):
+    """Returns validated mirror URLs for an ecosystem source."""
+    raw_urls = info.get("fallback_urls") or []
+    if isinstance(raw_urls, str):
+        raw_urls = [raw_urls]
+    if not isinstance(raw_urls, list):
+        return []
+    return [
+        url.strip()
+        for url in raw_urls
+        if isinstance(url, str)
+        and url.strip().startswith(("https://", "http://"))
+    ]
+
+
 def _parse_repo_info(name, info, repo_root):
     """Parse repo info into a config path, URL, and target metadata."""
     config_path = info.get("config_path", f"ecosystem/{name}.json")
@@ -123,6 +138,7 @@ def load_ecosystems():
                 if abs_path and url:
                     ecosystems[abs_path] = {
                         "url": url,
+                        "fallback_urls": _parse_fallback_urls(info),
                         "release_patches": is_rel,
                         "target_package": tgt_pkg,
                         "target_name": tgt_name,
@@ -153,6 +169,10 @@ def load_ecosystems():
                     "https://raw.githubusercontent.com/kveld9/"
                     "kveld-morphe-patches/main/patches-list.json"
                 ),
+                "fallback_urls": [
+                    "https://codeberg.org/kveld9/"
+                    "kveld-morphe-patches/raw/branch/main/patches-list.json"
+                ],
                 "release_patches": False,
                 "target_package": None,
                 "target_name": None,
@@ -1534,22 +1554,47 @@ def update_config(config_path, stable_data, ignore_packages=None, ignore_patches
     return changed, removed_apps, added_apps
 
 
+def _is_patches_payload(data):
+    """Returns True when fetched data has the expected patches-list shape."""
+    return isinstance(data, dict) and isinstance(data.get("patches"), list)
+
+
 def _process_ecosystem(config_path, ecosystem_info):
-    """Process a single ecosystem and return the fetched data."""
+    """Process a single ecosystem and return the fetched data.
+
+    GitHub accounts can be suspended without notice. Every source may
+    declare ``fallback_urls`` mirrors (for example a Codeberg copy) that
+    are tried in order when the primary GitHub raw URL fails.
+    """
     if not os.path.exists(config_path):
         print(f"Skipping '{config_path}': Config file not found in the repository.")
         return None
 
-    stable_data = fetch_patches_list(
-        ecosystem_info["url"],
-        release_patches=ecosystem_info["release_patches"],
-        target_package=ecosystem_info.get("target_package"),
-        target_name=ecosystem_info.get("target_name"),
+    fallback_urls = ecosystem_info.get("fallback_urls") or []
+    urls = [ecosystem_info["url"], *fallback_urls]
+
+    for index, url in enumerate(urls):
+        if index:
+            print(
+                f"  -> Primary source unavailable; trying fallback "
+                f"{index}/{len(fallback_urls)}: {url}"
+            )
+        stable_data = fetch_patches_list(
+            url,
+            release_patches=ecosystem_info["release_patches"],
+            target_package=ecosystem_info.get("target_package"),
+            target_name=ecosystem_info.get("target_name"),
+        )
+        if _is_patches_payload(stable_data):
+            return stable_data
+        if stable_data is not None:
+            print(f"  -> Invalid upstream payload from {url}; ignoring.")
+
+    print(
+        f"Skipping '{config_path}': Failed to fetch or parse upstream "
+        "data from all sources (see errors above)."
     )
-    if stable_data is None:
-        print(f"Skipping '{config_path}': Failed to fetch or parse upstream data (see error above).")
-        return None
-    return stable_data
+    return None
 
 
 def _sync_workflow_and_toml(

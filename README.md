@@ -97,6 +97,8 @@ Edit the JSON files under `ecosystem/` (e.g., `arandomhooman.json`, `byehi98.jso
 
 **For Termux local builds:** if your ecosystem uses complex matrices (like `Piko` or `SysAdminDoc`), place split `JSON` files in `ecosystem` directory and register them in `repo_map.json`. The Termux script parses this map to build its interactive menu.
 
+**Upstream mirror fallback:** the auto-update config workflow reads `repo_map.json`. Add `fallback_urls` to an ecosystem entry to retry a mirror (for example Codeberg) when the GitHub raw source is unavailable or the account is suspended. `kveld9` and `kveld9-extra` already point to their Codeberg mirrors.
+
 ### 6. Fill the Source Vault (Optional)
 
 Tier 0 can serve cached **original** artifacts from HuggingFace. The **Fetch Googlag Apps (Source Vault)** workflow fills that cache manually. It never patches, signs, or generates `options.json`, and it writes to a dataset separate from `HF_DATASET_ID` (the patched-output dataset). By default it keeps one version per package and removes the superseded file only after the replacement upload succeeds.

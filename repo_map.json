@@ -99,10 +99,16 @@
         "repo_url": "kuchingneko28/ipusnas-patches"
     },
     "kveld9": {
-        "repo_url": "kveld9/kveld-morphe-patches"
+        "repo_url": "kveld9/kveld-morphe-patches",
+        "fallback_urls": [
+            "https://codeberg.org/kveld9/kveld-morphe-patches/raw/branch/main/patches-list.json"
+        ]
     },
     "kveld9-extra": {
-        "repo_url": "kveld9/kveld-extra-morphe-patches"
+        "repo_url": "kveld9/kveld-extra-morphe-patches",
+        "fallback_urls": [
+            "https://codeberg.org/kveld9/kveld-extra-morphe-patches/raw/branch/main/patches-list.json"
+        ]
     },
     "legendsciber": {
         "repo_url": "legendsciber/morphe-patches"
