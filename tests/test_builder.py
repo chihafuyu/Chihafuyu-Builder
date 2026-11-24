@@ -609,6 +609,135 @@ def test_find_release_falls_back_to_beta_upload(monkeypatch):
     )
 
 
+def test_release_priority_ranks_plain_before_beta():
+    """Plain and stable uploads outrank beta, which outranks other tags."""
+    assert TIER1._release_priority(
+        "/apk/x/app-1-0-release/", "App 1.0", "1.0"
+    ) == 0
+    assert TIER1._release_priority(
+        "/apk/x/app-1-0-stable-release/", "App 1.0 - Stable", "1.0"
+    ) == 0
+    assert TIER1._release_priority(
+        "/apk/x/app-1-0-beta-release/", "App 1.0-BETA", "1.0"
+    ) == 1
+    assert TIER1._release_priority(
+        "/apk/x/app-1-0-alpha-release/", "App 1.0-ALPHA", "1.0"
+    ) == 2
+
+
+def test_find_release_prefers_plain_over_beta_regardless_of_order(monkeypatch):
+    """A beta listed first must not outrank an existing plain release."""
+    html = (
+        '<a class="fontBlack" href="/apk/google-inc/youtube/'
+        'youtube-21-45-82-beta-release/">YouTube 21.45.82-BETA</a>'
+        '<a class="fontBlack" href="/apk/google-inc/youtube/'
+        'youtube-21-45-82-release/">YouTube 21.45.82</a>'
+    )
+    scraper = object.__new__(TIER1.ApkmirrorScraper)
+    ctx = SimpleNamespace(
+        pkg="com.google.android.youtube",
+        app_data={"search_term": "YouTube"},
+        target_ver="21.45.82",
+    )
+
+    def fake_get(_ctx, url):
+        return SimpleNamespace(url=url, text=html)
+
+    monkeypatch.setattr(scraper, "_safe_get", fake_get)
+    url = scraper._find_release(ctx)
+    assert url == (
+        "https://www.apkmirror.com/apk/google-inc/youtube/"
+        "youtube-21-45-82-release/"
+    )
+
+
+def test_find_release_keeps_searching_for_plain_after_beta(monkeypatch):
+    """A beta-only result page must not stop the search for a plain build."""
+    pages = [
+        '<a class="fontBlack" href="/apk/google-inc/youtube/'
+        'youtube-21-45-82-beta-release/">YouTube 21.45.82-BETA</a>',
+        '<a class="fontBlack" href="/apk/google-inc/youtube/'
+        'youtube-21-45-82-release/">YouTube 21.45.82</a>',
+    ]
+    responses = iter(pages)
+    scraper = object.__new__(TIER1.ApkmirrorScraper)
+    ctx = SimpleNamespace(
+        pkg="com.google.android.youtube",
+        app_data={"search_term": "YouTube"},
+        target_ver="21.45.82",
+    )
+
+    def fake_get(_ctx, url):
+        return SimpleNamespace(url=url, text=next(responses))
+
+    monkeypatch.setattr(scraper, "_safe_get", fake_get)
+    url = scraper._find_release(ctx)
+    assert url == (
+        "https://www.apkmirror.com/apk/google-inc/youtube/"
+        "youtube-21-45-82-release/"
+    )
+
+
+def test_find_release_rejects_longer_version_prefix(monkeypatch):
+    """A target version must not match a longer numeric version."""
+    html = (
+        '<a class="fontBlack" href="/apk/google-inc/youtube/'
+        'youtube-21-46-524-release/">YouTube 21.46.524</a>'
+    )
+    scraper = object.__new__(TIER1.ApkmirrorScraper)
+    ctx = SimpleNamespace(
+        pkg="com.google.android.youtube",
+        app_data={"search_term": "YouTube"},
+        target_ver="21.46.52",
+    )
+
+    def fake_get(_ctx, url):
+        return SimpleNamespace(url=url, text=html)
+
+    monkeypatch.setattr(scraper, "_safe_get", fake_get)
+    assert scraper._find_release(ctx) is None
+
+
+def test_find_release_rejects_excluded_auto_redirect(monkeypatch):
+    """An auto-redirect to a secondary upload must not be downloaded."""
+    redirect = (
+        "https://www.apkmirror.com/apk/google-inc/youtube/"
+        "youtube-21-45-82-secondary-release/"
+    )
+    scraper = object.__new__(TIER1.ApkmirrorScraper)
+    ctx = SimpleNamespace(
+        pkg="com.google.android.youtube",
+        app_data={"search_term": "YouTube"},
+        target_ver="21.45.82",
+    )
+
+    def fake_get(_ctx, url):
+        return SimpleNamespace(url=redirect, text="")
+
+    monkeypatch.setattr(scraper, "_safe_get", fake_get)
+    assert scraper._find_release(ctx) is None
+
+
+def test_find_release_accepts_plain_auto_redirect(monkeypatch):
+    """A redirect to the exact plain release remains valid."""
+    redirect = (
+        "https://www.apkmirror.com/apk/google-inc/youtube/"
+        "youtube-21-45-82-release/"
+    )
+    scraper = object.__new__(TIER1.ApkmirrorScraper)
+    ctx = SimpleNamespace(
+        pkg="com.google.android.youtube",
+        app_data={"search_term": "YouTube"},
+        target_ver="21.45.82",
+    )
+
+    def fake_get(_ctx, url):
+        return SimpleNamespace(url=redirect, text="")
+
+    monkeypatch.setattr(scraper, "_safe_get", fake_get)
+    assert scraper._find_release(ctx) == redirect
+
+
 @pytest.mark.parametrize(
     "url,expected",
     [

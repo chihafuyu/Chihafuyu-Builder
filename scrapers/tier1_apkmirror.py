@@ -21,6 +21,9 @@ EDITION_SLUG_REGEX = re.compile(
 )
 
 EXCLUDED_RELEASE_TAGS = ("extended", "secondary")
+PLAIN_RELEASE_TAGS = ("", "release", "stable")
+RELEASE_TAG_PRIORITIES = {"beta": 1}
+UNKNOWN_RELEASE_TAG_PRIORITY = 2
 
 FETCH_ATTEMPTS = 3
 FETCH_TIMEOUT_SECONDS = 45
@@ -70,6 +73,46 @@ def _is_arch_token(text: str, token: str) -> bool:
     """
     pattern = rf"(?<![a-z0-9_-]){re.escape(token)}(?![a-z0-9_-])"
     return re.search(pattern, text, re.IGNORECASE) is not None
+
+
+def _has_version_token(value: str, version: str) -> bool:
+    """Matches *version* as a complete token, not as a numeric prefix.
+
+    Without the digit boundaries a target like ``21.46.52`` would also
+    match ``21.46.524``, which is a different APKMirror release.
+    """
+    pattern = rf"(?<![\d.]){re.escape(version)}(?![\d.])"
+    return re.search(pattern, value, re.IGNORECASE) is not None
+
+
+def _extract_release_tag(href: str, text: str, base_ver: str) -> str:
+    """Returns the upload tag that follows the target version.
+
+    APKMirror encodes alternate tracks in the slug and title, for example
+    ``youtube-21-47-483-beta-release`` / ``YouTube 21.47.483-BETA``.
+    A plain release returns an empty string or ``release``.
+    """
+    candidates = (
+        (text.lower(), base_ver.lower()),
+        (href.lower(), base_ver.replace(".", "-").lower()),
+    )
+    for value, version in candidates:
+        pos = value.rfind(version)
+        if pos < 0:
+            continue
+        suffix = value[pos + len(version):]
+        match = re.match(r"[-_\s]+([a-z0-9]+)", suffix)
+        if match:
+            return match.group(1)
+    return ""
+
+
+def _release_priority(href: str, text: str, base_ver: str) -> int:
+    """Ranks release uploads: plain stable first, beta as fallback."""
+    tag = _extract_release_tag(href, text, base_ver)
+    if tag in PLAIN_RELEASE_TAGS:
+        return 0
+    return RELEASE_TAG_PRIORITIES.get(tag, UNKNOWN_RELEASE_TAG_PRIORITY)
 
 
 class _FlareSolverrSession:
@@ -250,8 +293,10 @@ class ApkmirrorScraper(BaseScraper):
 
         text = link.text.lower()
 
-        has_ver_text = base_ver.lower() in text
-        has_ver_href = base_ver.replace(".", "-").lower() in href.lower()
+        has_ver_text = _has_version_token(text, base_ver)
+        has_ver_href = _has_version_token(
+            href, base_ver.replace(".", "-")
+        )
 
         is_smart_match = False
         if not (has_ver_text or has_ver_href):
@@ -268,6 +313,9 @@ class ApkmirrorScraper(BaseScraper):
             return None
 
         if any(k in text for k in exc_kws):
+            return None
+
+        if _extract_release_tag(href, text, base_ver) in EXCLUDED_RELEASE_TAGS:
             return None
 
         if inc_kws and not all(k in text for k in inc_kws):
@@ -315,6 +363,22 @@ class ApkmirrorScraper(BaseScraper):
             short_term,
         ]))
 
+    @staticmethod
+    def _release_url_priority(
+        url: str, base_ver: str, exc_kws: list[str]
+    ) -> int | None:
+        """Ranks an auto-redirected release URL, or rejects it."""
+        lowered = url.lower()
+        if any(k in lowered for k in exc_kws):
+            return None
+
+        if not _has_version_token(
+            lowered, base_ver.replace(".", "-")
+        ):
+            return None
+
+        return _release_priority(url, "", base_ver)
+
     def _find_release(self, ctx: Context) -> str | None:
         ver_match = re.search(r"(v?\d+(?:\.\d+)+)", ctx.target_ver, re.IGNORECASE)
         base_ver = ver_match.group(1) if ver_match else ctx.target_ver
@@ -322,6 +386,7 @@ class ApkmirrorScraper(BaseScraper):
         queries = self._get_search_queries(ctx, base_ver)
         exc_kws, inc_kws = self._get_filter_kws(ctx)
         total = len(queries)
+        beta_fallback = None
 
         for idx, query in enumerate(queries, start=1):
             print(
@@ -341,22 +406,63 @@ class ApkmirrorScraper(BaseScraper):
                 "?post_type=app_release" not in resp.url
                 and "-release/" in resp.url
             ):
+                redirect_url = str(resp.url)
+                priority = self._release_url_priority(
+                    redirect_url, base_ver, exc_kws
+                )
+                if priority is None:
+                    print(
+                        "[WARN] Auto-redirect pointed to an excluded "
+                        "release; ignoring.",
+                        flush=True,
+                    )
+                    continue
+
                 print("[INFO] Auto-redirected to release page.", flush=True)
-                return str(resp.url)
+                if priority == 0:
+                    return redirect_url
+                if beta_fallback is None:
+                    beta_fallback = redirect_url
+                continue
 
             soup = BeautifulSoup(resp.text, "html.parser")
+            candidates: list[tuple[int, str]] = []
             for link in soup.find_all("a", class_="fontBlack"):
                 valid_url = self._is_valid_release_link(
                     link, base_ver, exc_kws, inc_kws
                 )
-                if valid_url:
-                    print(
-                        f"[INFO] Matched release: {_short_url(valid_url)}",
-                        flush=True,
-                    )
-                    return valid_url
+                if not valid_url:
+                    continue
 
-        return None
+                priority = _release_priority(
+                    link.get("href", ""), link.text, base_ver
+                )
+                candidates.append((priority, valid_url))
+
+            if not candidates:
+                continue
+
+            # Stable, plain uploads always win over beta uploads. The site
+            # order is only a tiebreaker, so a newer beta upload cannot
+            # shadow an existing plain release.
+            candidates.sort(key=lambda item: item[0])
+            priority, best_url = candidates[0]
+            print(
+                f"[INFO] Matched release: {_short_url(best_url)}",
+                flush=True,
+            )
+            if priority == 0:
+                return best_url
+            if beta_fallback is None:
+                beta_fallback = best_url
+
+        if beta_fallback:
+            print(
+                f"[INFO] Falling back to upload: "
+                f"{_short_url(beta_fallback)}",
+                flush=True,
+            )
+        return beta_fallback
 
     @staticmethod
     def _log_expected_sha256(soup: BeautifulSoup) -> None:
