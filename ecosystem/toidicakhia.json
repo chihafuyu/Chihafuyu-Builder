@@ -110,7 +110,7 @@
                 "package": "com.dubox.drive",
                 "search_term": "TeraBox",
                 "stable": [
-                    "4.28.5"
+                    "4.29.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -127,10 +127,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "709",
-                    "armeabi-v7a": "709",
-                    "x86_64": "709",
-                    "x86": "709"
+                    "arm64-v8a": "710",
+                    "armeabi-v7a": "710",
+                    "x86_64": "710",
+                    "x86": "710"
                 },
                 "force_bundle": true
             },

@@ -417,6 +417,9 @@
                 "options_override": {
                     "Remove Friends of Friends tab": {
                         "enabled": false
+                    },
+                    "Custom BeFake header": {
+                        "enabled": false
                     }
                 },
                 "version_codes": {
@@ -701,6 +704,24 @@
                     "armeabi-v7a": "281",
                     "x86_64": "281",
                     "x86": "281"
+                },
+                "force_bundle": true
+            },
+            "chess-scanner": {
+                "package": "com.stervs.chessscanner",
+                "search_term": "Chess Scanner",
+                "stable": [
+                    "1.8.36"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "84",
+                    "armeabi-v7a": "84",
+                    "x86_64": "84",
+                    "x86": "84"
                 },
                 "force_bundle": true
             },
@@ -1167,6 +1188,24 @@
                 },
                 "force_bundle": true
             },
+            "fv-file-explorer": {
+                "package": "com.folderv.file",
+                "search_term": "FV File Explorer",
+                "stable": [
+                    "1.28.6"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "1804",
+                    "armeabi-v7a": "1804",
+                    "x86_64": "1804",
+                    "x86": "1804"
+                },
+                "force_bundle": true
+            },
             "glass-widgets": {
                 "package": "com.jndapp.glass.widgets",
                 "search_term": "Glass Widgets",
@@ -1189,17 +1228,17 @@
                 "package": "ir.ilmili.telegraph",
                 "search_term": "Graph Messenger",
                 "stable": [
-                    "13.2.2.0"
+                    "13.2.2.2"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "73031",
-                    "armeabi-v7a": "73031",
-                    "x86_64": "73031",
-                    "x86": "73031"
+                    "arm64-v8a": "73051",
+                    "armeabi-v7a": "73051",
+                    "x86_64": "73051",
+                    "x86": "73051"
                 },
                 "force_bundle": true
             },
@@ -2131,6 +2170,24 @@
                 },
                 "force_bundle": true
             },
+            "outlook": {
+                "package": "com.microsoft.office.outlook",
+                "search_term": "Outlook",
+                "stable": [
+                    "5.2645.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "72645119",
+                    "armeabi-v7a": "72645119",
+                    "x86_64": "72645119",
+                    "x86": "72645119"
+                },
+                "force_bundle": true
+            },
             "patreon": {
                 "package": "com.patreon.android",
                 "search_term": "Patreon",
@@ -2290,6 +2347,23 @@
                 },
                 "force_bundle": true
             },
+            "podcast-republic": {
+                "package": "com.itunestoppodcastplayer.app",
+                "search_term": "Podcast Republic",
+                "stable": [
+                    "26.11.4R"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "25146920",
+                    "armeabi-v7a": "25146920",
+                    "x86_64": "25146920",
+                    "x86": "25146920"
+                }
+            },
             "poe": {
                 "package": "com.poe.android",
                 "search_term": "Poe",
@@ -2305,6 +2379,24 @@
                     "armeabi-v7a": "3080004",
                     "x86_64": "3080004",
                     "x86": "3080004"
+                },
+                "force_bundle": true
+            },
+            "poweramp-equalizer": {
+                "package": "com.maxmpz.equalizer",
+                "search_term": "Poweramp Equalizer",
+                "stable": [
+                    "build-1035-bundle-play"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "1035009",
+                    "armeabi-v7a": "1035009",
+                    "x86_64": "1035009",
+                    "x86": "1035009"
                 },
                 "force_bundle": true
             },
@@ -2341,23 +2433,6 @@
                     "armeabi-v7a": "654002",
                     "x86_64": "654002",
                     "x86": "654002"
-                }
-            },
-            "projectivy-launcher": {
-                "package": "com.spocky.projengmenu",
-                "search_term": "Projectivy Launcher",
-                "stable": [
-                    "4.73"
-                ],
-                "beta": [],
-                "strip": true,
-                "archive_id": "ZeNiX",
-                "options_override": {},
-                "version_codes": {
-                    "arm64-v8a": "98",
-                    "armeabi-v7a": "98",
-                    "x86_64": "98",
-                    "x86": "98"
                 }
             },
             "proton-authenticator": {
@@ -2431,6 +2506,23 @@
                 },
                 "force_bundle": true
             },
+            "proton-pass-f-droid": {
+                "package": "proton.android.pass.fdroid",
+                "search_term": "Proton Pass (F-Droid)",
+                "stable": [
+                    "1.41.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "14105000",
+                    "armeabi-v7a": "14105000",
+                    "x86_64": "14105000",
+                    "x86": "14105000"
+                }
+            },
             "proton-vpn": {
                 "package": "ch.protonvpn.android",
                 "search_term": "Proton VPN",
@@ -2448,6 +2540,23 @@
                     "x86": "605215700"
                 },
                 "force_bundle": true
+            },
+            "proton-vpn-f-droid": {
+                "package": "ch.protonvpn.android.reproducible",
+                "search_term": "Proton VPN (F-Droid)",
+                "stable": [
+                    "5.21.57.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "605215700",
+                    "armeabi-v7a": "605215700",
+                    "x86_64": "605215700",
+                    "x86": "605215700"
+                }
             },
             "psiphon": {
                 "package": "com.psiphon3.subscription",
@@ -2962,6 +3071,9 @@
                             "hidePdfEncryption": false,
                             "hideAddWatermark": false
                         }
+                    },
+                    "Fix Google login": {
+                        "enabled": false
                     }
                 },
                 "version_codes": {
