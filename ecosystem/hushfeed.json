@@ -751,7 +751,8 @@
                             "hide_live_card_bulletin_board": false,
                             "hide_live_card_gift_gallery": false,
                             "hide_live_card_fest_honors": false,
-                            "live_following_row_order": false
+                            "live_following_row_order": false,
+                            "hide_live_chat": false
                         }
                     },
                     "Lift text length limits": {

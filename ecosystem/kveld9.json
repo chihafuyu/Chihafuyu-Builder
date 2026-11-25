@@ -5,7 +5,7 @@
                 "package": "com.brave.browser",
                 "search_term": "Brave Browser",
                 "stable": [
-                    "1.99.57"
+                    "1.100.59"
                 ],
                 "beta": [],
                 "strip": true,
@@ -40,7 +40,7 @@
                 "package": "com.google.android.inputmethod.latin",
                 "search_term": "Gboard Lite",
                 "stable": [
-                    "18.6.3.1002251336-lite_release-arm64-v8a"
+                    "18.8.0.1022711984-lite_beta-arm64-v8a"
                 ],
                 "beta": [],
                 "strip": true,
@@ -71,7 +71,7 @@
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok Global",
                 "stable": [
-                    "47.7.3"
+                    "47.9.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -107,7 +107,8 @@
                         "options": {
                             "hideSaveButton": false,
                             "hideMusicCover": false,
-                            "hideFullscreenButton": false
+                            "hideFullscreenButton": false,
+                            "hideCommentButton": false
                         }
                     },
                     "Disable History Recording": {
@@ -216,7 +217,10 @@
                         "enabled": true,
                         "options": {
                             "hideTopLiveEntrance": false,
-                            "hidePublishTab": false
+                            "hidePublishTab": false,
+                            "hideFriendsTab": false,
+                            "hideInboxTab": false,
+                            "hideStemTab": false
                         }
                     },
                     "Download Without Watermark": {
@@ -298,6 +302,25 @@
                         "options": {
                             "blockLiveStreams": false,
                             "hidePhotoPosts": false
+                        }
+                    },
+                    "Declutter Navigation Bar": {
+                        "enabled": true,
+                        "options": {
+                            "hideTopLiveEntrance": false,
+                            "hidePublishTab": false,
+                            "hideFriendsTab": false,
+                            "hideInboxTab": false,
+                            "hideStemTab": false
+                        }
+                    },
+                    "Declutter Video Interface": {
+                        "enabled": false,
+                        "options": {
+                            "hideCommentButton": false,
+                            "hideSaveButton": false,
+                            "hideMusicCover": false,
+                            "hideFullscreenButton": false
                         }
                     }
                 },

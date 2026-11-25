@@ -72,7 +72,7 @@
                 "package": "com.facebook.orca",
                 "search_term": "Messenger",
                 "stable": [
-                    "587.0.0.54.96"
+                    "588.1.0.66.98"
                 ],
                 "force_bundle": false,
                 "strip": true,
@@ -727,11 +727,35 @@
                     }
                 }
             },
+            "plus-messenger": {
+                "package": "org.telegram.plus",
+                "search_term": "Plus Messenger",
+                "stable": [
+                    "13.2.2.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "HushTelegram icon and name": {
+                        "enabled": false
+                    },
+                    "Use registered Maps API key": {
+                        "enabled": false
+                    },
+                    "Use registered Telegram API credentials": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "22710"
+                }
+            },
             "telegram": {
                 "package": "org.telegram.messenger",
                 "search_term": "Telegram",
                 "stable": [
-                    "13.2.2"
+                    "13.3.1"
                 ],
                 "beta": [],
                 "strip": true,
@@ -751,18 +775,18 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "73031"
+                    "arm64-v8a": "73461"
                 }
             },
             "telegram-web": {
                 "package": "org.telegram.messenger.web",
                 "search_term": "Telegram Web",
                 "stable": [
-                    "13.2.2"
+                    "13.3.1"
                 ],
                 "beta": [],
                 "version_codes": {
-                    "arm64-v8a": "73039"
+                    "arm64-v8a": "73469"
                 },
                 "strip": true,
                 "archive_id": "ZeNiX",
@@ -1562,7 +1586,8 @@
                             "hide_live_card_bulletin_board": false,
                             "hide_live_card_gift_gallery": false,
                             "hide_live_card_fest_honors": false,
-                            "live_following_row_order": false
+                            "live_following_row_order": false,
+                            "hide_live_chat": false
                         }
                     },
                     "Lift text length limits": {

@@ -29,6 +29,11 @@ name: 🛠️ Kveld9-Extra Ecosystem Patcher
         required: true
         type: boolean
         default: false
+      app_stride:
+        description: 'Patch stride'
+        required: true
+        type: boolean
+        default: true
       app_x:
         description: 'Patch x'
         required: true
@@ -139,6 +144,7 @@ jobs:
       APP_NOKOPRINT: ${{ inputs.app_nokoprint }}
       APP_SD_MAID_SE: ${{ inputs.app_sd_maid_se }}
       APP_INSTAGRAM: ${{ inputs.app_instagram }}
+      APP_STRIDE: ${{ inputs.app_stride }}
       APP_X: ${{ inputs.app_x }}
       APP_MOOVIT: ${{ inputs.app_moovit }}
       APP_SUBE: ${{ inputs.app_sube }}
@@ -163,6 +169,9 @@ jobs:
           fi
           if [[ "$APP_INSTAGRAM" == "true" ]]; then
             LIST="$LIST,instagram"
+          fi
+          if [[ "$APP_STRIDE" == "true" ]]; then
+            LIST="$LIST,stride"
           fi
           if [[ "$APP_X" == "true" ]]; then
             LIST="$LIST,x"
