@@ -40,6 +40,7 @@
 "castle" = false
 "castle-for-tv" = false
 "catzy" = false
+"chess-scanner" = true
 "classdojo" = false
 "clink" = false
 "clip-studio-paint" = false
@@ -65,6 +66,7 @@
 "focusnow" = false
 "forusapp" = false
 "freedom" = false
+"fv-file-explorer" = true
 "glass-widgets" = false
 "graph-messenger" = false
 "ground-news" = false
@@ -118,6 +120,7 @@
 "ok" = false
 "one4home-launcher" = false
 "opal" = false
+"outlook" = true
 "patreon" = false
 "period-tracker-and-calendar" = false
 "perplexity" = false
@@ -126,15 +129,18 @@
 "pixlr" = true
 "pleco" = false
 "pocket-whip" = false
+"podcast-republic" = true
 "poe" = false
+"poweramp-equalizer" = true
 "prayer-times-and-qibla" = true
 "privacy-notes" = true
-"projectivy-launcher" = false
 "proton-authenticator" = false
 "proton-lumo" = false
 "proton-mail" = false
 "proton-pass" = false
+"proton-pass-f-droid" = true
 "proton-vpn" = true
+"proton-vpn-f-droid" = true
 "psiphon" = true
 "public" = false
 "pydroid-3" = true

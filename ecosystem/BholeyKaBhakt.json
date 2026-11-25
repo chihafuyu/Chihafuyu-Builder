@@ -98,13 +98,19 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "26110366",
+                    "armeabi-v7a": "26110366",
+                    "x86_64": "26110366",
+                    "x86": "26110366"
+                }
             },
             "proto": {
                 "package": "com.proto.circuitsimulator",
                 "search_term": "PROTO",
                 "stable": [
-                    "1.53.0"
+                    "1.54.0"
                 ],
                 "beta": [],
                 "strip": true,
@@ -208,13 +214,19 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "2290052",
+                    "armeabi-v7a": "2290052",
+                    "x86_64": "2290052",
+                    "x86": "2290052"
+                }
             },
             "zangi": {
                 "package": "com.beint.zangi",
                 "search_term": "Zangi",
                 "stable": [
-                    "6.6.4"
+                    "6.6.6"
                 ],
                 "beta": [],
                 "strip": true,

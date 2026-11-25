@@ -133,6 +133,45 @@
                 },
                 "force_bundle": true
             },
+            "fomo-indonesia": {
+                "package": "id.anon.android",
+                "search_term": "FOMO Indonesia",
+                "stable": [
+                    "9.0.64"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "340",
+                    "armeabi-v7a": "340",
+                    "x86_64": "340",
+                    "x86": "340"
+                },
+                "force_bundle": true
+            },
+            "genius": {
+                "package": "com.genius.android",
+                "search_term": "Genius",
+                "stable": [
+                    "8.2.3.5414"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "80230",
+                    "armeabi-v7a": "80230",
+                    "x86_64": "80230",
+                    "x86": "80230"
+                }
+            },
             "github": {
                 "package": "com.github.android",
                 "search_term": "GitHub",
@@ -159,17 +198,17 @@
                 "package": "com.idntimes.idntimes",
                 "search_term": "IDN",
                 "stable": [
-                    "6.69.1"
+                    "6.70.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "2303",
-                    "armeabi-v7a": "2303",
-                    "x86_64": "2303",
-                    "x86": "2303"
+                    "arm64-v8a": "2318",
+                    "armeabi-v7a": "2318",
+                    "x86_64": "2318",
+                    "x86": "2318"
                 },
                 "force_bundle": true
             },
@@ -247,6 +286,28 @@
                     "x86": "218600"
                 }
             },
+            "mazii-japanese-dictionary": {
+                "package": "com.mazii.dictionary",
+                "search_term": "Mazii: Japanese Dictionary",
+                "stable": [
+                    "6.8.64"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "20261120",
+                    "armeabi-v7a": "20261120",
+                    "x86_64": "20261120",
+                    "x86": "20261120"
+                },
+                "force_bundle": true
+            },
             "muslim-pro": {
                 "package": "com.bitsmedia.android.muslimpro",
                 "search_term": "Muslim Pro",
@@ -303,6 +364,90 @@
                 },
                 "force_bundle": true
             },
+            "sync-by-krisbow": {
+                "package": "com.kawanlama.smartklic",
+                "search_term": "SYNC by Krisbow",
+                "stable": [
+                    "3.1.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "15",
+                    "armeabi-v7a": "15",
+                    "x86_64": "15",
+                    "x86": "15"
+                },
+                "force_bundle": true
+            },
+            "todaii-learn-german-a1-c1": {
+                "package": "mobi.eup.easygerman",
+                "search_term": "Todaii: Learn German A1-C1",
+                "stable": [
+                    "2.8.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "213",
+                    "armeabi-v7a": "213",
+                    "x86_64": "213",
+                    "x86": "213"
+                },
+                "force_bundle": true
+            },
+            "todaii-learn-japanese-n5-n1": {
+                "package": "mobi.eup.jpnews",
+                "search_term": "Todaii: Learn Japanese N5-N1",
+                "stable": [
+                    "5.6.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "100014433",
+                    "armeabi-v7a": "100014433",
+                    "x86_64": "100014433",
+                    "x86": "100014433"
+                },
+                "force_bundle": true
+            },
+            "todaii-super": {
+                "package": "com.eup.todaiisuper",
+                "search_term": "Todaii Super",
+                "stable": [
+                    "1.1.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "GmsCore support": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "19",
+                    "armeabi-v7a": "19",
+                    "x86_64": "19",
+                    "x86": "19"
+                },
+                "force_bundle": true
+            },
             "tuya-smart": {
                 "package": "com.tuya.smart",
                 "search_term": "Tuya Smart",
@@ -322,6 +467,28 @@
                     "armeabi-v7a": "876",
                     "x86_64": "876",
                     "x86": "876"
+                },
+                "force_bundle": true
+            },
+            "warung-life-simulator": {
+                "package": "com.neopawstudio.warunglife",
+                "search_term": "Warung Life Simulator",
+                "stable": [
+                    "1.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Clone": {
+                        "enabled": false
+                    }
+                },
+                "version_codes": {
+                    "arm64-v8a": "49",
+                    "armeabi-v7a": "49",
+                    "x86_64": "49",
+                    "x86": "49"
                 },
                 "force_bundle": true
             },

@@ -25,6 +25,9 @@
                     },
                     "GmsCore support": {
                         "enabled": false
+                    },
+                    "Custom chat sounds": {
+                        "enabled": false
                     }
                 }
             }
