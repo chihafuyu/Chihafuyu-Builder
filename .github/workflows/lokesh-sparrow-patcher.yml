@@ -4,6 +4,16 @@ name: 🔗 Lokesh-Sparrow Ecosystem Patcher
 "on":
   workflow_dispatch:
     inputs:
+      app_1dm:
+        description: 'Patch 1dm'
+        required: true
+        type: boolean
+        default: true
+      app_adm:
+        description: 'Patch adm'
+        required: true
+        type: boolean
+        default: true
       app_doc_scanner:
         description: 'Patch doc-scanner'
         required: true
@@ -26,6 +36,16 @@ name: 🔗 Lokesh-Sparrow Ecosystem Patcher
         default: true
       app_splitwise:
         description: 'Patch splitwise'
+        required: true
+        type: boolean
+        default: true
+      app_tasker:
+        description: 'Patch tasker'
+        required: true
+        type: boolean
+        default: true
+      app_trackchecker:
+        description: 'Patch trackchecker'
         required: true
         type: boolean
         default: true
@@ -114,17 +134,27 @@ jobs:
     outputs:
       selected: ${{ steps.build-list.outputs.apps }}
     env:
+      APP_1DM: ${{ inputs.app_1dm }}
+      APP_ADM: ${{ inputs.app_adm }}
       APP_DOC_SCANNER: ${{ inputs.app_doc_scanner }}
       APP_GOOGLE_PHOTOS: ${{ inputs.app_google_photos }}
       APP_LINKEDIN: ${{ inputs.app_linkedin }}
       APP_MX_PLAYER_PRO: ${{ inputs.app_mx_player_pro }}
       APP_SPLITWISE: ${{ inputs.app_splitwise }}
+      APP_TASKER: ${{ inputs.app_tasker }}
+      APP_TRACKCHECKER: ${{ inputs.app_trackchecker }}
       APP_TRUECALLER: ${{ inputs.app_truecaller }}
     steps:
       - id: build-list
         run: |
           set -euo pipefail
           LIST=""
+          if [[ "$APP_1DM" == "true" ]]; then
+            LIST="$LIST,1dm"
+          fi
+          if [[ "$APP_ADM" == "true" ]]; then
+            LIST="$LIST,adm"
+          fi
           if [[ "$APP_DOC_SCANNER" == "true" ]]; then
             LIST="$LIST,doc-scanner"
           fi
@@ -139,6 +169,12 @@ jobs:
           fi
           if [[ "$APP_SPLITWISE" == "true" ]]; then
             LIST="$LIST,splitwise"
+          fi
+          if [[ "$APP_TASKER" == "true" ]]; then
+            LIST="$LIST,tasker"
+          fi
+          if [[ "$APP_TRACKCHECKER" == "true" ]]; then
+            LIST="$LIST,trackchecker"
           fi
           if [[ "$APP_TRUECALLER" == "true" ]]; then
             LIST="$LIST,truecaller"

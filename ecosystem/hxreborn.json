@@ -947,7 +947,7 @@
                 "package": "com.duolingo",
                 "search_term": "Duolingo",
                 "stable": [
-                    "6.105.2"
+                    "6.106.6"
                 ],
                 "beta": [],
                 "strip": true,
@@ -964,10 +964,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "2497",
-                    "armeabi-v7a": "2497",
-                    "x86_64": "2497",
-                    "x86": "2497"
+                    "arm64-v8a": "2506",
+                    "armeabi-v7a": "2506",
+                    "x86_64": "2506",
+                    "x86": "2506"
                 },
                 "force_bundle": true
             },
@@ -1354,6 +1354,24 @@
                     "armeabi-v7a": "26101031",
                     "x86_64": "26101031",
                     "x86": "26101031"
+                },
+                "force_bundle": true
+            },
+            "infinite-painter": {
+                "package": "com.brakefield.painter",
+                "search_term": "Infinite Painter",
+                "stable": [
+                    "7.2.12"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "400803",
+                    "armeabi-v7a": "400803",
+                    "x86_64": "400803",
+                    "x86": "400803"
                 },
                 "force_bundle": true
             },
@@ -1808,17 +1826,17 @@
                 "package": "com.community.mbox.tv",
                 "search_term": "MovieBox TV",
                 "stable": [
-                    "1.2.0.0923.web_socialmedia"
+                    "1.2.3.1113.03"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "50040018",
-                    "armeabi-v7a": "50040018",
-                    "x86_64": "50040018",
-                    "x86": "50040018"
+                    "arm64-v8a": "50040022",
+                    "armeabi-v7a": "50040022",
+                    "x86_64": "50040022",
+                    "x86": "50040022"
                 }
             },
             "musclewiki": {

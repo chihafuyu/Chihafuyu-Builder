@@ -116,13 +116,7 @@
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {
-                    "Auto claim Benefits tasks": {
-                        "enabled": false
-                    },
                     "Bypass SSL pinning": {
-                        "enabled": false
-                    },
-                    "Spoof signature": {
                         "enabled": false
                     }
                 },
@@ -156,7 +150,7 @@
                 "package": "vn.vtv.vtvgo",
                 "search_term": "VTVGo",
                 "stable": [
-                    "12.11.13"
+                    "12.11.19"
                 ],
                 "beta": [],
                 "strip": true,
@@ -170,10 +164,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "260935",
-                    "armeabi-v7a": "260935",
-                    "x86_64": "260935",
-                    "x86": "260935"
+                    "arm64-v8a": "260938",
+                    "armeabi-v7a": "260938",
+                    "x86_64": "260938",
+                    "x86": "260938"
                 },
                 "force_bundle": true
             },

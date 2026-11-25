@@ -2,9 +2,13 @@
 # Change to `true` to patch, `false` to skip.
 
 [apps]
+"1dm" = true
+"adm" = true
 "doc-scanner" = true
 "google-photos" = true
 "linkedin" = true
 "mx-player-pro" = true
 "splitwise" = true
+"tasker" = true
+"trackchecker" = true
 "truecaller" = true
