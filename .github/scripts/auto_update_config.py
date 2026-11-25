@@ -8,6 +8,7 @@ import json
 import os
 import re
 import sys
+from urllib.parse import urlparse
 
 import requests
 
@@ -72,15 +73,56 @@ def _find_repo_map(script_dir, repo_root):
     return next((p for p in candidates if os.path.exists(p)), None)
 
 
+def _repo_raw_url(repo_url, branch, file_path):
+    """Expands a repository URL into a raw patches-list URL.
+
+    Explicit raw-file URLs are kept untouched. Repository URLs are
+    expanded for the forge in use, so a mirror only needs its normal
+    repository address. Adding a new mirror therefore never requires
+    editing this script, and a forge with a different layout can always
+    supply a full raw URL.
+    """
+    repo_url = repo_url.strip().rstrip("/")
+    if not repo_url:
+        return ""
+    if repo_url.endswith(".git"):
+        repo_url = repo_url[:-4].rstrip("/")
+
+    parsed = urlparse(repo_url)
+    path_lower = parsed.path.lower()
+    if path_lower.endswith((".json", ".txt")):
+        return repo_url
+    if "/raw/" in path_lower or "/-/raw/" in path_lower:
+        return repo_url
+
+    branch = str(branch or "main").strip("/")
+    file_path = str(file_path or "patches-list.json").strip("/")
+
+    if not parsed.scheme:
+        # Bare GitHub shorthand such as "owner/repo".
+        return f"https://raw.githubusercontent.com/{repo_url}/{branch}/{file_path}"
+
+    host = (parsed.hostname or "").lower()
+    repo_path = parsed.path.strip("/")
+    if host in ("github.com", "www.github.com"):
+        return f"https://raw.githubusercontent.com/{repo_path}/{branch}/{file_path}"
+    if "gitlab" in host:
+        return f"{repo_url}/-/raw/{branch}/{file_path}"
+    # Forgejo/Gitea raw layout.
+    return f"{repo_url}/raw/branch/{branch}/{file_path}"
+
+
 def _parse_fallback_urls(info):
-    """Returns validated mirror URLs for an ecosystem source."""
+    """Returns validated, expanded mirror URLs for an ecosystem source."""
     raw_urls = info.get("fallback_urls") or []
     if isinstance(raw_urls, str):
         raw_urls = [raw_urls]
     if not isinstance(raw_urls, list):
         return []
+    branch = info.get("branch", "main")
+    file_path = info.get("file_path", "patches-list.json")
     return [
-        url.strip()
+        _repo_raw_url(url, branch, file_path)
         for url in raw_urls
         if isinstance(url, str)
         and url.strip().startswith(("https://", "http://"))
@@ -99,7 +141,7 @@ def _parse_repo_info(name, info, repo_root):
 
     if "aggregate_repos" in info:
         urls = [
-            f"https://raw.githubusercontent.com/{repo}/main/patches-list.json"
+            _repo_raw_url(repo, "main", "patches-list.json")
             for repo in info["aggregate_repos"]
         ]
         return (
@@ -113,7 +155,7 @@ def _parse_repo_info(name, info, repo_root):
 
     branch = info.get("branch", "main")
     file_path = info.get("file_path", "patches-list.json")
-    url = f"https://raw.githubusercontent.com/{repo_url}/{branch}/{file_path}"
+    url = _repo_raw_url(repo_url, branch, file_path)
     return (
         abs_config_path, url, release_patches, target_package, target_name,
         ignore_packages, ignore_patches
@@ -150,36 +192,6 @@ def load_ecosystems():
     else:
         print("repo_map.json not found in any expected location.")
 
-    if not ecosystems:
-        print("Using fallback ecosystems (morphe & kveld9).")
-        ecosystems = {
-            os.path.join(repo_root, "ecosystem/morphe.json"): {
-                "url": (
-                    "https://raw.githubusercontent.com/MorpheApp/"
-                    "morphe-patches/main/patches-list.json"
-                ),
-                "release_patches": False,
-                "target_package": None,
-                "target_name": None,
-                "ignore_packages": [],
-                "ignore_patches": [],
-            },
-            os.path.join(repo_root, "ecosystem/kveld9.json"): {
-                "url": (
-                    "https://raw.githubusercontent.com/kveld9/"
-                    "kveld-morphe-patches/main/patches-list.json"
-                ),
-                "fallback_urls": [
-                    "https://codeberg.org/kveld9/"
-                    "kveld-morphe-patches/raw/branch/main/patches-list.json"
-                ],
-                "release_patches": False,
-                "target_package": None,
-                "target_name": None,
-                "ignore_packages": [],
-                "ignore_patches": [],
-            },
-        }
     return ecosystems
 
 
@@ -1563,8 +1575,8 @@ def _process_ecosystem(config_path, ecosystem_info):
     """Process a single ecosystem and return the fetched data.
 
     GitHub accounts can be suspended without notice. Every source may
-    declare ``fallback_urls`` mirrors (for example a Codeberg copy) that
-    are tried in order when the primary GitHub raw URL fails.
+    declare ``fallback_urls`` mirrors on another forge; they are tried
+    in order when the primary GitHub raw URL fails.
     """
     if not os.path.exists(config_path):
         print(f"Skipping '{config_path}': Config file not found in the repository.")
@@ -1667,6 +1679,12 @@ def _sync_workflow_and_toml(
 def main():
     """Run the auto-update process for all configured ecosystems."""
     ecosystems = load_ecosystems()
+    if not ecosystems:
+        print(
+            "No ecosystems loaded. Check repo_map.json; refusing to run "
+            "without an explicit source list."
+        )
+        sys.exit(1)
     fetched_ecosystems = []
     for config_path, info in ecosystems.items():
         stable_data = _process_ecosystem(config_path, info)

@@ -101,13 +101,13 @@
     "kveld9": {
         "repo_url": "kveld9/kveld-morphe-patches",
         "fallback_urls": [
-            "https://codeberg.org/kveld9/kveld-morphe-patches/raw/branch/main/patches-list.json"
+            "https://git.kvkdns.org/kveld9/kveld-morphe-patches"
         ]
     },
     "kveld9-extra": {
         "repo_url": "kveld9/kveld-extra-morphe-patches",
         "fallback_urls": [
-            "https://codeberg.org/kveld9/kveld-extra-morphe-patches/raw/branch/main/patches-list.json"
+            "https://git.kvkdns.org/kveld9/kveld-extra-morphe-patches"
         ]
     },
     "legendsciber": {

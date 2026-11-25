@@ -101,19 +101,65 @@ def test_normalize_vcodes_ignores_non_decimal_digits():
     }
 
 
-def test_parse_fallback_urls_accepts_string_and_filters_invalid():
-    """Mirror URLs are normalized while non-HTTP entries are dropped."""
+def test_repo_raw_url_expands_repository_hosts():
+    """Repository URLs expand to raw file URLs for each forge layout."""
+    expand = AUTO_CONFIG._repo_raw_url
+    assert expand("owner/repo", "main", "patches-list.json") == (
+        "https://raw.githubusercontent.com/owner/repo/main/patches-list.json"
+    )
+    assert expand("https://github.com/owner/repo", "dev", "list.json") == (
+        "https://raw.githubusercontent.com/owner/repo/dev/list.json"
+    )
+    assert expand(
+        "https://git.kvkdns.org/kveld9/kveld-morphe-patches",
+        "main",
+        "patches-list.json",
+    ) == (
+        "https://git.kvkdns.org/kveld9/kveld-morphe-patches/"
+        "raw/branch/main/patches-list.json"
+    )
+    assert expand(
+        "https://gitlab.com/owner/repo", "main", "patches-list.json"
+    ) == "https://gitlab.com/owner/repo/-/raw/main/patches-list.json"
+
+
+def test_repo_raw_url_keeps_explicit_raw_urls():
+    """Full raw URLs and .git repository suffixes stay valid."""
+    raw = "https://example.com/owner/repo/raw/branch/main/patches-list.json"
+    assert AUTO_CONFIG._repo_raw_url(raw, "main", "patches-list.json") == raw
+    assert AUTO_CONFIG._repo_raw_url(
+        "https://git.kvkdns.org/kveld9/repo.git",
+        "main",
+        "patches-list.json",
+    ) == "https://git.kvkdns.org/kveld9/repo/raw/branch/main/patches-list.json"
+
+
+def test_parse_fallback_urls_expands_repo_bases():
+    """Mirror entries accept repo bases while invalid entries are dropped."""
+    parsed = AUTO_CONFIG._parse_fallback_urls({
+        "fallback_urls": [
+            " https://git.kvkdns.org/kveld9/kveld-morphe-patches ",
+            "https://example.com/owner/repo/raw/branch/main/patches-list.json",
+            "ftp://bad",
+            "",
+            5,
+        ]
+    })
+    assert parsed == [
+        "https://git.kvkdns.org/kveld9/kveld-morphe-patches/"
+        "raw/branch/main/patches-list.json",
+        "https://example.com/owner/repo/raw/branch/main/patches-list.json",
+    ]
     assert AUTO_CONFIG._parse_fallback_urls(
-        {"fallback_urls": [" https://codeberg.org/a ", "ftp://bad", "", 5]}
-    ) == ["https://codeberg.org/a"]
-    assert AUTO_CONFIG._parse_fallback_urls(
-        {"fallback_urls": "https://codeberg.org/b"}
-    ) == ["https://codeberg.org/b"]
+        {"fallback_urls": "https://git.kvkdns.org/owner/repo"}
+    ) == [
+        "https://git.kvkdns.org/owner/repo/raw/branch/main/patches-list.json"
+    ]
     assert AUTO_CONFIG._parse_fallback_urls({}) == []
 
 
-def test_process_ecosystem_falls_back_to_codeberg(monkeypatch, tmp_path):
-    """A failed GitHub raw fetch retries the declared Codeberg mirror."""
+def test_process_ecosystem_falls_back_to_mirror(monkeypatch, tmp_path):
+    """A failed GitHub raw fetch retries the declared mirror."""
     config_path = tmp_path / "kveld9.json"
     config_path.write_text("{}", encoding="utf-8")
     primary = (
@@ -121,7 +167,7 @@ def test_process_ecosystem_falls_back_to_codeberg(monkeypatch, tmp_path):
         "kveld-morphe-patches/main/patches-list.json"
     )
     fallback = (
-        "https://codeberg.org/kveld9/"
+        "https://git.kvkdns.org/kveld9/"
         "kveld-morphe-patches/raw/branch/main/patches-list.json"
     )
     calls = []
@@ -157,7 +203,9 @@ def test_process_ecosystem_keeps_primary_when_it_works(monkeypatch, tmp_path):
     monkeypatch.setattr(AUTO_CONFIG, "fetch_patches_list", fake_fetch)
     info = {
         "url": "https://raw.githubusercontent.com/owner/repo/main/patches-list.json",
-        "fallback_urls": ["https://codeberg.org/owner/repo/raw/branch/main/patches-list.json"],
+        "fallback_urls": [
+            "https://git.kvkdns.org/owner/repo/raw/branch/main/patches-list.json"
+        ],
         "release_patches": False,
     }
     assert AUTO_CONFIG._process_ecosystem(str(config_path), info) is not None
@@ -179,7 +227,9 @@ def test_process_ecosystem_falls_back_on_invalid_payload(monkeypatch, tmp_path):
     monkeypatch.setattr(AUTO_CONFIG, "fetch_patches_list", fake_fetch)
     info = {
         "url": "https://raw.githubusercontent.com/owner/repo/main/patches-list.json",
-        "fallback_urls": ["https://codeberg.org/owner/repo/raw/branch/main/patches-list.json"],
+        "fallback_urls": [
+            "https://git.kvkdns.org/owner/repo/raw/branch/main/patches-list.json"
+        ],
         "release_patches": False,
     }
     result = AUTO_CONFIG._process_ecosystem(str(config_path), info)
@@ -187,16 +237,32 @@ def test_process_ecosystem_falls_back_on_invalid_payload(monkeypatch, tmp_path):
     assert len(calls) == 2
 
 
-def test_load_ecosystems_reads_codeberg_fallbacks_from_repo_map():
-    """repo_map.json must expose the kveld9 mirrors to the updater."""
+def test_load_ecosystems_reads_fallbacks_from_repo_map():
+    """repo_map.json mirrors are expanded for the updater."""
     ecosystems = AUTO_CONFIG.load_ecosystems()
     by_name = {Path(path).stem: info for path, info in ecosystems.items()}
-    assert "https://codeberg.org/kveld9/kveld-morphe-patches" in (
-        by_name["kveld9"]["fallback_urls"][0]
-    )
-    assert "https://codeberg.org/kveld9/kveld-extra-morphe-patches" in (
-        by_name["kveld9-extra"]["fallback_urls"][0]
-    )
+    assert by_name["kveld9"]["fallback_urls"] == [
+        "https://git.kvkdns.org/kveld9/kveld-morphe-patches/"
+        "raw/branch/main/patches-list.json"
+    ]
+    assert by_name["kveld9-extra"]["fallback_urls"] == [
+        "https://git.kvkdns.org/kveld9/kveld-extra-morphe-patches/"
+        "raw/branch/main/patches-list.json"
+    ]
+
+
+def test_load_ecosystems_without_repo_map_has_no_hidden_fallback(monkeypatch):
+    """A missing repo_map must not resurrect the old hardcoded sources."""
+    monkeypatch.setattr(AUTO_CONFIG, "_find_repo_map", lambda *_args: None)
+    assert AUTO_CONFIG.load_ecosystems() == {}
+
+
+def test_main_aborts_without_ecosystems(monkeypatch):
+    """The updater must fail visibly instead of silently doing nothing."""
+    monkeypatch.setattr(AUTO_CONFIG, "load_ecosystems", lambda: {})
+    with pytest.raises(SystemExit) as exc_info:
+        AUTO_CONFIG.main()
+    assert exc_info.value.code == 1
 
 
 def test_update_app_version_syncs_codes_one_to_one():

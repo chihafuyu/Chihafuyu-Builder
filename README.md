@@ -97,7 +97,7 @@ Edit the JSON files under `ecosystem/` (e.g., `arandomhooman.json`, `byehi98.jso
 
 **For Termux local builds:** if your ecosystem uses complex matrices (like `Piko` or `SysAdminDoc`), place split `JSON` files in `ecosystem` directory and register them in `repo_map.json`. The Termux script parses this map to build its interactive menu.
 
-**Upstream mirror fallback:** the auto-update config workflow reads `repo_map.json`. Add `fallback_urls` to an ecosystem entry to retry a mirror (for example Codeberg) when the GitHub raw source is unavailable or the account is suspended. `kveld9` and `kveld9-extra` already point to their Codeberg mirrors.
+**Upstream mirror fallback:** the auto-update config workflow reads `repo_map.json`. Add `fallback_urls` to an ecosystem entry to retry a mirror when the GitHub raw source is unavailable or the account is suspended. Each entry can be a full raw JSON URL or a normal repository URL; repository URLs are expanded automatically for GitHub, GitLab, and Forgejo/Gitea hosts such as `git.kvkdns.org`. Adding another mirror now only needs a `repo_map.json` edit. `kveld9` and `kveld9-extra` currently mirror to `git.kvkdns.org`.
 
 ### 6. Fill the Source Vault (Optional)
 
