@@ -1,0 +1,218 @@
+---
+name: Start FlareSolverr
+description: >-
+  Start a digest-pinned FlareSolverr container, reusing a cached image
+  tarball while the upstream image digest is unchanged.
+
+inputs:
+  image:
+    description: Container image reference to resolve and run.
+    required: false
+    default: ghcr.io/flaresolverr/flaresolverr:latest
+  port:
+    description: Host port to bind on 127.0.0.1.
+    required: false
+    default: '8191'
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve FlareSolverr image digest
+      id: resolve
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+      run: |
+        set -euo pipefail
+
+        retry() {
+          local n=3
+          until "$@"; do
+            ((n--)) || return 1
+            sleep 5
+          done
+        }
+
+        platform_os="$(docker version --format '{{.Server.Os}}')"
+        platform_arch="$(docker version --format '{{.Server.Arch}}')"
+        manifest_json="$(
+          retry docker buildx imagetools inspect "$IMAGE" \
+            --format '{{json .Manifest}}'
+        )"
+        if [[ -z "$manifest_json" ]]; then
+          echo "::error::Could not read the manifest for $IMAGE."
+          exit 1
+        fi
+
+        if jq -e '.manifests | length > 0' >/dev/null <<<"$manifest_json"; then
+          digest="$(
+            jq -r --arg os "$platform_os" --arg arch "$platform_arch" '
+              .manifests[]
+              | select(.platform.os == $os
+                       and .platform.architecture == $arch)
+              | .digest
+            ' <<<"$manifest_json" | head -n 1
+          )"
+          if [[ -z "$digest" || "$digest" == "null" ]]; then
+            echo "::error::No $platform_os/$platform_arch manifest for" \
+              "$IMAGE."
+            exit 1
+          fi
+          config_digest="$(
+            retry docker buildx imagetools inspect "$IMAGE@$digest" \
+              --raw | jq -r '.config.digest'
+          )"
+        else
+          digest="$(jq -r '.digest' <<<"$manifest_json")"
+          config_digest="$(jq -r '.config.digest' <<<"$manifest_json")"
+        fi
+
+        if [[ -z "$digest" || "$digest" == "null" ]]; then
+          echo "::error::Could not resolve a digest for $IMAGE."
+          exit 1
+        fi
+        if [[ -z "$config_digest" || "$config_digest" == "null" ]]; then
+          echo "::error::Could not read the config digest for $IMAGE."
+          exit 1
+        fi
+
+        echo "Resolved $IMAGE for $platform_os/$platform_arch: $digest"
+        {
+          echo "digest=$digest"
+          echo "config_digest=$config_digest"
+          echo "cache_key=flaresolverr-v1-${platform_os}-${platform_arch}-${digest#sha256:}"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Restore cached FlareSolverr image
+      id: cache
+      uses: actions/cache/restore@v6.1.0
+      with:
+        path: ${{ runner.temp }}/flaresolverr-image.tar
+        key: ${{ steps.resolve.outputs.cache_key }}
+      continue-on-error: true
+
+    - name: Load or pull FlareSolverr image
+      id: image
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        DIGEST: ${{ steps.resolve.outputs.digest }}
+        CONFIG_DIGEST: ${{ steps.resolve.outputs.config_digest }}
+        CACHE_TAR: ${{ runner.temp }}/flaresolverr-image.tar
+        CACHE_HIT: ${{ steps.cache.outputs.cache-hit }}
+      run: |
+        set -euo pipefail
+
+        retry() {
+          local n=3
+          until "$@"; do
+            ((n--)) || return 1
+            sleep 5
+          done
+        }
+
+        cache_image='flaresolverr:cache'
+        cache_valid=false
+
+        if [[ "$CACHE_HIT" == 'true' && -s "$CACHE_TAR" ]]; then
+          docker image rm --force "$cache_image" >/dev/null 2>&1 || true
+          if docker load --input "$CACHE_TAR" >/dev/null; then
+            actual_id="$(
+              docker image inspect --format '{{.Id}}' \
+                "$cache_image" 2>/dev/null || true
+            )"
+            if [[ "$actual_id" == "$CONFIG_DIGEST" ]]; then
+              cache_valid=true
+              echo '[INFO] FlareSolverr image restored from cache.'
+            else
+              echo '::warning::Cached FlareSolverr image did not match' \
+                'the resolved digest; pulling a fresh copy.'
+              docker image rm --force "$cache_image" >/dev/null 2>&1 || true
+            fi
+          else
+            echo '::warning::Cached FlareSolverr tarball is unreadable;' \
+              'pulling a fresh copy.'
+            rm -f -- "$CACHE_TAR"
+          fi
+        fi
+
+        if [[ "$cache_valid" != 'true' ]]; then
+          retry docker pull --quiet "$IMAGE@$DIGEST"
+          pulled_id="$(
+            docker image inspect --format '{{.Id}}' "$IMAGE@$DIGEST"
+          )"
+          if [[ "$pulled_id" != "$CONFIG_DIGEST" ]]; then
+            echo '::error::Pulled FlareSolverr image does not match the' \
+              'resolved config digest.'
+            exit 1
+          fi
+          docker tag "$pulled_id" "$cache_image"
+          if docker save --output "$CACHE_TAR" "$cache_image"; then
+            echo 'cache_ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo '::warning::Could not write the FlareSolverr cache tarball.'
+            rm -f -- "$CACHE_TAR"
+            echo 'cache_ready=false' >> "$GITHUB_OUTPUT"
+          fi
+        fi
+
+    - name: Save FlareSolverr image cache
+      if: >-
+        steps.cache.outputs.cache-hit != 'true' &&
+        steps.image.outputs.cache_ready == 'true'
+      uses: actions/cache/save@v6.1.0
+      with:
+        path: ${{ runner.temp }}/flaresolverr-image.tar
+        key: ${{ steps.resolve.outputs.cache_key }}
+      continue-on-error: true
+
+    - name: Start FlareSolverr
+      shell: bash
+      env:
+        PORT: ${{ inputs.port }}
+      run: |
+        set -euo pipefail
+
+        if [[ ! "$PORT" =~ ^[0-9]+$ ]]; then
+          echo "::error::Invalid FlareSolverr port: $PORT"
+          exit 1
+        fi
+
+        start_flaresolverr() {
+          docker rm --force flaresolverr >/dev/null 2>&1 || true
+          docker run --detach --name=flaresolverr \
+            --publish "127.0.0.1:${PORT}:8191" \
+            --env LOG_LEVEL=info \
+            flaresolverr:cache
+        }
+
+        for attempt in 1 2 3 4; do
+          if start_flaresolverr; then
+            break
+          fi
+          if (( attempt == 4 )); then
+            echo '::error::Could not start FlareSolverr.'
+            exit 1
+          fi
+          sleep 5
+        done
+
+        for _ in $(seq 1 30); do
+          if curl --silent --show-error --fail \
+            "http://127.0.0.1:${PORT}/" >/dev/null; then
+            echo '[INFO] FlareSolverr proxy is online.'
+            exit 0
+          fi
+          sleep 2
+        done
+
+        echo '::error::FlareSolverr did not become ready within 60 seconds.'
+        docker logs flaresolverr || true
+        exit 1
+
+    - name: Remove FlareSolverr cache tarball
+      if: always()
+      shell: bash
+      env:
+        CACHE_TAR: ${{ runner.temp }}/flaresolverr-image.tar
+      run: rm -f -- "$CACHE_TAR"

@@ -154,7 +154,7 @@ Useful inputs:
 >
 > Pruning only runs after a replacement upload. If the target file is already present, the workflow reports `already_present` and leaves old files in place; use `force=true` to re-upload the current target and prune, or wait for the next version.
 
-A real run needs `HF_SOURCE_TOKEN` (or `HF_TOKEN`) and at least one malware scanner (`VT_API_KEY`, `HA_API_KEY`, or `MD_API_KEY`). Play credentials are needed for Google Play downloads; without them, `auto` uses APKMirror only and `google_play` alone fails. The workflow starts FlareSolverr automatically for APKMirror. Full results are saved as the `vault-sync-summary` artifact.
+A real run needs `HF_SOURCE_TOKEN` (or `HF_TOKEN`) and at least one malware scanner (`VT_API_KEY`, `HA_API_KEY`, or `MD_API_KEY`). Play credentials are needed for Google Play downloads; without them, `auto` uses APKMirror only and `google_play` alone fails. The workflow starts FlareSolverr automatically for APKMirror. Its image is resolved to the upstream digest and cached by digest, so repeat runs reuse it until a new image is published. Full results are saved as the `vault-sync-summary` artifact.
 
 #### Source vault vs. patched output
 

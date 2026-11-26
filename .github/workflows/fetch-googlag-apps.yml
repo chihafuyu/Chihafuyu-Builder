@@ -113,9 +113,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
-      - name: Disk Space Report (Before)
-        run: df -h
-
       - name: Initialize Python Environment
         uses: actions/setup-python@v7.1.0
         with:
@@ -125,42 +122,7 @@ jobs:
 
       - name: Start FlareSolverr Microservice
         if: ${{ !inputs.dry_run && inputs.download_source != 'google_play' }}
-        run: |
-          set -euo pipefail
-
-          retry() {
-            local n=3
-            until "$@"; do
-              ((n--)) || return 1
-              sleep 5
-            done
-          }
-
-          IMAGE="ghcr.io/flaresolverr/flaresolverr:latest"
-          retry docker pull "$IMAGE"
-
-          DIGEST="$(
-            docker inspect \
-              --format='{{index .RepoDigests 0}}' "$IMAGE"
-          )"
-          echo "Resolved ${IMAGE} -> ${DIGEST}"
-
-          start_flaresolverr() {
-            docker rm -f flaresolverr >/dev/null 2>&1 || true
-            docker run -d --name=flaresolverr \
-              -p 127.0.0.1:8191:8191 \
-              -e LOG_LEVEL=info \
-              "$DIGEST"
-          }
-          retry start_flaresolverr
-
-          echo "Waiting for FlareSolverr to initialize..."
-          timeout 60 bash -c '
-            while ! curl -sf http://localhost:8191/ > /dev/null; do
-              sleep 2
-            done
-          '
-          echo "FlareSolverr proxy is online!"
+        uses: ./.github/actions/start-flaresolverr
 
       - name: Install Dependencies & apkeep
         env:
