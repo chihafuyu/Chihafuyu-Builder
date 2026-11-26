@@ -404,7 +404,8 @@ execute_patch() {
         java -jar "$MORPHE_JAR" patch
         --patches "$WORK_DIR/$TEMP_PATCH"
         --out "$final_apk"
-        --bytecode-mode FULL
+        # Morphe 2.4.0 dropped FULL; STRIP_SAFE is the safest supported mode.
+        --bytecode-mode STRIP_SAFE
     )
 
     if [[ -n "$KEYSTORE_PATH" ]]; then

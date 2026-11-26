@@ -323,7 +323,9 @@ def build_patch_command(
         "--patches", os.path.abspath(args.patches),
         "--options-file", options_path,
         "--out", out_path,
-        "--bytecode-mode", "FULL",
+        # Morphe Desktop 2.4.0 removed FULL; STRIP_SAFE is the safest
+        # mode it still accepts and keeps reflection-reachable code.
+        "--bytecode-mode", "STRIP_SAFE",
     ]
     if args.version_selection.lower() in (
         "beta", "pre-release", "latest", "experimental", "custom",

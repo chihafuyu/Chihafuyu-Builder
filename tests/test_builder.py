@@ -1103,6 +1103,28 @@ def test_apply_custom_version_code_empty_passthrough():
     assert MAIN._apply_custom_version_code(app, "", "arm64-v8a") is app
 
 
+def test_build_patch_command_uses_supported_bytecode_mode(tmp_path):
+    """Morphe 2.4.0 dropped FULL, so the CLI command must use a valid mode."""
+    args = SimpleNamespace(
+        cli=str(tmp_path / "morphe.jar"),
+        patches=str(tmp_path / "patches.mpp"),
+        version_selection="Latest",
+        continue_on_error="false",
+        keystore=None,
+        ks_alias=None,
+        ks_pass=None,
+        signer=None,
+    )
+    cmd = MAIN.build_patch_command(
+        args,
+        {"strip": False},
+        ("app.apk", "options.json", "out.apk"),
+        "arm64-v8a",
+    )
+    assert cmd[cmd.index("--bytecode-mode") + 1] == "STRIP_SAFE"
+    assert "FULL" not in cmd
+
+
 def test_resolve_target_version_prefers_beta():
     """Beta selection picks the newest beta when one is configured."""
     app = {"stable": ["1.0.0"], "beta": ["2.0.0-beta.1"]}
