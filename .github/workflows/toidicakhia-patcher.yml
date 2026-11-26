@@ -29,6 +29,11 @@ name: 🐉 Toidicakhia Ecosystem Patcher
         required: true
         type: boolean
         default: true
+      app_proxyman:
+        description: 'Patch proxyman'
+        required: true
+        type: boolean
+        default: true
       app_terabox:
         description: 'Patch terabox'
         required: true
@@ -134,6 +139,7 @@ jobs:
       APP_HTTP_SNIFFER: ${{ inputs.app_http_sniffer }}
       APP_LOCKET_WIDGET: ${{ inputs.app_locket_widget }}
       APP_NETMONSTER: ${{ inputs.app_netmonster }}
+      APP_PROXYMAN: ${{ inputs.app_proxyman }}
       APP_TERABOX: ${{ inputs.app_terabox }}
       APP_UNIVERSAL_COPY: ${{ inputs.app_universal_copy }}
       APP_VTVGO: ${{ inputs.app_vtvgo }}
@@ -157,6 +163,9 @@ jobs:
           fi
           if [[ "$APP_NETMONSTER" == "true" ]]; then
             LIST="$LIST,netmonster"
+          fi
+          if [[ "$APP_PROXYMAN" == "true" ]]; then
+            LIST="$LIST,proxyman"
           fi
           if [[ "$APP_TERABOX" == "true" ]]; then
             LIST="$LIST,terabox"
