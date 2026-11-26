@@ -5,7 +5,7 @@
                 "package": "com.zhiliaoapp.musically",
                 "search_term": "TikTok",
                 "stable": [
-                    "47.9.3"
+                    "48.0.2"
                 ],
                 "beta": [],
                 "strip": true,
@@ -545,7 +545,6 @@
                             "hide_inbox_group_chat_banner": false,
                             "hide_chat_call_buttons": false,
                             "hide_chat_sticker_banner": false,
-                            "hide_chat_ai_replies": false,
                             "turn_off_chat_double_tap": false,
                             "turn_off_chat_swipe_reply": false,
                             "show_inbox_filters": false,
@@ -1130,10 +1129,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "2024709030",
-                    "armeabi-v7a": "2024709030",
-                    "x86": "2024709030",
-                    "x86_64": "2024709030"
+                    "arm64-v8a": "2024800020",
+                    "armeabi-v7a": "2024800020",
+                    "x86": "2024800020",
+                    "x86_64": "2024800020"
                 }
             },
             "tiktok-lite": {
@@ -1280,6 +1279,12 @@
                             "country_date_under_caption": false,
                             "country_date_shadow": false,
                             "show_author_handle": false
+                        }
+                    },
+                    "Dark mode": {
+                        "enabled": true,
+                        "options": {
+                            "lite_dark_mode": false
                         }
                     }
                 },
