@@ -42,7 +42,10 @@
         "repo_url": "heval99/Heval-Morphe-Patches"
     },
     "hoo-dles": {
-        "repo_url": "hoo-dles/morphe-patches"
+        "repo_url": "hoo-dles/morphe-patches",
+        "fallback_urls": [
+            "https://gitgud.io/xiondigital/MorphePatches/-/raw/main/hoodles/patches-list.json"
+        ]
     },
     "hushfacebook": {
         "repo_url": "SysAdminDoc/HushFacebook",

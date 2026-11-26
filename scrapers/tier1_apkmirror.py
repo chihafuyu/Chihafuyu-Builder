@@ -649,6 +649,65 @@ class ApkmirrorScraper(BaseScraper):
         return False
 
     @staticmethod
+    def _variant_preference_index(
+        text: str, preferences: Any
+    ) -> int | None:
+        """Returns the first configured variant preference matching *text*.
+
+        Preferences are ordered most- to least-preferred. Each entry may
+        constrain ``arch``, ``android``, and/or ``dpi``; every supplied
+        field must match. Malformed entries are ignored.
+        """
+        if not isinstance(preferences, list):
+            return None
+
+        lowered = text.lower()
+        for index, pref in enumerate(preferences):
+            if not isinstance(pref, dict):
+                continue
+
+            arch = str(pref.get("arch") or "").strip()
+            android = str(pref.get("android") or "").strip().lower()
+            dpi = str(pref.get("dpi") or "").strip().lower()
+            if not (arch or android or dpi):
+                continue
+            if arch and not _is_arch_token(lowered, arch):
+                continue
+            if android and android not in lowered:
+                continue
+            if dpi and dpi not in lowered:
+                continue
+            return index
+        return None
+
+    @classmethod
+    def _order_rows_by_preference(
+        cls, rows: list[Any], preferences: Any
+    ) -> list[Any]:
+        """Orders variant rows by configured preference, then site order.
+
+        Rows that match no preference keep their original relative order
+        after every preferred row, so an unconfigured or partially
+        available list still behaves like the previous DOM-order scan.
+        """
+        if not isinstance(preferences, list) or not preferences:
+            return rows
+
+        def sort_key(item: tuple[int, Any]) -> tuple[bool, int, int]:
+            index, row = item
+            priority = cls._variant_preference_index(
+                row.get_text(" ", strip=True), preferences
+            )
+            return (
+                priority is None,
+                priority if priority is not None else 0,
+                index,
+            )
+
+        ordered = sorted(enumerate(rows), key=sort_key)
+        return [row for _, row in ordered]
+
+    @staticmethod
     def _is_bundle_row(row: Any) -> bool:
         """Identifies APKM bundles strictly via APKMirror's badge elements."""
         badges = row.find_all(
@@ -726,7 +785,7 @@ class ApkmirrorScraper(BaseScraper):
     def _extract_row(
         self, ctx: Context, row: Any, opts: dict
     ) -> str | None:
-        text = row.text.lower()
+        text = row.get_text(" ", strip=True).lower()
         ver_code = str(opts.get("ver_code") or "").lower()
         is_bundle = self._is_bundle_row(row)
 
@@ -754,6 +813,15 @@ class ApkmirrorScraper(BaseScraper):
         ver_code: str,
         force_b: bool,
     ) -> str | None:
+        preferences = ctx.app_data.get("apkm_variants")
+        rows = self._order_rows_by_preference(rows, preferences)
+        if isinstance(preferences, list) and preferences:
+            print(
+                "[INFO] Ordered variants by configured preference "
+                f"({len(preferences)} rule(s)).",
+                flush=True,
+            )
+
         for pass_idx in (1, 2, 3, 4):
             print(
                 f"[INFO] Variant pass {pass_idx}/4 "

@@ -249,6 +249,10 @@ def test_load_ecosystems_reads_fallbacks_from_repo_map():
         "https://git.kvkdns.org/kveld9/kveld-extra-morphe-patches/"
         "raw/branch/main/patches-list.json"
     ]
+    assert by_name["hoo-dles"]["fallback_urls"] == [
+        "https://gitgud.io/xiondigital/MorphePatches/"
+        "-/raw/main/hoodles/patches-list.json"
+    ]
 
 
 def test_load_ecosystems_without_repo_map_has_no_hidden_fallback(monkeypatch):
@@ -662,6 +666,142 @@ def test_is_arch_token_case_insensitive():
     """Arch token matching tolerates mixed-case text and tokens."""
     assert TIER1._is_arch_token("X86 NODPI APK", "x86") is True
     assert TIER1._is_arch_token("X86_64 NODPI APK", "x86") is False
+
+
+REDDIT_VARIANTS = [
+    {"arch": "universal", "android": "12L+"},
+    {"arch": "arm64-v8a", "android": "10+"},
+]
+
+
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        (
+            "2026.48.0 universal Android 12L+ 120-480dpi BUNDLE",
+            0,
+        ),
+        (
+            "2026.48.0 arm64-v8a Android 10+ 480-640dpi BUNDLE",
+            1,
+        ),
+        (
+            "2026.48.0 universal Android 10+ 120-480dpi BUNDLE",
+            None,
+        ),
+        (
+            "2026.48.0 x86 Android 12L+ 120-480dpi BUNDLE",
+            None,
+        ),
+        (
+            "2026.48.0 arm64-v8a Android 12L+ 480-640dpi BUNDLE",
+            None,
+        ),
+    ],
+)
+def test_variant_preference_index_requires_all_fields(text, expected):
+    """A variant rule only matches when arch, Android, and DPI agree."""
+    assert TIER1.ApkmirrorScraper._variant_preference_index(
+        text, REDDIT_VARIANTS
+    ) == expected
+
+
+def _reddit_variant_row(arch, android, dpi, slug):
+    """Builds a Reddit release-table row with a bundle badge."""
+    return BeautifulSoup(
+        (
+            '<div class="table-row headerFont">'
+            '<div class="table-cell">'
+            '<a class="accent_color" href="/apk/redditinc/reddit/'
+            f'reddit-2026-48-0-release/{slug}/">2026.48.0</a>'
+            '<span class="apkm-badge success">BUNDLE</span>'
+            '<span class="colorLightBlack">2648001</span>'
+            "</div>"
+            f'<div class="table-cell">{arch}</div>'
+            f'<div class="table-cell">{android}</div>'
+            f'<div class="table-cell">{dpi}</div>'
+            "</div>"
+        ),
+        "html.parser",
+    ).div
+
+
+def _reddit_rows():
+    """Returns Reddit's two 2026.48.0 bundles in ARM-first site order."""
+    return [
+        _reddit_variant_row(
+            "arm64-v8a",
+            "Android 10+",
+            "480-640dpi",
+            "reddit-2026-48-0-android-apk-download",
+        ),
+        _reddit_variant_row(
+            "universal",
+            "Android 12L+",
+            "120-480dpi",
+            "reddit-2026-48-0-2-android-apk-download",
+        ),
+    ]
+
+
+def test_find_variant_prefers_universal_12l_over_site_order(monkeypatch):
+    """Reddit's universal/12L+ bundle wins even when ARM is listed first."""
+    scraper = object.__new__(TIER1.ApkmirrorScraper)
+    ctx = SimpleNamespace(
+        pkg="com.reddit.frontpage",
+        app_data={
+            "force_bundle": True,
+            "apkm_variants": REDDIT_VARIANTS,
+        },
+        arch="arm64-v8a",
+        target_ver="2026.48.0",
+    )
+    calls = []
+
+    def fake_process(_ctx, url, is_bundle):
+        calls.append((url, is_bundle))
+        return "/tmp/reddit.apkm"
+
+    monkeypatch.setattr(scraper, "_process_variant_page", fake_process)
+
+    out = scraper._find_variant_in_rows(ctx, _reddit_rows(), "", True)
+
+    assert out == "/tmp/reddit.apkm"
+    assert len(calls) == 1
+    assert "-2-android-apk-download" in calls[0][0]
+    assert calls[0][1] is True
+
+
+def test_find_variant_falls_back_to_arm64_when_universal_fails(
+    monkeypatch,
+):
+    """A failed universal download falls through to arm64/Android 10+."""
+    scraper = object.__new__(TIER1.ApkmirrorScraper)
+    ctx = SimpleNamespace(
+        pkg="com.reddit.frontpage",
+        app_data={
+            "force_bundle": True,
+            "apkm_variants": REDDIT_VARIANTS,
+        },
+        arch="arm64-v8a",
+        target_ver="2026.48.0",
+    )
+    calls = []
+
+    def fake_process(_ctx, url, is_bundle):
+        calls.append((url, is_bundle))
+        if "-2-android-apk-download" in url:
+            return None
+        return "/tmp/reddit-arm64.apkm"
+
+    monkeypatch.setattr(scraper, "_process_variant_page", fake_process)
+
+    out = scraper._find_variant_in_rows(ctx, _reddit_rows(), "", True)
+
+    assert out == "/tmp/reddit-arm64.apkm"
+    assert len(calls) == 2
+    assert "-2-android-apk-download" in calls[0][0]
+    assert "-2-android-apk-download" not in calls[1][0]
 
 
 def _release_link(title, href):

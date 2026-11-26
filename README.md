@@ -112,6 +112,8 @@ Each ecosystem uses two files:
 | `config/apps-<ecosystem>.toml` | Download switch. Only apps marked `true` are processed; `false` is ignored. |
 | `ecosystem/<ecosystem>.json` | Package name, `stable`/`beta` version, `archive_id`, and scraper hints. |
 
+`APKMirror` variants can be ranked per app with `apkm_variants`. Each entry may set `arch`, `android`, and/or `dpi`; entries are tried in order, and rows matching no entry remain available as a last resort. Reddit, for example, prefers `universal` on Android 12L+ before `arm64-v8a` on Android 10+.
+
 Leave **App keys** blank (or use `all`) to follow the TOML. For example, `hxreborn` currently has 188 TOML entries, 45 of them `true`; a dry run therefore plans 45 artifacts. To narrow the TOML selection for one run, use a comma-separated list such as `1weather,acalendar` or `hxreborn/1weather`.
 
 #### Run the workflow

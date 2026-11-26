@@ -944,6 +944,16 @@
                     "Any"
                 ],
                 "beta": [],
+                "apkm_variants": [
+                    {
+                        "arch": "universal",
+                        "android": "12L+"
+                    },
+                    {
+                        "arch": "arm64-v8a",
+                        "android": "10+"
+                    }
+                ],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {}

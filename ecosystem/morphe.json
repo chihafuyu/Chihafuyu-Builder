@@ -10,6 +10,16 @@
                 "beta": [
                     "2026.46.0"
                 ],
+                "apkm_variants": [
+                    {
+                        "arch": "universal",
+                        "android": "12L+"
+                    },
+                    {
+                        "arch": "arm64-v8a",
+                        "android": "10+"
+                    }
+                ],
                 "strip": true,
                 "force_bundle": true,
                 "archive_id": "ZeNiX",
