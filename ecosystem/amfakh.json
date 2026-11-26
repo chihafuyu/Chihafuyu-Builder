@@ -496,17 +496,17 @@
                 "package": "com.windyty.android",
                 "search_term": "Windy",
                 "stable": [
-                    "51.3.2"
+                    "51.4.4"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "5103023",
-                    "armeabi-v7a": "5103023",
-                    "x86_64": "5103023",
-                    "x86": "5103023"
+                    "arm64-v8a": "5104042",
+                    "armeabi-v7a": "5104042",
+                    "x86_64": "5104042",
+                    "x86": "5104042"
                 },
                 "force_bundle": true
             }

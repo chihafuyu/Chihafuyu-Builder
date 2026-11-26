@@ -106,6 +106,24 @@
                 },
                 "force_bundle": true
             },
+            "proxyman": {
+                "package": "com.proxyman.proxymanandroid",
+                "search_term": "Proxyman",
+                "stable": [
+                    "1.33.0"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "70",
+                    "armeabi-v7a": "70",
+                    "x86_64": "70",
+                    "x86": "70"
+                },
+                "force_bundle": true
+            },
             "terabox": {
                 "package": "com.dubox.drive",
                 "search_term": "TeraBox",

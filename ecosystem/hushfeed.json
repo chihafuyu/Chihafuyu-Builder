@@ -164,7 +164,8 @@
                             "rounded_grid_corners": false,
                             "publish_date_instead_of_age": false,
                             "favorites_jump_to_date": false,
-                            "remember_saved_videos": false
+                            "remember_saved_videos": false,
+                            "publish_date_everywhere": false
                         }
                     },
                     "Always upload in HD": {
@@ -655,7 +656,8 @@
                             "hide_creation_tags": false,
                             "hide_live_entrance": false,
                             "hide_may_know_tag": false,
-                            "hide_pause_icon": false
+                            "hide_pause_icon": false,
+                            "pages_under_bottom_bar": false
                         }
                     },
                     "Hold-and-slide 2x lock": {
@@ -752,7 +754,11 @@
                             "hide_live_card_gift_gallery": false,
                             "hide_live_card_fest_honors": false,
                             "live_following_row_order": false,
-                            "hide_live_chat": false
+                            "hide_live_chat": false,
+                            "hide_live_room_id": false,
+                            "hide_live_ping": false,
+                            "hide_live_latency": false,
+                            "hide_live_download_speed": false
                         }
                     },
                     "Lift text length limits": {
@@ -965,7 +971,8 @@
                             "local_profile_counts": false,
                             "local_profile_verified_badge": false,
                             "hide_own_profile_restriction_notice": false,
-                            "show_profile_changes": false
+                            "show_profile_changes": false,
+                            "show_profile_video_count": false
                         }
                     },
                     "Show the progress bar": {
@@ -1114,6 +1121,12 @@
                         "options": {
                             "smaller_text_sizes": false
                         }
+                    },
+                    "Hide sound page buttons": {
+                        "enabled": true,
+                        "options": {
+                            "hide_sound_page_buttons": false
+                        }
                     }
                 },
                 "version_codes": {
@@ -1239,7 +1252,8 @@
                             "favorites_jump_to_date": false,
                             "remember_saved_videos": false,
                             "grid_search": false,
-                            "grid_position_controls": false
+                            "grid_position_controls": false,
+                            "publish_date_everywhere": false
                         }
                     },
                     "Ghost mode": {
