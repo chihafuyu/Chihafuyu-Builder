@@ -5,14 +5,13 @@
                 "package": "com.spotify.music",
                 "search_term": "Spotify: Music and Podcasts",
                 "stable": [
-                    "9.1.80.2221"
+                    "9.2.4.2644"
                 ],
                 "beta": [],
                 "strip": true,
-                "force_bundle": false,
+                "force_bundle": true,
                 "version_codes": {
-                    "universal": "145767611",
-                    "arm64-v8a": "145767611"
+                    "arm64-v8a": "148916300"
                 },
                 "archive_id": "ZeNiX",
                 "options_override": {
@@ -22,21 +21,14 @@
                     "Hide player ad cards": {
                         "enabled": false
                     },
-                    "Spicetify extensions": {
-                        "enabled": true
-                    },
                     "Pin shortcuts on Home": {
                         "enabled": false
                     },
                     "Local files from a server": {
                         "enabled": false
                     },
-                    "Hide Premium tab": {
-                        "enabled": true
-                    },
                     "Theme colors": {
-                        "enabled": false,
-                        "options": {}
+                        "enabled": false
                     }
                 }
             }

@@ -411,7 +411,7 @@
                 "package": "com.sofascore.results",
                 "search_term": "SofaScore",
                 "stable": [
-                    "26.09.21"
+                    "26.11.09"
                 ],
                 "beta": [],
                 "strip": true,
@@ -506,7 +506,7 @@
                 "package": "com.whatsapp",
                 "search_term": "WhatsApp",
                 "stable": [
-                    "2.26.45.93"
+                    "2.26.46.82"
                 ],
                 "beta": [
                     "2.26.44.70"

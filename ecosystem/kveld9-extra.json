@@ -164,7 +164,7 @@
                 "package": "com.twitter.android",
                 "search_term": "X",
                 "stable": [
-                    "12.43.0-prod.01"
+                    "12.45.1-prod.01"
                 ],
                 "beta": [],
                 "strip": true,
