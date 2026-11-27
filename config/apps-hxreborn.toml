@@ -41,6 +41,7 @@
 "castle-for-tv" = false
 "catzy" = false
 "chess-scanner" = true
+"citra" = true
 "classdojo" = false
 "clink" = false
 "clip-studio-paint" = false
@@ -58,8 +59,10 @@
 "echo-equalizer" = false
 "echogram" = false
 "etsy" = false
+"exiftool-for-photo-and-video" = true
 "fast-stl-viewer" = false
 "fddb" = false
+"film-ish" = true
 "flights25" = true
 "flipaclip" = true
 "flipboard" = true
@@ -70,8 +73,10 @@
 "glass-widgets" = false
 "graph-messenger" = false
 "ground-news" = false
+"gsmarena" = true
 "habitify" = true
 "hindu-calendar" = false
+"hourly-chime-talking-clock" = true
 "hypic" = true
 "ilovepdf" = true
 "imo" = false
@@ -92,6 +97,7 @@
 "liftoff" = false
 "lingodeer" = false
 "magic-earth" = true
+"magic-poser" = true
 "mangatime" = false
 "may-beautiful-bullet-journal" = false
 "mbc-shahid" = false
@@ -119,10 +125,12 @@
 "notein" = false
 "notesnook" = true
 "ok" = false
+"one-sec" = true
 "one4home-launcher" = false
 "opal" = false
 "outlook" = true
 "patreon" = false
+"pcapdroid" = true
 "period-tracker-and-calendar" = false
 "perplexity" = false
 "photo-editor-pro" = true
@@ -183,6 +191,7 @@
 "viber" = false
 "video-editor" = false
 "vllo" = false
+"vocat-my-own-vocabulary" = true
 "vpn-india" = false
 "vpn-super-unlimited-proxy" = false
 "vpnify" = false
@@ -197,3 +206,4 @@
 "yanosik" = false
 "yi-iot" = false
 "yuka" = false
+"zarchiver" = true
