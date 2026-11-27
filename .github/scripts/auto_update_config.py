@@ -997,6 +997,17 @@ def _migrate_to_text_input(ecosystem_name, yaml_path):
     if eco_match and not eco_match.group(1).startswith("$"):
         ecosystem_name = eco_match.group(1)
 
+    track_opts_match = re.search(
+        r"^ {6}patches_track:\r?\n(?: {8}.*\r?\n)*? {8}options:\s*(\[[^\r\n]+\])",
+        content,
+        re.MULTILINE,
+    )
+    patches_track_options = (
+        track_opts_match.group(1)
+        if track_opts_match
+        else "[Stable, Pre-release, Custom Local]"
+    )
+
     # The f-string formatting requires double braces (e.g., {{eco}}) for
     # literal curly braces that must survive into the generated YAML.
     new_yaml = f"""---
@@ -1067,7 +1078,7 @@ name: {workflow_name}
         required: true
         type: choice
         default: 'Stable'
-        options: [Stable, Pre-release, Custom Local]
+        options: {patches_track_options}
       upload_github_release:
         description: 'Upload to GitHub Release'
         required: true

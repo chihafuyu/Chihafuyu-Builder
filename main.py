@@ -17,6 +17,7 @@ from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from core.context import Context, RateLimiter
+from core.repo_url import normalize_repo_url
 from core.utils import (
     SUBPROCESS_TIMEOUT_SECONDS,
     _safe_filename,
@@ -138,23 +139,8 @@ def download_apk(ctx: Context, args: Any) -> str | None:
 
 
 def _normalize_repo_url(repo: str) -> str:
-    """Normalizes a repo identifier into a fully-qualified GitHub URL.
-
-    Accepts either a plain `owner/repo` path or a full https://github.com/...
-    URL. Any other hostname is rejected (returns empty string) instead of
-    producing a malformed URL.
-    """
-    repo = (repo or "").strip().rstrip("/")
-    if not repo:
-        return ""
-    if "://" in repo:
-        parsed = urlparse(repo)
-        if parsed.hostname not in ("github.com", "www.github.com"):
-            print(f"[WARN] Non-GitHub repo URL ignored: {repo!r}")
-            return ""
-        path = parsed.path.strip("/")
-        return f"https://github.com/{path}" if path else "https://github.com"
-    return f"https://github.com/{repo.lstrip('/')}"
+    """Normalizes a repository identifier into a safe HTTPS URL."""
+    return normalize_repo_url(repo)
 
 
 def write_changelog(
@@ -327,8 +313,12 @@ def build_patch_command(
         # mode it still accepts and keeps reflection-reachable code.
         "--bytecode-mode", "STRIP_SAFE",
     ]
-    if args.version_selection.lower() in (
-        "beta", "pre-release", "latest", "experimental", "custom",
+    patches_track = getattr(args, "patches_track", "Stable") or "Stable"
+    if (
+        args.version_selection.lower() in (
+            "beta", "pre-release", "latest", "experimental", "custom",
+        )
+        or patches_track.strip().lower() != "stable"
     ):
         cmd.append("--force")
 
@@ -845,6 +835,7 @@ def parse_arguments() -> Any:
     parser.add_argument("--cli-version", default="")
     parser.add_argument("--patches", required=True)
     parser.add_argument("--patches-version", required=True)
+    parser.add_argument("--patches-track", default="Stable")
     parser.add_argument("--repo-url", required=True)
     parser.add_argument("--keystore")
     parser.add_argument("--ks-alias")

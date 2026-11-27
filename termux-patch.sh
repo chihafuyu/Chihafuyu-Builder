@@ -13,6 +13,7 @@ MORPHE_JAR="$BASE_DIR/morphe.jar"
 REPO_URL="https://raw.githubusercontent.com/chihafuyu/Chihafuyu-Builder/main"
 
 TEMP_PATCH="" ECO_CHOICE="" TARGET_REPO="" TARGET_JSON_PATH=""
+TARGET_FALLBACKS=()
 ECO_DIR="" TRACK_CHOICE="" APK_CHOICE="" TEMP_LOG_FILE=""
 WAKELOCK_HELD=0
 KEYSTORE_PATH="" KEYSTORE_ALIAS="Morphe"
@@ -127,6 +128,7 @@ select_ecosystem() {
     echo -e "${GREEN}Selected: $ECO_CHOICE${NC}"
 
     TARGET_REPO=$(printf '%s' "$map_data" | jq -r --arg e "$ECO_CHOICE" '.[$e].repo_url // empty')
+    mapfile -t TARGET_FALLBACKS < <(printf '%s' "$map_data" | jq -r --arg e "$ECO_CHOICE" '.[$e].fallback_urls[]? // empty')
     TARGET_JSON_PATH=$(printf '%s' "$map_data" | jq -r --arg e "$ECO_CHOICE" '.[$e].config_path // empty')
     if [[ -z "$TARGET_REPO" ]]; then
         TARGET_REPO="chihafuyu/morphe-patches"
@@ -208,6 +210,82 @@ _download_with_cache() {
     mv -f "$tmp" "$dest"
 }
 
+_resolve_patch_url_from_repo() {
+    local repo_spec="$1" track="$2"
+    repo_spec="${repo_spec%/}"
+    repo_spec="${repo_spec%.git}"
+    [[ -n "$repo_spec" ]] || return 1
+
+    local host="github.com" forge="github" repo_path=""
+    if [[ "$repo_spec" =~ ^[^/]+/[^/]+$ && "$repo_spec" != *"://"* ]]; then
+        repo_path="$repo_spec"
+    elif [[ "$repo_spec" == https://* ]]; then
+        local rest="${repo_spec#https://}"
+        host="${rest%%/*}"
+        host="${host,,}"
+        repo_path="${rest#*/}"
+        [[ "$host" == "www.github.com" ]] && host="github.com"
+        if [[ "$host" != "github.com" ]]; then
+            forge="gitea"
+        fi
+    else
+        return 1
+    fi
+
+    local curl_cmd=(curl -sLf --max-time 30 -A "$USER_AGENT")
+    if [[ "$forge" == "github" && -n "${GITHUB_TOKEN:-}" ]]; then
+        curl_cmd+=("-H" "Authorization: Bearer $GITHUB_TOKEN")
+    fi
+
+    local api_url api_resp patch_url=""
+    if [[ "$forge" == "github" ]]; then
+        if [[ "$track" == "Stable" ]]; then
+            api_url="https://api.github.com/repos/${repo_path}/releases/latest"
+            api_resp=$("${curl_cmd[@]}" "$api_url") || return 1
+            patch_url=$(printf '%s' "$api_resp" | jq -r '
+                .assets[]? | select(.name | ascii_downcase | endswith(".mpp"))
+                | .browser_download_url' | tail -n1) || true
+        else
+            api_url="https://api.github.com/repos/${repo_path}/releases"
+            api_resp=$("${curl_cmd[@]}" "$api_url") || return 1
+            patch_url=$(printf '%s' "$api_resp" | jq -r '
+                [ .[] | select(.draft != true and .prerelease == true)
+                  | .assets[]? | select(.name | ascii_downcase | endswith(".mpp"))
+                  | .browser_download_url ] | first // empty') || true
+            if [[ -z "$patch_url" || "$patch_url" == "null" ]]; then
+                echo -e "${YELLOW}[WARN] No pre-release .mpp in ${repo_path}; falling back to stable.${NC}" >&2
+                api_url="https://api.github.com/repos/${repo_path}/releases/latest"
+                api_resp=$("${curl_cmd[@]}" "$api_url") || return 1
+                patch_url=$(printf '%s' "$api_resp" | jq -r '
+                    .assets[]? | select(.name | ascii_downcase | endswith(".mpp"))
+                    | .browser_download_url' | tail -n1) || true
+            fi
+        fi
+    else
+        api_url="https://${host}/api/v1/repos/${repo_path}/releases?limit=50"
+        api_resp=$("${curl_cmd[@]}" "$api_url") || return 1
+        local want_pre="false"
+        [[ "$track" != "Stable" ]] && want_pre="true"
+        patch_url=$(printf '%s' "$api_resp" | jq -r --argjson pre "$want_pre" '
+            [ .[] | select(.draft != true and ((.prerelease // false) == $pre))
+              | .assets[]? | select(.name | ascii_downcase | endswith(".mpp"))
+              | .browser_download_url ] | first // empty') || true
+        if [[ ( -z "$patch_url" || "$patch_url" == "null" ) && "$want_pre" == "true" ]]; then
+            echo -e "${YELLOW}[WARN] No experimental/pre-release .mpp in https://${host}/${repo_path}; falling back to stable.${NC}" >&2
+            patch_url=$(printf '%s' "$api_resp" | jq -r '
+                [ .[] | select(.draft != true and ((.prerelease // false) == false))
+                  | .assets[]? | select(.name | ascii_downcase | endswith(".mpp"))
+                  | .browser_download_url ] | first // empty') || true
+        fi
+    fi
+
+    if [[ -n "$patch_url" && "$patch_url" != "null" ]]; then
+        printf '%s' "$patch_url"
+        return 0
+    fi
+    return 1
+}
+
 fetch_components() {
     echo -e "\n${YELLOW}[INFO] Checking components...${NC}"
 
@@ -237,23 +315,14 @@ fetch_components() {
         exit 1
     fi
 
-    local api_url jq_filter
-    if [[ "$TRACK_CHOICE" == "Stable" ]]; then
-        api_url="https://api.github.com/repos/${TARGET_REPO}/releases/latest"
-        jq_filter='.assets[]? | select(.name | endswith(".mpp")) | .browser_download_url'
-    else
-        api_url="https://api.github.com/repos/${TARGET_REPO}/releases"
-        jq_filter='map(select(.prerelease == true)) | .[0].assets[]? | select(.name | endswith(".mpp")) | .browser_download_url'
-    fi
+    local patch_url="" candidate
+    for candidate in "$TARGET_REPO" "${TARGET_FALLBACKS[@]}"; do
+        [[ -n "$candidate" ]] || continue
+        if patch_url=$(_resolve_patch_url_from_repo "$candidate" "$TRACK_CHOICE"); then
+            break
+        fi
+    done
 
-    local api_resp
-    if ! api_resp=$("${api_cmd[@]}" "$api_url"); then
-        echo -e "${RED}[ERROR] Failed to query $TARGET_REPO.${NC}" >&2
-        exit 1
-    fi
-
-    local patch_url
-    patch_url=$(printf '%s' "$api_resp" | jq -r "$jq_filter" | tail -n1) || true
     if [[ -z "$patch_url" || "$patch_url" == "null" ]]; then
         echo -e "${RED}[ERROR] No .mpp for $ECO_CHOICE in $TARGET_REPO ($TRACK_CHOICE).${NC}" >&2
         exit 1

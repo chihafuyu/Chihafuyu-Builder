@@ -194,6 +194,7 @@ jobs:
             "At least one scanner is active."
 
       - name: Fetch Environment Artifacts
+        id: fetch-artifacts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PATCH_SOURCE_TOKEN: ${{ secrets.PATCH_SOURCE_TOKEN }}
@@ -241,12 +242,22 @@ jobs:
             exit 1
           }
 
-          if [[ ! "$INPUT_REPO_URL" =~ ^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9._-]+$ ]]; then
-            echo "::error::repo_url must be 'owner/repo', got: $INPUT_REPO_URL"
+          REPO_META_RAW="$(python -m core.repo_url "$INPUT_REPO_URL")"
+          mapfile -t REPO_META <<<"$REPO_META_RAW"
+          if (( ${#REPO_META[@]} != 4 )); then
+            echo "::error::Failed to resolve repo URL: $INPUT_REPO_URL"
             exit 1
           fi
-          echo "TARGET_REPO_URL=https://github.com/$INPUT_REPO_URL" \
-            >> "$GITHUB_ENV"
+          REPO_HOST="${REPO_META[0]}"
+          REPO_PATH="${REPO_META[1]}"
+          REPO_FORGE="${REPO_META[2]}"
+          TARGET_REPO_URL="${REPO_META[3]}"
+          {
+            echo "REPO_HOST=$REPO_HOST"
+            echo "REPO_PATH=$REPO_PATH"
+            echo "REPO_FORGE=$REPO_FORGE"
+            echo "TARGET_REPO_URL=$TARGET_REPO_URL"
+          } >> "$GITHUB_ENV"
 
           # --- Resolve CLI tag ---
           if [[ "$INPUT_CLI_TRACK" == "Custom" ]]; then
@@ -303,13 +314,19 @@ jobs:
             fi
             cp -- "$CUSTOM_PATCH" patches.mpp
             echo "PATCHES_VERSION=custom-local" >> "$GITHUB_ENV"
+            echo "resolved_track=custom-local" >> "$GITHUB_OUTPUT"
 
           elif [[ "$INPUT_PATCHES_TRACK" == "Test Artifact" ]]; then
+            if [[ "$REPO_FORGE" != "github" ]]; then
+              echo "::error::The Test Artifact track requires a GitHub" \
+                "repository, got: $TARGET_REPO_URL"
+              exit 1
+            fi
             if [[ -z "${PATCH_SOURCE_TOKEN:-}" ]]; then
               echo "::error::Test Artifact needs the PATCH_SOURCE_TOKEN" \
                 "secret to read GitHub Actions artifacts."
               echo "::error::Create a fine-grained PAT with 'Actions: Read'" \
-                "for $INPUT_REPO_URL and add it as a repository secret."
+                "for $TARGET_REPO_URL and add it as a repository secret."
               exit 1
             fi
 
@@ -339,16 +356,16 @@ jobs:
             }
 
             echo "[INFO] Fetching latest Test Artifact from" \
-              "$INPUT_REPO_URL ($TEST_BRANCH)..."
+              "$TARGET_REPO_URL ($TEST_BRANCH)..."
             ENCODED_BRANCH="$(jq -rn \
               --arg value "$TEST_BRANCH" '$value | @uri')"
-            RUNS_URL="https://api.github.com/repos/$INPUT_REPO_URL/actions/"
+            RUNS_URL="https://api.github.com/repos/$REPO_PATH/actions/"
             RUNS_URL+="workflows/$TEST_WORKFLOW/runs?"
             RUNS_URL+="status=success&branch=$ENCODED_BRANCH&per_page=20"
 
             if ! RUNS_JSON="$(api_get "$RUNS_URL")"; then
               echo "::error::Could not list workflow runs from" \
-                "$INPUT_REPO_URL."
+                "$TARGET_REPO_URL."
               echo "::error::Verify that PATCH_SOURCE_TOKEN can read" \
                 "Actions for that repository."
               exit 1
@@ -357,7 +374,7 @@ jobs:
             # Only trust runs built by the upstream repository itself. A
             # fork pull request can reuse the same branch name, but its
             # artifact must never be applied with this repository's secrets.
-            REPO_KEY="$(printf '%s' "$INPUT_REPO_URL" \
+            REPO_KEY="$(printf '%s' "$REPO_PATH" \
               | tr '[:upper:]' '[:lower:]')"
             mapfile -t RUN_IDS < <(jq -r --arg repo "$REPO_KEY" '
               .workflow_runs[]
@@ -367,7 +384,7 @@ jobs:
             ' <<<"$RUNS_JSON")
             if (( ${#RUN_IDS[@]} == 0 )); then
               echo "::error::No successful $TEST_WORKFLOW run from" \
-                "$INPUT_REPO_URL itself found on branch $TEST_BRANCH."
+                "$TARGET_REPO_URL itself found on branch $TEST_BRANCH."
               exit 1
             fi
 
@@ -377,7 +394,7 @@ jobs:
             ARTIFACT_DIGEST=""
             for CANDIDATE_RUN in "${RUN_IDS[@]}"; do
               ARTIFACTS_URL="https://api.github.com/repos/"
-              ARTIFACTS_URL+="$INPUT_REPO_URL/actions/runs/"
+              ARTIFACTS_URL+="$REPO_PATH/actions/runs/"
               ARTIFACTS_URL+="$CANDIDATE_RUN/artifacts?per_page=100"
               if ! ARTIFACTS_JSON="$(api_get "$ARTIFACTS_URL")"; then
                 echo "[WARN] Could not list artifacts for run" \
@@ -412,7 +429,7 @@ jobs:
 
             if [[ -z "$ARTIFACT_ID" ]]; then
               echo "::error::No unexpired artifact found in the latest" \
-                "successful runs of $INPUT_REPO_URL."
+                "successful runs of $TARGET_REPO_URL."
               exit 1
             fi
 
@@ -426,7 +443,7 @@ jobs:
             ARTIFACT_DIR=".artifact_download"
             rm -rf "$ARTIFACT_DIR"
             mkdir -p "$ARTIFACT_DIR"
-            DOWNLOAD_URL="https://api.github.com/repos/$INPUT_REPO_URL/"
+            DOWNLOAD_URL="https://api.github.com/repos/$REPO_PATH/"
             DOWNLOAD_URL+="actions/artifacts/$ARTIFACT_ID/zip"
 
             if ! curl -sSLf \
@@ -477,42 +494,76 @@ jobs:
             rm -rf "$ARTIFACT_DIR"
 
             echo "PATCHES_VERSION=test-$RUN_ID" >> "$GITHUB_ENV"
+            echo "resolved_track=test-artifact" >> "$GITHUB_OUTPUT"
             echo "[INFO] Successfully fetched patches.mpp from test artifact"
 
           else
-            if [[ "$INPUT_PATCHES_TRACK" == "Pre-release" ]]; then
-              JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
-              JQ_FLTR="${JQ_FLTR} | .[].tag_name"
-              PATCH_TAG="$(gh api "repos/$INPUT_REPO_URL/releases" \
-                --paginate | jq -r -s "$JQ_FLTR" | sort -V | tail -n 1)"
+            case "${INPUT_PATCHES_TRACK,,}" in
+              stable)
+                PATCH_TRACK="stable"
+                ;;
+              pre-release|prerelease|experimental)
+                PATCH_TRACK="experimental"
+                ;;
+              *)
+                echo "::error::Unsupported patches track:" \
+                  "$INPUT_PATCHES_TRACK"
+                exit 1
+                ;;
+            esac
+
+            if [[ "$REPO_FORGE" == "gitea" ]]; then
+              PATCH_TAG="$(python .github/scripts/fetch_gitea_release.py \
+                --repo "$TARGET_REPO_URL" \
+                --track "$PATCH_TRACK" \
+                --output patches.mpp \
+                --github-output "$GITHUB_OUTPUT")"
               if [[ -z "$PATCH_TAG" ]]; then
-                echo "::error::No patches pre-release found in $INPUT_REPO_URL"
+                echo "::error::No patch tag was resolved from" \
+                  "$TARGET_REPO_URL"
                 exit 1
               fi
+              echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
             else
-              PATCH_TAG="$(gh api "repos/$INPUT_REPO_URL/releases/latest" \
-                | jq -r '.tag_name // empty')"
+              RESOLVED_TRACK="$PATCH_TRACK"
+              if [[ "$PATCH_TRACK" == "experimental" ]]; then
+                JQ_FLTR='add | map(select(.prerelease==true and .draft==false))'
+                JQ_FLTR="${JQ_FLTR} | .[].tag_name"
+                PATCH_TAG="$(gh api "repos/$REPO_PATH/releases" \
+                  --paginate | jq -r -s "$JQ_FLTR" | sort -V | tail -n 1)"
+                if [[ -z "$PATCH_TAG" ]]; then
+                  echo "::warning::No patches pre-release found in" \
+                    "$TARGET_REPO_URL; falling back to latest stable release."
+                  PATCH_TAG="$(gh api "repos/$REPO_PATH/releases/latest" \
+                    | jq -r '.tag_name // empty')"
+                  RESOLVED_TRACK="stable"
+                fi
+              else
+                PATCH_TAG="$(gh api "repos/$REPO_PATH/releases/latest" \
+                  | jq -r '.tag_name // empty')"
+              fi
               if [[ -z "$PATCH_TAG" ]]; then
-                echo "::error::No stable patches release found in" \
-                  "$INPUT_REPO_URL"
+                echo "::error::No patches release found in" \
+                  "$TARGET_REPO_URL"
                 exit 1
               fi
-            fi
 
-            MPP_DIR=".patches_download"
-            rm -rf "$MPP_DIR"
-            mkdir -p "$MPP_DIR"
-            retry gh release download "$PATCH_TAG" -R "$INPUT_REPO_URL" \
-              --pattern "*.mpp" -D "$MPP_DIR"
+              MPP_DIR=".patches_download"
+              rm -rf "$MPP_DIR"
+              mkdir -p "$MPP_DIR"
+              retry gh release download "$PATCH_TAG" -R "$REPO_PATH" \
+                --pattern "*.mpp" -D "$MPP_DIR"
 
-            mapfile -t MPPS < <(find "$MPP_DIR" -maxdepth 1 -type f \
-              -name '*.mpp' -print | sort -V)
-            if (( ${#MPPS[@]} == 0 )); then
-              echo "::error::No .mpp patch bundle downloaded"
-              exit 1
+              mapfile -t MPPS < <(find "$MPP_DIR" -maxdepth 1 -type f \
+                -name '*.mpp' -print | sort -V)
+              if (( ${#MPPS[@]} == 0 )); then
+                echo "::error::No .mpp patch bundle downloaded"
+                exit 1
+              fi
+              mv -- "${MPPS[${#MPPS[@]}-1]}" patches.mpp
+              echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
+              echo "resolved_track=$RESOLVED_TRACK" >> "$GITHUB_OUTPUT"
             fi
-            mv -- "${MPPS[${#MPPS[@]}-1]}" patches.mpp
-            echo "PATCHES_VERSION=$PATCH_TAG" >> "$GITHUB_ENV"
           fi
 
       - name: Decode Custom Keystore
@@ -535,14 +586,17 @@ jobs:
         env:
           INPUT_CLI_TRACK: ${{ inputs.cli_track }}
           INPUT_PATCHES_TRACK: ${{ inputs.patches_track }}
+          PATCH_TRACK_OUT: ${{ steps.fetch-artifacts.outputs.resolved_track }}
           INPUT_VERSION_SELECTION: ${{ inputs.version_selection }}
         run: |
           set -euo pipefail
 
+          EFFECTIVE_PATCH="${PATCH_TRACK_OUT:-${INPUT_PATCHES_TRACK,,}}"
           if [[ "$INPUT_CLI_TRACK" == "Pre-release" || \
-                "$INPUT_PATCHES_TRACK" == "Pre-release" || \
-                "$INPUT_PATCHES_TRACK" == "Custom Local" || \
-                "$INPUT_PATCHES_TRACK" == "Test Artifact" || \
+                "$EFFECTIVE_PATCH" == "pre-release" || \
+                "$EFFECTIVE_PATCH" == "experimental" || \
+                "$EFFECTIVE_PATCH" == "custom-local" || \
+                "$EFFECTIVE_PATCH" == "test-artifact" || \
                 "$INPUT_VERSION_SELECTION" == "Beta" ]]; then
             echo "IS_PRERELEASE=true" >> "$GITHUB_ENV"
           else
@@ -572,6 +626,7 @@ jobs:
           INPUT_CONTINUE_ON_ERROR: ${{ inputs.continue_on_error }}
           INPUT_CLI_TRACK: ${{ inputs.cli_track }}
           INPUT_CUSTOM_CLI_VERSION: ${{ inputs.custom_cli_version }}
+          INPUT_PATCHES_TRACK: ${{ inputs.patches_track }}
         run: |
           set -euo pipefail
 
@@ -598,6 +653,7 @@ jobs:
             --cli-version "$CLI_VERSION" \
             --patches "patches.mpp" \
             --patches-version "$PATCHES_VERSION" \
+            --patches-track "$INPUT_PATCHES_TRACK" \
             --repo-url "$TARGET_REPO_URL" \
             --is-prerelease "$IS_PRERELEASE" \
             "${KEYSTORE_OPTS[@]}"
