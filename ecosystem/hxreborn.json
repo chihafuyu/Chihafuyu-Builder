@@ -725,6 +725,24 @@
                 },
                 "force_bundle": true
             },
+            "citra": {
+                "package": "com.theemulator.citra",
+                "search_term": "Citra",
+                "stable": [
+                    "b3105a4-googleplay"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "33510292",
+                    "armeabi-v7a": "33510292",
+                    "x86_64": "33510292",
+                    "x86": "33510292"
+                },
+                "force_bundle": true
+            },
             "classdojo": {
                 "package": "com.classdojo.android",
                 "search_term": "ClassDojo",
@@ -1042,6 +1060,24 @@
                 },
                 "force_bundle": true
             },
+            "exiftool-for-photo-and-video": {
+                "package": "com.exiftool.free",
+                "search_term": "ExifTool for photo and video",
+                "stable": [
+                    "5.1.1-gms"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "88",
+                    "armeabi-v7a": "88",
+                    "x86_64": "88",
+                    "x86": "88"
+                },
+                "force_bundle": true
+            },
             "fast-stl-viewer": {
                 "package": "com.performance.meshview",
                 "search_term": "Fast STL Viewer",
@@ -1074,6 +1110,24 @@
                     "armeabi-v7a": "7080701",
                     "x86_64": "7080701",
                     "x86": "7080701"
+                },
+                "force_bundle": true
+            },
+            "film-ish": {
+                "package": "com.filmish.android",
+                "search_term": "Film(ish)",
+                "stable": [
+                    "1.1.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "16",
+                    "armeabi-v7a": "16",
+                    "x86_64": "16",
+                    "x86": "16"
                 },
                 "force_bundle": true
             },
@@ -1259,6 +1313,24 @@
                     "x86": "1221"
                 }
             },
+            "gsmarena": {
+                "package": "com.gsmarena.android",
+                "search_term": "GSMArena",
+                "stable": [
+                    "1.9.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "191",
+                    "armeabi-v7a": "191",
+                    "x86_64": "191",
+                    "x86": "191"
+                },
+                "force_bundle": true
+            },
             "habitify": {
                 "package": "co.unstatic.habitify",
                 "search_term": "Habitify",
@@ -1292,6 +1364,24 @@
                     "armeabi-v7a": "177",
                     "x86_64": "177",
                     "x86": "177"
+                },
+                "force_bundle": true
+            },
+            "hourly-chime-talking-clock": {
+                "package": "com.caynax.hourlychime",
+                "search_term": "Hourly Chime: Talking Clock",
+                "stable": [
+                    "16.5.2"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "160502",
+                    "armeabi-v7a": "160502",
+                    "x86_64": "160502",
+                    "x86": "160502"
                 },
                 "force_bundle": true
             },
@@ -1656,6 +1746,24 @@
                     "armeabi-v7a": "2026151218",
                     "x86_64": "2026151218",
                     "x86": "2026151218"
+                },
+                "force_bundle": true
+            },
+            "magic-poser": {
+                "package": "com.magicposernew",
+                "search_term": "Magic Poser",
+                "stable": [
+                    "3.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "623",
+                    "armeabi-v7a": "623",
+                    "x86_64": "623",
+                    "x86": "623"
                 },
                 "force_bundle": true
             },
@@ -2103,17 +2211,17 @@
                 "package": "com.orion.notein.global",
                 "search_term": "Notein",
                 "stable": [
-                    "v2.1.49.0"
+                    "v2.1.56.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "413",
-                    "armeabi-v7a": "413",
-                    "x86_64": "413",
-                    "x86": "413"
+                    "arm64-v8a": "414",
+                    "armeabi-v7a": "414",
+                    "x86_64": "414",
+                    "x86": "414"
                 },
                 "force_bundle": true
             },
@@ -2150,6 +2258,24 @@
                     "armeabi-v7a": "26101501",
                     "x86_64": "26101501",
                     "x86": "26101501"
+                },
+                "force_bundle": true
+            },
+            "one-sec": {
+                "package": "wtf.riedel.onesec",
+                "search_term": "one sec",
+                "stable": [
+                    "3.0.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "20909",
+                    "armeabi-v7a": "20909",
+                    "x86_64": "20909",
+                    "x86": "20909"
                 },
                 "force_bundle": true
             },
@@ -2232,6 +2358,24 @@
                     "armeabi-v7a": "246014",
                     "x86_64": "246014",
                     "x86": "246014"
+                },
+                "force_bundle": true
+            },
+            "pcapdroid": {
+                "package": "com.emanuelef.remote_capture",
+                "search_term": "PCAPdroid",
+                "stable": [
+                    "2.0.5"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "98",
+                    "armeabi-v7a": "98",
+                    "x86_64": "98",
+                    "x86": "98"
                 },
                 "force_bundle": true
             },
@@ -3181,17 +3325,17 @@
                 "package": "com.tunneldoom.http",
                 "search_term": "TunnelDOOM VPN",
                 "stable": [
-                    "4.3.0"
+                    "4.3.5"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "430",
-                    "armeabi-v7a": "430",
-                    "x86_64": "430",
-                    "x86": "430"
+                    "arm64-v8a": "435",
+                    "armeabi-v7a": "435",
+                    "x86_64": "435",
+                    "x86": "435"
                 },
                 "force_bundle": true
             },
@@ -3336,17 +3480,35 @@
                 "package": "com.darinsoft.vimo",
                 "search_term": "VLLO",
                 "stable": [
-                    "13.9.18"
+                    "14.0.2"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "130918",
-                    "armeabi-v7a": "130918",
-                    "x86_64": "130918",
-                    "x86": "130918"
+                    "arm64-v8a": "140002",
+                    "armeabi-v7a": "140002",
+                    "x86_64": "140002",
+                    "x86": "140002"
+                },
+                "force_bundle": true
+            },
+            "vocat-my-own-vocabulary": {
+                "package": "kr.co.devstory.vocat",
+                "search_term": "VoCat - My Own Vocabulary",
+                "stable": [
+                    "5.2.1"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "336",
+                    "armeabi-v7a": "336",
+                    "x86_64": "336",
+                    "x86": "336"
                 },
                 "force_bundle": true
             },
@@ -3602,6 +3764,23 @@
                     "x86": "882"
                 },
                 "force_bundle": true
+            },
+            "zarchiver": {
+                "package": "ru.zdevs.zarchiver",
+                "search_term": "ZArchiver",
+                "stable": [
+                    "1.0.10"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "101035",
+                    "armeabi-v7a": "101035",
+                    "x86_64": "101035",
+                    "x86": "101035"
+                }
             }
         }
     }

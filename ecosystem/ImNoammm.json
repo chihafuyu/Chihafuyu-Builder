@@ -33,7 +33,7 @@
                 "package": "com.chess",
                 "search_term": "Chess.com",
                 "stable": [
-                    "4.10.18-googleplay"
+                    "4.10.29-googleplay"
                 ],
                 "beta": [],
                 "strip": true,
@@ -48,7 +48,7 @@
                 "package": "com.google.android.inputmethod.latin",
                 "search_term": "Gboard",
                 "stable": [
-                    "18.2.4.969776716-release-arm64-v8a"
+                    "18.5.4.993608717-release-arm64-v8a"
                 ],
                 "beta": [],
                 "strip": true,
