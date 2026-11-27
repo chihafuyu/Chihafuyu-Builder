@@ -49,12 +49,31 @@
                 "package": "com.google.android.apps.photos",
                 "search_term": "Google Photos",
                 "stable": [
-                    "8.1.0.1023737660"
+                    "8.2.1.1030128190"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
+                "force_bundle": true
+            },
+            "imo": {
+                "package": "com.imo.android.imoimhd",
+                "search_term": "IMO",
+                "stable": [
+                    "2026.10.1048"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {
+                    "Disappearing messages (IMO)": {
+                        "enabled": false
+                    },
+                    "Hide Premium on Me page (IMO)": {
+                        "enabled": false
+                    }
+                },
                 "force_bundle": true
             },
             "linkedin": {
@@ -144,7 +163,7 @@
                 "package": "com.truecaller",
                 "search_term": "Truecaller",
                 "stable": [
-                    "26.44.6"
+                    "26.45.5"
                 ],
                 "beta": [],
                 "strip": true,

@@ -1000,7 +1000,8 @@
                             "publish_date_instead_of_age": false,
                             "favorites_jump_to_date": false,
                             "remember_saved_videos": false,
-                            "publish_date_everywhere": false
+                            "publish_date_everywhere": false,
+                            "publish_date_grid_like_tiktok": false
                         }
                     },
                     "Always upload in HD": {
@@ -1124,7 +1125,8 @@
                         "enabled": true,
                         "options": {
                             "account_facts": false,
-                            "country_on_profiles": false
+                            "country_on_profiles": false,
+                            "bio_social_links": false
                         }
                     },
                     "Custom offline videos limit": {
@@ -1296,7 +1298,8 @@
                             "ghost_mode": false,
                             "ghost_hide_online_status": false,
                             "ghost_hide_live_views": false,
-                            "ghost_local_likes": false
+                            "ghost_local_likes": false,
+                            "ghost_live_double_tap": false
                         }
                     },
                     "Hide CAPTCHA popups": {
@@ -1747,7 +1750,9 @@
                             "hide_settings_row": false,
                             "settings_as_list": false,
                             "startup_message": false,
-                            "check_for_updates": false
+                            "check_for_updates": false,
+                            "notices_at_top": false,
+                            "notice_blur": false
                         }
                     },
                     "Share sheet tools": {
@@ -1774,7 +1779,8 @@
                             "region_as_flag": false,
                             "country_date_under_caption": false,
                             "show_author_handle": false,
-                            "country_date_shadow": false
+                            "country_date_shadow": false,
+                            "region_flag_with_code": false
                         }
                     },
                     "Show commenter handle and region": {
@@ -1783,7 +1789,8 @@
                             "region_as_flag": false,
                             "show_commenter_handle": false,
                             "show_commenter_region": false,
-                            "color_commenter_names": false
+                            "color_commenter_names": false,
+                            "region_flag_with_code": false
                         }
                     },
                     "Show engagement rate": {
@@ -1806,7 +1813,8 @@
                             "local_profile_verified_badge": false,
                             "hide_own_profile_restriction_notice": false,
                             "show_profile_changes": false,
-                            "show_profile_video_count": false
+                            "show_profile_video_count": false,
+                            "yellow_private_lists": false
                         }
                     },
                     "Show the progress bar": {
@@ -2063,7 +2071,9 @@
                             "hide_settings_row": false,
                             "settings_as_list": false,
                             "startup_message": false,
-                            "check_for_updates": false
+                            "check_for_updates": false,
+                            "notices_at_top": false,
+                            "notice_blur": false
                         }
                     },
                     "Trust user certificates": {
@@ -2087,7 +2097,8 @@
                             "remember_saved_videos": false,
                             "grid_search": false,
                             "grid_position_controls": false,
-                            "publish_date_everywhere": false
+                            "publish_date_everywhere": false,
+                            "publish_date_grid_like_tiktok": false
                         }
                     },
                     "Ghost mode": {
@@ -2096,7 +2107,8 @@
                             "ghost_mode": false,
                             "ghost_hide_online_status": false,
                             "ghost_hide_live_views": false,
-                            "ghost_local_likes": false
+                            "ghost_local_likes": false,
+                            "ghost_live_double_tap": false
                         }
                     },
                     "SIM spoof": {
@@ -2113,7 +2125,8 @@
                             "region_as_flag": false,
                             "country_date_under_caption": false,
                             "country_date_shadow": false,
-                            "show_author_handle": false
+                            "show_author_handle": false,
+                            "region_flag_with_code": false
                         }
                     },
                     "Dark mode": {

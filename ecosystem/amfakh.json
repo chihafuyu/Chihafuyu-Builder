@@ -80,24 +80,24 @@
                 "package": "org.detikcom.rss",
                 "search_term": "detikcom",
                 "stable": [
-                    "7.15.0"
+                    "7.15.1"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "466",
-                    "armeabi-v7a": "466",
-                    "x86_64": "466",
-                    "x86": "466"
+                    "arm64-v8a": "472",
+                    "armeabi-v7a": "472",
+                    "x86_64": "472",
+                    "x86": "472"
                 }
             },
             "dodo-music": {
                 "package": "com.dundunstudio.autoplay",
                 "search_term": "DoDo Music",
                 "stable": [
-                    "2.0.18"
+                    "2.0.20"
                 ],
                 "beta": [],
                 "strip": true,
@@ -108,10 +108,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "257",
-                    "armeabi-v7a": "257",
-                    "x86_64": "257",
-                    "x86": "257"
+                    "arm64-v8a": "259",
+                    "armeabi-v7a": "259",
+                    "x86_64": "259",
+                    "x86": "259"
                 },
                 "force_bundle": true
             },
@@ -119,17 +119,17 @@
                 "package": "com.dinoster.flipside",
                 "search_term": "FlipSide",
                 "stable": [
-                    "1.7.1"
+                    "2.0"
                 ],
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
                 "options_override": {},
                 "version_codes": {
-                    "arm64-v8a": "73",
-                    "armeabi-v7a": "73",
-                    "x86_64": "73",
-                    "x86": "73"
+                    "arm64-v8a": "85",
+                    "armeabi-v7a": "85",
+                    "x86_64": "85",
+                    "x86": "85"
                 },
                 "force_bundle": true
             },
@@ -181,11 +181,7 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {
-                    "Glass navigation bar": {
-                        "enabled": false
-                    }
-                },
+                "options_override": {},
                 "force_bundle": true,
                 "version_codes": {
                     "arm64-v8a": "956",
@@ -234,7 +230,7 @@
                 "package": "com.ertanto.kompas.official",
                 "search_term": "KOMPAS.com",
                 "stable": [
-                    "9.8.7"
+                    "9.8.9"
                 ],
                 "beta": [],
                 "strip": true,
@@ -245,10 +241,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "9008007",
-                    "armeabi-v7a": "9008007",
-                    "x86_64": "9008007",
-                    "x86": "9008007"
+                    "arm64-v8a": "9008009",
+                    "armeabi-v7a": "9008009",
+                    "x86_64": "9008009",
+                    "x86": "9008009"
                 },
                 "force_bundle": true
             },
@@ -386,7 +382,7 @@
                 "package": "mobi.eup.easygerman",
                 "search_term": "Todaii: Learn German A1-C1",
                 "stable": [
-                    "2.8.2"
+                    "2.8.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -397,10 +393,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "213",
-                    "armeabi-v7a": "213",
-                    "x86_64": "213",
-                    "x86": "213"
+                    "arm64-v8a": "214",
+                    "armeabi-v7a": "214",
+                    "x86_64": "214",
+                    "x86": "214"
                 },
                 "force_bundle": true
             },
@@ -474,7 +470,7 @@
                 "package": "com.neopawstudio.warunglife",
                 "search_term": "Warung Life Simulator",
                 "stable": [
-                    "1.2"
+                    "1.3"
                 ],
                 "beta": [],
                 "strip": true,
@@ -485,10 +481,10 @@
                     }
                 },
                 "version_codes": {
-                    "arm64-v8a": "49",
-                    "armeabi-v7a": "49",
-                    "x86_64": "49",
-                    "x86": "49"
+                    "arm64-v8a": "52",
+                    "armeabi-v7a": "52",
+                    "x86_64": "52",
+                    "x86": "52"
                 },
                 "force_bundle": true
             },

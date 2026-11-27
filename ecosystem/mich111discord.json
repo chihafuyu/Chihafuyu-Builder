@@ -525,6 +525,12 @@
                         "options": {
                             "aggressive": false
                         }
+                    },
+                    "Mods settings entry": {
+                        "enabled": false
+                    },
+                    "Mods settings resources": {
+                        "enabled": false
                     }
                 }
             }
