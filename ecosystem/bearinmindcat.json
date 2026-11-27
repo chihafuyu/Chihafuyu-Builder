@@ -10,7 +10,14 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {},
+                "options_override": {
+                    "Remove telemetry": {
+                        "enabled": true,
+                        "options": {
+                            "keepBraze": false
+                        }
+                    }
+                },
                 "force_bundle": true
             },
             "asus-launcher": {
@@ -67,7 +74,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "google-maps": {
                 "package": "com.google.android.apps.maps",
@@ -125,7 +136,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "honor-calculator": {
                 "package": "com.hihonor.calculator",
@@ -357,7 +372,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "one-ui-home": {
                 "package": "com.sec.android.app.launcher",
@@ -368,7 +387,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "oneplus-calculator": {
                 "package": "com.oneplus.calculator",
@@ -549,6 +572,17 @@
                     }
                 }
             },
+            "pixel-launcher": {
+                "package": "com.google.android.apps.nexuslauncher",
+                "search_term": "Pixel Launcher",
+                "stable": [
+                    "Any"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {}
+            },
             "redmagic-game-space": {
                 "package": "cn.nubia.gamelauncher",
                 "search_term": "RedMagic Game Space",
@@ -569,7 +603,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-calendar": {
                 "package": "com.samsung.android.calendar",
@@ -580,7 +618,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-capture": {
                 "package": "com.samsung.android.app.smartcapture",
@@ -606,7 +648,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-contacts": {
                 "package": "com.samsung.android.app.contacts",
@@ -617,7 +663,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-editor-lite": {
                 "package": "com.samsung.app.newtrim",
@@ -628,7 +678,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-email": {
                 "package": "com.samsung.android.email.provider",
@@ -639,7 +693,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-finder": {
                 "package": "com.samsung.android.app.galaxyfinder",
@@ -650,7 +708,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-gallery": {
                 "package": "com.sec.android.gallery3d",
@@ -663,6 +725,12 @@
                 "archive_id": "ZeNiX",
                 "options_override": {
                     "Remove Google services": {
+                        "enabled": false
+                    },
+                    "Change package name": {
+                        "enabled": false
+                    },
+                    "Navigation bar tabs": {
                         "enabled": false
                     }
                 }
@@ -691,7 +759,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-internet": {
                 "package": "com.sec.android.app.sbrowser",
@@ -764,6 +836,12 @@
                     },
                     "Pure black theme": {
                         "enabled": false
+                    },
+                    "Frosted glass": {
+                        "enabled": false
+                    },
+                    "Voice input without navigation bar button": {
+                        "enabled": false
                     }
                 }
             },
@@ -787,7 +865,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-music": {
                 "package": "com.sec.android.app.music",
@@ -798,7 +880,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-my-files": {
                 "package": "com.sec.android.app.myfiles",
@@ -809,7 +895,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-notes": {
                 "package": "com.samsung.android.app.notes",
@@ -823,6 +913,9 @@
                 "options_override": {
                     "Samsung account sign-in": {
                         "enabled": false
+                    },
+                    "Change package name": {
+                        "enabled": false
                     }
                 }
             },
@@ -835,7 +928,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-photo-editor": {
                 "package": "com.sec.android.mimage.photoretouching",
@@ -846,7 +943,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-reminder": {
                 "package": "com.samsung.android.app.reminder",
@@ -857,7 +958,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-screen-recorder": {
                 "package": "com.sec.app.screenrecorder",
@@ -868,7 +973,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-video-library": {
                 "package": "com.samsung.android.videolist",
@@ -879,7 +988,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-video-player": {
                 "package": "com.samsung.android.video",
@@ -890,7 +1003,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-voice-recorder": {
                 "package": "com.sec.android.app.voicenote",
@@ -901,7 +1018,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "samsung-weather": {
                 "package": "com.sec.android.daemonapp",
@@ -912,7 +1033,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "sony-album": {
                 "package": "com.sonyericsson.album",
@@ -945,7 +1070,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "waze": {
                 "package": "com.waze",
@@ -1008,7 +1137,11 @@
                 "beta": [],
                 "strip": true,
                 "archive_id": "ZeNiX",
-                "options_override": {}
+                "options_override": {
+                    "Change package name": {
+                        "enabled": false
+                    }
+                }
             },
             "xiaomi-calendar": {
                 "package": "com.android.calendar",
