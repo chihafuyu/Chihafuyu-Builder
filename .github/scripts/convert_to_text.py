@@ -44,7 +44,12 @@ def normalize_descriptions(content: str) -> str:
     return pattern.sub(repl, content)
 
 
-def _build_text_yaml(ecosystem_name: str, call_patcher_block: str, workflow_name: str) -> str:
+def _build_text_yaml(
+    ecosystem_name: str,
+    call_patcher_block: str,
+    workflow_name: str,
+    patches_track_options: str = "[Stable, Pre-release, Custom Local]",
+) -> str:
     """Generates the text-based YAML structure."""
     return f"""---
 name: {workflow_name}
@@ -114,7 +119,7 @@ name: {workflow_name}
         required: true
         type: choice
         default: 'Stable'
-        options: [Stable, Pre-release, Custom Local]
+        options: {patches_track_options}
       upload_github_release:
         description: 'Upload to GitHub Release'
         required: true
@@ -364,7 +369,19 @@ def convert_workflow(yaml_path: str) -> bool:
 
         call_patcher_block = content[call_patcher_match.start():]
         ecosystem_name = _resolve_ecosystem_name(content, yaml_path)
-        content = _build_text_yaml(ecosystem_name, call_patcher_block, workflow_name)
+        track_opts_match = re.search(
+            r"^ {6}patches_track:\r?\n(?: {8}.*\r?\n)*? {8}options:\s*(\[[^\r\n]+\])",
+            content,
+            re.MULTILINE,
+        )
+        track_opts = (
+            track_opts_match.group(1)
+            if track_opts_match
+            else "[Stable, Pre-release, Custom Local]"
+        )
+        content = _build_text_yaml(
+            ecosystem_name, call_patcher_block, workflow_name, track_opts
+        )
         print(f"Migrating {yaml_path} to text-based input (app inputs: {app_inputs}, total: {total_inputs}).")
         _ensure_toml_exists(ecosystem_name)
 

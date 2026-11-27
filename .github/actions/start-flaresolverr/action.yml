@@ -33,6 +33,14 @@ runs:
           done
         }
 
+        image_no_digest="${IMAGE%@*}"
+        last_segment="${image_no_digest##*/}"
+        if [[ "$last_segment" == *:* ]]; then
+          image_repo="${image_no_digest%:*}"
+        else
+          image_repo="$image_no_digest"
+        fi
+
         platform_os="$(docker version --format '{{.Server.Os}}')"
         platform_arch="$(docker version --format '{{.Server.Arch}}')"
         manifest_json="$(
@@ -59,12 +67,19 @@ runs:
             exit 1
           fi
           config_digest="$(
-            retry docker buildx imagetools inspect "$IMAGE@$digest" \
+            retry docker buildx imagetools inspect "$image_repo@$digest" \
               --raw | jq -r '.config.digest'
           )"
         else
           digest="$(jq -r '.digest' <<<"$manifest_json")"
-          config_digest="$(jq -r '.config.digest' <<<"$manifest_json")"
+          config_digest="$(jq -r '.config.digest // empty' <<<"$manifest_json")"
+          if [[ -z "$config_digest" && -n "$digest" && "$digest" != "null" ]]
+          then
+            config_digest="$(
+              retry docker buildx imagetools inspect "$image_repo@$digest" \
+                --raw | jq -r '.config.digest'
+            )"
+          fi
         fi
 
         if [[ -z "$digest" || "$digest" == "null" ]]; then
@@ -77,10 +92,12 @@ runs:
         fi
 
         echo "Resolved $IMAGE for $platform_os/$platform_arch: $digest"
+        key_prefix="flaresolverr-v2-${platform_os}-${platform_arch}"
         {
+          echo "image_repo=$image_repo"
           echo "digest=$digest"
           echo "config_digest=$config_digest"
-          echo "cache_key=flaresolverr-v1-${platform_os}-${platform_arch}-${digest#sha256:}"
+          echo "cache_key=${key_prefix}-${digest#sha256:}"
         } >> "$GITHUB_OUTPUT"
 
     - name: Restore cached FlareSolverr image
@@ -95,11 +112,12 @@ runs:
       id: image
       shell: bash
       env:
-        IMAGE: ${{ inputs.image }}
+        IMAGE_REPO: ${{ steps.resolve.outputs.image_repo }}
         DIGEST: ${{ steps.resolve.outputs.digest }}
         CONFIG_DIGEST: ${{ steps.resolve.outputs.config_digest }}
         CACHE_TAR: ${{ runner.temp }}/flaresolverr-image.tar
         CACHE_HIT: ${{ steps.cache.outputs.cache-hit }}
+        VERIFY_SCRIPT: ${{ github.action_path }}/verify_cache_tar.py
       run: |
         set -euo pipefail
 
@@ -116,37 +134,51 @@ runs:
 
         if [[ "$CACHE_HIT" == 'true' && -s "$CACHE_TAR" ]]; then
           docker image rm --force "$cache_image" >/dev/null 2>&1 || true
-          if docker load --input "$CACHE_TAR" >/dev/null; then
-            actual_id="$(
-              docker image inspect --format '{{.Id}}' \
-                "$cache_image" 2>/dev/null || true
+          expected_layers="$(
+            python "$VERIFY_SCRIPT" \
+              --tar "$CACHE_TAR" \
+              --config-digest "$CONFIG_DIGEST" \
+              --digest "$DIGEST" || true
+          )"
+          if [[ -n "$expected_layers" ]] \
+             && docker load --input "$CACHE_TAR" >/dev/null; then
+            loaded_layers="$(
+              docker image inspect --format '{{json .RootFS.Layers}}' \
+                "$cache_image" 2>/dev/null | jq -c '.' || true
             )"
-            if [[ "$actual_id" == "$CONFIG_DIGEST" ]]; then
+            if [[ "$loaded_layers" == "$expected_layers" ]]; then
               cache_valid=true
               echo '[INFO] FlareSolverr image restored from cache.'
             else
-              echo '::warning::Cached FlareSolverr image did not match' \
-                'the resolved digest; pulling a fresh copy.'
+              echo '::warning::Loaded FlareSolverr layers did not match' \
+                'the verified config; pulling a fresh copy.'
               docker image rm --force "$cache_image" >/dev/null 2>&1 || true
             fi
           else
-            echo '::warning::Cached FlareSolverr tarball is unreadable;' \
-              'pulling a fresh copy.'
+            echo '::warning::Cached FlareSolverr tarball failed' \
+              'verification; pulling a fresh copy.'
             rm -f -- "$CACHE_TAR"
           fi
         fi
 
         if [[ "$cache_valid" != 'true' ]]; then
-          retry docker pull --quiet "$IMAGE@$DIGEST"
+          image_ref="${IMAGE_REPO}@${DIGEST}"
+          retry docker pull --quiet "$image_ref"
           pulled_id="$(
-            docker image inspect --format '{{.Id}}' "$IMAGE@$DIGEST"
+            docker image inspect --format '{{.Id}}' "$image_ref"
           )"
-          if [[ "$pulled_id" != "$CONFIG_DIGEST" ]]; then
+          repo_digests="$(
+            docker image inspect --format '{{json .RepoDigests}}' "$image_ref"
+          )"
+          if [[ "$pulled_id" != "$CONFIG_DIGEST" && \
+                "$pulled_id" != "$DIGEST" ]] && \
+             ! jq -e --arg rd "$image_ref" 'index($rd) != null' \
+               <<<"$repo_digests" >/dev/null; then
             echo '::error::Pulled FlareSolverr image does not match the' \
-              'resolved config digest.'
+              'resolved digest.'
             exit 1
           fi
-          docker tag "$pulled_id" "$cache_image"
+          docker tag "$image_ref" "$cache_image"
           if docker save --output "$CACHE_TAR" "$cache_image"; then
             echo 'cache_ready=true' >> "$GITHUB_OUTPUT"
           else

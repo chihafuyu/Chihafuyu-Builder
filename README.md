@@ -99,6 +99,8 @@ Edit the JSON files under `ecosystem/` (e.g., `arandomhooman.json`, `byehi98.jso
 
 **Upstream mirror fallback:** the auto-update config workflow reads `repo_map.json`. Add `fallback_urls` to an ecosystem entry to retry a mirror when the GitHub raw source is unavailable or the account is suspended. Each entry can be a full raw JSON URL or a normal repository URL; repository URLs are expanded automatically for GitHub, GitLab, and Forgejo/Gitea hosts such as `git.kvkdns.org`. Adding another mirror now only needs a `repo_map.json` edit. `kveld9` and `kveld9-extra` currently mirror to `git.kvkdns.org`.
 
+**Non-GitHub patch releases:** `repo_url` accepts either `owner/repo` (GitHub) or a full `https://host/owner/repo` URL. GitHub keeps using its Releases API; other HTTPS hosts are treated as Gitea/Forgejo and read `/api/v1/repos/{owner}/{repo}/releases`. `patches_track: Experimental` (an alias of `Pre-release`) selects releases marked pre-release and falls back to `Stable` with a warning when none exist, while `Stable` selects non-prerelease releases. Any non-`Stable` `patches_track` enables `--force` during patching. `kveld9` and `kveld9-extra` use this to download their `.mpp` bundles directly from `git.kvkdns.org`.
+
 ### 6. Fill the Source Vault (Optional)
 
 Tier 0 can serve cached **original** artifacts from HuggingFace. The **Fetch Googlag Apps (Source Vault)** workflow fills that cache manually. It never patches, signs, or generates `options.json`, and it writes to a dataset separate from `HF_DATASET_ID` (the patched-output dataset). By default it keeps one version per package and removes the superseded file only after the replacement upload succeeds.
@@ -220,7 +222,7 @@ Piko exposes this as **Patches Track → Test Artifact**.
 
 GitHub does not allow the built-in `GITHUB_TOKEN` to read another repository's artifacts. Add a `PATCH_SOURCE_TOKEN` repository secret: a fine-grained PAT with **Actions: Read** access to the upstream public repository. Without it, `Test Artifact` stops with a clear error.
 
-If you do not want to manage a PAT, use `Pre-release`. Piko publishes `v*-dev.*` prereleases with `.mpp` assets, but released builds can lag behind the newest CI build.
+If you do not want to manage a PAT, use `Pre-release` (or its `Experimental` alias). Piko publishes `v*-dev.*` prereleases with `.mpp` assets, but released builds can lag behind the newest CI build.
 
 > Test builds can target newer app versions than the pins in `ecosystem/piko.json`. If patching fails with an unsupported-version error, update the ecosystem version or switch to `Pre-release`/`Stable`.
 

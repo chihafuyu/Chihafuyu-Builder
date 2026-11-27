@@ -79,7 +79,7 @@ name: 🦁 Kveld9 Ecosystem Patcher
         required: true
         type: choice
         default: 'Stable'
-        options: [Stable, Pre-release, Custom Local]
+        options: [Stable, Experimental, Custom Local]
       upload_github_release:
         description: 'Upload to GitHub Release'
         required: true
@@ -172,7 +172,7 @@ jobs:
       cli_track: ${{ inputs.cli_track }}
       custom_cli_version: ${{ inputs.custom_cli_version }}
       patches_track: ${{ inputs.patches_track }}
-      repo_url: "kveld9/kveld-morphe-patches"
+      repo_url: "https://git.kvkdns.org/kveld9/kveld-morphe-patches"
       custom_patch_filename: "kveld9-custom.mpp"
       upload_github_release: ${{ inputs.upload_github_release }}
       upload_huggingface: ${{ inputs.upload_huggingface }}

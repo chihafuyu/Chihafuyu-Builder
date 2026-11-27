@@ -1125,6 +1125,40 @@ def test_build_patch_command_uses_supported_bytecode_mode(tmp_path):
     assert "FULL" not in cmd
 
 
+@pytest.mark.parametrize(
+    ("patches_track", "expect_force"),
+    [
+        ("Stable", False),
+        ("Experimental", True),
+        ("Pre-release", True),
+        ("Custom Local", True),
+        ("Test Artifact", True),
+    ],
+)
+def test_build_patch_command_forces_non_stable_patches_track(
+    tmp_path, patches_track, expect_force
+):
+    """Every non-stable patches track enables --force even on Latest Recommended."""
+    args = SimpleNamespace(
+        cli=str(tmp_path / "morphe.jar"),
+        patches=str(tmp_path / "patches.mpp"),
+        version_selection="Latest Recommended",
+        patches_track=patches_track,
+        continue_on_error="false",
+        keystore=None,
+        ks_alias=None,
+        ks_pass=None,
+        signer=None,
+    )
+    cmd = MAIN.build_patch_command(
+        args,
+        {"strip": False},
+        ("app.apk", "options.json", "out.apk"),
+        "arm64-v8a",
+    )
+    assert ("--force" in cmd) is expect_force
+
+
 def test_resolve_target_version_prefers_beta():
     """Beta selection picks the newest beta when one is configured."""
     app = {"stable": ["1.0.0"], "beta": ["2.0.0-beta.1"]}
@@ -1171,9 +1205,57 @@ def test_normalize_repo_url_owner_repo():
     assert MAIN._normalize_repo_url("owner/repo/") == "https://github.com/owner/repo"
 
 
-def test_normalize_repo_url_rejects_foreign_host():
-    """Non-GitHub repository URLs are rejected instead of mangled."""
-    assert MAIN._normalize_repo_url("https://gitlab.com/owner/repo") == ""
+def test_normalize_repo_url_accepts_https_forge_urls():
+    """Full HTTPS repository URLs are kept for non-GitHub forges."""
+    assert MAIN._normalize_repo_url(
+        "https://git.kvkdns.org/kveld9/kveld-morphe-patches"
+    ) == "https://git.kvkdns.org/kveld9/kveld-morphe-patches"
+    assert MAIN._normalize_repo_url(
+        "https://github.com/owner/repo.git"
+    ) == "https://github.com/owner/repo"
+    assert MAIN._normalize_repo_url(
+        "https://www.github.com/owner/repo"
+    ) == "https://github.com/owner/repo"
+
+
+def test_normalize_repo_url_rejects_unsafe_urls():
+    """Credentials, queries, extra paths, and non-HTTPS URLs are rejected."""
+    assert MAIN._normalize_repo_url("http://git.kvkdns.org/owner/repo") == ""
+    assert MAIN._normalize_repo_url(
+        "https://user:pass@git.kvkdns.org/owner/repo"
+    ) == ""
+    assert MAIN._normalize_repo_url(
+        "https://git.kvkdns.org/owner/repo?tab=readme"
+    ) == ""
+    assert MAIN._normalize_repo_url(
+        "https://git.kvkdns.org/owner/repo/extra"
+    ) == ""
+    assert MAIN._normalize_repo_url("https://git.kvkdns.org/owner") == ""
+    assert MAIN._normalize_repo_url("https://git.kvkdns.org:/owner/repo") == ""
+    assert MAIN._normalize_repo_url("owner/repo/extra") == ""
+    assert MAIN._normalize_repo_url("owner/..") == ""
+
+
+def test_repo_url_cli_resolves_forges(capsys):
+    """core.repo_url CLI outputs host, path, forge, and normalized URL."""
+    repo_url_mod = _load_module("builder_repo_url", "core/repo_url.py")
+    assert repo_url_mod.main(
+        ["https://git.kvkdns.org:443/kveld9/kveld-morphe-patches.git"]
+    ) == 0
+    assert capsys.readouterr().out.splitlines() == [
+        "git.kvkdns.org",
+        "kveld9/kveld-morphe-patches",
+        "gitea",
+        "https://git.kvkdns.org/kveld9/kveld-morphe-patches",
+    ]
+    assert repo_url_mod.main(["MorpheApp/morphe-patches"]) == 0
+    assert capsys.readouterr().out.splitlines() == [
+        "github.com",
+        "MorpheApp/morphe-patches",
+        "github",
+        "https://github.com/MorpheApp/morphe-patches",
+    ]
+    assert repo_url_mod.main(["https://git.kvkdns.org/kveld9/repo/releases"]) == 1
 
 
 def test_sandboxed_env_strips_credentials(monkeypatch):
