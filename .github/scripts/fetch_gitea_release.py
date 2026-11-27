@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Download a Morphe patch bundle from a Gitea/Forgejo release."""
 
 from __future__ import annotations
