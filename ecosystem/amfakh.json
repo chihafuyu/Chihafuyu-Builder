@@ -115,6 +115,24 @@
                 },
                 "force_bundle": true
             },
+            "facer": {
+                "package": "com.jeremysteckling.facerrel",
+                "search_term": "Facer",
+                "stable": [
+                    "7.0.82_11172254_wear_receiver.watch"
+                ],
+                "beta": [],
+                "strip": true,
+                "archive_id": "ZeNiX",
+                "options_override": {},
+                "version_codes": {
+                    "arm64-v8a": "11172254",
+                    "armeabi-v7a": "11172254",
+                    "x86_64": "11172254",
+                    "x86": "11172254"
+                },
+                "force_bundle": true
+            },
             "flipside": {
                 "package": "com.dinoster.flipside",
                 "search_term": "FlipSide",
