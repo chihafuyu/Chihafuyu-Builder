@@ -46,7 +46,7 @@ By default, Morphe CLI signs patched APKs with an **auto-generated shared keysto
 
 ### On GitHub Actions
 
-Set these repository secrets:
+Set these repository secrets (optional — if `KEYSTORE_BASE64` is omitted or empty, the pipeline falls back to Morphe's default keystore with a warning):
 
 | Secret | Purpose |
 | :--- | :--- |
@@ -55,7 +55,7 @@ Set these repository secrets:
 | `KEYSTORE_PASSWORD` | Entry password |
 | `KEYSTORE_SIGNER_NAME` | Signer name embedded in the APK signature |
 
-See the [README](README.md#2-generate-your-custom-keystore) for the helper script that generates these.
+See [README §2](README.md#2-generate-your-custom-keystore) for the helper scripts (`./generate_keystore.sh` on Linux/macOS/WSL and `.\generate_keystore.ps1` on Windows PowerShell) that generate these.
 
 ### On Termux (Local)
 
@@ -102,6 +102,7 @@ Yes — the patcher is fully modular. Add new apps by editing the appropriate ec
 - A `package` name (e.g., `com.example.app`)
 - A `search_term` for the downloader
 - At least one entry under `stable` (or `beta`)
+- Optional per-app overrides when needed: `force_arch`, `force_bundle`, `apkm_variants`, and `apkm_exclude`
 
 The 7-tier smart downloader will attempt to fetch the APK from any of these sources in order: **Direct URL, GitHub Releases, HuggingFace, APKMirror, Archive.org, APKPure, and Google Play Store**.
 
@@ -177,7 +178,7 @@ No. Leave **App keys** blank, or enter `all`, to follow the selected ecosystem's
 - `true` → download the app
 - `false` → ignore the app
 
-The ecosystem JSON still supplies the `package`, `stable`/`beta` version, `archive_id`, and scraper hints. For example, `hxreborn` currently has 188 TOML entries and 45 `true` entries, so a dry run plans 45 artifacts.
+The ecosystem JSON still supplies the `package`, `stable`/`beta` version, `archive_id`, and scraper hints. For example, running a dry run for `hxreborn` with blank **App keys** plans only the entries marked `true` in `config/apps-hxreborn.toml` and skips the rest.
 
 To narrow the TOML selection for one run, enter specific keys:
 
@@ -291,11 +292,20 @@ Yes. Select `patches_track: Test Artifact`. It reads the newest successful `buil
 
 GitHub requires authentication for artifact downloads, and the built-in `GITHUB_TOKEN` only has access to this repository. Add `PATCH_SOURCE_TOKEN` as a repository secret: a fine-grained PAT with **Actions: Read** access to the upstream public repository. Without it, the track fails with a clear message.
 
-If you do not want a PAT, use `Pre-release`. Piko publishes `v*-dev.*` prereleases with `.mpp` assets, but those can lag behind the newest CI build.
+If you do not want to manage a PAT, use `Pre-release` (or its `Experimental` alias). Piko publishes `v*-dev.*` prereleases with `.mpp` assets, though released builds can lag behind the newest CI build.
 
-> A test build may require newer app versions than the pins in `ecosystem/piko.json`. If patching fails with an unsupported-version error, update the ecosystem version or use `Pre-release`/`Stable`.
+> A test build may require newer app versions than the pins in `ecosystem/piko.json`. Non-`Stable` patch tracks (`Pre-release`, `Experimental`, `Custom Local`, `Test Artifact`) automatically enable `--force`; if patching still fails, update the ecosystem version or switch back to `Stable`.
 
 See [README §8](README.md#8-use-upstream-test-builds-optional) for setup details.
+
+---
+
+## 17. How do `Experimental`, non-GitHub patch repos, and `Custom Local` work?
+
+- **Non-GitHub patch sources:** Ecosystems such as `kveld9` and `kveld9-extra` pass a full `https://host/owner/repo` URL (`https://git.kvkdns.org/...`) instead of `owner/repo`. The engine fetches `.mpp` releases via the Gitea/Forgejo Releases API (`/api/v1/repos/{owner}/{repo}/releases`) rather than `gh`.
+- **`Experimental` / `Pre-release` fallback:** Selecting `Experimental` (an alias of `Pre-release`) picks the highest pre-release that includes a `.mpp` asset. If an upstream repo has not published any pre-release yet (e.g. `kveld9-extra`), the pipeline logs a `::warning::` and automatically falls back to the latest `Stable` release (keeping `IS_PRERELEASE=false` when the CLI and app version are also stable).
+- **Automatic `--force`:** Any `patches_track` other than `Stable` (`Experimental`, `Pre-release`, `Custom Local`, `Test Artifact`) automatically passes `--force` to Morphe CLI.
+- **`Custom Local`:** Uses a repository-committed bundle from `Custom-Patches/<ecosystem>-custom.mpp` without querying upstream releases.
 
 ---
 

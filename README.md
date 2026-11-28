@@ -31,7 +31,9 @@ Click **Use this template** at the top of this repository to create your own cop
 
 ### 2. Generate Your Custom Keystore
 
-To sign your patched APKs, you'll need a cryptographic keystore. A helper script is included for Linux, macOS, and WSL.
+To sign your patched APKs, you'll need a cryptographic keystore. Helper scripts are included for Linux/macOS/WSL (`generate_keystore.sh`) and Windows PowerShell (`generate_keystore.ps1`).
+
+**Linux / macOS / WSL:**
 
 1. Open a terminal in the repository folder.
 2. Grant execution permission:
@@ -42,17 +44,23 @@ To sign your patched APKs, you'll need a cryptographic keystore. A helper script
    ```bash
    ./generate_keystore.sh
    ```
-4. Follow the interactive prompts to set your alias, password, and distinguished name (DNAME).
-5. The script produces a `.keystore` file and a Base64 text file (`custom_keystore_base64.txt`) with no line breaks, ready for GitHub Secrets.
+
+**Windows (PowerShell):**
+
+```powershell
+.\generate_keystore.ps1
+```
+
+Follow the interactive prompts to set your alias, password, and distinguished name (DNAME). Either script produces a `.keystore` file and a single-line Base64 text file (`custom_keystore_base64.txt`) ready for GitHub Secrets.
 
 ### 3. Generate a Telegram Session String (Optional)
 
-To auto-upload patched APKs to Telegram (bypassing the 50 MB bot upload limit), you'll need a Pyrogram session string.
+To auto-upload patched APKs to Telegram via a user account (instead of a bot token), you'll need a session string.
 
-1. Ensure **Python 3.12 or newer** is installed.
-2. Install the required library:
+1. Ensure **Python 3.12 or newer** is installed (CI runs Python 3.14).
+2. Install Kurigram (the maintained Pyrogram fork used by `tg_upload.py` and `generate_session.py`):
    ```bash
-   pip install pyrogram
+   pip install kurigram
    ```
 3. Run the script:
    ```bash
@@ -68,8 +76,9 @@ Configure the following secrets at **Settings → Secrets and variables → Acti
 
 | Secret | Description |
 | :--- | :--- |
+| `GH_PAT` | Personal Access Token used by `auto-update-configs.yml` and `convert-to-text-based.yml` to open PRs |
 | `GEMINI_API_KEY` | Google Gemini API key for the automated PR code reviewer |
-| `KEYSTORE_BASE64` | Contents of `custom_keystore_base64.txt` from Step 2 |
+| `KEYSTORE_BASE64` | Contents of `custom_keystore_base64.txt` from Step 2 (optional; falls back to Morphe's default keystore if omitted) |
 | `KEYSTORE_ALIAS` | Keystore alias chosen during generation |
 | `KEYSTORE_PASSWORD` | Keystore password chosen during generation |
 | `KEYSTORE_SIGNER_NAME` | Signer name passed to the CLI |
@@ -86,7 +95,8 @@ Configure the following secrets at **Settings → Secrets and variables → Acti
 | `PATCH_SOURCE_TOKEN` | Fine-grained PAT with **Actions: Read** on the upstream patch repository; required for the `Test Artifact` patches track |
 | `API_ID` | Telegram API ID from my.telegram.org |
 | `API_HASH` | Telegram API hash from my.telegram.org |
-| `SESSION_STRING` | Pyrogram session string from Step 3 |
+| `BOT_TOKEN` | Telegram bot token for bot-mode uploads (takes precedence over `SESSION_STRING` when set) |
+| `SESSION_STRING` | Telegram session string from Step 3 for user-account uploads |
 | `CHAT_ID` | Target Telegram channel/group ID or private invite link |
 
 > **⚠️ CRITICAL:** You **must** provide at least one of `VT_API_KEY`, `HA_API_KEY`, or `MD_API_KEY`. The pipeline will fail-fast and abort if no malware scanners are configured.
@@ -116,7 +126,7 @@ Each ecosystem uses two files:
 
 `APKMirror` variants can be ranked per app with `apkm_variants`. Each entry may set `arch`, `android`, and/or `dpi`; entries are tried in order, and rows matching no entry remain available as a last resort. Reddit, for example, prefers `universal` on Android 12L+ before `arm64-v8a` on Android 10+.
 
-Leave **App keys** blank (or use `all`) to follow the TOML. For example, `hxreborn` currently has 188 TOML entries, 45 of them `true`; a dry run therefore plans 45 artifacts. To narrow the TOML selection for one run, use a comma-separated list such as `1weather,acalendar` or `hxreborn/1weather`.
+Leave **App keys** blank (or use `all`) to follow the TOML: every entry set to `true` in `config/apps-<ecosystem>.toml` is planned and `false` entries are skipped. To narrow the TOML selection for one run, use a comma-separated list such as `1weather,acalendar` or `hxreborn/1weather`.
 
 #### Run the workflow
 
@@ -178,7 +188,7 @@ python vault_sync.py --ecosystems hxreborn --apps all --limit 10 --prune-old-ver
 
 ### 7. Local Build (Termux / Android)
 
-Patch directly on an Android device without depending on GitHub Actions limits. The Termux builder supports dynamic matrix routing, anti-cache corruption, and API rate-limit bypass.
+Patch directly on an Android device without depending on GitHub Actions limits. The Termux builder supports dynamic matrix routing via `repo_map.json` (including `fallback_urls`, Gitea/Forgejo releases such as `git.kvkdns.org`, and `Pre-release` → `Stable` fallback), anti-cache corruption, and GitHub API rate-limit bypass.
 
 #### Quick Start
 
