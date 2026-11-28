@@ -154,7 +154,7 @@
                 "package": "pl.solidexplorer2",
                 "search_term": "Solid Explorer",
                 "stable": [
-                    "3.6.5"
+                    "3.6.6"
                 ],
                 "beta": [],
                 "strip": true,
@@ -226,7 +226,7 @@
                 "package": "com.beint.zangi",
                 "search_term": "Zangi",
                 "stable": [
-                    "6.6.6"
+                    "7.0.0"
                 ],
                 "beta": [],
                 "strip": true,
